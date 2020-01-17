@@ -1,0 +1,9 @@
+SubDir TOP modules gw xcpt  ;
+
+XCPTS =
+    clicktocall
+    ;
+
+if $(UA_COPY_UASYS_HOME) = yes  {
+    InstallAbs $(UASYS_HOME)/service/gw : $(XCPTS).xcpt ;
+}

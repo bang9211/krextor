@@ -1,0 +1,52 @@
+dnl Process this file with autoconf 2.0 or later to make a configure script.
+AC_PREREQ(2.0)
+
+dnl If you want to use GNU style configure. you have to use below following wihtout comment. 
+#m4_include([m4/uac_system.m4])
+
+m4_include([m4/uac_general.m4])
+
+AC_INIT(pre.conf.in)
+
+dnl If you want to use GNU style configure. you have to use include follwing without comment. 
+#AC_CONFIG_HEADER(config.h)
+#UAC_CANONICAL_SYSTEM_CACHE_CHECK
+
+UAC_SYSTEM_INFO
+UAC_COMPILE_INFO
+UAC_STRUCT_SIN6
+UAC_SYS_SA_LEN
+UAC_LUA_INFO
+
+ac_uims_ver=`svn info | grep 'URL:' | grep 'tags' | awk -F'/' '{ print $9 }'`
+if test "$ac_uims_ver" = ""; then
+	ac_uims_ver=`cat build.ver`
+	if test "$ac_uims_ver" = ""; then
+		ac_uims_ver="1.0.0"
+	fi
+fi
+ac_uims_ver_major=`echo $ac_uims_ver | awk -F'.' '{print $1}'`
+ac_uims_ver_minor=`echo $ac_uims_ver | awk -F'.' '{print $2}'`
+ac_uims_ver_deploy=`echo $ac_uims_ver | awk -F'.' '{print $3}'`
+AC_MSG_CHECKING(uims_ver_major)
+AC_SUBST(uims_ver_major)
+uims_ver_major=`echo $ac_uims_ver_major`
+AC_MSG_RESULT($uims_ver_major)
+AC_MSG_CHECKING(uims_ver_minor)
+AC_SUBST(uims_ver_minor)
+uims_ver_minor=`echo $ac_uims_ver_minor`
+AC_MSG_RESULT($uims_ver_minor)
+AC_MSG_CHECKING(uims_ver_deploy)
+AC_SUBST(uims_ver_deploy)
+uims_ver_deploy=`echo $ac_uims_ver_deploy`
+AC_MSG_RESULT($uims_ver_deploy)
+AC_MSG_CHECKING(uims_ver_link)
+AC_SUBST(uims_ver_link)
+uims_ver_link=`echo $ac_uims_ver_major.$ac_uims_ver_minor`
+AC_MSG_RESULT($uims_ver_link)
+AC_MSG_CHECKING(uims_version)
+AC_SUBST(uims_version)
+uims_version=`echo $ac_uims_ver_major.$ac_uims_ver_minor.$ac_uims_ver_deploy`
+AC_MSG_RESULT($uims_version)
+
+AC_OUTPUT(pre.conf Jamfile.sys ../src/common/uims/uims_def.h)

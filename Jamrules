@@ -1,0 +1,3 @@
+SubDir SKBGW_SRC_HOME ;
+
+SubInclude SKBGW_SRC_HOME config ;

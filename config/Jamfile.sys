@@ -1,0 +1,46 @@
+#
+#
+# OS Dependent settings
+# which are filled by autoconf
+#
+#
+
+UA_OS_INFO         = linux3_10_0_862_el7_x86_64 ;
+UA_OS_NAME         = linux ;
+UA_OS_VER          = 3_10_0_862_el7_x86_64 ;
+UA_MACH_NAME       = x86_64 ;
+UA_CPU_NAME        = x86_64 ;
+UA_COMPILE_64BIT   = yes ;
+UA_COPY_UASYS_HOME = yes ;
+UA_HAS_LUA         = yes ;
+UA_USE_LUAJIT      = yes ;
+UIMS_VERSION       = 1.0.0 ;
+UIMS_VER_MAJOR     = 1 ;
+UIMS_VER_MINOR     = 0 ;
+UIMS_VER_DEPLOY    = 0 ;
+UIMS_VER_LINK      = 1.0 ;
+
+SYS_CC = cc ;
+SYS_CFLAGS = -Wshadow -fPIC   -g -O -fomit-frame-pointer -Wall ;
+SYS_CPPFLAGS = -D__LINUX__ -DPIC -D_GNU_SOURCE -D_REENTRANT ;
+SYS_CINCLUDE =  ;
+
+SYS_CXX = g++ ;
+SYS_CXXFLAGS = -Wshadow -fPIC   -g -O -fomit-frame-pointer -Wall ;
+SYS_CXXINCLUDE =  ;
+
+SYS_LINK = cc ;
+SYS_LDFLAGS =  ;
+SYS_LIBS =  ;
+SYS_LUA_INCLUDE_PATH = include/luajit-2.0 ;
+SYS_LUA_LIB =  ;
+
+SYS_SHLINK = cc ;
+SYS_SUFSHARED = .so ;
+SYS_SHLDFLAGS = -shared ;
+SYS_SH_NEEDLIBS_BEGIN = -Wl,--whole-archive ;
+SYS_SH_NEEDLIBS_EACH =  ;
+SYS_SH_NEEDLIBS_END = -Wl,--no-whole-archive ;
+
+
+SYS_EXEMODE = 755 ;

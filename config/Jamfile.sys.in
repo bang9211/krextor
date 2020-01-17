@@ -1,0 +1,46 @@
+#
+#
+# OS Dependent settings
+# which are filled by autoconf
+#
+#
+
+UA_OS_INFO         = @ua_os_info@ ;
+UA_OS_NAME         = @ua_os_name@ ;
+UA_OS_VER          = @ua_os_version@ ;
+UA_MACH_NAME       = @ua_mach_name@ ;
+UA_CPU_NAME        = @ua_cpu_name@ ;
+UA_COMPILE_64BIT   = @ua_compile_64bit@ ;
+UA_COPY_UASYS_HOME = @ua_copy_uasys_home@ ;
+UA_HAS_LUA         = @ua_has_lua@ ;
+UA_USE_LUAJIT      = @ua_use_luajit@ ;
+UIMS_VERSION       = @uims_version@ ;
+UIMS_VER_MAJOR     = @uims_ver_major@ ;
+UIMS_VER_MINOR     = @uims_ver_minor@ ;
+UIMS_VER_DEPLOY    = @uims_ver_deploy@ ;
+UIMS_VER_LINK      = @uims_ver_link@ ;
+
+SYS_CC = @CC@ ;
+SYS_CFLAGS = @CFLAGS@ ;
+SYS_CPPFLAGS = @CPPFLAGS@ ;
+SYS_CINCLUDE = @CINCLUDE@ ;
+
+SYS_CXX = @CXX@ ;
+SYS_CXXFLAGS = @CXXFLAGS@ ;
+SYS_CXXINCLUDE = @CXXINCLUDE@ ;
+
+SYS_LINK = @LINKER@ ;
+SYS_LDFLAGS = @LDFLAGS@ ;
+SYS_LIBS = @LIBS@ ;
+SYS_LUA_INCLUDE_PATH = @ua_lua_include_path@ ;
+SYS_LUA_LIB = @ua_lua_libs@ ;
+
+SYS_SHLINK = @SHLINKER@ ;
+SYS_SUFSHARED = @SUFSHARED@ ;
+SYS_SHLDFLAGS = @SHLDFLAGS@ ;
+SYS_SH_NEEDLIBS_BEGIN = @SH_NEEDLIBS_BEGIN@ ;
+SYS_SH_NEEDLIBS_EACH = @SH_NEEDLIBS_EACH@ ;
+SYS_SH_NEEDLIBS_END = @SH_NEEDLIBS_END@ ;
+
+
+SYS_EXEMODE = 755 ;

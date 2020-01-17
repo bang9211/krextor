@@ -1,0 +1,593 @@
+#
+# UXLIB Base Jamfile
+#
+#
+# gloval variables:	
+# CPPONLY : only show the precompiled file and exit -1
+#           use jam like : jam -sCPPONLY=TRUE -q
+#
+#
+
+#
+# If we need different options when we release SYS modules
+# set the environment variable of UASYS_RELEASE
+PRODUCT = $(UASYS_PRODUCT) ;
+RELEASE = $(UASYS_RELEASE) ;
+
+#
+# OS Dependent settings 
+#
+include $(TOP)/config/Jamfile.sys ;
+
+#
+#
+#
+CC = $(SYS_CC) ;
+CP = cp -rf ;
+SUFSHARED = $(SYS_SUFSHARED) ;
+
+#
+#
+# UTILITY RULES
+#
+#
+#
+# SoftLink rule for Jam version below 2.4
+#
+rule SoftLink
+{
+	Depends files : $(<) ;
+	Depends $(<) : $(>) ;
+	SEARCH on $(>) = $(SEARCH_SOURCE) ;
+	MakeLocate $(<) : $(LOCATE_TARGET) ;
+	Clean clean : $(<) ;
+}
+
+actions SoftLink
+{
+	$(RM) $(<) && $(LN) -s $(>) $(<)
+}
+
+rule Copy
+{
+	local _i ;
+	DEPENDS $(<) : $(>) ;
+	MkDir $(>) ;
+
+	for i in $(<)
+	{
+		myCopy $(i) : $(>) ;
+	}
+}
+
+actions myCopy
+{
+	$(CP) $(<) $(>) ; 
+}
+
+
+rule InstallFile
+{
+	DEPENDS install : $(>) ;
+	DEPENDS install : $(<:D) ;
+	DEPENDS install : $(<) ;
+	DEPENDS $(<) : $(>) ;
+	MkDir $(<:D) ;
+	MakeLocate $(<) : $(PWD) ;
+	#Clean clean : $(<) ;
+}
+
+actions InstallFile
+{
+	$(CP) $(>) $(<) ;
+}
+
+rule InstallLink
+{
+	CURPATH = $(PWD) ;
+	DEPENDS install : $(>) ;
+	DEPENDS install : $(<:D) ;
+	DEPENDS install : $(<) ;
+	MkDir $(<:D) ;
+	MakeLocate $(<) : $(PWD) ;
+	#Clean clean : $(<) ;
+}
+
+actions InstallLink
+{
+	cd $(>:D) ;
+	$(RM) $(<:BS) && $(LN) -s $(>:BS) $(<:BS)
+	cd $(CURPATH) ;
+}
+
+rule CopyFile
+{
+	Depends files : $(<) ;
+	Depends $(<) : $(>) ;
+	SEARCH on $(>) = $(SEARCH_SOURCE) ;
+	MakeLocate $(<) : $(LOCATE_TARGET) ;
+	Clean clean : $(<) ;
+}
+
+actions CopyFile
+{
+	$(CP) $(>) $(<) ;
+}
+
+#
+# Install files into the specified dir.
+#
+# normal InstallXxx rules can install only files in 
+# the current directory. this rule can be used
+# to install the file from the absoulte path 
+#
+# usage:  
+#	InstallAbs dir : file1 file2 ...
+#	fileN must be absoulute path
+#
+
+rule InstallAbs
+{
+	# InstallInto dir : sources ;
+
+	local i t ;
+
+	t = $(>:G=$(INSTALLGRIST)) ;
+	t = $(t:GBS) ;  # remove directory part to bind to different dir
+	
+	# Arrange for jam install
+	# Arrange for jam uninstall
+	# sources are in SEARCH_SOURCE
+	# targets are in dir
+
+	Depends install : $(t) ;
+	Clean uninstall : $(t) ;
+	SEARCH on $(>) = $(SEARCH_SOURCE) ;
+	MakeLocate $(t) : $(<) ;
+
+	# For each source, make gristed target name
+	# and Install, Chmod, Chown, and Chgrp
+
+	for i in $(>)
+	{
+	    local tt = $(i:G=$(INSTALLGRIST)) ;
+		tt = $(tt:GBS) ;  # remove directory part to bind to different dir
+		local mode = 644 ;
+
+		Suffix = $(i:S) ;
+		
+		if $(Suffix) 
+		{
+			switch $(i:S)
+			{
+				case $(SUFSHARED) : mode = 755 ;
+				case * : mode = 644 ;
+			}	
+		} else
+		{
+			mode = 755 ;
+		}
+
+		MODE on $(tt) = $(mode) ;
+
+	    Depends $(tt) : $(i) ;
+	    Install $(tt) : $(i) ;
+	    Chmod $(tt) ;
+
+	    if $(OWNER) && $(CHOWN) 
+	    { 
+		Chown $(tt) ;
+		OWNER on $(tt) = $(OWNER) ;
+	    }
+
+	    if $(GROUP) && $(CHGRP) 
+	    { 
+		Chgrp $(tt) ;
+		GROUP on $(tt) = $(GROUP) ;
+	    }
+	}
+}
+
+rule UserObject
+{
+	switch $(>:S)
+	{
+		case .sc : Cc $(<) : $(<:S=.c) ;
+				   Sesc $(<:S=.c) : $(>) ;
+		case .ls : Cc $(<) : $(<:S=.c) ;
+				   LexSed $(<:S=.c) : $(>) ;
+		case .ys : Cc $(<) : $(<:S=.c) ;
+				   YaccSed $(<:S=.c) : $(>) ;
+	}
+}
+
+
+SED_FILE = yy-sed ;
+rule LexSed
+{
+	local _l ;
+	_l = [ FGristFiles $(SED_FILE) ] ;
+	SEDPARA on $(<) = lex.yy.c ;
+	Sed $(<) : $(_l) ;
+	DEPENDS $(<) : $(>) ;
+	MakeLocate $(<) : $(LOCATE_SOURCE) ;
+	Clean clean : $(<) ;
+}
+
+rule YaccSed
+{
+    local _h ;
+	local _l ;
+
+    _h = $(<:S=.h) ;
+
+    # Some places don't have a yacc.
+
+    MakeLocate $(<) $(_h) : $(LOCATE_SOURCE) ;
+
+    if $(YACC)
+    {
+		_l = [ FGristFiles $(SED_FILE) ] ;
+        DEPENDS $(<) $(_h) : $(>) ;
+        Yacc1 $(<) $(_h) : $(>) ;
+		SEDPARA on $(<) = $(YACCFILES).c ;
+		Sed $(<) : $(_l) ;
+		SEDPARA on $(_h) = $(YACCFILES).h ;
+		Sed $(_h) : $(_l) ;
+        Clean clean : $(<) $(_h) ;
+    }
+
+    # make sure someone includes $(_h) else it will be
+    # a deadly independent target
+
+    INCLUDES $(<) : $(_h) ;
+}
+
+actions LexSed
+{
+    $(LEX) $(LEXFLAGS) $(>)
+}
+
+actions Sed
+{
+	sed -f $(>) $(SEDPARA) > $(<) ;
+}
+
+
+rule LinkShared
+{
+    MODE on $(<) = $(SYS_EXEMODE) ;
+    Chmod $(<) ;
+}
+
+if $(SYS_SH_NEEDLIBS_EACH) {
+	actions LinkShared bind NEEDLIBS
+	{
+		$(SYS_SHLINK) -o $(<) $(SYS_SHLDFLAGS) $(UNDEFS) $(>) \
+			$(SYS_SH_NEEDLIBS_BEGIN) $(SYS_SH_NEEDLIBS_EACH)$(NEEDLIBS) $(SYS_SH_NEEDLIBS_END) $(LINKLIBS)
+	}
+} else {
+	actions LinkShared bind NEEDLIBS
+	{
+		$(SYS_SHLINK) -o $(<) $(SYS_SHLDFLAGS) $(UNDEFS) $(>) \
+			$(SYS_SH_NEEDLIBS_BEGIN) $(NEEDLIBS) $(SYS_SH_NEEDLIBS_END) $(LINKLIBS)
+	}
+}	
+
+
+#
+# SharedLibrayMain [shared library name] [source, object or arcives]
+#	make shared library from object, source or archives
+#
+# ex)	SharedLibrayMain libtest.so : libtest.a libtest2.a
+#		SharedLibrayMain libtest.so : a.c b.c c.o 
+#		SharedLibrayMain libtest.so : a.c b.c c.o libtest.a
+#
+rule SharedLibraryMain
+{
+
+	local _so _i _a _o _c ;
+	_so = $(1:S=$(SUFSHARED)) ;
+	for _i in $(2)
+	{
+		switch $(_i:S)
+		{
+			case .a : _a += $(_i) ;
+			case .o : _o += $(_i) ;
+			case .c : 
+				_c += $(_i) ;
+				_o += $(_i:S=$(SUFOBJ)) ;
+		}
+	}
+	SharedLibraryMainFromObject $(_so) : $(_o) ;
+	Objects $(_c) ;
+	if $(_a) {
+		LinkLibraries $(_so) : $(_a) ;
+		#LinkLibraries $(_so) : $(_a:S=) ;
+	}
+}
+
+rule SharedLibraryMainFromObject
+{
+    local _s _t _l _i _obj_or_archive ;
+
+    _s = [ FGristFiles $(2) ] ;
+    _t = $(1:S=$(SUFSHARED)) ;
+
+    # make compiled sources a dependency of target
+
+    DEPENDS exe : $(_t) ;
+    DEPENDS $(_t) : $(_s) ;
+    MakeLocate $(_t) : $(LOCATE_TARGET) ;
+	SEARCH on $(_s) = $(SEARCH_SOURCE) ;
+
+    Clean clean : $(_t) ;
+
+ 	LinkShared $(_t) : $(_s) ;
+
+	# Shared Object 를 만들어야 하는 경우.
+	# clean을 하면 so_locations file을 삭제하는 루틴 추가.
+	_l = [ FGristFiles so_locations ] ;
+	# file을 한번만 삭제하도록.
+	if $(_l)-flag != TRUE {
+		$(_l)-flag = TRUE ;
+		Clean clean : so_locations ;
+	}
+}
+
+rule Main
+{
+	if $(VERCONTROL) = 1 {
+		VersionUpdate $(<) : $(>) ;
+	}
+	MainFromObjects $(<) : $(>:S=$(SUFOBJ)) ;
+	Objects $(>) ;
+
+}
+rule ObjectsWithSuf
+{
+    local _i _is ;
+
+    for _i in [ FGristFiles $(<) ]
+    {
+        _is = $(_i:B=$(_i:B)$(>)) ;
+        Object $(_is:S=$(SUFOBJ)) : $(_i) ;
+        Depends obj : $(_is:S=$(SUFOBJ)) ;
+    }
+}
+
+##########################################################
+# for using Lint
+#
+# Lint target : source1 source2 ... sourceN
+#
+# ex) Lint lint : a.c b.c
+#
+##########################################################
+
+rule Lint 
+{
+
+	local _i, _g, _f ;
+	for _i in $(2)
+	{
+		_g =  [ FGristFiles $(_i) ] ;
+		_o = $(_g:S=.o) ;
+		_g = <lint>$(_g:S=.o) ;
+		_f = [ FGristFiles $(_i) ] ;
+
+		#use CCFLAGS bound to '.o'
+		on $(_o) {
+			
+			CCFLAGS on $(_g) = [ RemoveUnecessaryCcFlagsForLint $(CCFLAGS) ] ;
+			CCDEFS on $(_g) = [ RemoveUnecessaryCcFlagsForLint $(CCDEFS) ] ; 
+			CCHDRS on $(_g) = [ RemoveUnecessaryCcFlagsForLint $(CCHDRS) ] ;
+		}
+		Depends $(1) : $(_g) ;
+		LintEach $(_g) : $(_f) ;
+	}
+}
+
+rule LintEach
+{
+	local _s = $(2:S=.c) ;
+	Depends $(1) : $(_s) ;
+	SEARCH on $(_s) = $(SEARCH_SOURCE) ;
+	doLintEach $(1) : $(_s) ;
+}
+
+actions doLintEach
+{
+	$(SYS_LINT) $(LINTFLAGS) $(CCFLAGS) $(CCDEFS) $(CCHDRS) $(2)
+}
+
+rule RemoveUnecessaryCcFlagsForLint {
+
+	local _i ;
+	local _source = $(1) ;
+	local _result ;
+
+	for _i in $(_source)
+	{
+		switch $(_i) {
+			case -D* : _result += $(_i) ;
+			case -I* : _result += $(_i) ;
+		}
+	}
+	
+	return $(_result) ;
+
+}
+
+# Usage : 
+#		LintFlags main.c func.c : -a -b 
+#
+rule LintFlags
+{
+	_g =  [ FGristFiles $(1) ] ;
+	_g = <lint>$(_g:S=.o) ;
+
+	LINTFLAGS on $(_g) += $(2) ;
+}
+
+
+
+##############################################################
+# collect static library
+#
+# ex) LibraryFromLibrary libuangin : libpcb libheap ;
+#
+# note) there must be a 'Library' for each source library
+#
+##############################################################
+rule LibraryFromLibrary
+{
+	local _i _l _s ;
+
+	# Add grist to file names
+
+	_s = $(>:S=$(SUFLIB)) ;
+	_l = $(<:S=$(SUFLIB)) ;
+
+    Depends $(_l) : $(_s) ;
+    Depends lib : $(_l) ;
+
+	MakeLocate $(_l) : $(LOCATE_TARGET) ;
+
+	Clean clean : $(_l) ;
+
+	if $(CRELIB) { CreLib $(_l) : $(_s[1]) ; }
+
+	Archive $(_l) : $(_s) ;
+
+	if $(RANLIB) { Ranlib $(_l) ; }
+
+}
+
+rule Cc
+{
+    Depends $(<) : $(>) ;
+
+    # If the compiler's -o flag doesn't work, relocate the .o
+
+    if $(RELOCATE)
+    {
+        CcMv $(<) : $(>) ;
+    }
+
+    # Just to clarify here: this sets the per-target CCFLAGS to
+    # be the current value of (global) CCFLAGS and SUBDIRCCFLAGS.
+    # CCHDRS and CCDEFS must be reformatted each time for some
+    # compiles (VMS, NT) that malign multiple -D or -I flags.
+
+    CCFLAGS on $(<) += $(SYS_CPPFLAGS) $(SYS_CFLAGS) $(CCFLAGS) $(SUBDIRCCFLAGS) $(SYS_CINCLUDE) ;
+	if $(CPPONLY) {
+	    CCFLAGS on $(<) += -E ;
+	}
+
+    CCHDRS on $(<) = [ on $(<) FIncludes $(HDRS) ] ;
+    CCDEFS on $(<) = [ on $(<) FDefines $(DEFINES) ] ;
+}
+
+if $(CPPONLY) {
+	actions Cc
+	{
+		$(CC) $(CCFLAGS) $(CCDEFS) $(CCHDRS) $(>)
+		exit -1
+	}
+}
+
+
+actions Link bind NEEDLIBS
+{
+    $(SYS_LINK) $(LINKFLAGS) -o $(<) $(UNDEFS) $(>) $(SYS_LDFLAGS) $(NEEDLIBS) $(LINKLIBS) 
+}
+
+
+########################################################
+# ReplaceElem <var without $> <from> <to>
+#
+# ex) 
+#	X = 1 2 3 ;
+#	ReplaceElem X : 2 : B ;
+#   
+#   now  X = 1 B 3 ;
+########################################################
+rule ReplaceElem {
+
+	local _i ;
+	local _source = $($(1)) ;
+	local _target = ;
+	local _from = $(2) ;
+	local _to = $(3) ;
+
+	for _i in $(_source)
+	{
+		if $(_i) = $(_from) {
+			_target += $(_to) ;
+		} else {
+			_target += $(_i) ;
+		}
+	}
+
+	$(1) = $(_target) ;
+}
+
+# LUAC compile related
+# ex> Luac Udbc
+rule Luac
+{
+	local _i, _t ;
+	for _i in [ FGristFiles $(1) ]
+	{
+		_t = $(_i:S=.out) ;
+		_s = $(_i:S=.lua) ;
+		LuaCompile $(_t) : $(_s) ;
+	}
+}
+
+# ex) LuaCompile Udbc.out : Udbc.lua
+rule LuaCompile
+{
+	Depends obj : $(1) ;
+	Depends $(1) : $(2) ;
+	Clean clean : $(1) ;
+
+	SEARCH on $(2) = $(SEARCH_SOURCE) ;
+	LOCATE on $(1) = $(LOCATE_TARGET) ;
+
+	if $(UA_USE_LUAJIT) = "yes" {
+		LuajitAction $(1) : $(2) ;
+	} else {
+		LuacAction $(1) : $(2) ;
+	}
+}
+
+actions LuacAction
+{
+	luac -s -o $(1) $(2) ;
+}
+
+actions LuajitAction
+{
+	luajit -b $(2) $(1) ;
+}
+
+# ex) LuaInstall $(UASYS_HOME)/lua/script : Udbc.out
+rule LuaInstall
+{
+	local _i ;
+
+	Depends install : $(1) ;
+	for _i in [ FGristFiles $(2) ]
+	{
+		Depends install : $(_i) ;
+		Copy $(_i) : $(1) ;
+	}
+}
+
+actions Lex
+{
+	flex $(LEX_OPTION) $(>)
+}
+

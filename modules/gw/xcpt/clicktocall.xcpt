@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<uxcutor>
+	<service name="clicktocall" id="1">
+		<functions>
+			<function name="log_msg" acttype="LUA">
+				<parameter name="message" type="char*"/>
+				<![CDATA[
+					local message = uxc_sdmvars.get(sdmvars, 0);
+					ux_log.always(message);
+				]]>
+			</function>
+			<function name="dump_sdm" acttype="LUA"> <![CDATA[
+				local sess = uxc_sdmvars.get_sess(sdmvars);
+				sess:dump();
+			]]></function>
+			<script><![CDATA[
+				ux_log.always("http server is initialized");
+			]]></script>
+
+			<function name="parse_startreq" acttype="LUA">
+				<parameter name="text" type="char*"/>
+				<![CDATA[
+					local cjson = require "cjson"
+
+					local text = uxc_sdmvars.get(sdmvars, 0);
+					local startReq = cjson.decode(text)
+
+					local sess = uxc_sdmvars.get_sess(sdmvars)
+                    local sessval = sess:get_root()
+					sessval.session_id = startReq.SessionID
+					sessval.subscriber_name = startReq.SbscriberName
+					sessval.calling_number = startReq.CallingNumber
+					sessval.called_number = startReq.CalledNumber
+					sessval.charging_number = startReq.ChargingNumber
+					sessval.ringbacktone_type = startReq.RingBackToneType
+					sessval.waiting_mentid = startReq.WaitingMentID
+					sessval.call_mentid = startReq.CallMentID
+					sessval.calling_cid = startReq.CallingCID
+					sessval.called_cid = startReq.CalledCID
+					sessval.host_code = startReq.HostCode
+
+					ux_log.always("calling=%s", startReq.CallingNumber);
+					ux_log.always("sessval.called_number=%s", sessval.called_number);
+				]]>
+			</function>
+
+			<function name="parse_stopreq" acttype="LUA">
+				<parameter name="text" type="char*"/>
+				<![CDATA[
+					local cjson = require "cjson"
+
+					local text = uxc_sdmvars.get(sdmvars, 0);
+					local stopReq = cjson.decode(text)
+
+					local sess = uxc_sdmvars.get_sess(sdmvars)
+                    local sessval = sess:get_root()
+					sessval.session_id = stopReq.SessionID
+
+					ux_log.always("session_id=%s", stopReq.SessionID);
+					ux_log.always("sessval.session_id=%s", sessval.session_id);
+				]]>
+			</function>
+
+		</functions>
+		<mmfs>
+			<mmf name="httpreq" protocol="HTTP" operation="POST">
+				<map mparam=":authority" value="authority"/>
+			</mmf>
+		</mmfs>
+
+		<variables>
+			<member name="waitTime" type="int" value="3000"/>
+		</variables>
+		<session>
+			<member name="authority" type="char[256]"/>
+			<member name="result" type="int"/>
+			<member name="thread_id" type="int"/>
+			<member name="conn_id" type="int"/>
+			<member name="stream_id" type="int"/>
+			<member name="version" type="int"/>
+			<member name="body" type="char[1024]"/>
+			<member name="session_id" type="char[64]"/>
+			<member name="subscriber_name" type="char[16]"/>
+			<member name="calling_number" type="char[12]"/>
+			<member name="called_number" type="char[12]"/>
+			<member name="charging_number" type="char[12]"/>
+			<member name="ringbacktone_type" type="int"/>
+			<member name="waiting_mentid" type="char[8]"/>
+			<member name="call_mentid" type="char[8]"/>
+			<member name="calling_cid" type="char[12]"/>
+			<member name="called_cid" type="char[12]"/>
+			<member name="host_code" type="int"/>
+		</session>
+
+		<fsm onerror="stop" ontimeout="stop">
+			<start name="start">
+				<onrecv target="RECV_CLICKTOCALL_START"/>
+			</start>
+
+			<recv name="RECV_CLICKTOCALL_START" protocol="HTTP" operation="POST" url="/clicktocall/start" is_req="yes" did="0">
+				<oncall mmf="httpreq">
+					<call type="SYS" function="upa_httpcall_read_ids(thread_id, conn_id, stream_id, version)"/>
+					<call type="SYS" function="upa_httpcall_get_body(body)"/>
+					<call function="parse_startreq(body)"/>
+				</oncall>
+				<onsuccess>
+					<call function="log_msg('SUCCESS')"/>
+				</onsuccess>
+				<onerror target="stop">
+					<call function="log_msg('ERROR')"/>
+				</onerror>
+			</recv>
+			<send name="SEND_CLICKTOCALL_START_RSP" protocol="HTTP" operation="POST" rcode="200" phrase="OK" did="0">
+				<oncall>
+					<call type="SYS" function="upa_httpcall_write_ids(thread_id, conn_id, stream_id, version)"/>
+					<call type="SYS" function="upa_httpcall_set_header('Agent', 0, 'UANGEL')"/>
+				</oncall>
+			</send>
+
+			<invoke name="HTTPREQ" protocol="HTTP" operation="POST" url="http://192.168.1.74:18443/clicktocall/notify" version="1.0" rid="1" timeout="5000" is_req="yes">
+				<!--oncall>
+					<call type="SYS" function="upa_httpcall_set_header('Host', 0, '192.168.1.74:18443')"/>
+				</oncall-->
+
+				<onsuccess>
+					<call function="log_msg('SUCCESS')"/>
+					<call type="SYS" function="upa_httpcall_get_body(body)"/>
+					<call function="dump_sdm()"/>
+				</onsuccess>
+				<onerror target="stop">
+					<call function="log_msg('ERROR')"/>
+				</onerror>
+				<ontimeout target="stop">
+					<call function="log_msg('TIMEOUT')"/>
+				</ontimeout>
+			</invoke>
+
+			<recv name="RECV_CLICKTOCALL_STOP" protocol="HTTP" operation="POST" url="/clicktocall/stop" timeout="10000" is_req="yes" did="0">
+				<oncall mmf="httpreq">
+					<call type="SYS" function="upa_httpcall_read_ids(thread_id, conn_id, stream_id, version)"/>
+					<call type="SYS" function="upa_httpcall_get_body(body)"/>
+					<call function="parse_stopreq(body)"/>
+				</oncall>
+				<onsuccess>
+					<call function="log_msg('SUCCESS')"/>
+				</onsuccess>
+				<onerror target="stop">
+					<call function="log_msg('ERROR')"/>
+				</onerror>
+			</recv>
+			<send name="SEND_CLICKTOCALL_STOP_RSP" protocol="HTTP" operation="POST" rcode="200" phrase="OK" did="0">
+				<oncall>
+					<call type="SYS" function="upa_httpcall_write_ids(thread_id, conn_id, stream_id, version)"/>
+					<call type="SYS" function="upa_httpcall_set_header('Agent', 0, 'UANGEL')"/>
+				</oncall>
+			</send>
+
+			<stop name="stop">
+				<onentry>
+					<!--call function="dump_sdm"/-->
+				</onentry>
+			</stop>
+		</fsm>
+	</service>
+
+</uxcutor>
