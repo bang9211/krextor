@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration SYSTEM "configuration.dtd">
+
+<usip>
+<!--
+또는
+<configuartion>
+-->
+	<general>
+		<!-- stack에서 사용할 thread의 개수. optional(default:0) --> 
+		<thread_count>2</thread_count>
+		<!-- 생성되는 thread의 stack memory 영역의 크기. 단위 byte. optional(default:0[시스템설정사용])  -->
+		<!--thread_stack_size>0</thread_stack_size-->
+		<!-- mpool의 max free size. 단위 MegaByte. optional(default : 0[무제한]) -->
+		<mpool_max_free_size>4096</mpool_max_free_size>
+		<!-- transport hash table bin size. optional(default:10240) -->
+		<!--tport_hash_bin_size>10240</tport_hash_bin_size-->
+		<!-- STACK transaction hash table bin size. optional(default:10240) -->
+		<!--transc_hash_bin_size>10240</transc_hash_bin_size-->
+	</general>
+
+	<!-- SIP timer 관련 정보. 단위 mili-seconds(1/1000) 
+		여기에 정의하지 않은 값은 RFC 3261, 6026 에서 권고하는 값을 따른다. -->
+	<timer>
+		<!-- transport 유효 체크 간격. optional(default:0) -->
+		<tport_timer>100000</tport_timer>
+		<!-- stack transaction timers -->
+		<!-- T1 Timer, initial retransmission interval. optional(default:500) -->
+		<t1_timer>500</t1_timer>
+		<!-- T2 Timer, max retransmission interval. optional(default:4000) -->
+		<!--t2_timer>4000</t2_timer!-->
+		<!-- T4 Timer, clear message time of network. optional(default:5000) -->
+		<!--t4_timer>5000</t4_timer!-->
+		<!-- A Timer, INVITE 재전송 timer. optional(default:T1) -->
+		<!--a_timer>500</a_timer-->
+		<!-- B Timer, INVITE transaction timeout. optional(default:64*T1) -->
+		<!--b_timer>32000</b_timer-->
+		<!-- C Timer, proxy INVITE transaction timeout. optional(default:> 3min, 180500) -->
+		<!--c_timer>180500</c_timer-->
+		<!-- D Timer, INVITE response 재전송 수신 대기 시간. optional(default:> 32s, 32500) -->
+		<!--d_timer>32500</d_timer-->
+		<!-- E Timer, Non-INVITE 재전송 timer. optional(default:T1) -->
+		<!--d_timer>500</d_timer-->
+		<!-- F Timer, Non-INVITE transaction timeout. optional(default:64*T1) -->
+		<!--f_timer>32000</f_timer-->
+		<!-- G Timer, INVITE response 재전송 timer. optional(default:T1) -->
+		<!--g_timer>500</g_timer-->
+		<!-- H Timer, ACK receive timeout. optional(default:64*T1) -->
+		<!--h_timer>32000</h_timer-->
+		<!-- I Timer, ACK 재전송 수신 대기 시간. optional(default:T4) -->
+		<!--i_timer>5000</i_timer-->
+		<!-- J Timer, Non-INVITE request 재전송 수신 대기 시간. optional(default:64*T1) -->
+		<!--j_timer>32000</j_timer-->
+		<!-- K Timer, Non-INVITE response 재전송 수신 대기 시간. optional(default:T4) -->
+		<!--k_timer>5000</k_timer-->
+		<!-- L Timer, INVITE-Accept 응답 후 재전송되는 INVITE 대기 시간. optional(default:64*T1) -->
+		<!--l_timer>32000</l_timer-->
+		<!-- M Timer, INVITE-Accepted 후 200OK 재전송 대기 시간. optional(default:64*T1) -->
+		<!--m_timer>32000</m_timer-->
+		<!--dialog Timer -->
+		<!--dlg_timer>60000</dlg_timer-->
+	</timer>
+	
+	<!-- SIP SERVER option 정보 -->
+	<option>
+		<!-- IPv6 주소를 사용할 것인지 여부 - optional(default:no) -->
+		<use_ipv6>yes</use_ipv6>
+		<!-- default transport type 설정 for outgoing (default:udp) -->
+		<default_transport_type>udp</default_transport_type>
+		<!-- TCP 허용 여부 (default:yes, for simulation) -->
+		<tcp_enabled>yes</tcp_enabled>
+		<!-- UDP MTU 설정 (default:0) -->
+		<!--udp_min_size>0</udp_min_size-->
+		<udp_max_size>65535</udp_max_size>
+		<!-- MSG Receive Buffer 최소 크기 (default:256) -->
+		<rcv_buf_min>256</rcv_buf_min>
+		<!-- MSG Receive Buffer 최대 크기 (default:10240) -->
+		<rcv_buf_max>10240</rcv_buf_max>
+		<!-- Max-Forwards header 설정 (default:70) -->
+		<!--max_forwards>70</max_forwards-->
+		<!-- Let application provide Via headers (default:no) -->
+		<!--use_user_via>yes</use_user_via-->
+		<!-- "408 Request Timeout" is passed to client - optional (default:yes) -->
+		<irq_pass_408>yes</irq_pass_408>
+		<!-- "100 Trying" is passed to app - optional (default:yes) -->
+		<orq_pass_100>yes</orq_pass_100>
+	</option>
+	
+	<trace>
+		<id type="caller">
+			<method>P-Asserted-Identity.uri.user</method>
+			<method>From.uri.user</method>
+		</id>
+		<id type="callee">
+			<method>To.uri.user</method>
+		</id>
+	</trace>
+	
+	<!-- localhost 정보 -->
+	<local contact="<sip:172.10.9.51:5060>">
+		<transport id="1" address="172.10.9.51" port="5060">
+			<protocol type="tcp" port="5060"/>
+		</transport>
+	</local>
+
+	<peer file="$UASYS_HOME/data/ibcf-sip-peer.conf"/>
+
+<!--
+또는 
+</configuartion>
+-->
+</usip>

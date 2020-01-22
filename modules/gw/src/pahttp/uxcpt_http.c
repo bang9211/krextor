@@ -131,7 +131,8 @@ static int _uxcpt_http_get_thrid( uxc_paif_t *paif, uxc_msg_t *msg)
 	uint32_t idx, thrid, nworker;
 	uhttp_hdrs_t *hdrs;
 	uhttp_value_t *value;
-	char *sid = NULL;
+	char *sessid = NULL;
+	char *gwsessid = NULL;
 	char temp[64];
 	upa_httpmsg_t *httpmsg = (upa_httpmsg_t*)msg->data;
 
@@ -141,23 +142,31 @@ static int _uxcpt_http_get_thrid( uxc_paif_t *paif, uxc_msg_t *msg)
 	hdrs = uhttp_msg_get_hdrs( httpmsg->msg);
 	value = uhttp_hdrs_get_value( hdrs, "SessionID", 0);
 	if (value != NULL) {
-		sid = uhttp_value_get_str( value, temp, sizeof(temp), NULL);
-		ux_log( UXL_INFO, "_uxcpt_http_get_thrid: sessionid=%s", sid );
+		sessid = uhttp_value_get_str( value, temp, sizeof(temp), NULL);
+		ux_log( UXL_INFO, "_uxcpt_http_get_thrid: SessionID HDR=%s", sessid );
 	}
 
-	if( sid != NULL) {
-		idx =  (uint32_t)ux_str_hash(sid) % nworker;	
-		ux_log( UXL_INFO, "idx: idx=%d", idx );
-	} else if( httpmsg->sessid != UXC_SESSID_NULL) {
+	value = uhttp_hdrs_get_value( hdrs, "GW-SessionID", 0);
+	if (value != NULL) {
+		gwsessid = uhttp_value_get_str( value, temp, sizeof(temp), NULL);
+		ux_log( UXL_INFO, "_uxcpt_http_get_thrid: GW-SessionID HDR=%s", gwsessid );
+	}
+
+	if( httpmsg->sessid != UXC_SESSID_NULL) {
 		thrid = uxc_sessid_get_thread_id( httpmsg->sessid)-1;
-		idx = thrid % nworker;
-		ux_log( UXL_INFO, "idx: idx=%d", idx );
+		ux_log( UXL_INFO, "idx: idx=%d", thrid % nworker );
+	} else if (sessid != NULL) {
+		thrid = (uint32_t)ux_str_hash(sessid);
+		if (gwsessid != NULL) {
+			httpmsg->sessid = (uint32_t)atoi(gwsessid);
+		}
+		ux_log( UXL_INFO, "idx: idx=%d, httpmsg->sessid=%d", thrid % nworker, httpmsg->sessid );
 	} else {
 		thrid = httpmsg->connid;
-		idx = thrid % nworker;
-		ux_log( UXL_INFO, "idx: idx=%d", idx );
+		ux_log( UXL_INFO, "idx: idx=%d", thrid % nworker );
 	}
 
+	idx = thrid % nworker;
 	return idx; 
 }
 
@@ -196,7 +205,8 @@ int uxcpt_handle_http( uxc_action_t *action, uxc_worker_t* worker, uxc_msg_t *ms
 		req = NULL;
 	}
 	proto = 0;
-	need_create_session = (is_req && httpmsg->sessid == UXC_SESSID_NULL);
+	need_create_session = (is_req && strstr(uhttp_req_get_path(req), "/start") != NULL ? 1 : 0 );
+
 	if( !need_create_session ) {
 		if( httpmsg->sessid != UXC_SESSID_NULL ) {
 			sess = uxc_sessmgr_get( sessmgr, 0xFFFFFFFF & httpmsg->sessid);
@@ -251,6 +261,8 @@ int uxcpt_handle_http( uxc_action_t *action, uxc_worker_t* worker, uxc_msg_t *ms
 		}
 		httpmsg->sessid = uxc_sess_get_id(sess);
 		httpmsg->rid = 0;
+
+		ux_log( UXL_INFO, "uxcpt_handle_http: sessid = %u", httpmsg->sessid);
 	}
 
 	if( uxc_sess_is_trace_on( sess) ) {

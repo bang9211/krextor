@@ -28,17 +28,17 @@
 
 					local sess = uxc_sdmvars.get_sess(sdmvars)
                     local sessval = sess:get_root()
-					sessval.session_id = startReq.SessionID
-					sessval.subscriber_name = startReq.SbscriberName
-					sessval.calling_number = startReq.CallingNumber
-					sessval.called_number = startReq.CalledNumber
-					sessval.charging_number = startReq.ChargingNumber
-					sessval.ringbacktone_type = startReq.RingBackToneType
-					sessval.waiting_mentid = startReq.WaitingMentID
-					sessval.call_mentid = startReq.CallMentID
-					sessval.calling_cid = startReq.CallingCID
-					sessval.called_cid = startReq.CalledCID
-					sessval.host_code = startReq.HostCode
+					sessval.session_id = startReq.sessionID
+					sessval.subscriber_name = startReq.subscriberName
+					sessval.calling_number = startReq.callingNumber
+					sessval.called_number = startReq.calledNumber
+					sessval.charging_number = startReq.chargingNumber
+					sessval.ringbacktone_type = startReq.ringBackToneType
+					sessval.waiting_mentid = startReq.waitingMentID
+					sessval.call_mentid = startReq.callMentID
+					sessval.calling_cid = startReq.callingCID
+					sessval.called_cid = startReq.calledCID
+					sessval.host_code = startReq.hostCode
 
 					ux_log.always("calling=%s", startReq.CallingNumber);
 					ux_log.always("sessval.called_number=%s", sessval.called_number);
@@ -55,9 +55,9 @@
 
 					local sess = uxc_sdmvars.get_sess(sdmvars)
                     local sessval = sess:get_root()
-					sessval.session_id = stopReq.SessionID
+					sessval.session_id = stopReq.sessionID
 
-					ux_log.always("session_id=%s", stopReq.SessionID);
+					ux_log.always("session_id=%s", stopReq.sessionID);
 					ux_log.always("sessval.session_id=%s", sessval.session_id);
 				]]>
 			</function>
@@ -91,6 +91,7 @@
 			<member name="calling_cid" type="char[12]"/>
 			<member name="called_cid" type="char[12]"/>
 			<member name="host_code" type="int"/>
+			<member name="start_rsp" type="char[256]"/>
 		</session>
 
 		<fsm onerror="stop" ontimeout="stop">
@@ -113,12 +114,33 @@
 			</recv>
 			<send name="SEND_CLICKTOCALL_START_RSP" protocol="HTTP" operation="POST" rcode="200" phrase="OK" did="0">
 				<oncall>
+					<call type="LUA">
+						<![CDATA[
+							local cjson = require "cjson"
+							local sess = uxc_sdmvars.get_sess(sdmvars)
+                    		local sessval = sess:get_root()
+							local sessid = sess:get_id()
+							local rsp = {}
+							rsp.gwSessionID = sessid
+							local text = cjson.encode(rsp)
+							sessval.start_rsp = text
+							ux_log.always("sessval.start_rsp=%s", sessval.start_rsp);
+						]]>
+					</call>
 					<call type="SYS" function="upa_httpcall_write_ids(thread_id, conn_id, stream_id, version)"/>
 					<call type="SYS" function="upa_httpcall_set_header('Agent', 0, 'UANGEL')"/>
+					<call type="SYS" function="upa_httpcall_set_body( start_rsp, 'application/json')"/>
 				</oncall>
 			</send>
 
-			<invoke name="HTTPREQ" protocol="HTTP" operation="POST" url="http://192.168.1.74:18443/clicktocall/notify" version="1.0" rid="1" timeout="5000" is_req="yes">
+			<send name="SEND_INVITE_TO_CALLING" protocol="SIP" operation="INVITE" is_req="yes">
+                <oncall>
+                    <call type="SYS" function="gw_dlgsvc_on_send_outgoing_req()"/>
+                </oncall>
+                <onerror target="stop"/>
+            </send>
+
+			<invoke name="HTTPREQ" protocol="HTTP" operation="POST" url="http://192.168.1.74:18443/clicktocall/notify" version="1.0" timeout="5000" is_req="yes">
 				<!--oncall>
 					<call type="SYS" function="upa_httpcall_set_header('Host', 0, '192.168.1.74:18443')"/>
 				</oncall-->
@@ -136,7 +158,7 @@
 				</ontimeout>
 			</invoke>
 
-			<recv name="RECV_CLICKTOCALL_STOP" protocol="HTTP" operation="POST" url="/clicktocall/stop" timeout="10000" is_req="yes" did="0">
+			<recv name="RECV_CLICKTOCALL_STOP" protocol="HTTP" operation="POST" url="/clicktocall/stop" timeout="30000" is_req="yes" did="0">
 				<oncall mmf="httpreq">
 					<call type="SYS" function="upa_httpcall_read_ids(thread_id, conn_id, stream_id, version)"/>
 					<call type="SYS" function="upa_httpcall_get_body(body)"/>

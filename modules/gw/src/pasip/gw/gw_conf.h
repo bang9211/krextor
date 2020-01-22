@@ -1,0 +1,35 @@
+#ifndef __GW_CONF_H__
+#define __GW_CONF_H__
+
+#include <uxlib/ux_log.h>
+#include <uxlib/ux_memory.h>
+#include <uxcutor/uxcutor.h>
+#include <upa/upa_sippa.h>
+#include "gw_error.h"
+
+/**
+ * @ingroup gw_conf
+ * @file
+ * @brief GW Configuration
+ */
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+////////////////////////////////////////////////////////////////////////////////
+// GW configuration types & macros
+////////////////////////////////////////////////////////////////////////////////
+
+/** @brief GW configuration е╦ют */
+typedef struct gw_conf_s gw_conf_t; 
+
+////////////////////////////////////////////////////////////////////////////////
+// functions for gw_conf_t 
+////////////////////////////////////////////////////////////////////////////////
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif	// #ifndef __GW_CONF_H__

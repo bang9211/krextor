@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration SYSTEM "configuration.dtd">
+
+<uhttp>
+	<general>
+		<!-- stack에서 사용할 thread의 개수. optional(default:0) -->
+		<thread_count>4</thread_count>
+		<!-- 생성되는 thread의 stack memory 영역의 크기. 단위 byte. optional(default:0[시스템설정사용])  -->
+		<!--thread_stack_size>0</thread_stack_size-->
+		<!-- mpool의 max free size. 단위 MegaByte. optional(default : 0[무제한]) -->
+		<!--mpool_max_free_size>0</mpool_max_free_size-->
+	</general>
+	<server port="8055" scheme="http"/>
+	<!--server port="8056" scheme="https">
+		<tls>
+			<certificate_file>data/server.crt</certificate_file>
+			<private_key_file>data/server.key</private_key_file>
+		</tls>
+	</server-->
+</uhttp>
+
