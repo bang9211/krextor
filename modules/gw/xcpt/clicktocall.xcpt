@@ -135,7 +135,7 @@
 
 			<send name="SEND_INVITE_TO_CALLING" protocol="SIP" operation="INVITE" is_req="yes">
                 <oncall>
-                    <call type="SYS" function="gw_dlgsvc_on_send_outgoing_req()"/>
+                    <call type="SYS" function="gw_dlgsvc_on_send_outgoing_req('INVITE', 'sip:07076008398@127.0.0.1:5068;ServiceKey=99;DP=12', 'sip:1004@127.0.0.1', 'sip:07076008398@127.0.0.1')"/>
                 </oncall>
                 <onerror target="stop"/>
             </send>
