@@ -2,6 +2,7 @@
 #include <uxcutor/uxc_sdm.h>
 #include <uxcutor/uxc_sfsm.h>
 #include <upa/upa_sippa.h>
+#include "gw/gw_error.h"
 
 
 /**
@@ -26,7 +27,6 @@ UX_DECLARE(int) gw_dlgsvc_on_send_outgoing_req( uxc_sfcall_t *sfcall, uxc_sdmvar
 	upa_sipmsg_t *sipmsg;
 	uxc_sess_t *uxcsess = (uxc_sess_t*)params->sdm->impl;
 	uxc_msg_t *sndmsg = uxc_sess_get_sndmsg(uxcsess);
-	sndmsg = uxc_sess_get_sndmsg( uxcsess);
 	if( sndmsg == NULL ) {
 		uxc_trace(UXCTL(1,MAJ), "%s: Send message instance in session doesn't exist.", func);
 		return UX_EINVAL;
@@ -96,13 +96,13 @@ UX_DECLARE(int) gw_dlgsvc_on_send_outgoing_req( uxc_sfcall_t *sfcall, uxc_sdmvar
 
 		payload = usip_payload_create( usip_msg_get_allocator(sipmsg->mobj->base->msg), (void*)body, bodysize);
 		if( payload == NULL) {
-			ux_log(UXL_MAJ, "Failed to make SIP payload. err=%d,%s)", rv, usip_errstr(bodysize));
+			ux_log(UXL_MAJ, "Failed to set SIP payload. err=%d,%s)", rv, usip_errstr(bodysize));
 			return bodysize;
 		}
 
 		rv = usip_msg_add_hdr( sipmsg->mobj->base->msg, payload->base, 0);
 		if( rv < USIP_SUCCESS) {
-			ux_log(UXL_MAJ, "Failed to make SIP payload. err=%d,%s)", rv, usip_errstr(rv));
+			ux_log(UXL_MAJ, "Failed to set SIP payload. err=%d,%s)", rv, usip_errstr(rv));
 			return rv;
 		}
 	}
@@ -117,3 +117,97 @@ UX_DECLARE(int) gw_dlgsvc_on_send_outgoing_req( uxc_sfcall_t *sfcall, uxc_sdmvar
 }
 
 
+/**
+ * @brief DIALOG INITIAL response(INVITE, SUBSCRIBE)?? ???? ???? ??? ????? ??? 
+ * @param sfcall call fsm node
+ * @param params sdm value parameter
+ * @return ???? ???
+ * @remark
+ * para[0] = STATUS - response code
+ */
+UX_DECLARE(int) gw_dlgsvc_on_recv_initial_rsp( uxc_sfcall_t *sfcall, uxc_sdmvars_t *params)
+{
+	enum { PARA_STATUS};
+	static const char *func = "gw_dlgsvc_on_recv_initial_rsp";
+
+	int rv;
+	uxc_sess_t *uxcsess;
+	uxc_msg_t *rcvmsg;
+	upa_sipmsg_t *rspmsg;
+
+	uxcsess = (uxc_sess_t*)params->sdm->impl;
+
+	rcvmsg = uxc_sess_get_rcvmsg( uxcsess);
+	if( rcvmsg == NULL ) {
+		uxc_trace(UXCTL(1,MAJ), "%s: Recv message instance in session doesn't exist.", func);
+		return UX_EINVAL;
+	}
+	rspmsg = (upa_sipmsg_t*)rcvmsg->data;
+
+	rv = uxc_sdmvars_set_int( params, PARA_STATUS, rspmsg->mobj->status->code);
+	if( rv < UX_SUCCESS) {
+		uxc_trace(UXCTL(1,MIN), "%s: Failed to set STATUS parameter. (err=%d,%s)",
+				func, rv, uxc_errnostr(rv));
+		return rv;
+	}
+
+	uxc_sess_set_str_n(uxcsess, "from", )
+	
+	return UX_SUCCESS;
+}
+
+
+
+/**
+ * @brief DIALOG INITIAL REQUEST(INVITE, SUBSCRIBE) 메시지를 전달하기 위해 호출되는 함수
+ * @param sfcall call fsm node
+ * @param params sdm value parameter
+ * @return 실행 결과
+ */
+UX_DECLARE(int) gw_dlgsvc_on_send_rsp( uxc_sfcall_t *sfcall, uxc_sdmvars_t *params)
+{
+	enum { PARA_STATUS};
+
+	static const char *func = "gw_dlgsvc_on_send_rsp";
+
+	int rv, status;
+
+	upa_sipmsg_t *rspmsg, *reqmsg;
+	uxc_sess_t *uxcsess = (uxc_sess_t*)params->sdm->impl;
+	uxc_msg_t *sndmsg, *rcvmsg;
+	sndmsg = uxc_sess_get_sndmsg(uxcsess);
+	if( sndmsg == NULL ) {
+		ux_log(UXL_MAJ, "%s: Send message instance in session doesn't exist.", func);
+		return UX_EINVAL;
+	}
+	rspmsg = (upa_sipmsg_t*)(sndmsg->data);
+
+	rcvmsg = uxc_sess_get_rcvmsg( uxcsess);
+	if( rcvmsg == NULL ) {
+		ux_log(UXL_MAJ, "%s: Recv message instance in session doesn't exist.", func);
+		return UX_EINVAL;
+	}
+	reqmsg = (upa_sipmsg_t*)rcvmsg->data;
+
+	ux_log(UXL_INFO, "gw_dlgsvc_on_send_rsp: #1")
+	
+	status = uxc_sdmvars_get_int( params, PARA_STATUS, 0, &rv);
+	if( rv < UX_SUCCESS) return rv;
+	
+	
+	rv = usip_mobj_make_response( rspmsg->mobj, gw_err_to_rcode( status),
+					gw_err_to_phrase(status), reqmsg->mobj);
+	if( rv < USIP_SUCCESS) {
+		ux_log(UXL_MAJ, "%s: Failed to make SIP response. (status=%d,%s, err=%d,%s)",
+				func, status, gw_err_to_phrase(status), rv, usip_errstr(rv));
+		return rv;
+	}
+
+
+	rv = usip_mobj_complete( rspmsg->mobj);
+	if( rv < USIP_SUCCESS) return rv;
+
+	ux_log(UXL_INFO, "gw_dlgsvc_on_send_rsp: #7");
+
+	return UX_SUCCESS;
+}

@@ -92,6 +92,12 @@
 			<member name="called_cid" type="char[12]"/>
 			<member name="host_code" type="int"/>
 			<member name="start_rsp" type="char[256]"/>
+			<member name="status" type="int"/>
+			<member name="call_id" type="char[64]"/>
+			<member name="from" type="char[64]"/>
+			<member name="ltag" type="char[64]"/>
+			<member name="to" type="char[64]"/>
+			<member name="cseq" type="int"/>
 		</session>
 
 		<fsm onerror="stop" ontimeout="stop">
@@ -140,10 +146,28 @@
                 <onerror target="stop"/>
             </send>
 
-			<invoke name="HTTPREQ" protocol="HTTP" operation="POST" url="http://192.168.1.74:18443/clicktocall/notify" version="1.0" timeout="5000" is_req="yes">
-				<!--oncall>
-					<call type="SYS" function="upa_httpcall_set_header('Host', 0, '192.168.1.74:18443')"/>
-				</oncall-->
+			<wait name="CALLING_PROCEEDING" timeout="180000">
+				<onrecv target="RECV_INVITE_RSP"/>
+				<onerror target="stop"/>
+			</wait>
+
+			<recv name="RECV_INVITE_RSP" protocol="SIP" operation="INVITE" is_req="no">
+				<oncall>
+					<call type="SYS" function="gw_dlgsvc_on_recv_initial_rsp(status)"/>
+				</oncall>
+			</recv>
+			<switch name="CHECK_INVITE_RSP" value="status">
+				<case value="100" target="CALLING_PROCEEDING"/>
+				<case value="180" target="CALLING_PROCEEDING"/>
+				<case value="200" target="SEND_CLICKTOCALL_NOTI"/>
+				<default target="stop"/>
+			</switch>
+
+			<invoke name="SEND_CLICKTOCALL_NOTI" protocol="HTTP" operation="POST" url="http://192.168.1.74:18443/clicktocall/notify" version="1.0" timeout="5000" is_req="yes">
+				<oncall>
+					<call type="SYS" function="upa_httpcall_set_header('Agent', 0, 'UANGEL')"/>
+					<call type="SYS" function="upa_httpcall_set_body( '{}', 'application/json')"/>
+				</oncall>
 
 				<onsuccess>
 					<call function="log_msg('SUCCESS')"/>
@@ -158,6 +182,30 @@
 				</ontimeout>
 			</invoke>
 
+			<send name="SEND_ACK" protocol="SIP" operation="ACK" is_req="yes">
+				<oncall>
+                    <call type="SYS" function="gw_dlgsvc_on_send_outgoing_req('ACK', 'sip:07076008398@127.0.0.1:5068', 'sip:1004@127.0.0.1', 'sip:07076008398@127.0.0.1')"/>
+                </oncall>
+                <onerror target="stop"/>
+			</send>
+
+			<wait name="CALL_ESTABLISHED" timeout="180000">
+				<onrecv target="RECV_CLICKTOCALL_STOP"/>
+				<onrecv target="RECV_BYE"/>
+				<onerror target="stop"/>
+			</wait>
+
+			<recv name="RECV_BYE" protocol="SIP" operation="BYE" is_req="yes">
+			</recv>
+
+			<send name="SEND_BYE_RSP" protocol="SIP" operation="BYE" is_req="no">
+				<oncall>
+					<call type="SYS" function="gw_dlgsvc_on_send_rsp(200)"/>
+				</oncall>
+				<onsuccess target="SEND_CLICKTOCALL_RES"/>
+			</send>
+			
+
 			<recv name="RECV_CLICKTOCALL_STOP" protocol="HTTP" operation="POST" url="/clicktocall/stop" timeout="30000" is_req="yes" did="0">
 				<oncall mmf="httpreq">
 					<call type="SYS" function="upa_httpcall_read_ids(thread_id, conn_id, stream_id, version)"/>
@@ -171,12 +219,43 @@
 					<call function="log_msg('ERROR')"/>
 				</onerror>
 			</recv>
+
 			<send name="SEND_CLICKTOCALL_STOP_RSP" protocol="HTTP" operation="POST" rcode="200" phrase="OK" did="0">
 				<oncall>
 					<call type="SYS" function="upa_httpcall_write_ids(thread_id, conn_id, stream_id, version)"/>
 					<call type="SYS" function="upa_httpcall_set_header('Agent', 0, 'UANGEL')"/>
 				</oncall>
 			</send>
+
+			<send name="SEND_BYE" protocol="SIP" operation="BYE" is_req="yes">
+				<oncall>
+                    <call type="SYS" function="gw_dlgsvc_on_send_outgoing_req('BYE', 'sip:07076008398@127.0.0.1:5068', 'sip:1004@127.0.0.1', 'sip:07076008398@127.0.0.1')"/>
+                </oncall>
+                <onerror target="stop"/>
+			</send>
+
+			<recv name="RECV_BYE_RSP" protocol="SIP" operation="BYE" is_req="no">
+			</recv>
+
+
+			<invoke name="SEND_CLICKTOCALL_RES" protocol="HTTP" operation="POST" url="http://192.168.1.74:18443/clicktocall/respond" version="1.0" timeout="5000" is_req="yes">
+				<oncall>
+					<call type="SYS" function="upa_httpcall_set_header('Agent', 0, 'UANGEL')"/>
+					<call type="SYS" function="upa_httpcall_set_body( '{}', 'application/json')"/>
+				</oncall>
+
+				<onsuccess>
+					<call function="log_msg('SUCCESS')"/>
+					<call type="SYS" function="upa_httpcall_get_body(body)"/>
+					<call function="dump_sdm()"/>
+				</onsuccess>
+				<onerror target="stop">
+					<call function="log_msg('ERROR')"/>
+				</onerror>
+				<ontimeout target="stop">
+					<call function="log_msg('TIMEOUT')"/>
+				</ontimeout>
+			</invoke>
 
 			<stop name="stop">
 				<onentry>
