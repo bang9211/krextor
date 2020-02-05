@@ -2,20 +2,20 @@
 #include <uxcutor/uxc_sdm.h>
 #include <uxcutor/uxc_sfsm.h>
 #include <upa/upa_sippa.h>
-#include "gw/gw_error.h"
+#include "clicktocall/clicktocall_error.h"
 
 
 /**
- * @brief DIALOG INITIAL REQUEST(INVITE, SUBSCRIBE) 메시지를 전달하기 위해 호출되는 함수
+ * @brief DIALOG INITIAL REQUEST(INVITE) outgoing 메시지를 전달하기 위해 호출되는 함수
  * @param sfcall call fsm node
  * @param params sdm value parameter
  * @return 실행 결과
  */
-UX_DECLARE(int) gw_dlgsvc_on_send_outgoing_req( uxc_sfcall_t *sfcall, uxc_sdmvars_t *params)
+UX_DECLARE(int) clicktocall_dlgsvc_on_send_outgoing_req( uxc_sfcall_t *sfcall, uxc_sdmvars_t *params)
 {
 	enum { PARA_METHOD, PARA_REQURI, PARA_FROM, PARA_TO, PARA_CONTENTTYPE, PARA_BODY};
 
-	static const char *func = "gw_dlgsvc_on_send_outgoing_req";
+	static const char *func = "clicktocall_dlgsvc_on_send_outgoing_req";
 
 	int rv, urisize, bodysize;
 
@@ -36,7 +36,7 @@ UX_DECLARE(int) gw_dlgsvc_on_send_outgoing_req( uxc_sfcall_t *sfcall, uxc_sdmvar
 
 	sipmsg = (upa_sipmsg_t*)(sndmsg->data);
 
-	ux_log(UXL_INFO, "gw_dlgsvc_on_send_outgoing_req: #1")
+	ux_log(UXL_INFO, "clicktocall_dlgsvc_on_send_outgoing_req: #1")
 	
 	
 	method = uxc_sdmvars_get_str( params, PARA_METHOD, NULL, &rv);
@@ -51,7 +51,7 @@ UX_DECLARE(int) gw_dlgsvc_on_send_outgoing_req( uxc_sfcall_t *sfcall, uxc_sdmvar
 	to = uxc_sdmvars_get_str( params, PARA_TO, NULL, &rv);
 	if( rv < UX_SUCCESS || to == NULL) return rv;
 
-	ux_log(UXL_INFO, "gw_dlgsvc_on_send_outgoing_req: #2")
+	ux_log(UXL_INFO, "clicktocall_dlgsvc_on_send_outgoing_req: #2")
 	if( uxc_sdmvars_is_set(params, PARA_CONTENTTYPE) ) {
 		contenttype = uxc_sdmvars_get_str( params, PARA_CONTENTTYPE, NULL, &rv);
 		if( rv < UX_SUCCESS) return rv;
@@ -59,7 +59,7 @@ UX_DECLARE(int) gw_dlgsvc_on_send_outgoing_req( uxc_sfcall_t *sfcall, uxc_sdmvar
 		contenttype = NULL;
 	}
 
-	ux_log(UXL_INFO, "gw_dlgsvc_on_send_outgoing_req: #3")
+	ux_log(UXL_INFO, "clicktocall_dlgsvc_on_send_outgoing_req: #3")
 	if( uxc_sdmvars_is_set(params, PARA_BODY) ) {
 		body = uxc_sdmvars_get_oct(params, PARA_BODY, NULL, &bodysize); 
 		if( rv < UX_SUCCESS) return rv;
@@ -75,7 +75,7 @@ UX_DECLARE(int) gw_dlgsvc_on_send_outgoing_req( uxc_sfcall_t *sfcall, uxc_sdmvar
 		return rv;
 	}
 
-	ux_log(UXL_INFO, "gw_dlgsvc_on_send_outgoing_req: #4 uri= " USIP_URI_PRINT_FORMAT ", size=%d", USIP_URI_PRINT_ARGS(uri), urisize)
+	ux_log(UXL_INFO, "clicktocall_dlgsvc_on_send_outgoing_req: #4 uri= " USIP_URI_PRINT_FORMAT ", size=%d", USIP_URI_PRINT_ARGS(uri), urisize)
 
 	rv = usip_mobj_make_request( sipmsg->mobj, method, uri, from, to);
 	if( rv < USIP_SUCCESS) {
@@ -87,7 +87,7 @@ UX_DECLARE(int) gw_dlgsvc_on_send_outgoing_req( uxc_sfcall_t *sfcall, uxc_sdmvar
 	rv = usip_mobj_set_cseq( sipmsg->mobj, (curtime->tv_sec * 1000 + curtime->tv_usec / 1000) & 0xFFFFF, sipmsg->mobj->request->method_name);
 
 
-	ux_log(UXL_INFO, "gw_dlgsvc_on_send_outgoing_req: #5")
+	ux_log(UXL_INFO, "clicktocall_dlgsvc_on_send_outgoing_req: #5")
 	if (contenttype != NULL && body != NULL) {
 		rv = usip_mobj_set_content_type(sipmsg->mobj, contenttype);
 		if( rv < USIP_SUCCESS) {
@@ -106,12 +106,12 @@ UX_DECLARE(int) gw_dlgsvc_on_send_outgoing_req( uxc_sfcall_t *sfcall, uxc_sdmvar
 			return rv;
 		}
 	}
-	ux_log(UXL_INFO, "gw_dlgsvc_on_send_outgoing_req: #6")
+	ux_log(UXL_INFO, "clicktocall_dlgsvc_on_send_outgoing_req: #6")
 
 	rv = usip_mobj_complete_request( sipmsg->mobj);
 	if( rv < USIP_SUCCESS) return rv;
 
-	ux_log(UXL_INFO, "gw_dlgsvc_on_send_outgoing_req: #7. request=%p", sipmsg->mobj->request);
+	ux_log(UXL_INFO, "clicktocall_dlgsvc_on_send_outgoing_req: #7. request=%p", sipmsg->mobj->request);
 
 	return UX_SUCCESS;
 }
@@ -125,10 +125,10 @@ UX_DECLARE(int) gw_dlgsvc_on_send_outgoing_req( uxc_sfcall_t *sfcall, uxc_sdmvar
  * @remark
  * para[0] = STATUS - response code
  */
-UX_DECLARE(int) gw_dlgsvc_on_recv_initial_rsp( uxc_sfcall_t *sfcall, uxc_sdmvars_t *params)
+UX_DECLARE(int) clicktocall_dlgsvc_on_recv_initial_rsp( uxc_sfcall_t *sfcall, uxc_sdmvars_t *params)
 {
 	enum { PARA_STATUS};
-	static const char *func = "gw_dlgsvc_on_recv_initial_rsp";
+	static const char *func = "clicktocall_dlgsvc_on_recv_initial_rsp";
 
 	int rv;
 	uxc_sess_t *uxcsess;
@@ -150,8 +150,6 @@ UX_DECLARE(int) gw_dlgsvc_on_recv_initial_rsp( uxc_sfcall_t *sfcall, uxc_sdmvars
 				func, rv, uxc_errnostr(rv));
 		return rv;
 	}
-
-	uxc_sess_set_str_n(uxcsess, "from", )
 	
 	return UX_SUCCESS;
 }
@@ -164,11 +162,11 @@ UX_DECLARE(int) gw_dlgsvc_on_recv_initial_rsp( uxc_sfcall_t *sfcall, uxc_sdmvars
  * @param params sdm value parameter
  * @return 실행 결과
  */
-UX_DECLARE(int) gw_dlgsvc_on_send_rsp( uxc_sfcall_t *sfcall, uxc_sdmvars_t *params)
+UX_DECLARE(int) clicktocall_dlgsvc_on_send_rsp( uxc_sfcall_t *sfcall, uxc_sdmvars_t *params)
 {
 	enum { PARA_STATUS};
 
-	static const char *func = "gw_dlgsvc_on_send_rsp";
+	static const char *func = "clicktocall_dlgsvc_on_send_rsp";
 
 	int rv, status;
 
@@ -189,17 +187,17 @@ UX_DECLARE(int) gw_dlgsvc_on_send_rsp( uxc_sfcall_t *sfcall, uxc_sdmvars_t *para
 	}
 	reqmsg = (upa_sipmsg_t*)rcvmsg->data;
 
-	ux_log(UXL_INFO, "gw_dlgsvc_on_send_rsp: #1")
+	ux_log(UXL_INFO, "clicktocall_dlgsvc_on_send_rsp: #1")
 	
 	status = uxc_sdmvars_get_int( params, PARA_STATUS, 0, &rv);
 	if( rv < UX_SUCCESS) return rv;
 	
 	
-	rv = usip_mobj_make_response( rspmsg->mobj, gw_err_to_rcode( status),
-					gw_err_to_phrase(status), reqmsg->mobj);
+	rv = usip_mobj_make_response( rspmsg->mobj, clicktocall_err_to_rcode( status),
+					clicktocall_err_to_phrase(status), reqmsg->mobj);
 	if( rv < USIP_SUCCESS) {
 		ux_log(UXL_MAJ, "%s: Failed to make SIP response. (status=%d,%s, err=%d,%s)",
-				func, status, gw_err_to_phrase(status), rv, usip_errstr(rv));
+				func, status, clicktocall_err_to_phrase(status), rv, usip_errstr(rv));
 		return rv;
 	}
 
@@ -207,7 +205,7 @@ UX_DECLARE(int) gw_dlgsvc_on_send_rsp( uxc_sfcall_t *sfcall, uxc_sdmvars_t *para
 	rv = usip_mobj_complete( rspmsg->mobj);
 	if( rv < USIP_SUCCESS) return rv;
 
-	ux_log(UXL_INFO, "gw_dlgsvc_on_send_rsp: #7");
+	ux_log(UXL_INFO, "clicktocall_dlgsvc_on_send_rsp: #7");
 
 	return UX_SUCCESS;
 }

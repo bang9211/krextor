@@ -1,21 +1,25 @@
-SubDir TOP modules gw src pahttp ;
+SubDir TOP modules clicktocall src ;
 
+SubDirHdrs $(UALIB_SRC_HOME)/include ;
 SubDirHdrs $(UXLIB_SRC_HOME)/include ;
-SubDirHdrs $(UHTTP_SRC_HOME)/src/stack ;
-SubDirHdrs $(UHTTP_SRC_HOME)/src/uxcutor/padapter ;
 SubDirHdrs $(UXCUTOR_SRC_HOME)/include ;
-SubDirHdrs ../pasip ;
+SubDirHdrs $(USIP_SRC_HOME)/include ;
+SubDirHdrs $(UHTTP_SRC_HOME)/include ;
+SubDirHdrs $(TOP)/modules/uims/src ;
 
-LIB_NAME = libskb_uxcpt_http ;
+LIB_NAME = libclicktocall ;
 LIB_VERSION_NAME = $(LIB_NAME)-1.0.0 ;
 LIB_VERLINK_NAME = $(LIB_NAME)-1.0 ;
 
 LOCAL_DEF = $(SYS_CCFLAGS) ;
 
 SRCS =
-	uxcpt_httpconf
-	uxcpt_http
-	gw_dlgsvc
+	clicktocall_conf
+	clicktocall_dlgsess
+	clicktocall_error
+	clicktocall_plugin
+	clicktocall_sessdb
+	clicktocall_xcpt
 	;
 
 IHDRS =

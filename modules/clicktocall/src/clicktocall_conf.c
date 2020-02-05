@@ -1,9 +1,9 @@
-#include "local/gw_conf_l.h"
+#include "local/clicktocall_conf_l.h"
 #include <uxcutor/uxc_util.h>
 #include <string.h>
 
 /////////////////////////////////////////////////////////////////////////////////////////
-// function to handle gw_conf_t
+// function to handle clicktocall_conf_t
 /////////////////////////////////////////////////////////////////////////////////////////
 
 /**
@@ -12,18 +12,18 @@
  * @param cfile configuration file
  * @return 실행 결과
  */
-ux_status_t gw_conf_init( gw_conf_t *conf, const char *cfile)
+ux_status_t clicktocall_conf_init( clicktocall_conf_t *conf, const char *cfile)
 {
-	return gw_conf_load( conf, cfile);
+	return clicktocall_conf_load( conf, cfile);
 }
 
 /**
  * @brief plugin configuration의 사용을 종료한다.
  * @param conf plugin configuration
  */
-void gw_conf_final( gw_conf_t *conf )
+void clicktocall_conf_final( clicktocall_conf_t *conf )
 {
-	if( conf->thig_confstr) ux_free( ux_mem_default(), conf->thig_confstr);
+
 }
 
 /**
@@ -32,7 +32,7 @@ void gw_conf_final( gw_conf_t *conf )
  * @param cfile configuration file
  * @return 실행 결과
  */
-ux_status_t gw_conf_load( gw_conf_t *conf, const char *cfile)
+ux_status_t clicktocall_conf_load( clicktocall_conf_t *conf, const char *cfile)
 {
 /*
 	char buf[512];
@@ -70,11 +70,11 @@ ux_status_t gw_conf_load( gw_conf_t *conf, const char *cfile)
  * @brief plugin configuration의 값을 출력한다. 
  * @param conf plugin configuration
  */
-void gw_conf_print( gw_conf_t *conf)
+void clicktocall_conf_print( clicktocall_conf_t *conf)
 {
 	ux_log(UXL_INFO, "[UXCUTOR/GW/COMMON]");
 /*
-	ux_log(UXL_INFO, "    DEFAULT_PRIVACY : %s", gw_util_privacy_to_str(conf->dflt_privacy));
+	ux_log(UXL_INFO, "    DEFAULT_PRIVACY : %s", clicktocall_util_privacy_to_str(conf->dflt_privacy));
 	ux_log(UXL_INFO, "    USE_THIG        : %s", conf->use_thig ? "YES" : "NO");
 	if( conf->use_thig) {
 		ux_log(UXL_INFO, "    THIG_HOST       : %s", conf->thig_host);
