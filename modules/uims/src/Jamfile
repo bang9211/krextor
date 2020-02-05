@@ -1,30 +1,50 @@
-SubDir TOP modules gw src pahttp ;
+SubDir TOP modules uims src ;
 
+SubDirHdrs $(UALIB_SRC_HOME)/include ;
 SubDirHdrs $(UXLIB_SRC_HOME)/include ;
-SubDirHdrs $(UHTTP_SRC_HOME)/src/stack ;
-SubDirHdrs $(UHTTP_SRC_HOME)/src/uxcutor/padapter ;
 SubDirHdrs $(UXCUTOR_SRC_HOME)/include ;
-SubDirHdrs ../pasip ;
+SubDirHdrs $(USIP_SRC_HOME)/include ;
+SubDirHdrs $(UHTTP_SRC_HOME)/include ;
 
-LIB_NAME = libskb_uxcpt_http ;
-LIB_VERSION_NAME = $(LIB_NAME)-1.0.0 ;
-LIB_VERLINK_NAME = $(LIB_NAME)-1.0 ;
+LIB_NAME = libuims ;
+LIB_VERSION_NAME = $(LIB_NAME)-$(UIMS_VERSION) ;
+LIB_VERLINK_NAME = $(LIB_NAME)-$(UIMS_VER_LINK) ;
 
 LOCAL_DEF = $(SYS_CCFLAGS) ;
 
 SRCS =
-	uxcpt_httpconf
-	uxcpt_http
-	gw_dlgsvc
-	;
-
+    uims_constants
+    uims_conf
+    uims_util
+#    uims_hash
+    uims_sipmsg
+    uims_sess
+    uims_plugin
+    uims_db
+    uims_udbcdb
+    uims_xcpt
+    uims_cdr
+    ;
 IHDRS =
-	;
+    uims_def
+    uims_constants
+    uims_conf
+    uims_util
+#    uims_hash
+    uims_sipmsg
+    uims_sess
+    uims_plugin
+    uims_xcpt
+    uims_cdr
+    ;
+
 
 ObjectCcFlags $(SRCS)$(SUFOBJ) : $(LOCAL_DEF) ;
 
 Library $(LIB_VERSION_NAME)$(SUFLIB) : $(SRCS).c ;
 SharedLibraryMain $(LIB_VERSION_NAME)$(SUFSHARED) : $(LIB_VERSION_NAME)$(SUFLIB) ;
+
+InstallAbs $(TOP)/include/uims : uims/$(IHDRS).h ;
 InstallLib $(TOP)/lib : $(LIB_VERSION_NAME)$(SUFLIB) ;
 InstallFile $(TOP)/lib/$(LIB_VERSION_NAME)$(SUFSHARED) : $(LIB_VERSION_NAME)$(SUFSHARED) ;
 InstallLink $(TOP)/lib/$(LIB_VERLINK_NAME)$(SUFSHARED) : $(TOP)/lib/$(LIB_VERSION_NAME)$(SUFSHARED) ;
@@ -34,4 +54,3 @@ if $(UA_COPY_UASYS_HOME) = yes  {
 	InstallLink $(UASYS_HOME)/lib/$(LIB_VERLINK_NAME)$(SUFSHARED) : $(UASYS_HOME)/lib/$(LIB_VERSION_NAME)$(SUFSHARED) ;
 	InstallLink $(UASYS_HOME)/lib/$(LIB_NAME)$(SUFSHARED) : $(UASYS_HOME)/lib/$(LIB_VERLINK_NAME)$(SUFSHARED) ;
 }
-Lint check : $(SRCS).c ;

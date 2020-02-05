@@ -1,0 +1,31 @@
+#ifndef __UIMS_DEF_H__
+#define __UIMS_DEF_H__
+
+#include <usip/usip_def.h>
+
+/**
+ * @ingroup uims_def
+ * @file
+ * @brief UIMS COMMON DEFINITION 
+ */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+////////////////////////////////////////////////////////////////////////////////
+// UIMS COMMON DEFINES
+////////////////////////////////////////////////////////////////////////////////
+/** @brief UIMS VERSION */
+#define UIMS_VERSION     "@uims_version@"
+/** @brief UIMS MAJOR VERSION number */
+#define UIMS_VER_MAJOR   @uims_ver_major@ 
+/** @brief UIMS STACK MINOR VERSION number */
+#define UIMS_VER_MINOR   @uims_ver_minor@ 
+/** @brief UIMS STACK DEPLOY VERSION number */
+#define UIMS_VER_DEPLOY  @uims_ver_deploy@ 
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif // #ifndef __UIMS_DEF_H__

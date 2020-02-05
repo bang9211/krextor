@@ -103,7 +103,7 @@
 		</transport>
 	</local>
 
-	<peer file="$UASYS_HOME/data/ibcf-sip-peer.conf"/>
+	<peer file="$UASYS_HOME/data/gw-sip-peer.conf"/>
 
 <!--
 ¶Ç´Â 

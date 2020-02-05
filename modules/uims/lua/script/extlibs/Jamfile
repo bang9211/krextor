@@ -1,0 +1,10 @@
+SubDir TOP modules uims lua script extlibs  ;
+
+LUAS =
+    expirationd
+	;
+
+if $(UA_COPY_UASYS_HOME) = yes  {
+	InstallAbs $(UASYS_HOME)/lua/script/extlibs : $(LUAS).lua ;
+}
+

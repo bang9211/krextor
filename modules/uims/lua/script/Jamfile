@@ -1,0 +1,5 @@
+SubDir TOP modules uims lua script ;
+
+SubInclude TOP modules uims lua script extlibs ;
+SubInclude TOP modules uims lua script uims ;
+

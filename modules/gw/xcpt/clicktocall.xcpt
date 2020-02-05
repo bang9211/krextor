@@ -23,7 +23,7 @@
 				<![CDATA[
 					local cjson = require "cjson"
 
-					local text = uxc_sdmvars.get(sdmvars, 0);
+					local text = uxc_sdmvars.get(sdmvars, 0)
 					local startReq = cjson.decode(text)
 
 					local sess = uxc_sdmvars.get_sess(sdmvars)
@@ -40,8 +40,8 @@
 					sessval.called_cid = startReq.calledCID
 					sessval.host_code = startReq.hostCode
 
-					ux_log.always("calling=%s", startReq.CallingNumber);
-					ux_log.always("sessval.called_number=%s", sessval.called_number);
+					ux_log.always("calling=%s", startReq.CallingNumber)
+					ux_log.always("sessval.called_number=%s", sessval.called_number)
 				]]>
 			</function>
 
