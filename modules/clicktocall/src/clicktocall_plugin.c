@@ -1,4 +1,5 @@
 #include "local/clicktocall_plugin_l.h"
+#include "uims/uims_plugin.h"
 
 static clicktocall_plugin_t *_g_plugin = NULL;
 

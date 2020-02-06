@@ -4,6 +4,7 @@
 #include <uxlib/ux_def.h>
 #include <uims/uims_sess.h>
 #include <uims/uims_db.h>
+#include <upa/upa_httppa.h>
 
 /**
  * @ingroup clicktocall_dlgsess
@@ -44,6 +45,10 @@ UX_DECLARE(const char*) clicktocall_dlgstate_to_str( clicktocall_dlgstate_e dlgs
 // functions for clicktocall_dlgsess_t
 ////////////////////////////////////////////////////////////////////////////////
 UX_DECLARE(clicktocall_dlgsess_t*) clicktocall_dlgsess_create( uims_sess_t *imssess, int *err);
+
+UX_DECLARE(ux_status_t) clicktocall_dlgsess_handle_http_start_req( clicktocall_dlgsess_t *dlgsess, upa_httpmsg_t *reqmsg);
+UX_DECLARE(ux_status_t) clicktocall_dlgsess_make_http_start_res( clicktocall_dlgsess_t *dlgsess, upa_httpmsg_t *resmsg);
+UX_DECLARE(ux_status_t) clicktocall_dlgsess_handle_ssw_outgoing_req( clicktocall_dlgsess_t *dlgsess, upa_sipmsg_t *reqmsg);
 
 UX_DECLARE(usip_nameaddr_t*) clicktocall_dlgsess_get_ouser( clicktocall_dlgsess_t *dlgsess);
 UX_DECLARE(ux_status_t) clicktocall_dlgsess_set_ouser( clicktocall_dlgsess_t *dlgsess, usip_nameaddr_t *value);

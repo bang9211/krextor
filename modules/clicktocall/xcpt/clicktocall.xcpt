@@ -107,9 +107,8 @@
 
 			<recv name="RECV_CLICKTOCALL_START" protocol="HTTP" operation="POST" url="/clicktocall/start" is_req="yes" did="0">
 				<oncall mmf="httpreq">
-					<call type="SYS" function="upa_httpcall_read_ids(thread_id, conn_id, stream_id, version)"/>
-					<call type="SYS" function="upa_httpcall_get_body(body)"/>
-					<call function="parse_startreq(body)"/>
+					<call type="SYS" function="clicktocall_dlgsess_handle_http_start_req(calling_number, called_number)"/>
+					<!--call function="parse_startreq(body)"/-->
 				</oncall>
 				<onsuccess>
 					<call function="log_msg('SUCCESS')"/>
@@ -120,7 +119,8 @@
 			</recv>
 			<send name="SEND_CLICKTOCALL_START_RSP" protocol="HTTP" operation="POST" rcode="200" phrase="OK" did="0">
 				<oncall>
-					<call type="LUA">
+					<call type="SYS" function="clicktocall_dlgsess_make_http_start_res(0)"/>
+					<!--call type="LUA">
 						<![CDATA[
 							local cjson = require "cjson"
 							local sess = uxc_sdmvars.get_sess(sdmvars)
@@ -135,13 +135,13 @@
 					</call>
 					<call type="SYS" function="upa_httpcall_write_ids(thread_id, conn_id, stream_id, version)"/>
 					<call type="SYS" function="upa_httpcall_set_header('Agent', 0, 'UANGEL')"/>
-					<call type="SYS" function="upa_httpcall_set_body( start_rsp, 'application/json')"/>
+					<call type="SYS" function="upa_httpcall_set_body( start_rsp, 'application/json')"/-->
 				</oncall>
 			</send>
 
 			<send name="SEND_INVITE_TO_CALLING" protocol="SIP" operation="INVITE" is_req="yes">
                 <oncall>
-                    <call type="SYS" function="gw_dlgsvc_on_send_outgoing_req('INVITE', 'sip:07076008398@127.0.0.1:5068;ServiceKey=99;DP=12', 'sip:1004@127.0.0.1', 'sip:07076008398@127.0.0.1')"/>
+                    <call type="SYS" function="clicktocall_dlgsvc_on_send_ssw_outgoing_req('INVITE', calling_number, called_number)"/>
                 </oncall>
                 <onerror target="stop"/>
             </send>
@@ -153,7 +153,7 @@
 
 			<recv name="RECV_INVITE_RSP" protocol="SIP" operation="INVITE" is_req="no">
 				<oncall>
-					<call type="SYS" function="gw_dlgsvc_on_recv_initial_rsp(status)"/>
+					<call type="SYS" function="clicktocall_dlgsvc_on_recv_initial_rsp(status)"/>
 				</oncall>
 			</recv>
 			<switch name="CHECK_INVITE_RSP" value="status">
@@ -184,7 +184,7 @@
 
 			<send name="SEND_ACK" protocol="SIP" operation="ACK" is_req="yes">
 				<oncall>
-                    <call type="SYS" function="gw_dlgsvc_on_send_outgoing_req('ACK', 'sip:07076008398@127.0.0.1:5068', 'sip:1004@127.0.0.1', 'sip:07076008398@127.0.0.1')"/>
+                    <call type="SYS" function="clicktocall_dlgsvc_on_send_outgoing_req('ACK', 'sip:07076008398@127.0.0.1:5068', 'sip:1004@127.0.0.1', 'sip:07076008398@127.0.0.1')"/>
                 </oncall>
                 <onerror target="stop"/>
 			</send>
@@ -200,7 +200,7 @@
 
 			<send name="SEND_BYE_RSP" protocol="SIP" operation="BYE" is_req="no">
 				<oncall>
-					<call type="SYS" function="gw_dlgsvc_on_send_rsp(200)"/>
+					<call type="SYS" function="clicktocall_dlgsvc_on_send_rsp(200)"/>
 				</oncall>
 				<onsuccess target="SEND_CLICKTOCALL_RES"/>
 			</send>
@@ -229,7 +229,7 @@
 
 			<send name="SEND_BYE" protocol="SIP" operation="BYE" is_req="yes">
 				<oncall>
-                    <call type="SYS" function="gw_dlgsvc_on_send_outgoing_req('BYE', 'sip:07076008398@127.0.0.1:5068', 'sip:1004@127.0.0.1', 'sip:07076008398@127.0.0.1')"/>
+                    <call type="SYS" function="clicktocall_dlgsvc_on_send_outgoing_req('BYE', 'sip:07076008398@127.0.0.1:5068', 'sip:1004@127.0.0.1', 'sip:07076008398@127.0.0.1')"/>
                 </oncall>
                 <onerror target="stop"/>
 			</send>

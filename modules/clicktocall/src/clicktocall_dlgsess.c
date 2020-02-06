@@ -2,6 +2,7 @@
 #include "uims/uims_plugin.h"
 #include "uims/uims_util.h"
 #include "local/clicktocall_plugin_l.h"
+#include <cjson/cJSON.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 // functions for clicktocall_dlgstate_t
@@ -66,6 +67,259 @@ ux_status_t clicktocall_dlgsess_final( clicktocall_dlgsess_t *dlgsess)
 	if( dlgsess->troute) ux_free( allocator, dlgsess->troute);
 
 	return UX_SUCCESS;
+}
+
+UX_DECLARE(ux_status_t) clicktocall_dlgsess_handle_http_start_req( clicktocall_dlgsess_t *dlgsess, upa_httpmsg_t *reqmsg) 
+{
+	int rv;
+	char buffer[2048];
+	int bufsize = sizeof(buffer); 
+	uhttp_body_t *body;
+	const char *jsonstr;
+	cJSON *json = NULL;
+	const cJSON *sessionid = NULL;
+	const cJSON *subscribername = NULL;
+	const cJSON *callingnumber = NULL;
+	const cJSON *callednumber = NULL;
+	const cJSON *chargingnumber = NULL;
+	const cJSON *ringbacktonetype = NULL;
+	const cJSON *watitngmentid = NULL;
+	const cJSON *callmentid = NULL;
+	const cJSON *callingcid = NULL;
+	const cJSON *calledcid = NULL;
+	const cJSON *hostcode = NULL;
+
+	body = uhttp_msg_get_body( reqmsg->msg);
+	if( body) {
+		jsonstr = uhttp_body_get_str( body, buffer, bufsize, &rv);
+		ux_log(UXL_INFO, "get_body(len=%d, %s)", bufsize, buffer);
+	} else {
+		ux_log(UXL_MAJ, "Fail to get HTTP body");
+		return rv;
+	}
+
+	dlgsess->thread_id = uhttp_msg_get_thread_id(reqmsg->msg);
+	dlgsess->conn_id = uhttp_msg_get_conn_id(reqmsg->msg);
+	dlgsess->stream_id = uhttp_msg_get_id(reqmsg->msg);
+	dlgsess->version = uhttp_msg_get_version(reqmsg->msg);
+
+	json = cJSON_Parse(jsonstr);
+	if ( json == NULL) {
+		const char *error_ptr = cJSON_GetErrorPtr();
+        if (error_ptr != NULL) {
+			ux_log(UXL_MAJ, "Fail to parse HTTP body. err=%s", error_ptr);
+        }
+		return UX_EINVAL;
+	}
+
+	sessionid = cJSON_GetObjectItemCaseSensitive(json, "sessionID");
+    if (cJSON_IsString(sessionid) && (sessionid->valuestring != NULL)) {
+		dlgsess->sessionid = ux_str_dup( sessionid->valuestring, uims_sess_get_allocator(dlgsess->sess)); 
+    } else {
+		ux_log(UXL_MAJ, "Fail to get sessionID JSON key");
+		return UX_EINVAL;
+	}
+
+	subscribername = cJSON_GetObjectItemCaseSensitive(json, "subscriberName");
+    if (cJSON_IsString(subscribername) && (subscribername->valuestring != NULL)) {
+		dlgsess->subscribername = ux_str_dup( subscribername->valuestring, uims_sess_get_allocator(dlgsess->sess)); 
+		ux_log(UXL_MAJ, "Fail to get subscriberName JSON key");
+		return UX_EINVAL;
+	}
+
+	callingnumber = cJSON_GetObjectItemCaseSensitive(json, "callingNumber");
+    if (cJSON_IsString(callingnumber) && (callingnumber->valuestring != NULL)) {
+		dlgsess->callingnumber = ux_str_dup( callingnumber->valuestring, uims_sess_get_allocator(dlgsess->sess)); 
+    } else {
+		ux_log(UXL_MAJ, "Fail to get callingNumber JSON key");
+		return UX_EINVAL;
+	}
+
+	callednumber = cJSON_GetObjectItemCaseSensitive(json, "calledNumber");
+    if (cJSON_IsString(callednumber) && (callednumber->valuestring != NULL)) {
+		dlgsess->callednumber = ux_str_dup( callednumber->valuestring, uims_sess_get_allocator(dlgsess->sess)); 
+    } else {
+		ux_log(UXL_MAJ, "Fail to get calledNumber JSON key");
+		return UX_EINVAL;
+	}
+
+	chargingnumber = cJSON_GetObjectItemCaseSensitive(json, "chargingNumber");
+    if (cJSON_IsString(chargingnumber) && (chargingnumber->valuestring != NULL)) {
+		dlgsess->chargingnumber = ux_str_dup( chargingnumber->valuestring, uims_sess_get_allocator(dlgsess->sess)); 
+		ux_log(UXL_MAJ, "Fail to get chargingNumber JSON key");
+		return UX_EINVAL;
+	}
+
+	ringbacktonetype = cJSON_GetObjectItemCaseSensitive(json, "ringBackToneType");
+    if (cJSON_IsNumber(ringbacktonetype)) {
+		dlgsess->ringbacktonetype = ringbacktonetype->valueint;
+		ux_log(UXL_MAJ, "Fail to get ringBackToneType JSON key");
+		return UX_EINVAL;
+	}
+
+	watitngmentid = cJSON_GetObjectItemCaseSensitive(json, "waitingMentID");
+    if (cJSON_IsString(watitngmentid) && (watitngmentid->valuestring != NULL)) {
+		dlgsess->watitngmentid = ux_str_dup( watitngmentid->valuestring, uims_sess_get_allocator(dlgsess->sess)); 
+    } else {
+		ux_log(UXL_MAJ, "Fail to get waitingMentID JSON key");
+		return UX_EINVAL;
+	}
+
+	callmentid = cJSON_GetObjectItemCaseSensitive(json, "callMentID");
+    if (cJSON_IsString(callmentid) && (callmentid->valuestring != NULL)) {
+		dlgsess->callmentid = ux_str_dup( callmentid->valuestring, uims_sess_get_allocator(dlgsess->sess)); 
+    } else {
+		ux_log(UXL_MAJ, "Fail to get callMentID JSON key");
+		return UX_EINVAL;
+	}
+
+	callingcid = cJSON_GetObjectItemCaseSensitive(json, "callingCID");
+    if (cJSON_IsString(callingcid) && (callingcid->valuestring != NULL)) {
+		dlgsess->callingcid = ux_str_dup( callingcid->valuestring, uims_sess_get_allocator(dlgsess->sess)); 
+		ux_log(UXL_MAJ, "Fail to get callingCID JSON key");
+		return UX_EINVAL;
+	}
+
+	calledcid = cJSON_GetObjectItemCaseSensitive(json, "calledCID");
+    if (cJSON_IsString(calledcid) && (calledcid->valuestring != NULL)) {
+		dlgsess->calledcid = ux_str_dup( calledcid->valuestring, uims_sess_get_allocator(dlgsess->sess)); 
+    } else {
+		ux_log(UXL_MAJ, "Fail to get calledCID JSON key");
+		return UX_EINVAL;
+	}
+
+	hostcode = cJSON_GetObjectItemCaseSensitive(json, "hostCode");
+    if (cJSON_IsNumber(hostcode)) {
+		dlgsess->hostcode = hostcode->valueint;
+		ux_log(UXL_MAJ, "Fail to get hostCode JSON key");
+		return UX_EINVAL;
+	}
+
+	return UX_SUCCESS;
+}
+
+UX_DECLARE(ux_status_t) clicktocall_dlgsess_make_http_start_res( clicktocall_dlgsess_t *dlgsess, upa_httpmsg_t *resmsg) 
+{
+	int rv, dlen;
+	char *data;
+	char sid[64];
+	uhttp_hdrs_t *hdrs;
+	uhttp_body_t *body;
+
+	uhttp_msg_set_thread_id(resmsg->msg, dlgsess->thread_id);
+	uhttp_msg_set_conn_id(resmsg->msg, dlgsess->conn_id);
+	uhttp_msg_set_id(resmsg->msg, dlgsess->stream_id);
+	uhttp_msg_set_version(resmsg->msg, dlgsess->version);
+
+	cJSON *json = cJSON_CreateObject();
+
+    cJSON_AddItemToObject(json, "sessionID", cJSON_CreateString(dlgsess->sessionid));
+	sprintf( sid, "%llu", (unsigned long long)uims_sess_get_id(dlgsess->sess));
+	cJSON_AddItemToObject(json, "gwSessionID", cJSON_CreateString(sid));
+	cJSON_AddItemToObject(json, "resultCode", cJSON_CreateNumber(dlgsess->error));
+
+	data = cJSON_Print(json);
+    if (data == NULL) {
+		ux_log(UXL_MAJ, "Failed to encode json");
+    	return UX_EBADMSG;
+    }
+
+	dlen = strlen(data);
+	hdrs = uhttp_msg_get_hdrs( resmsg->msg);
+	if( data[0]) {
+		body = uhttp_body_create_v( uhttp_msg_get_allocator(resmsg->msg), (uint8_t*)data, dlen); 
+		if( body == NULL) {
+			uxc_trace(UXCTL(1,MIN), "upa_httpcall_set_body: Failed to create body. (body=%s, err=%d,%s)",
+					data, UX_ENOMEM, uhttp_errstr(UX_ENOMEM));
+			cJSON_Delete(json);
+			return UX_ENOMEM;
+		}
+		uhttp_msg_set_body( resmsg->msg, body);
+	}
+	rv = uhttp_hdrs_set_int( hdrs, "Content-Length", 0, dlen);
+	if( rv < UHTTP_SUCCESS) {
+		uxc_trace(UXCTL(1,MIN), "upa_httpcall_set_body: Failed to set Content-Length value. (value=%d, err=%d,%s)",
+				dlen, rv, uhttp_errstr(rv));
+		cJSON_Delete(json);
+		return UX_EINVAL;
+	}
+	
+	rv = uhttp_hdrs_set_str( hdrs, "Content-Type", 0, "application/json");
+	if( rv < UHTTP_SUCCESS) {
+		uxc_trace(UXCTL(1,MIN), "upa_httpcall_set_body: Failed to set Content-Type value. (content_type=%s, err=%d,%s)",
+				 "application/json", rv, uhttp_errstr(rv));
+		cJSON_Delete(json);
+		return UX_EINVAL;
+	}
+		
+	cJSON_Delete(json);	
+
+	return UX_SUCCESS;
+}
+
+UX_DECLARE(ux_status_t) clicktocall_dlgsess_handle_ssw_outgoing_req( clicktocall_dlgsess_t *dlgsess, upa_sipmsg_t *reqmsg)
+{
+	int rv;
+	usip_mobj_t *req;
+	upa_sippa_t *sippa;
+	char tag[128];
+
+	req = reqmsg->mobj;
+	if( req->call_id == NULL || req->from == NULL || req->from == NULL || req->to == NULL || req->cseq == NULL) {
+		ux_log( UXL_MAJ, "Missing mandatory header. (method=%s, call_id=%s, from=%s:%s, to=%s:%s)",
+				usip_mobj_get_method( req), USIP_MOBJ_GET_CALLID( req),
+				USIP_MOBJ_GET_FROMUSER( req), USIP_MOBJ_GET_FROMTAG( req),
+				USIP_MOBJ_GET_TOUSER( req), USIP_MOBJ_GET_TOTAG( req));
+		return UX_EBADMSG;
+	}
+
+	sippa = (upa_sippa_t*)reqmsg->uxcmsg->paif;
+	dlgsess->method = req->request->method;
+	dlgsess->ocseq = (req->cseq) ? req->cseq->seq : 1;
+	dlgsess->reqmsg = upa_sipmsg_ref( reqmsg);
+	dlgsess->prevstate = dlgsess->dlgstate = CLICKTOCALL_DLGSTATE_INIT;
+	dlgsess->hasreq = USIP_TRUE;
+
+	reqmsg->sessinfo->did = 0;
+	upa_sippa_write_sessinfo( sippa, reqmsg, tag, sizeof(tag));
+	dlgsess->ostag = ux_str_dup( tag, uims_sess_get_allocator(dlgsess->sess)); 
+
+	rv = uims_sess_set_call_id( dlgsess->sess, req->call_id->id);
+	if( rv < UX_SUCCESS) {
+		ux_log( UXL_MAJ, "Failed to set call-id. (method=%s, call_id=%s, err=%d,%s)",
+				usip_mobj_get_method( req), USIP_MOBJ_GET_CALLID( req), rv, usip_errstr(rv));
+		return rv;
+	}
+
+	rv = uims_sess_set_ltag( dlgsess->sess, req->from->tag);
+	if( rv < UX_SUCCESS) {
+		ux_log( UXL_MAJ, "Failed to set tag of From header. (method=%s, tag=%s, err=%d,%s)",
+				usip_mobj_get_method( req), USIP_MOBJ_GET_FROMTAG( req), rv, usip_errstr(rv));
+	}
+
+	rv = clicktocall_dlgsess_set_ouser( dlgsess, req->from);
+	if( rv < UX_SUCCESS) {
+		ux_log( UXL_MAJ, "Failed to set From header. (method=%s, From=" USIP_URI_PRINT_FORMAT ", err=%d,%s)",
+				usip_mobj_get_method( req), USIP_URI_PRINT_ARGS(req->from->uri), rv, usip_errstr(rv));
+		return rv;
+	}
+
+	if( req->contact) {
+		rv = clicktocall_dlgsess_set_ocontact( dlgsess, req->contact);
+		if( rv < UX_SUCCESS) {
+			ux_log( UXL_MAJ, "Failed to set Contact header. (method=%s, Contact=" USIP_URI_PRINT_FORMAT ", err=%d,%s)",
+					usip_mobj_get_method( req), USIP_URI_PRINT_ARGS(req->contact->uri), rv, usip_errstr(rv));
+			return rv;
+		}	
+	}
+
+	rv = clicktocall_dlgsess_set_tuser( dlgsess, req->to);
+	if( rv < USIP_SUCCESS) {
+		ux_log( UXL_MAJ, "Failed to set From URI. (method=%s, from=" USIP_URI_PRINT_FORMAT ", err=%d,%s)",
+				usip_mobj_get_method( req), USIP_URI_PRINT_ARGS(req->from->uri), rv, usip_errstr(rv));
+	}
+
+	return USIP_SUCCESS;
 }
 
 UX_DECLARE(ux_status_t) clicktocall_dlgsess_load_from_initial_req( clicktocall_dlgsess_t *dlgsess, upa_sipmsg_t *reqmsg)

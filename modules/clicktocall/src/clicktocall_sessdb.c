@@ -1,4 +1,5 @@
 #include "local/clicktocall_sessdb_l.h"
+#include "uims/uims_plugin.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // functions for clicktocall_sessdb_t

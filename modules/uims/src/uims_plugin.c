@@ -74,6 +74,7 @@ ux_status_t uims_plugin_init( uims_plugin_t *plugin, uxc_xcutor_t *xcutor, const
 	httppa = (upa_httppa_t*)uxc_xcutor_get_paif( xcutor, "PA_HTTP");
 	if( httppa == NULL) {
 		ux_log(UXL_INFO, "Can't find Protocol Adapter PA_HTTP.");
+		return UX_ENOENT;
 	}
 
 	rv = uxc_plugin_init( plugin->base, xcutor, cfile);
@@ -102,7 +103,7 @@ ux_status_t uims_plugin_init( uims_plugin_t *plugin, uxc_xcutor_t *xcutor, const
 	plugin->base->heartbeat = NULL;
 
 	uxc_paif_set_thrid_func((uxc_paif_t*)sippa, _uims_plugin_get_sip_thrid);
-	if(httppa) uxc_paif_set_thrid_func((uxc_paif_t*)httppa, _uims_plugin_get_http_thrid);
+	uxc_paif_set_thrid_func((uxc_paif_t*)httppa, _uims_plugin_get_http_thrid);
 	pasfif = uxc_xcutor_get_pasfif( xcutor, "SIP");
 	if( pasfif ) pasfif->create_msg = _uims_plugin_create_sipmsg;
 

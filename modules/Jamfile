@@ -1,4 +1,4 @@
 SubDir TOP modules ;
 
-SubInclude TOP modules gw ;
-SubInclude TOP modules ims ;
+SubInclude TOP modules clicktocall ;
+SubInclude TOP modules uims ;

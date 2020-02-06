@@ -16,6 +16,7 @@ struct clicktocall_dlgsess_s {
 	upa_sipmsg_t *reqmsg; /**< request */
 	uint64_t extime; /**< executed time-sec*/
 	int32_t error; /**< 서비스 error code */
+	uint32_t mscseq; /**< ms cseq */
 	uint32_t ocseq; /**< originator cseq */
 	uint32_t tcseq; /**< terminator cseq */
 	uint8_t dlgstate; /**< dialog state */
@@ -31,6 +32,21 @@ struct clicktocall_dlgsess_s {
 	usip_nameaddr_t *tuser; /**< terminator user. (To header) */
 	usip_contact_hdr_t *tcontact; /**< terminator contact */
 	usip_route_hdr_t *troute; /**< terminator record-routes */
+	uint32_t thread_id;
+	uint32_t conn_id;
+	uint32_t stream_id;
+	uint32_t version;
+	char *sessionid;
+	char *subscribername;
+	char *callingnumber;
+	char *callednumber;
+	char *chargingnumber;
+	uint8_t ringbacktonetype;
+	char *watitngmentid;
+	char *callmentid;
+	char *callingcid;
+	char *calledcid;
+	uint8_t hostcode;
 	void *data; /**< session 데이터 */
 	void *user_data; /**< 해당 session에 연결할 사용자 데이터 정보 */
 };

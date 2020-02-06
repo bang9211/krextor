@@ -1,4 +1,4 @@
-SubDir TOP modules gw xcpt  ;
+SubDir TOP modules clicktocall xcpt  ;
 
 XCPTS =
     clicktocall

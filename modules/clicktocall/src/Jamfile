@@ -16,10 +16,10 @@ LOCAL_DEF = $(SYS_CCFLAGS) ;
 SRCS =
 	clicktocall_conf
 	clicktocall_dlgsess
+	clicktocall_dlgsvc
 	clicktocall_error
 	clicktocall_plugin
 	clicktocall_sessdb
-	clicktocall_xcpt
 	;
 
 IHDRS =
