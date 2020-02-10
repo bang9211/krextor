@@ -98,6 +98,7 @@
 			<member name="ltag" type="char[64]"/>
 			<member name="to" type="char[64]"/>
 			<member name="cseq" type="int"/>
+			
 		</session>
 
 		<fsm onerror="stop" ontimeout="stop">
@@ -107,7 +108,7 @@
 
 			<recv name="RECV_CLICKTOCALL_START" protocol="HTTP" operation="POST" url="/clicktocall/start" is_req="yes" did="0">
 				<oncall mmf="httpreq">
-					<call type="SYS" function="clicktocall_dlgsess_handle_http_start_req(calling_number, called_number)"/>
+					<call type="SYS" function="clicktocall_dlgsvc_on_recv_http_start_req(calling_number, called_number)"/>
 					<!--call function="parse_startreq(body)"/-->
 				</oncall>
 				<onsuccess>
@@ -119,7 +120,7 @@
 			</recv>
 			<send name="SEND_CLICKTOCALL_START_RSP" protocol="HTTP" operation="POST" rcode="200" phrase="OK" did="0">
 				<oncall>
-					<call type="SYS" function="clicktocall_dlgsess_make_http_start_res(0)"/>
+					<call type="SYS" function="clicktocall_dlgsvc_on_send_http_start_res(0)"/>
 					<!--call type="LUA">
 						<![CDATA[
 							local cjson = require "cjson"
@@ -153,17 +154,17 @@
 
 			<recv name="RECV_INVITE_RSP" protocol="SIP" operation="INVITE" is_req="no">
 				<oncall>
-					<call type="SYS" function="clicktocall_dlgsvc_on_recv_initial_rsp(status)"/>
+					<call type="SYS" function="clicktocall_dlgsvc_on_recv_origin_initial_rsp(status, body)"/>
 				</oncall>
 			</recv>
 			<switch name="CHECK_INVITE_RSP" value="status">
 				<case value="100" target="CALLING_PROCEEDING"/>
 				<case value="180" target="CALLING_PROCEEDING"/>
-				<case value="200" target="SEND_CLICKTOCALL_NOTI"/>
+				<case value="200" target="SEND_ACK"/>
 				<default target="stop"/>
 			</switch>
 
-			<invoke name="SEND_CLICKTOCALL_NOTI" protocol="HTTP" operation="POST" url="http://192.168.1.74:18443/clicktocall/notify" version="1.0" timeout="5000" is_req="yes">
+			<!--invoke name="SEND_CLICKTOCALL_NOTI" protocol="HTTP" operation="POST" url="http://192.168.1.74:18443/clicktocall/notify" version="1.0" timeout="5000" is_req="yes">
 				<oncall>
 					<call type="SYS" function="upa_httpcall_set_header('Agent', 0, 'UANGEL')"/>
 					<call type="SYS" function="upa_httpcall_set_body( '{}', 'application/json')"/>
@@ -180,11 +181,11 @@
 				<ontimeout target="stop">
 					<call function="log_msg('TIMEOUT')"/>
 				</ontimeout>
-			</invoke>
+			</invoke-->
 
 			<send name="SEND_ACK" protocol="SIP" operation="ACK" is_req="yes">
 				<oncall>
-                    <call type="SYS" function="clicktocall_dlgsvc_on_send_outgoing_req('ACK', 'sip:07076008398@127.0.0.1:5068', 'sip:1004@127.0.0.1', 'sip:07076008398@127.0.0.1')"/>
+                    <call type="SYS" function="clicktocall_dlgsvc_on_send_originator_ack()"/>
                 </oncall>
                 <onerror target="stop"/>
 			</send>
@@ -229,7 +230,7 @@
 
 			<send name="SEND_BYE" protocol="SIP" operation="BYE" is_req="yes">
 				<oncall>
-                    <call type="SYS" function="clicktocall_dlgsvc_on_send_outgoing_req('BYE', 'sip:07076008398@127.0.0.1:5068', 'sip:1004@127.0.0.1', 'sip:07076008398@127.0.0.1')"/>
+                    <call type="SYS" function="clicktocall_dlgsvc_on_send_ssw_outgoing_req('BYE', 'sip:07076008398@127.0.0.1:5068', 'sip:1004@127.0.0.1', 'sip:07076008398@127.0.0.1')"/>
                 </oncall>
                 <onerror target="stop"/>
 			</send>

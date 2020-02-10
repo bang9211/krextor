@@ -12,9 +12,9 @@ uasport=`cat ../../config/agent.csv | grep -v 'SEQ' | grep -v '#' | awk '{ split
 pxyaddr=$ipaddr:$pxyport
 uasaddr=$ipaddr:$uasport
 
-cmd="sipp $ipaddr -p $uasport -l 100 -sf uas.xml" 
+cmd="sipp $ipaddr -p $uasport -l 100 -sf ms.xml" 
 
-simctrl="-m 1 -f 600 -nostdin -trace_msg -message_file ../report/uas.res.tmp"
+simctrl="-m 1 -f 600 -nostdin -trace_msg -message_file ../report/ms.res.tmp"
 simctrl2="-m 1 -f 600 -nostdin -trace_msg -message_file"
 args=""
 

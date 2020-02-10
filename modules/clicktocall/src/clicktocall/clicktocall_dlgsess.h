@@ -49,6 +49,13 @@ UX_DECLARE(clicktocall_dlgsess_t*) clicktocall_dlgsess_create( uims_sess_t *imss
 UX_DECLARE(ux_status_t) clicktocall_dlgsess_handle_http_start_req( clicktocall_dlgsess_t *dlgsess, upa_httpmsg_t *reqmsg);
 UX_DECLARE(ux_status_t) clicktocall_dlgsess_make_http_start_res( clicktocall_dlgsess_t *dlgsess, upa_httpmsg_t *resmsg);
 UX_DECLARE(ux_status_t) clicktocall_dlgsess_handle_ssw_outgoing_req( clicktocall_dlgsess_t *dlgsess, upa_sipmsg_t *reqmsg);
+UX_DECLARE(ux_status_t) clicktocall_dlgsess_handle_initial_res( clicktocall_dlgsess_t *dlgsess, upa_sipmsg_t *resmsg);
+
+UX_DECLARE(ux_status_t) clicktocall_dlgsess_set_ocall_id( clicktocall_dlgsess_t *dlgsess, const char *call_id);
+UX_DECLARE(ux_status_t) clicktocall_dlgsess_set_ofrom( clicktocall_dlgsess_t *dlgsess, usip_nameaddr_t *value);
+UX_DECLARE(ux_status_t) clicktocall_dlgsess_set_oto( clicktocall_dlgsess_t *dlgsess, usip_nameaddr_t *value);
+
+UX_DECLARE(int) clicktocall_dlgsess_sprint( clicktocall_dlgsess_t *dlgsess, char *buffer, int buflen);
 
 UX_DECLARE(usip_nameaddr_t*) clicktocall_dlgsess_get_ouser( clicktocall_dlgsess_t *dlgsess);
 UX_DECLARE(ux_status_t) clicktocall_dlgsess_set_ouser( clicktocall_dlgsess_t *dlgsess, usip_nameaddr_t *value);

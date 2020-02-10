@@ -27,7 +27,6 @@ ux_status_t clicktocall_sessdb_init( clicktocall_sessdb_t *sessdb)
 		return UX_ENOENT;
 	}
 
-
 	rv = clicktocall_dlgdao_init( sessdb->dlgdao, sessdb->dbmgr);
 	if( rv < UX_SUCCESS) {
 		ux_log(UXL_MAJ, "Failed to initialize Call Session DAO. (err=%d,%s)", rv, uxc_errnostr(rv));

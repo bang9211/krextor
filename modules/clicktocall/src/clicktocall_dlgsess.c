@@ -113,87 +113,81 @@ UX_DECLARE(ux_status_t) clicktocall_dlgsess_handle_http_start_req( clicktocall_d
 	}
 
 	sessionid = cJSON_GetObjectItemCaseSensitive(json, "sessionID");
-    if (cJSON_IsString(sessionid) && (sessionid->valuestring != NULL)) {
-		dlgsess->sessionid = ux_str_dup( sessionid->valuestring, uims_sess_get_allocator(dlgsess->sess)); 
-    } else {
+    if (!cJSON_IsString(sessionid) || (sessionid->valuestring == NULL)) {
 		ux_log(UXL_MAJ, "Fail to get sessionID JSON key");
-		return UX_EINVAL;
-	}
-
-	subscribername = cJSON_GetObjectItemCaseSensitive(json, "subscriberName");
-    if (cJSON_IsString(subscribername) && (subscribername->valuestring != NULL)) {
-		dlgsess->subscribername = ux_str_dup( subscribername->valuestring, uims_sess_get_allocator(dlgsess->sess)); 
-		ux_log(UXL_MAJ, "Fail to get subscriberName JSON key");
-		return UX_EINVAL;
-	}
+		return UX_EINVAL;	
+    } 
+	dlgsess->sessionid = ux_str_dup( sessionid->valuestring, uims_sess_get_allocator(dlgsess->sess)); 
 
 	callingnumber = cJSON_GetObjectItemCaseSensitive(json, "callingNumber");
-    if (cJSON_IsString(callingnumber) && (callingnumber->valuestring != NULL)) {
-		dlgsess->callingnumber = ux_str_dup( callingnumber->valuestring, uims_sess_get_allocator(dlgsess->sess)); 
-    } else {
+    if (!cJSON_IsString(callingnumber) || (callingnumber->valuestring == NULL)) {
 		ux_log(UXL_MAJ, "Fail to get callingNumber JSON key");
 		return UX_EINVAL;
-	}
+    } 
+	dlgsess->callingnumber = ux_str_dup( callingnumber->valuestring, uims_sess_get_allocator(dlgsess->sess)); 
 
 	callednumber = cJSON_GetObjectItemCaseSensitive(json, "calledNumber");
-    if (cJSON_IsString(callednumber) && (callednumber->valuestring != NULL)) {
-		dlgsess->callednumber = ux_str_dup( callednumber->valuestring, uims_sess_get_allocator(dlgsess->sess)); 
-    } else {
+    if (!cJSON_IsString(callednumber) || (callednumber->valuestring == NULL)) {
 		ux_log(UXL_MAJ, "Fail to get calledNumber JSON key");
 		return UX_EINVAL;
-	}
+    } 
+	dlgsess->callednumber = ux_str_dup( callednumber->valuestring, uims_sess_get_allocator(dlgsess->sess)); 
+
+	subscribername = cJSON_GetObjectItemCaseSensitive(json, "subscriberName");
+    if (!cJSON_IsString(subscribername) || (subscribername->valuestring == NULL)) {
+		ux_log(UXL_MAJ, "Fail to get subscriberName JSON key");
+		return UX_EINVAL;	
+	} 
+	dlgsess->subscribername = ux_str_dup( subscribername->valuestring, uims_sess_get_allocator(dlgsess->sess)); 
 
 	chargingnumber = cJSON_GetObjectItemCaseSensitive(json, "chargingNumber");
-    if (cJSON_IsString(chargingnumber) && (chargingnumber->valuestring != NULL)) {
-		dlgsess->chargingnumber = ux_str_dup( chargingnumber->valuestring, uims_sess_get_allocator(dlgsess->sess)); 
+    if (!cJSON_IsString(chargingnumber) || (chargingnumber->valuestring == NULL)) {
 		ux_log(UXL_MAJ, "Fail to get chargingNumber JSON key");
 		return UX_EINVAL;
-	}
+	} 
+	dlgsess->chargingnumber = ux_str_dup( chargingnumber->valuestring, uims_sess_get_allocator(dlgsess->sess)); 
 
 	ringbacktonetype = cJSON_GetObjectItemCaseSensitive(json, "ringBackToneType");
-    if (cJSON_IsNumber(ringbacktonetype)) {
-		dlgsess->ringbacktonetype = ringbacktonetype->valueint;
+    if (!cJSON_IsNumber(ringbacktonetype)) {
 		ux_log(UXL_MAJ, "Fail to get ringBackToneType JSON key");
 		return UX_EINVAL;
 	}
-
+	dlgsess->ringbacktonetype = ringbacktonetype->valueint;
+		
 	watitngmentid = cJSON_GetObjectItemCaseSensitive(json, "waitingMentID");
-    if (cJSON_IsString(watitngmentid) && (watitngmentid->valuestring != NULL)) {
-		dlgsess->watitngmentid = ux_str_dup( watitngmentid->valuestring, uims_sess_get_allocator(dlgsess->sess)); 
-    } else {
+    if (!cJSON_IsString(watitngmentid) || (watitngmentid->valuestring == NULL)) {
 		ux_log(UXL_MAJ, "Fail to get waitingMentID JSON key");
 		return UX_EINVAL;
-	}
+    } 
+	dlgsess->watitngmentid = ux_str_dup( watitngmentid->valuestring, uims_sess_get_allocator(dlgsess->sess)); 
 
 	callmentid = cJSON_GetObjectItemCaseSensitive(json, "callMentID");
-    if (cJSON_IsString(callmentid) && (callmentid->valuestring != NULL)) {
-		dlgsess->callmentid = ux_str_dup( callmentid->valuestring, uims_sess_get_allocator(dlgsess->sess)); 
-    } else {
+    if (!cJSON_IsString(callmentid) || (callmentid->valuestring == NULL)) {
 		ux_log(UXL_MAJ, "Fail to get callMentID JSON key");
 		return UX_EINVAL;
-	}
+    } 
+	dlgsess->callmentid = ux_str_dup( callmentid->valuestring, uims_sess_get_allocator(dlgsess->sess)); 
 
 	callingcid = cJSON_GetObjectItemCaseSensitive(json, "callingCID");
-    if (cJSON_IsString(callingcid) && (callingcid->valuestring != NULL)) {
-		dlgsess->callingcid = ux_str_dup( callingcid->valuestring, uims_sess_get_allocator(dlgsess->sess)); 
+    if (!cJSON_IsString(callingcid) || (callingcid->valuestring == NULL)) {	
 		ux_log(UXL_MAJ, "Fail to get callingCID JSON key");
 		return UX_EINVAL;
 	}
-
+	dlgsess->callingcid = ux_str_dup( callingcid->valuestring, uims_sess_get_allocator(dlgsess->sess)); 
+	
 	calledcid = cJSON_GetObjectItemCaseSensitive(json, "calledCID");
-    if (cJSON_IsString(calledcid) && (calledcid->valuestring != NULL)) {
-		dlgsess->calledcid = ux_str_dup( calledcid->valuestring, uims_sess_get_allocator(dlgsess->sess)); 
-    } else {
+    if (!cJSON_IsString(calledcid) || (calledcid->valuestring == NULL)) {
 		ux_log(UXL_MAJ, "Fail to get calledCID JSON key");
 		return UX_EINVAL;
-	}
+    } 
+	dlgsess->calledcid = ux_str_dup( calledcid->valuestring, uims_sess_get_allocator(dlgsess->sess)); 
 
 	hostcode = cJSON_GetObjectItemCaseSensitive(json, "hostCode");
-    if (cJSON_IsNumber(hostcode)) {
-		dlgsess->hostcode = hostcode->valueint;
+    if (!cJSON_IsNumber(hostcode)) {
 		ux_log(UXL_MAJ, "Fail to get hostCode JSON key");
 		return UX_EINVAL;
 	}
+	dlgsess->hostcode = hostcode->valueint;
 
 	return UX_SUCCESS;
 }
@@ -279,11 +273,11 @@ UX_DECLARE(ux_status_t) clicktocall_dlgsess_handle_ssw_outgoing_req( clicktocall
 	dlgsess->reqmsg = upa_sipmsg_ref( reqmsg);
 	dlgsess->prevstate = dlgsess->dlgstate = CLICKTOCALL_DLGSTATE_INIT;
 	dlgsess->hasreq = USIP_TRUE;
-
+/*
 	reqmsg->sessinfo->did = 0;
 	upa_sippa_write_sessinfo( sippa, reqmsg, tag, sizeof(tag));
 	dlgsess->ostag = ux_str_dup( tag, uims_sess_get_allocator(dlgsess->sess)); 
-
+*/
 	rv = uims_sess_set_call_id( dlgsess->sess, req->call_id->id);
 	if( rv < UX_SUCCESS) {
 		ux_log( UXL_MAJ, "Failed to set call-id. (method=%s, call_id=%s, err=%d,%s)",
@@ -320,6 +314,147 @@ UX_DECLARE(ux_status_t) clicktocall_dlgsess_handle_ssw_outgoing_req( clicktocall
 	}
 
 	return USIP_SUCCESS;
+}
+
+UX_DECLARE(ux_status_t) clicktocall_dlgsess_handle_initial_res( clicktocall_dlgsess_t *dlgsess, upa_sipmsg_t *resmsg)
+{
+	int rv;
+	usip_mobj_t *res;
+	upa_sippa_t *sippa;
+	char tag[128];
+
+	res = resmsg->mobj;
+	if( res->call_id == NULL || res->from == NULL || res->from->tag == NULL || res->to == NULL || res->cseq == NULL) {
+		ux_log( UXL_MAJ, "Missing mandatory header. (method=%s, call_id=%s, from=%s:%s, to=%s:%s)",
+				usip_mobj_get_method( res), USIP_MOBJ_GET_CALLID( res),
+				USIP_MOBJ_GET_FROMUSER( res), USIP_MOBJ_GET_FROMTAG( res),
+				USIP_MOBJ_GET_TOUSER( res), USIP_MOBJ_GET_TOTAG( res));
+		return UX_EBADMSG;
+	}
+
+	sippa = (upa_sippa_t*)resmsg->uxcmsg->paif;
+	upa_sippa_write_sessinfo( sippa, resmsg, tag, sizeof(tag));
+	dlgsess->ostag = ux_str_dup( tag, uims_sess_get_allocator(dlgsess->sess));
+	
+	rv = clicktocall_dlgsess_set_ocall_id( dlgsess, res->call_id->id);
+	if( rv < UX_SUCCESS) {
+		ux_log( UXL_MAJ, "Failed to set call-id. (method=%s, call_id=%s, err=%d,%s)",
+				usip_mobj_get_method( res), USIP_MOBJ_GET_CALLID( res), rv, usip_errstr(rv));
+		return rv;
+	}
+
+	rv = clicktocall_dlgsess_set_ofrom( dlgsess, res->from);
+	if( rv < UX_SUCCESS) {
+		ux_log( UXL_MAJ, "Failed to set From. (method=%s, from=%s, err=%d,%s)",
+				usip_mobj_get_method( res), USIP_MOBJ_GET_FROMUSER( res), rv, usip_errstr(rv));
+		return rv;
+	}
+
+	rv = clicktocall_dlgsess_set_oto( dlgsess, res->to);
+	if( rv < UX_SUCCESS) {
+		ux_log( UXL_MAJ, "Failed to set From. (method=%s, to=%s, err=%d,%s)",
+				usip_mobj_get_method( res), USIP_MOBJ_GET_TOUSER( res), rv, usip_errstr(rv));
+		return rv;
+	}
+	 
+	return USIP_SUCCESS;
+}
+
+/**
+ * @brief clicktocall session의 originator call id 값을 설정한다. 
+ * @param dlgsess dlg session
+ * @param call_id 설정할 call_id 
+ * @return 실행 결과
+ */
+UX_DECLARE(ux_status_t) clicktocall_dlgsess_set_ocall_id( clicktocall_dlgsess_t *dlgsess, const char *call_id)
+{
+	char *value;
+
+	if( call_id == NULL) {
+		if( dlgsess->ocall_id) ux_free( uims_sess_get_allocator(dlgsess->sess), dlgsess->ocall_id);
+		dlgsess->ocall_id = NULL;
+		return UX_SUCCESS;
+	}
+
+	value = ux_str_dup( call_id, uims_sess_get_allocator(dlgsess->sess));
+	if( value == NULL) return UX_ENOMEM;
+
+	if( dlgsess->ocall_id) ux_free( uims_sess_get_allocator(dlgsess->sess), dlgsess->ocall_id);
+	dlgsess->ocall_id = value;
+	return UX_SUCCESS;
+}
+
+/**
+ * @brief clicktocall session의 originator From header 값을 설정한다. 
+ * @param dlgsess dlg session
+ * @param value 호 발신 user
+ * @return 실행 결과
+ */
+UX_DECLARE(ux_status_t) clicktocall_dlgsess_set_ofrom( clicktocall_dlgsess_t *dlgsess, usip_nameaddr_t *value)
+{
+	usip_nameaddr_t *ofrom;
+
+	ofrom = (usip_nameaddr_t*)usip_hdr_duplicate( (usip_hdr_t*)value, uims_sess_get_allocator(dlgsess->sess));
+	if( ofrom == NULL) {
+		ux_log( UXL_CRT, "Failed to duplicate originator From header.");
+		return UX_ENOMEM;
+	}
+
+	if( dlgsess->ofrom) usip_hdr_destroy( (usip_hdr_t*)dlgsess->ofrom);
+	dlgsess->ofrom = ofrom;
+
+	return USIP_SUCCESS;
+}
+
+/**
+ * @brief clicktocall session의 originator To header 값을 설정한다. 
+ * @param dlgsess dlg session
+ * @param value 호 발신 user
+ * @return 실행 결과
+ */
+UX_DECLARE(ux_status_t) clicktocall_dlgsess_set_oto( clicktocall_dlgsess_t *dlgsess, usip_nameaddr_t *value)
+{
+	usip_nameaddr_t *oto;
+
+	oto = (usip_nameaddr_t*)usip_hdr_duplicate( (usip_hdr_t*)value, uims_sess_get_allocator(dlgsess->sess));
+	if( oto == NULL) {
+		ux_log( UXL_CRT, "Failed to duplicate originator To header.");
+		return UX_ENOMEM;
+	}
+
+	if( dlgsess->oto) usip_hdr_destroy( (usip_hdr_t*)dlgsess->oto);
+	dlgsess->oto = oto;
+
+	return USIP_SUCCESS;
+}
+
+
+UX_DECLARE(int) clicktocall_dlgsess_sprint( clicktocall_dlgsess_t *dlgsess, char *buffer, int buflen)
+{
+	int len;
+
+	len =  uims_util_sprint_ttl( buffer,     buflen,     "[CLICKTOCALL SESSION]\n");
+	len += uims_util_sprint_u64( buffer+len, buflen-len, " - UXC_SESS     = %lld\n", 
+			(unsigned long long)uims_sess_get_id( dlgsess->sess), 20);
+	len += uims_util_sprint_str( buffer+len, buflen-len, " - CALL_ID      = %s\n", 
+			(char*)uims_sess_get_call_id( dlgsess->sess), 20);
+	len += uims_util_sprint_str( buffer+len, buflen-len, " - LTAG         = %s\n", 
+			(char*)uims_sess_get_ltag( dlgsess->sess), 20)			;
+	len += uims_util_sprint_str( buffer+len, buflen-len, " - RTAG         = %s\n", 
+			(char*)uims_sess_get_rtag( dlgsess->sess), 20);
+	len += uims_util_sprint_str( buffer+len, buflen-len, "   + HTTP SESSION_ID = %s\n",dlgsess->sessionid, 20);
+	len += uims_util_sprint_str( buffer+len, buflen-len, "   + CALLING    = %s\n", dlgsess->callingnumber, 20);
+	len += uims_util_sprint_str( buffer+len, buflen-len, "   + CALLED     = %s\n", dlgsess->callednumber, 20);
+	len += uims_util_sprint_str( buffer+len, buflen-len, "   + METHOD     = %s\n", 
+			(char*)usip_method_to_str( dlgsess->method), 20);
+	len += uims_util_sprint_int( buffer+len, buflen-len, "   + OCSEQ      = %d\n", dlgsess->ocseq, 20);
+	len += uims_util_sprint_str( buffer+len, buflen-len, "   + OSTAG      = %s\n", dlgsess->ostag, 20);
+	len += uims_util_sprint_hdr( buffer+len, buflen-len, "   + OFROM      = %s\n", 
+			(usip_hdr_t*)dlgsess->ofrom, 20);
+	len += uims_util_sprint_hdr( buffer+len, buflen-len, "   + OTO        = %s\n", 
+			(usip_hdr_t*)dlgsess->oto, 20);
+
+	return len;
 }
 
 UX_DECLARE(ux_status_t) clicktocall_dlgsess_load_from_initial_req( clicktocall_dlgsess_t *dlgsess, upa_sipmsg_t *reqmsg)
