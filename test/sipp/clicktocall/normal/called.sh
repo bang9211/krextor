@@ -7,8 +7,8 @@
 
 host=`uname -n`
 ipaddr=`cat /etc/hosts | grep $host | awk '{ print $1 }' `
-pxyport=`cat ../../config/agent.csv | grep -v 'SEQ' | grep -v '#' | awk '{ split($0,arr,";"); printf("%s",arr[1]); }'`
-uasport=`cat ../../config/agent.csv | grep -v 'SEQ' | grep -v '#' | awk '{ split($0,arr,";"); printf("%s",arr[3]); }'`
+pxyport=`cat ../config/agent.csv | grep -v 'SEQ' | grep -v '#' | awk '{ split($0,arr,";"); printf("%s",arr[1]); }'`
+uasport=`cat ../config/agent.csv | grep -v 'SEQ' | grep -v '#' | awk '{ split($0,arr,";"); printf("%s",arr[3]); }'`
 pxyaddr=$ipaddr:$pxyport
 uasaddr=$ipaddr:$uasport
 

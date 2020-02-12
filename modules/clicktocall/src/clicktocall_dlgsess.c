@@ -53,18 +53,30 @@ ux_status_t clicktocall_dlgsess_final( clicktocall_dlgsess_t *dlgsess)
 {
 	ux_mem_t *allocator;
 
-	if( dlgsess->reqmsg ) {
-		upa_sipmsg_unref( dlgsess->reqmsg);
-		dlgsess->reqmsg = NULL;
-	}
-
 	allocator = uims_sess_get_allocator( dlgsess->sess);
-	if( dlgsess->ouser) ux_free( allocator, dlgsess->ouser);
-	if( dlgsess->ocontact) ux_free( allocator, dlgsess->ocontact);
-	if( dlgsess->oroute) ux_free( allocator, dlgsess->oroute);
-	if( dlgsess->tuser) ux_free( allocator, dlgsess->tuser);
-	if( dlgsess->tcontact) ux_free( allocator, dlgsess->tcontact);
-	if( dlgsess->troute) ux_free( allocator, dlgsess->troute);
+	if( dlgsess->sessionid) ux_free( allocator, dlgsess->sessionid);
+	if( dlgsess->subscribername) ux_free( allocator, dlgsess->subscribername);
+	if( dlgsess->callingnumber) ux_free( allocator, dlgsess->callingnumber);
+	if( dlgsess->callednumber) ux_free( allocator, dlgsess->callednumber);
+	if( dlgsess->chargingnumber) ux_free( allocator, dlgsess->chargingnumber);
+	if( dlgsess->watitngmentid) ux_free( allocator, dlgsess->watitngmentid);
+	if( dlgsess->callmentid) ux_free( allocator, dlgsess->callmentid);
+	if( dlgsess->callingcid) ux_free( allocator, dlgsess->callingcid);
+	if( dlgsess->calledcid) ux_free( allocator, dlgsess->calledcid);
+	if( dlgsess->sessionid) ux_free( allocator, dlgsess->sessionid);
+
+	if( dlgsess->ostag) ux_free( allocator, dlgsess->ostag);
+	if( dlgsess->ocall_id) ux_free( allocator, dlgsess->ocall_id);
+	if( dlgsess->ofrom) ux_free( allocator, dlgsess->ofrom);
+	if( dlgsess->oto) ux_free( allocator, dlgsess->oto);
+	if( dlgsess->tstag) ux_free( allocator, dlgsess->tstag);
+	if( dlgsess->tcall_id) ux_free( allocator, dlgsess->tcall_id);
+	if( dlgsess->tfrom) ux_free( allocator, dlgsess->tfrom);
+	if( dlgsess->tto) ux_free( allocator, dlgsess->tto);
+	if( dlgsess->msstag) ux_free( allocator, dlgsess->msstag);
+	if( dlgsess->mscall_id) ux_free( allocator, dlgsess->mscall_id);
+	if( dlgsess->msfrom) ux_free( allocator, dlgsess->msfrom);
+	if( dlgsess->msto) ux_free( allocator, dlgsess->msto);
 
 	return UX_SUCCESS;
 }
@@ -251,15 +263,13 @@ UX_DECLARE(ux_status_t) clicktocall_dlgsess_make_http_start_res( clicktocall_dlg
 	return UX_SUCCESS;
 }
 
-UX_DECLARE(ux_status_t) clicktocall_dlgsess_handle_ssw_outgoing_req( clicktocall_dlgsess_t *dlgsess, upa_sipmsg_t *reqmsg)
+UX_DECLARE(ux_status_t) clicktocall_dlgsess_handle_sip_invite_req( clicktocall_dlgsess_t *dlgsess, upa_sipmsg_t *reqmsg, clicktocall_callto_e callto)
 {
 	int rv;
 	usip_mobj_t *req;
-	upa_sippa_t *sippa;
-	char tag[128];
 
 	req = reqmsg->mobj;
-	if( req->call_id == NULL || req->from == NULL || req->from == NULL || req->to == NULL || req->cseq == NULL) {
+	if( req->call_id == NULL || req->from == NULL || req->from->tag == NULL || req->to == NULL || req->cseq == NULL) {
 		ux_log( UXL_MAJ, "Missing mandatory header. (method=%s, call_id=%s, from=%s:%s, to=%s:%s)",
 				usip_mobj_get_method( req), USIP_MOBJ_GET_CALLID( req),
 				USIP_MOBJ_GET_FROMUSER( req), USIP_MOBJ_GET_FROMTAG( req),
@@ -267,64 +277,98 @@ UX_DECLARE(ux_status_t) clicktocall_dlgsess_handle_ssw_outgoing_req( clicktocall
 		return UX_EBADMSG;
 	}
 
-	sippa = (upa_sippa_t*)reqmsg->uxcmsg->paif;
 	dlgsess->method = req->request->method;
-	dlgsess->ocseq = (req->cseq) ? req->cseq->seq : 1;
-	dlgsess->reqmsg = upa_sipmsg_ref( reqmsg);
-	dlgsess->prevstate = dlgsess->dlgstate = CLICKTOCALL_DLGSTATE_INIT;
-	dlgsess->hasreq = USIP_TRUE;
-/*
-	reqmsg->sessinfo->did = 0;
-	upa_sippa_write_sessinfo( sippa, reqmsg, tag, sizeof(tag));
-	dlgsess->ostag = ux_str_dup( tag, uims_sess_get_allocator(dlgsess->sess)); 
-*/
-	rv = uims_sess_set_call_id( dlgsess->sess, req->call_id->id);
-	if( rv < UX_SUCCESS) {
-		ux_log( UXL_MAJ, "Failed to set call-id. (method=%s, call_id=%s, err=%d,%s)",
-				usip_mobj_get_method( req), USIP_MOBJ_GET_CALLID( req), rv, usip_errstr(rv));
-		return rv;
-	}
 
-	rv = uims_sess_set_ltag( dlgsess->sess, req->from->tag);
-	if( rv < UX_SUCCESS) {
-		ux_log( UXL_MAJ, "Failed to set tag of From header. (method=%s, tag=%s, err=%d,%s)",
-				usip_mobj_get_method( req), USIP_MOBJ_GET_FROMTAG( req), rv, usip_errstr(rv));
-	}
+	switch (callto) {
+		case CALL_TO_CALLING:
+			dlgsess->ocseq = (req->cseq) ? req->cseq->seq : 1;
+			dlgsess->ostag = ux_str_dup( req->from->tag, uims_sess_get_allocator(dlgsess->sess)); 
 
-	rv = clicktocall_dlgsess_set_ouser( dlgsess, req->from);
-	if( rv < UX_SUCCESS) {
-		ux_log( UXL_MAJ, "Failed to set From header. (method=%s, From=" USIP_URI_PRINT_FORMAT ", err=%d,%s)",
+			rv = clicktocall_dlgsess_set_ocall_id( dlgsess, req->call_id->id);
+			if( rv < USIP_SUCCESS) {
+				ux_log( UXL_MAJ, "Failed to set ocall_id. (method=%s, call_id=%s, err=%d,%s)",
+				usip_mobj_get_method( req), req->call_id->id, rv, usip_errstr(rv));
+			}
+
+			rv = clicktocall_dlgsess_set_ofrom( dlgsess, req->from);
+			if( rv < UX_SUCCESS) {
+				ux_log( UXL_MAJ, "Failed to set ofrom. (method=%s, From=" USIP_URI_PRINT_FORMAT ", err=%d,%s)",
 				usip_mobj_get_method( req), USIP_URI_PRINT_ARGS(req->from->uri), rv, usip_errstr(rv));
-		return rv;
-	}
+				return rv;
+			}
 
-	if( req->contact) {
-		rv = clicktocall_dlgsess_set_ocontact( dlgsess, req->contact);
-		if( rv < UX_SUCCESS) {
-			ux_log( UXL_MAJ, "Failed to set Contact header. (method=%s, Contact=" USIP_URI_PRINT_FORMAT ", err=%d,%s)",
-					usip_mobj_get_method( req), USIP_URI_PRINT_ARGS(req->contact->uri), rv, usip_errstr(rv));
-			return rv;
-		}	
-	}
+			rv = clicktocall_dlgsess_set_oto( dlgsess, req->to);
+			if( rv < UX_SUCCESS) {
+				ux_log( UXL_MAJ, "Failed to set oto. (method=%s, From=" USIP_URI_PRINT_FORMAT ", err=%d,%s)",
+				usip_mobj_get_method( req), USIP_URI_PRINT_ARGS(req->to->uri), rv, usip_errstr(rv));
+				return rv;
+			}
+			break;
+		case CALL_TO_CALLED:
+			dlgsess->tcseq = (req->cseq) ? req->cseq->seq : 1;
+			dlgsess->tstag = ux_str_dup( req->from->tag, uims_sess_get_allocator(dlgsess->sess)); 
+			
+			rv = clicktocall_dlgsess_set_tcall_id( dlgsess, req->call_id->id);
+			if( rv < USIP_SUCCESS) {
+				ux_log( UXL_MAJ, "Failed to set tcall_id. (method=%s, call_id=%s, err=%d,%s)",
+				usip_mobj_get_method( req), req->call_id->id, rv, usip_errstr(rv));
+			}
 
-	rv = clicktocall_dlgsess_set_tuser( dlgsess, req->to);
-	if( rv < USIP_SUCCESS) {
-		ux_log( UXL_MAJ, "Failed to set From URI. (method=%s, from=" USIP_URI_PRINT_FORMAT ", err=%d,%s)",
+			rv = clicktocall_dlgsess_set_tfrom( dlgsess, req->from);
+			if( rv < UX_SUCCESS) {
+				ux_log( UXL_MAJ, "Failed to set tfrom. (method=%s, From=" USIP_URI_PRINT_FORMAT ", err=%d,%s)",
 				usip_mobj_get_method( req), USIP_URI_PRINT_ARGS(req->from->uri), rv, usip_errstr(rv));
+				return rv;
+			}
+
+			rv = clicktocall_dlgsess_set_tto( dlgsess, req->to);
+			if( rv < UX_SUCCESS) {
+				ux_log( UXL_MAJ, "Failed to set tto. (method=%s, From=" USIP_URI_PRINT_FORMAT ", err=%d,%s)",
+				usip_mobj_get_method( req), USIP_URI_PRINT_ARGS(req->to->uri), rv, usip_errstr(rv));
+				return rv;
+			}
+			break;
+		case CALL_TO_MS_CALLING:
+		case CALL_TO_MS_CALLED:
+			dlgsess->mscseq = (req->cseq) ? req->cseq->seq : 1;
+						dlgsess->tstag = ux_str_dup( req->from->tag, uims_sess_get_allocator(dlgsess->sess)); 
+			
+			rv = clicktocall_dlgsess_set_mscall_id( dlgsess, req->call_id->id);
+			if( rv < USIP_SUCCESS) {
+				ux_log( UXL_MAJ, "Failed to set mscall_id. (method=%s, call_id=%s, err=%d,%s)",
+				usip_mobj_get_method( req), req->call_id->id, rv, usip_errstr(rv));
+			}
+
+			rv = clicktocall_dlgsess_set_msfrom( dlgsess, req->from);
+			if( rv < UX_SUCCESS) {
+				ux_log( UXL_MAJ, "Failed to set msfrom. (method=%s, From=" USIP_URI_PRINT_FORMAT ", err=%d,%s)",
+				usip_mobj_get_method( req), USIP_URI_PRINT_ARGS(req->from->uri), rv, usip_errstr(rv));
+				return rv;
+			}
+
+			rv = clicktocall_dlgsess_set_msto( dlgsess, req->to);
+			if( rv < UX_SUCCESS) {
+				ux_log( UXL_MAJ, "Failed to set msto. (method=%s, From=" USIP_URI_PRINT_FORMAT ", err=%d,%s)",
+				usip_mobj_get_method( req), USIP_URI_PRINT_ARGS(req->to->uri), rv, usip_errstr(rv));
+				return rv;
+			}
+			break;	
 	}
 
 	return USIP_SUCCESS;
 }
 
-UX_DECLARE(ux_status_t) clicktocall_dlgsess_handle_initial_res( clicktocall_dlgsess_t *dlgsess, upa_sipmsg_t *resmsg)
+UX_DECLARE(ux_status_t) clicktocall_dlgsess_handle_sip_invite_res( clicktocall_dlgsess_t *dlgsess, upa_sipmsg_t *resmsg, clicktocall_callto_e callto)
 {
 	int rv;
 	usip_mobj_t *res;
-	upa_sippa_t *sippa;
-	char tag[128];
+
+	if (resmsg != NULL && resmsg->mobj != NULL && resmsg->mobj->status != NULL && resmsg->mobj->status->code <= 100) {
+		return USIP_SUCCESS;
+	}
 
 	res = resmsg->mobj;
-	if( res->call_id == NULL || res->from == NULL || res->from->tag == NULL || res->to == NULL || res->cseq == NULL) {
+	if( res->call_id == NULL || res->from == NULL || res->from->tag == NULL || res->to == NULL || res->to->tag == NULL || res->cseq == NULL) {
 		ux_log( UXL_MAJ, "Missing mandatory header. (method=%s, call_id=%s, from=%s:%s, to=%s:%s)",
 				usip_mobj_get_method( res), USIP_MOBJ_GET_CALLID( res),
 				USIP_MOBJ_GET_FROMUSER( res), USIP_MOBJ_GET_FROMTAG( res),
@@ -332,32 +376,87 @@ UX_DECLARE(ux_status_t) clicktocall_dlgsess_handle_initial_res( clicktocall_dlgs
 		return UX_EBADMSG;
 	}
 
-	sippa = (upa_sippa_t*)resmsg->uxcmsg->paif;
-	upa_sippa_write_sessinfo( sippa, resmsg, tag, sizeof(tag));
-	dlgsess->ostag = ux_str_dup( tag, uims_sess_get_allocator(dlgsess->sess));
+	switch (callto) {
+		case CALL_TO_CALLING:
+			rv = clicktocall_dlgsess_set_ocall_id( dlgsess, res->call_id->id);
+			if( rv < UX_SUCCESS) {
+				ux_log( UXL_MAJ, "Failed to set ocall-id. (method=%s, call_id=%s, err=%d,%s)",
+						usip_mobj_get_method( res), USIP_MOBJ_GET_CALLID( res), rv, usip_errstr(rv));
+				return rv;
+			}
+
+			rv = clicktocall_dlgsess_set_ofrom( dlgsess, res->from);
+			if( rv < UX_SUCCESS) {
+				ux_log( UXL_MAJ, "Failed to set ofrom. (method=%s, from=%s:%s, err=%d,%s)",
+						usip_mobj_get_method( res), USIP_MOBJ_GET_FROMUSER( res), USIP_MOBJ_GET_FROMTAG( res), rv, usip_errstr(rv));
+				return rv;
+			}
+
+			rv = clicktocall_dlgsess_set_oto( dlgsess, res->to);
+			if( rv < UX_SUCCESS) {
+				ux_log( UXL_MAJ, "Failed to set oto. (method=%s, to=%s:%s, err=%d,%s)",
+						usip_mobj_get_method( res), USIP_MOBJ_GET_TOUSER( res), USIP_MOBJ_GET_TOTAG( res), rv, usip_errstr(rv));
+				return rv;
+			}
+			break;
+		case CALL_TO_CALLED:
+			rv = clicktocall_dlgsess_set_tcall_id( dlgsess, res->call_id->id);
+			if( rv < UX_SUCCESS) {
+				ux_log( UXL_MAJ, "Failed to set tcall-id. (method=%s, call_id=%s, err=%d,%s)",
+						usip_mobj_get_method( res), USIP_MOBJ_GET_CALLID( res), rv, usip_errstr(rv));
+				return rv;
+			}
+
+			rv = clicktocall_dlgsess_set_tfrom( dlgsess, res->from);
+			if( rv < UX_SUCCESS) {
+				ux_log( UXL_MAJ, "Failed to set tfrom. (method=%s, from=%s:%s, err=%d,%s)",
+						usip_mobj_get_method( res), USIP_MOBJ_GET_FROMUSER( res), USIP_MOBJ_GET_FROMTAG( res), rv, usip_errstr(rv));
+				return rv;
+			}
+
+			rv = clicktocall_dlgsess_set_tto( dlgsess, res->to);
+			if( rv < UX_SUCCESS) {
+				ux_log( UXL_MAJ, "Failed to set tto. (method=%s, to=%s:%s, err=%d,%s)",
+						usip_mobj_get_method( res), USIP_MOBJ_GET_TOUSER( res), USIP_MOBJ_GET_TOTAG( res), rv, usip_errstr(rv));
+				return rv;
+			}
+			break;
+		case CALL_TO_MS_CALLING:
+		case CALL_TO_MS_CALLED:
+			rv = clicktocall_dlgsess_set_mscall_id( dlgsess, res->call_id->id);
+			if( rv < UX_SUCCESS) {
+				ux_log( UXL_MAJ, "Failed to set mscall-id. (method=%s, call_id=%s, err=%d,%s)",
+						usip_mobj_get_method( res), USIP_MOBJ_GET_CALLID( res), rv, usip_errstr(rv));
+				return rv;
+			}
+
+			rv = clicktocall_dlgsess_set_msfrom( dlgsess, res->from);
+			if( rv < UX_SUCCESS) {
+				ux_log( UXL_MAJ, "Failed to set msfrom. (method=%s, from=%s:%s, err=%d,%s)",
+						usip_mobj_get_method( res), USIP_MOBJ_GET_FROMUSER( res), USIP_MOBJ_GET_FROMTAG( res), rv, usip_errstr(rv));
+				return rv;
+			}
+
+			rv = clicktocall_dlgsess_set_msto( dlgsess, res->to);
+			if( rv < UX_SUCCESS) {
+				ux_log( UXL_MAJ, "Failed to set msto. (method=%s, to=%s:%s, err=%d,%s)",
+						usip_mobj_get_method( res), USIP_MOBJ_GET_TOUSER( res), USIP_MOBJ_GET_TOTAG( res), rv, usip_errstr(rv));
+				return rv;
+			}
+			break;
+	}
 	
-	rv = clicktocall_dlgsess_set_ocall_id( dlgsess, res->call_id->id);
-	if( rv < UX_SUCCESS) {
-		ux_log( UXL_MAJ, "Failed to set call-id. (method=%s, call_id=%s, err=%d,%s)",
-				usip_mobj_get_method( res), USIP_MOBJ_GET_CALLID( res), rv, usip_errstr(rv));
-		return rv;
-	}
-
-	rv = clicktocall_dlgsess_set_ofrom( dlgsess, res->from);
-	if( rv < UX_SUCCESS) {
-		ux_log( UXL_MAJ, "Failed to set From. (method=%s, from=%s, err=%d,%s)",
-				usip_mobj_get_method( res), USIP_MOBJ_GET_FROMUSER( res), rv, usip_errstr(rv));
-		return rv;
-	}
-
-	rv = clicktocall_dlgsess_set_oto( dlgsess, res->to);
-	if( rv < UX_SUCCESS) {
-		ux_log( UXL_MAJ, "Failed to set From. (method=%s, to=%s, err=%d,%s)",
-				usip_mobj_get_method( res), USIP_MOBJ_GET_TOUSER( res), rv, usip_errstr(rv));
-		return rv;
-	}
-	 
 	return USIP_SUCCESS;
+}
+
+/**
+ * @brief 해당 세션 originator call_id 정보를 반환한다.
+ * @param dlgsess dlg session
+ * @return 발신자 call_id 정보
+ */
+UX_DECLARE(char*) clicktocall_dlgsess_get_ocall_id( clicktocall_dlgsess_t *dlgsess)
+{
+	return dlgsess->ocall_id;
 }
 
 /**
@@ -385,49 +484,264 @@ UX_DECLARE(ux_status_t) clicktocall_dlgsess_set_ocall_id( clicktocall_dlgsess_t 
 }
 
 /**
+ * @brief 해당 세션 terminator call_id 정보를 반환한다.
+ * @param dlgsess dlg session
+ * @return 발신자 call_id 정보
+ */
+UX_DECLARE(char*) clicktocall_dlgsess_get_tcall_id( clicktocall_dlgsess_t *dlgsess)
+{
+	return dlgsess->tcall_id;
+}
+
+/**
+ * @brief clicktocall session의 terminator call id 값을 설정한다. 
+ * @param dlgsess dlg session
+ * @param call_id 설정할 call_id 
+ * @return 실행 결과
+ */
+UX_DECLARE(ux_status_t) clicktocall_dlgsess_set_tcall_id( clicktocall_dlgsess_t *dlgsess, const char *call_id)
+{
+	char *value;
+
+	if( call_id == NULL) {
+		if( dlgsess->tcall_id) ux_free( uims_sess_get_allocator(dlgsess->sess), dlgsess->tcall_id);
+		dlgsess->tcall_id = NULL;
+		return UX_SUCCESS;
+	}
+
+	value = ux_str_dup( call_id, uims_sess_get_allocator(dlgsess->sess));
+	if( value == NULL) return UX_ENOMEM;
+
+	if( dlgsess->tcall_id) ux_free( uims_sess_get_allocator(dlgsess->sess), dlgsess->tcall_id);
+	dlgsess->tcall_id = value;
+	return UX_SUCCESS;
+}
+
+/**
+ * @brief 해당 세션 ms call_id 정보를 반환한다.
+ * @param dlgsess dlg session
+ * @return 발신자 call_id 정보
+ */
+UX_DECLARE(char*) clicktocall_dlgsess_get_mscall_id( clicktocall_dlgsess_t *dlgsess)
+{
+	return dlgsess->mscall_id;
+}
+
+/**
+ * @brief clicktocall session의 ms call id 값을 설정한다. 
+ * @param dlgsess dlg session
+ * @param call_id 설정할 call_id 
+ * @return 실행 결과
+ */
+UX_DECLARE(ux_status_t) clicktocall_dlgsess_set_mscall_id( clicktocall_dlgsess_t *dlgsess, const char *call_id)
+{
+	char *value;
+
+	if( call_id == NULL) {
+		if( dlgsess->mscall_id) ux_free( uims_sess_get_allocator(dlgsess->sess), dlgsess->mscall_id);
+		dlgsess->mscall_id = NULL;
+		return UX_SUCCESS;
+	}
+
+	value = ux_str_dup( call_id, uims_sess_get_allocator(dlgsess->sess));
+	if( value == NULL) return UX_ENOMEM;
+
+	if( dlgsess->mscall_id) ux_free( uims_sess_get_allocator(dlgsess->sess), dlgsess->mscall_id);
+	dlgsess->mscall_id = value;
+	return UX_SUCCESS;
+}
+
+/**
+ * @brief 해당 세션 originator From header 정보를 반환한다.
+ * @param dlgsess dlg session
+ * @return 발신자 from 정보
+ */
+UX_DECLARE(usip_nameaddr_t*) clicktocall_dlgsess_get_ofrom( clicktocall_dlgsess_t *dlgsess)
+{
+	return dlgsess->ofrom;
+}
+
+/**
  * @brief clicktocall session의 originator From header 값을 설정한다. 
  * @param dlgsess dlg session
- * @param value 호 발신 user
+ * @param value 호 발신 from
  * @return 실행 결과
  */
 UX_DECLARE(ux_status_t) clicktocall_dlgsess_set_ofrom( clicktocall_dlgsess_t *dlgsess, usip_nameaddr_t *value)
 {
-	usip_nameaddr_t *ofrom;
+	usip_nameaddr_t *from;
 
-	ofrom = (usip_nameaddr_t*)usip_hdr_duplicate( (usip_hdr_t*)value, uims_sess_get_allocator(dlgsess->sess));
-	if( ofrom == NULL) {
+	from = (usip_nameaddr_t*)usip_hdr_duplicate( (usip_hdr_t*)value, uims_sess_get_allocator(dlgsess->sess));
+	if( from == NULL) {
 		ux_log( UXL_CRT, "Failed to duplicate originator From header.");
 		return UX_ENOMEM;
 	}
 
 	if( dlgsess->ofrom) usip_hdr_destroy( (usip_hdr_t*)dlgsess->ofrom);
-	dlgsess->ofrom = ofrom;
+	dlgsess->ofrom = from;
 
 	return USIP_SUCCESS;
 }
 
 /**
+ * @brief 해당 세션 terminator From header 정보를 반환한다.
+ * @param dlgsess dlg session
+ * @return 발신자 from 정보
+ */
+UX_DECLARE(usip_nameaddr_t*) clicktocall_dlgsess_get_tfrom( clicktocall_dlgsess_t *dlgsess)
+{
+	return dlgsess->tfrom;
+}
+
+/**
+ * @brief clicktocall session의 terminator From header 값을 설정한다. 
+ * @param dlgsess dlg session
+ * @param value 호 발신 from
+ * @return 실행 결과
+ */
+UX_DECLARE(ux_status_t) clicktocall_dlgsess_set_tfrom( clicktocall_dlgsess_t *dlgsess, usip_nameaddr_t *value)
+{
+	usip_nameaddr_t *from;
+
+	from = (usip_nameaddr_t*)usip_hdr_duplicate( (usip_hdr_t*)value, uims_sess_get_allocator(dlgsess->sess));
+	if( from == NULL) {
+		ux_log( UXL_CRT, "Failed to duplicate terminator From header.");
+		return UX_ENOMEM;
+	}
+
+	if( dlgsess->tfrom) usip_hdr_destroy( (usip_hdr_t*)dlgsess->tfrom);
+	dlgsess->tfrom = from;
+
+	return USIP_SUCCESS;
+}
+
+/**
+ * @brief 해당 세션 ms From header 정보를 반환한다.
+ * @param dlgsess dlg session
+ * @return 발신자 from 정보
+ */
+UX_DECLARE(usip_nameaddr_t*) clicktocall_dlgsess_get_msfrom( clicktocall_dlgsess_t *dlgsess)
+{
+	return dlgsess->msfrom;
+}
+
+/**
+ * @brief clicktocall session의 ms From header 값을 설정한다. 
+ * @param dlgsess dlg session
+ * @param value 호 발신 from
+ * @return 실행 결과
+ */
+UX_DECLARE(ux_status_t) clicktocall_dlgsess_set_msfrom( clicktocall_dlgsess_t *dlgsess, usip_nameaddr_t *value)
+{
+	usip_nameaddr_t *from;
+
+	from = (usip_nameaddr_t*)usip_hdr_duplicate( (usip_hdr_t*)value, uims_sess_get_allocator(dlgsess->sess));
+	if( from == NULL) {
+		ux_log( UXL_CRT, "Failed to duplicate ms From header.");
+		return UX_ENOMEM;
+	}
+
+	if( dlgsess->msfrom) usip_hdr_destroy( (usip_hdr_t*)dlgsess->msfrom);
+	dlgsess->msfrom = from;
+
+	return USIP_SUCCESS;
+}
+
+/**
+ * @brief 해당 세션 originator To header 정보를 반환한다.
+ * @param dlgsess dlg session
+ * @return 발신자 to 정보
+ */
+UX_DECLARE(usip_nameaddr_t*) clicktocall_dlgsess_get_oto( clicktocall_dlgsess_t *dlgsess)
+{
+	return dlgsess->oto;
+}
+
+/**
  * @brief clicktocall session의 originator To header 값을 설정한다. 
  * @param dlgsess dlg session
- * @param value 호 발신 user
+ * @param value 호 발신 to
  * @return 실행 결과
  */
 UX_DECLARE(ux_status_t) clicktocall_dlgsess_set_oto( clicktocall_dlgsess_t *dlgsess, usip_nameaddr_t *value)
 {
-	usip_nameaddr_t *oto;
+	usip_nameaddr_t *to;
 
-	oto = (usip_nameaddr_t*)usip_hdr_duplicate( (usip_hdr_t*)value, uims_sess_get_allocator(dlgsess->sess));
-	if( oto == NULL) {
+	to = (usip_nameaddr_t*)usip_hdr_duplicate( (usip_hdr_t*)value, uims_sess_get_allocator(dlgsess->sess));
+	if( to == NULL) {
 		ux_log( UXL_CRT, "Failed to duplicate originator To header.");
 		return UX_ENOMEM;
 	}
 
 	if( dlgsess->oto) usip_hdr_destroy( (usip_hdr_t*)dlgsess->oto);
-	dlgsess->oto = oto;
+	dlgsess->oto = to;
 
 	return USIP_SUCCESS;
 }
 
+/**
+ * @brief 해당 세션 terminator To header 정보를 반환한다.
+ * @param dlgsess dlg session
+ * @return 발신자 to 정보
+ */
+UX_DECLARE(usip_nameaddr_t*) clicktocall_dlgsess_get_tto( clicktocall_dlgsess_t *dlgsess)
+{
+	return dlgsess->tto;
+}
+
+/**
+ * @brief clicktocall session의 terminator To header 값을 설정한다. 
+ * @param dlgsess dlg session
+ * @param value 호 발신 to
+ * @return 실행 결과
+ */
+UX_DECLARE(ux_status_t) clicktocall_dlgsess_set_tto( clicktocall_dlgsess_t *dlgsess, usip_nameaddr_t *value)
+{
+	usip_nameaddr_t *to;
+
+	to = (usip_nameaddr_t*)usip_hdr_duplicate( (usip_hdr_t*)value, uims_sess_get_allocator(dlgsess->sess));
+	if( to == NULL) {
+		ux_log( UXL_CRT, "Failed to duplicate terminator To header.");
+		return UX_ENOMEM;
+	}
+
+	if( dlgsess->tto) usip_hdr_destroy( (usip_hdr_t*)dlgsess->tto);
+	dlgsess->tto = to;
+
+	return USIP_SUCCESS;
+}
+
+/**
+ * @brief 해당 세션 ms To header 정보를 반환한다.
+ * @param dlgsess dlg session
+ * @return ms to 정보
+ */
+UX_DECLARE(usip_nameaddr_t*) clicktocall_dlgsess_get_msto( clicktocall_dlgsess_t *dlgsess)
+{
+	return dlgsess->msto;
+}
+
+/**
+ * @brief clicktocall session의 ms To header 값을 설정한다. 
+ * @param dlgsess dlg session
+ * @param value 호 ms to
+ * @return 실행 결과
+ */
+UX_DECLARE(ux_status_t) clicktocall_dlgsess_set_msto( clicktocall_dlgsess_t *dlgsess, usip_nameaddr_t *value)
+{
+	usip_nameaddr_t *to;
+
+	to = (usip_nameaddr_t*)usip_hdr_duplicate( (usip_hdr_t*)value, uims_sess_get_allocator(dlgsess->sess));
+	if( to == NULL) {
+		ux_log( UXL_CRT, "Failed to duplicate ms To header.");
+		return UX_ENOMEM;
+	}
+
+	if( dlgsess->msto) usip_hdr_destroy( (usip_hdr_t*)dlgsess->msto);
+	dlgsess->msto = to;
+
+	return USIP_SUCCESS;
+}
 
 UX_DECLARE(int) clicktocall_dlgsess_sprint( clicktocall_dlgsess_t *dlgsess, char *buffer, int buflen)
 {
@@ -453,955 +767,30 @@ UX_DECLARE(int) clicktocall_dlgsess_sprint( clicktocall_dlgsess_t *dlgsess, char
 			(usip_hdr_t*)dlgsess->ofrom, 20);
 	len += uims_util_sprint_hdr( buffer+len, buflen-len, "   + OTO        = %s\n", 
 			(usip_hdr_t*)dlgsess->oto, 20);
+	len += uims_util_sprint_str( buffer+len, buflen-len, "   + OCALL_ID   = %s\n", dlgsess->ocall_id, 20);		
+	len += uims_util_sprint_int( buffer+len, buflen-len, "   + TCSEQ      = %d\n", dlgsess->tcseq, 20);
+	len += uims_util_sprint_str( buffer+len, buflen-len, "   + TSTAG      = %s\n", dlgsess->tstag, 20);
+	len += uims_util_sprint_hdr( buffer+len, buflen-len, "   + TFROM      = %s\n", 
+			(usip_hdr_t*)dlgsess->tfrom, 20);
+	len += uims_util_sprint_hdr( buffer+len, buflen-len, "   + TTO        = %s\n", 
+			(usip_hdr_t*)dlgsess->tto, 20);
+	len += uims_util_sprint_str( buffer+len, buflen-len, "   + TCALL_ID   = %s\n", dlgsess->tcall_id, 20);
+	len += uims_util_sprint_int( buffer+len, buflen-len, "   + MSCSEQ      = %d\n", dlgsess->mscseq, 20);
+	len += uims_util_sprint_str( buffer+len, buflen-len, "   + MSSTAG      = %s\n", dlgsess->msstag, 20);
+	len += uims_util_sprint_hdr( buffer+len, buflen-len, "   + MSFROM      = %s\n", 
+			(usip_hdr_t*)dlgsess->msfrom, 20);
+	len += uims_util_sprint_hdr( buffer+len, buflen-len, "   + MSTO        = %s\n", 
+			(usip_hdr_t*)dlgsess->msto, 20);
+	len += uims_util_sprint_str( buffer+len, buflen-len, "   + MSCALL_ID   = %s\n", dlgsess->mscall_id, 20);
 
 	return len;
 }
 
-UX_DECLARE(ux_status_t) clicktocall_dlgsess_load_from_initial_req( clicktocall_dlgsess_t *dlgsess, upa_sipmsg_t *reqmsg)
-{
-	int rv;
-	usip_mobj_t *req;
-	upa_sippa_t *sippa;
-	char tag[128];
-
-	req = reqmsg->mobj;
-	if( req->call_id == NULL || req->from == NULL || req->from->tag == NULL || req->to == NULL || req->cseq == NULL) {
-		ux_log( UXL_MAJ, "Missing mandatory header. (method=%s, call_id=%s, from=%s:%s, to=%s:%s)",
-				usip_mobj_get_method( req), USIP_MOBJ_GET_CALLID( req),
-				USIP_MOBJ_GET_FROMUSER( req), USIP_MOBJ_GET_FROMTAG( req),
-				USIP_MOBJ_GET_TOUSER( req), USIP_MOBJ_GET_TOTAG( req));
-		return UX_EBADMSG;
-	}
-
-	sippa = (upa_sippa_t*)reqmsg->uxcmsg->paif;
-	dlgsess->method = req->request->method;
-	dlgsess->ocseq = (req->cseq) ? req->cseq->seq : 1;
-	dlgsess->reqmsg = upa_sipmsg_ref( reqmsg);
-	dlgsess->prevstate = dlgsess->dlgstate = CLICKTOCALL_DLGSTATE_INIT;
-	dlgsess->hasreq = USIP_TRUE;
-
-	reqmsg->sessinfo->did = 1;
-	upa_sippa_write_sessinfo( sippa, reqmsg, tag, sizeof(tag));
-	dlgsess->tstag = ux_str_dup( tag, uims_sess_get_allocator(dlgsess->sess)); 
-
-	reqmsg->sessinfo->did = 0;
-	upa_sippa_write_sessinfo( sippa, reqmsg, tag, sizeof(tag));
-	dlgsess->ostag = ux_str_dup( tag, uims_sess_get_allocator(dlgsess->sess)); 
-
-	rv = uims_sess_set_call_id( dlgsess->sess, req->call_id->id);
-	if( rv < UX_SUCCESS) {
-		ux_log( UXL_MAJ, "Failed to set call-id. (method=%s, call_id=%s, err=%d,%s)",
-				usip_mobj_get_method( req), USIP_MOBJ_GET_CALLID( req), rv, usip_errstr(rv));
-		return rv;
-	}
-
-	rv = uims_sess_set_ltag( dlgsess->sess, req->from->tag);
-	if( rv < UX_SUCCESS) {
-		ux_log( UXL_MAJ, "Failed to set tag of From header. (method=%s, tag=%s, err=%d,%s)",
-				usip_mobj_get_method( req), USIP_MOBJ_GET_FROMTAG( req), rv, usip_errstr(rv));
-	}
-
-	rv = clicktocall_dlgsess_set_ouser( dlgsess, req->from);
-	if( rv < UX_SUCCESS) {
-		ux_log( UXL_MAJ, "Failed to set From header. (method=%s, From=" USIP_URI_PRINT_FORMAT ", err=%d,%s)",
-				usip_mobj_get_method( req), USIP_URI_PRINT_ARGS(req->from->uri), rv, usip_errstr(rv));
-		return rv;
-	}
-
-	if( req->contact) {
-		rv = clicktocall_dlgsess_set_ocontact( dlgsess, req->contact);
-		if( rv < UX_SUCCESS) {
-			ux_log( UXL_MAJ, "Failed to set Contact header. (method=%s, Contact=" USIP_URI_PRINT_FORMAT ", err=%d,%s)",
-					usip_mobj_get_method( req), USIP_URI_PRINT_ARGS(req->contact->uri), rv, usip_errstr(rv));
-			return rv;
-		}	
-	}
-
-	if( req->record_route) {
-		rv = clicktocall_dlgsess_set_oroute( dlgsess, req->record_route);
-		if( rv < UX_SUCCESS) {
-			ux_log( UXL_MAJ, "Failed to set Contact URI. (method=%s, Record-Route=" USIP_URI_PRINT_FORMAT ", err=%d,%s)",
-					usip_mobj_get_method( req), USIP_URI_PRINT_ARGS(req->record_route->uri), rv, usip_errstr(rv));
-			return rv;
-		}	
-	}
-
-	rv = clicktocall_dlgsess_set_tuser( dlgsess, req->to);
-	if( rv < USIP_SUCCESS) {
-		ux_log( UXL_MAJ, "Failed to set From URI. (method=%s, from=" USIP_URI_PRINT_FORMAT ", err=%d,%s)",
-				usip_mobj_get_method( req), USIP_URI_PRINT_ARGS(req->from->uri), rv, usip_errstr(rv));
-	}
-
-	return USIP_SUCCESS;
-}
-
-UX_DECLARE(ux_status_t) clicktocall_dlgsess_load_from_initial_rsp( clicktocall_dlgsess_t *dlgsess, upa_sipmsg_t *rspmsg)
-{
-	int rv;
-	usip_mobj_t *rsp;
-
-	rsp = rspmsg->mobj;
-	if( rsp->to->tag && uims_sess_get_rtag( dlgsess->sess) == NULL) {
-		rv = uims_sess_set_rtag( dlgsess->sess, rsp->to->tag);
-		if( rv < UX_SUCCESS) {
-			ux_log( UXL_MAJ, "Failed to set tag of To header. (method=%s, tag=%s, err=%d,%s)",
-					usip_mobj_get_method( rsp), USIP_MOBJ_GET_TOTAG( rsp), rv, usip_errstr(rv));
-			return rv;
-		}
-	}
-	if( rsp->contact && dlgsess->tcontact == NULL) {
-		rv = clicktocall_dlgsess_set_tcontact( dlgsess, rsp->contact);
-		if( rv < UX_SUCCESS) {
-			ux_log( UXL_MAJ, "Failed to set Contact header. (method=%s, Contact=" USIP_URI_PRINT_FORMAT ", err=%d,%s)",
-					usip_mobj_get_method( rsp), USIP_URI_PRINT_ARGS(rsp->contact->uri), rv, usip_errstr(rv));
-			return rv;
-		}	
-	}
-	if( rsp->record_route && dlgsess->troute) {
-		rv = clicktocall_dlgsess_set_troute( dlgsess, rsp->record_route);
-		if( rv < UX_SUCCESS) {
-			ux_log( UXL_MAJ, "Failed to set Contact URI. (method=%s, Record-Route=" USIP_URI_PRINT_FORMAT ", err=%d,%s)",
-					usip_mobj_get_method( rsp), USIP_URI_PRINT_ARGS(rsp->record_route->uri), rv, usip_errstr(rv));
-			return rv;
-		}	
-	}
-
-	return USIP_SUCCESS;
-}
 
 UX_DECLARE(ux_mem_t*) clicktocall_dlgsess_get_allocator( clicktocall_dlgsess_t *dlgsess)
 {
 	return uims_sess_get_allocator( dlgsess->sess);
 }
-
-/**
- * @brief 해당 호 발신 user를 반환한다.
- * @param dlgsess dlg session
- * @return 호 발신 user
- */
-UX_DECLARE(usip_nameaddr_t*) clicktocall_dlgsess_get_ouser( clicktocall_dlgsess_t *dlgsess)
-{
-	return dlgsess->ouser;
-}
-
-/**
- * @brief 해당 호 발신 user를 설정한다. 
- * @param dlgsess dlg session
- * @param value 호 발신 user
- * @return 실행 결과
- */
-UX_DECLARE(ux_status_t) clicktocall_dlgsess_set_ouser( clicktocall_dlgsess_t *dlgsess, usip_nameaddr_t *value)
-{
-	usip_nameaddr_t *ouser;
-
-	ouser = (usip_nameaddr_t*)usip_hdr_duplicate( (usip_hdr_t*)value, uims_sess_get_allocator(dlgsess->sess));
-	if( ouser == NULL) {
-		ux_log( UXL_CRT, "Failed to duplicate originator nameaddr.");
-		return UX_ENOMEM;
-	}
-
-	if( dlgsess->ouser) usip_hdr_destroy( (usip_hdr_t*)dlgsess->ouser);
-	dlgsess->ouser = ouser;
-
-	return USIP_SUCCESS;
-}
-
-/**
- * @brief 해당 세션 발신자 contact 정보를 반환한다.
- * @param dlgsess dlg session
- * @return 발신자 contact 정보
- */
-UX_DECLARE(usip_contact_hdr_t*) clicktocall_dlgsess_get_ocontact( clicktocall_dlgsess_t *dlgsess)
-{
-	return dlgsess->ocontact;
-}
-
-/**
- * @brief 해당 세션 발신자 contact 정보를 설정한다. 
- * @param dlgsess dlg session
- * @param value 발신자 contact 정보
- * @return 실행 결과
- */
-UX_DECLARE(ux_status_t) clicktocall_dlgsess_set_ocontact( clicktocall_dlgsess_t *dlgsess, usip_contact_hdr_t *value)
-{
-	usip_contact_hdr_t *ocontact;
-
-	ocontact = (usip_contact_hdr_t*)usip_hdr_duplicate( (usip_hdr_t*)value, uims_sess_get_allocator(dlgsess->sess));
-	if( ocontact == NULL) {
-		ux_log( UXL_CRT, "Failed to duplicate originator contact.");
-		return UX_ENOMEM;
-	}
-
-	if( dlgsess->ocontact) usip_hdr_destroy( (usip_hdr_t*)dlgsess->ocontact);
-	dlgsess->ocontact = ocontact;
-
-	return USIP_SUCCESS;
-}
-
-/**
- * @brief 해당 세션 발신자 route 정보를 반환한다.
- * @param dlgsess dlg session
- * @return 발신자 route 정보
- */
-UX_DECLARE(usip_route_hdr_t*) clicktocall_dlgsess_get_oroute( clicktocall_dlgsess_t *dlgsess)
-{
-	return dlgsess->oroute;
-}
-
-/**
- * @brief 해당 세션 발신자 route 정보를 설정한다. 
- * @param dlgsess dlg session
- * @param value 발신자 route 정보
- * @return 실행 결과
- */
-UX_DECLARE(ux_status_t) clicktocall_dlgsess_set_oroute( clicktocall_dlgsess_t *dlgsess, usip_route_hdr_t *value)
-{
-	usip_route_hdr_t *oroute;
-
-	oroute = usip_route_fixdup( value, uims_sess_get_allocator(dlgsess->sess));
-	if( oroute == NULL) {
-		ux_log( UXL_CRT, "Failed to duplicate originator route.");
-		return UX_ENOMEM;
-	}
-
-	if( dlgsess->oroute) usip_hdr_destroy( (usip_hdr_t*)dlgsess->oroute);
-	dlgsess->oroute = oroute;
-
-	return USIP_SUCCESS;
-}
-
-/**
- * @brief 해당 호 착신 user를 반환한다.
- * @param dlgsess dlg session
- * @return 호 착신 user
- */
-UX_DECLARE(usip_nameaddr_t*) clicktocall_dlgsess_get_tuser( clicktocall_dlgsess_t *dlgsess)
-{
-	return dlgsess->tuser;
-}
-
-/**
- * @brief 해당 호 착신 user를 설정한다. 
- * @param dlgsess dlg session
- * @param value 호 착신 user
- * @return 실행 결과
- */
-UX_DECLARE(ux_status_t) clicktocall_dlgsess_set_tuser( clicktocall_dlgsess_t *dlgsess, usip_nameaddr_t *value)
-{
-	usip_nameaddr_t *tuser;
-
-	tuser = (usip_nameaddr_t*)usip_hdr_duplicate( (usip_hdr_t*)value, uims_sess_get_allocator(dlgsess->sess));
-	if( tuser == NULL) {
-		ux_log( UXL_CRT, "Failed to duplicate terminator name addr.");
-		return UX_ENOMEM;
-	}
-
-	if( dlgsess->tuser) usip_hdr_destroy( (usip_hdr_t*)dlgsess->tuser);
-	dlgsess->tuser = tuser;
-
-	return USIP_SUCCESS;
-}
-
-/**
- * @brief 해당 세션 착신자 contact 정보를 반환한다.
- * @param dlgsess dlg session
- * @return 착신자 contact 정보
- */
-UX_DECLARE(usip_contact_hdr_t*) clicktocall_dlgsess_get_tcontact( clicktocall_dlgsess_t *dlgsess)
-{
-	return dlgsess->tcontact;
-}
-
-/**
- * @brief 해당 세션 착신자 contact 정보를 설정한다. 
- * @param dlgsess dlg session
- * @param value 착신자 contact 정보
- * @return 실행 결과
- */
-UX_DECLARE(ux_status_t) clicktocall_dlgsess_set_tcontact( clicktocall_dlgsess_t *dlgsess, usip_contact_hdr_t *value)
-{
-	usip_contact_hdr_t *tcontact;
-
-	tcontact = (usip_contact_hdr_t*)usip_hdr_duplicate( (usip_hdr_t*)value, uims_sess_get_allocator(dlgsess->sess));
-	if( tcontact == NULL) {
-		ux_log( UXL_CRT, "Failed to duplicate terminator contact.");
-		return UX_ENOMEM;
-	}
-
-	if( dlgsess->tcontact) usip_hdr_destroy( (usip_hdr_t*)dlgsess->tcontact);
-	dlgsess->tcontact = tcontact;
-
-	return USIP_SUCCESS;
-}
-
-/**
- * @brief 해당 세션 착신자 route 정보를 반환한다.
- * @param dlgsess dlg session
- * @return 발신자 route 정보
- */
-UX_DECLARE(usip_route_hdr_t*) clicktocall_dlgsess_get_troute( clicktocall_dlgsess_t *dlgsess)
-{
-	return dlgsess->troute;
-}
-
-/**
- * @brief 해당 세션 착신자 route 정보를 설정한다. 
- * @param dlgsess dlg session
- * @param value 착신자 route 정보
- * @return 실행 결과
- */
-UX_DECLARE(ux_status_t) clicktocall_dlgsess_set_troute( clicktocall_dlgsess_t *dlgsess, usip_route_hdr_t *value)
-{
-	const char *lr;
-	ux_mem_t *allocator;
-	usip_route_hdr_t *dst, *troute;
-
-	allocator = uims_sess_get_allocator(dlgsess->sess);
-	for( troute = NULL; value; value = (usip_route_hdr_t*)value->base->next ) {
-		if( dlgsess->ostag) {
-			if( usip_str_cmp(value->uri->user, dlgsess->ostag) == 0) break;
-		} else {
-			if( usip_str_cmp(value->uri->host, "192.168.1.182") == 0 &&
-					usip_str_cmp(value->uri->port, "15064") == 0) {
-				break;
-			}
-		}
-
-		dst = (usip_route_hdr_t*)usip_hdr_create_c(allocator, usip_route_hdef(), value->base);
-		if( dst == NULL) {
-			ux_log(UXL_CRT, "Failed to creae terminator Route header");
-			return UX_ENOMEM;
-		}
-		// Fix broken (Record-)Routes without <>
-		if( dst->uri->params == NULL && dst->params) {
-			lr = usip_params_get_value( dst->params, "lr");
-			if(lr) {
-				dst->uri->params = usip_str_fmtdup( allocator, "lr%s%s", lr[0] ? "=" : "", lr);
-				usip_params_remove_value( dst->params, "lr", allocator);
-			}
-		}
-		dst->base->next = (usip_hdr_t *)troute;
-		troute = dst;
-	}
-
-	if( dlgsess->troute) usip_hdr_destroy( (usip_hdr_t*)dlgsess->troute);
-	dlgsess->troute = troute;
-
-	return USIP_SUCCESS;
-}
-
-UX_DECLARE(ux_status_t) clicktocall_dlgsess_handle_initial_req( clicktocall_dlgsess_t *dlgsess,
-						uims_dbmgr_t *dbmgr, upa_sipmsg_t *reqmsg)
-{
-	/*
-	int rv;
-	usip_mobj_t *mobj;
-	clicktocall_peer_t *tpeer;
-
-	mobj = reqmsg->mobj;
-	if( mobj->request == NULL) {
-		dlgsess->error = CLICKTOCALL_ERR_BAD_REQUEST;
-		return UX_EINVAL;
-	}
-	if( mobj->request->method != USIP_METHOD_INVITE && mobj->request->method != USIP_METHOD_SUBSCRIBE) {
-		dlgsess->error = CLICKTOCALL_ERR_BAD_REQUEST;
-		return UX_EINVAL;
-	}
-
-	rv = clicktocall_dlgsess_load_from_initial_req( dlgsess, reqmsg);
-	if( rv < UX_SUCCESS) {
-		dlgsess->error = CLICKTOCALL_ERR_BAD_REQUEST;
-		return UX_EINVAL;
-	}
-
-	if( mobj->route && mobj->route->base->next) {
-		//만약 Route 헤더가 자신 헤더 이외에 더 있다면 ROUTER mode로 동작하도록 한다.
-		dlgsess->rtpolicy->opeer_id = mobj->peer_id;
-		dlgsess->rtpolicy->tpeer_id = -1;
-		dlgsess->rtpolicy->svcmode = CLICKTOCALL_SVCMODE_ROUTER;
-		dlgsess->rtpolicy->way = CLICKTOCALL_SVCWAY_INTERNAL_TO_INTERNAL;
-		dlgsess->rtpolicy->opt = 0;
-		dlgsess->tpeer = NULL;
-	} else {
-		rv = clicktocall_router_get_policy( router, reqmsg, dlgsess->rtpolicy);
-		if( rv < UX_SUCCESS) {
-			dlgsess->error = CLICKTOCALL_ERR_BAD_REQUEST;
-			return rv;
-		}
-
-		tpeer = clicktocall_router_get_peer( router, dlgsess->rtpolicy->tpeer_id);
-		if( tpeer) {
-			dlgsess->tpeer = ux_str_fmtdup( uims_sess_get_allocator( dlgsess->sess),
-					"sip:%s:%u", tpeer->host, tpeer->port);
-		} else {
-			dlgsess->tpeer = NULL;
-		}
-	}
-	dlgsess->error = CLICKTOCALL_ERR_SUCCESS;
-*/
-	return UX_SUCCESS;
-}
-
-UX_DECLARE(ux_status_t) clicktocall_dlgsess_make_forward_initial_req( clicktocall_dlgsess_t *dlgsess,
-						upa_sipmsg_t *fwdmsg)
-{
-	/*
-	int rv, priv_type, thig_flag;
-	upa_sippa_t *sippa;
-	clicktocall_plugin_t *plugin;
-
-	plugin = clicktocall_plugin_instance();
-	thig_flag = 0;
-
-	if( dlgsess->tpeer == NULL && dlgsess->rtpolicy->svcmode != CLICKTOCALL_SVCMODE_ROUTER) {
-		ux_log(UXL_MAJ, "Selected target peer URI doesn't exist.");
-		dlgsess->error = CLICKTOCALL_ERR_NO_SCSCF; 
-		return UX_EINVAL;
-	}
-	if( dlgsess->reqmsg == NULL) {
-		ux_log(UXL_MAJ, "No request message.");
-		dlgsess->error = CLICKTOCALL_ERR_SERVICE_LOGIC; 
-		return UX_EINVAL;
-	}
-
-	sippa = (upa_sippa_t*)fwdmsg->uxcmsg->paif;
-	rv = usip_mobj_copy( fwdmsg->mobj, dlgsess->reqmsg->mobj);
-	if( rv < USIP_SUCCESS) {
-		ux_log(UXL_MAJ, "Failed to copy SIP message. (err=%d,%s)", rv, usip_errstr(rv));
-		dlgsess->error = CLICKTOCALL_ERR_SERVICE_LOGIC;
-		return rv;
-	}
-
-	//Max-Forwards 헤더 값 감소
-	if( fwdmsg->mobj->max_forwards) --fwdmsg->mobj->max_forwards->value;
-	//첫번 째 Route 헤더 삭제 - CLICKTOCALL 자신의 주소
-	if( fwdmsg->mobj->route) usip_msg_remove_hdr( fwdmsg->mobj->base->msg, fwdmsg->mobj->route->base);
-
-	if( dlgsess->rtpolicy->svcmode == CLICKTOCALL_SVCMODE_B2BUA) {
-		//Via thig 적용
-		if( plugin->conf->use_thig) {
-			rv = clicktocall_thig_encrypt_header( plugin->thid, fwdmsg, CLICKTOCALL_THIG_HDR_VIA);
-			if( rv < USIP_SUCCESS) {
-				ux_log(UXL_MAJ, "Failed to adjust THIG Via header on SIP message. (target=%s, err=%d,%s)",
-						dlgsess->tpeer, rv, usip_errstr(rv));
-				dlgsess->error = CLICKTOCALL_ERR_SERVICE_LOGIC;
-				return rv;
-			}
-			thig_flag += rv;
-		}
-		
-		//Route 관련 정보 모두 삭제
-		if(fwdmsg->mobj->route) usip_msg_remove_all_hdr_d( fwdmsg->mobj->base->msg, usip_route_hdef()); 
-		if(fwdmsg->mobj->record_route) usip_msg_remove_all_hdr_d( fwdmsg->mobj->base->msg, usip_record_route_hdef());
-		//만약 Contact이 GRUU가 아닐 경우 change Contact (contact@ clicktocall 주소)
-		if( fwdmsg->mobj->contact) {
-			fwdmsg->mobj->contact->uri->host = ux_str_dup("192.168.1.182", usip_mobj_get_allocator(fwdmsg->mobj));
-			fwdmsg->mobj->contact->uri->port = ux_str_dup("15064", usip_mobj_get_allocator(fwdmsg->mobj));
-		}
-		
-		//착신지가 외부 peer일 경우 동작 수행
-		//From tag 값 terminator session tag로 변경
-		rv = usip_nameaddr_set_param( fwdmsg->mobj->from, "tag", dlgsess->tstag);
-		if( rv < UX_SUCCESS) return rv;
-
-		// Privacy protection ( RFC3323/RFC3325)
-		priv_type = clicktocall_util_check_privacy( plugin->conf, fwdmsg->mobj);
-		if( priv_type == CLICKTOCALL_PRIVACY_ID) {
-			usip_msg_remove_all_hdr_n( fwdmsg->mobj->base->msg, "P-Asserted-Identity"); 
-		} else if( priv_type == CLICKTOCALL_PRIVACY_HEADER && thig_flag == 0) {
-			// TODO : Remove all Via header.
-			// incoming transaction 을 찾을 수 있는 값을 fwdmsg 에 설정하고 응답에 존재해야 한다.
-			usip_msg_remove_all_hdr_n( fwdmsg->mobj->base->msg, "Subject"); 
-			usip_msg_remove_all_hdr_n( fwdmsg->mobj->base->msg, "Call-Info"); 
-			usip_msg_remove_all_hdr_n( fwdmsg->mobj->base->msg, "User-Agent"); 
-			usip_msg_remove_all_hdr_n( fwdmsg->mobj->base->msg, "Reply-To"); 
-			usip_msg_remove_all_hdr_n( fwdmsg->mobj->base->msg, "In-Reply-To"); 
-			usip_msg_remove_all_hdr_n( fwdmsg->mobj->base->msg, "Organization"); 
-			// History-Info privacy 적용(RFC7044)
-		}
-
-	} else if( dlgsess->rtpolicy->svcmode == CLICKTOCALL_SVCMODE_PROXY) {	// External->Internal
-		//만약 thig 적용 시 Via, Record-Route THIG decryption 한다.
-		if( plugin->conf->use_thig) {
-			// Route header decryption
-			rv = clicktocall_thig_decrypt_header( plugin->thid, fwdmsg, CLICKTOCALL_THIG_HDR_ROUTE);
-			if( rv < USIP_SUCCESS) {
-				ux_log(UXL_MAJ, "Failed to adjust decrypted Route header on SIP message. (from=%s, err=%d,%s)",
-						dlgsess->tpeer, rv, usip_errstr(rv));
-				dlgsess->error = CLICKTOCALL_ERR_SERVICE_LOGIC;
-				return rv;
-			}
-			// Record-Route header decryption
-			rv = clicktocall_thig_decrypt_header( plugin->thid, fwdmsg, CLICKTOCALL_THIG_HDR_RECROUTE);
-			if( rv < USIP_SUCCESS) {
-				ux_log(UXL_MAJ, "Failed to adjust decrypted Record-Route header on SIP message. (from=%s, err=%d,%s)",
-						dlgsess->tpeer, rv, usip_errstr(rv));
-				dlgsess->error = CLICKTOCALL_ERR_SERVICE_LOGIC;
-				return rv;
-			}
-		}
-
-		//add Record-Route with localtag@clicktocall address 
-		rv = usip_msg_insert_fmtval( fwdmsg->mobj->base->msg, usip_record_route_hdef(), 0, NULL, "<sip:%s@%s:%d;lr>",
-				dlgsess->ostag, "192.168.1.182", 15064);
-		if( rv < USIP_SUCCESS) {
-			ux_log(UXL_MAJ, "Failed to set route address into SIP message. (taget=%s, err=%d,%s)",
-					dlgsess->tpeer, rv, usip_errstr(rv));
-			dlgsess->error = CLICKTOCALL_ERR_SERVICE_LOGIC;
-			return rv;
-		}
-	} else {
-		//Do nothing
-		// TODO : 임시. add Record-Route with clicktocall address 
-		rv = usip_msg_insert_fmtval( fwdmsg->mobj->base->msg, usip_record_route_hdef(), 0, NULL, "<sip:%s@%s:%d;lr>",
-				dlgsess->ostag, "192.168.1.182", 15064);
-		if( rv < USIP_SUCCESS) {
-			ux_log(UXL_MAJ, "Failed to set route address into SIP message. (taget=%s, err=%d,%s)",
-					dlgsess->tpeer, rv, usip_errstr(rv));
-			dlgsess->error = CLICKTOCALL_ERR_SERVICE_LOGIC;
-			return rv;
-		}
-	}
-
-	//다음 착신지 설정
-	if( dlgsess->tpeer) {
-		rv = usip_msg_insert_fmtval( fwdmsg->mobj->base->msg, usip_route_hdef(), 0, NULL, "<%s;lr>", dlgsess->tpeer);
-		if( rv < USIP_SUCCESS) {
-			ux_log(UXL_MAJ, "Failed to set route address into SIP message. (taget=%s, err=%d,%s)",
-					dlgsess->tpeer, rv, usip_errstr(rv));
-			dlgsess->error = CLICKTOCALL_ERR_SERVICE_LOGIC;
-			return rv;
-		}
-	}
-
-	//domain name을 포함하는 P-Prviate-Network-Indication 헤더 필드 삭제
-
-	//외부 전송시 P-Charging-Vector 처리 
-	if( CLICKTOCALL_SVCWAY_IS_TO_EXTERNAL(dlgsess->rtpolicy->way)) {
-		//정책에 따라
-		usip_msg_remove_all_hdr_n( fwdmsg->mobj->base->msg, "P-Charging-Vector"); 
-		//store P-Charging-Function-Address	
-		usip_msg_remove_all_hdr_n( fwdmsg->mobj->base->msg, "P-Charging-Function-Addresses"); 
-	}
-	usip_msg_remove_all_hdr_n( fwdmsg->mobj->base->msg, "P-Profile-Key"); 
-	
-	//필요 시 Session Refreshment를 위한 Session-Expire 값들을 설정
-
-	fwdmsg->sessinfo->flags |= UPA_SIPSESSINFO_PROXY_MODE;
-
-	return UX_SUCCESS;
-}
-
-UX_DECLARE(ux_status_t) clicktocall_dlgsess_handle_initial_rsp( clicktocall_dlgsess_t *dlgsess,
-						upa_sipmsg_t *rspmsg, int *status)
-{
-	int rv;
-	char *tpeer, uristr[1024];
-
-	//TODO P-Charing-Vector가 있고 term-ioi가 있으면 해당 값을 세션에 저장
-
-	//TODO P-Charging-Vector handling
-
-	if( rspmsg->mobj->status->code == 305) {
-		*status = 403; //Forbidden
-		if( rspmsg->mobj->contact == NULL) return UX_SUCCESS;
-		rv = usip_uri_encode( rspmsg->mobj->contact->uri, uristr, sizeof(uristr), 0);
-		if( rv < UX_SUCCESS) return UX_SUCCESS;
-		if( dlgsess->tpeer && strcasecmp(uristr, dlgsess->tpeer) == 0) return UX_SUCCESS; 
-		tpeer = ux_str_dup( uristr, uims_sess_get_allocator(dlgsess->sess));
-		if( tpeer == NULL ) return UX_SUCCESS; 
-		dlgsess->tpeer = tpeer;
-		dlgsess->dlgstate = CLICKTOCALL_DLGSTATE_PROCEEDING;
-		*status = 305;
-		return UX_SUCCESS;
-	}
-
-	*status = rspmsg->mobj->status->code;
-	if( rspmsg->mobj->status->code > 100) {
-		rv = clicktocall_dlgsess_load_from_initial_rsp( dlgsess, rspmsg);
-		if( rv < UX_SUCCESS) {
-			dlgsess->error = CLICKTOCALL_ERR_BAD_REQUEST;
-			return rv;
-		}
-		if( rspmsg->mobj->status->code < 200) {
-			dlgsess->dlgstate = CLICKTOCALL_DLGSTATE_PROCEEDING;
-		} else {
-			if( rspmsg->mobj->status->code < 300) {
-				dlgsess->dlgstate = CLICKTOCALL_DLGSTATE_ACCEPTED;
-			} else {
-				dlgsess->dlgstate = CLICKTOCALL_DLGSTATE_REJECTED;
-			}
-			if( dlgsess->reqmsg ) {
-				upa_sipmsg_unref( dlgsess->reqmsg);
-				dlgsess->reqmsg = NULL;
-			}
-		}
-	}
-	*/
-
-	return UX_SUCCESS;
-}
-
-UX_DECLARE(ux_status_t) clicktocall_dlgsess_make_forward_initial_rsp( clicktocall_dlgsess_t *dlgsess,
-						upa_sipmsg_t *rspmsg, upa_sipmsg_t *fwdmsg)
-{
-	/*
-	int rv;
-	upa_sippa_t *sippa;
-	clicktocall_plugin_t *plugin;
-
-	plugin = clicktocall_plugin_instance();
-
-	sippa = (upa_sippa_t*)fwdmsg->uxcmsg->paif;
-
-	rv = usip_mobj_copy( fwdmsg->mobj, rspmsg->mobj);
-	if( rv < USIP_SUCCESS) {
-		ux_log(UXL_MAJ, "Failed to copy SIP message. (err=%d,%s)", rv, usip_errstr(rv));
-		dlgsess->error = CLICKTOCALL_ERR_SERVICE_LOGIC;
-		return rv;
-	}
-	usip_msg_remove_hdr_d( fwdmsg->mobj->base->msg, usip_via_hdef(), 0);
-
-	if( dlgsess->rtpolicy->svcmode == CLICKTOCALL_SVCMODE_B2BUA) {
-		rv = usip_nameaddr_set_param( fwdmsg->mobj->from, "tag", uims_sess_get_ltag( dlgsess->sess));
-		if( rv < USIP_SUCCESS) {
-			ux_log(UXL_MAJ, "Failed to set tag of From header. (err=%d,%s)", rv, usip_errstr(rv));
-			dlgsess->error = CLICKTOCALL_ERR_SERVICE_LOGIC;
-			return rv;
-		}
-		if( fwdmsg->mobj->to->tag) {
-			rv = usip_nameaddr_set_param( fwdmsg->mobj->to, "tag", dlgsess->ostag);
-			if( rv < UX_SUCCESS) {
-				ux_log(UXL_MAJ, "Failed to set tag of To header. (err=%d,%s)", rv, usip_errstr(rv));
-				return rv;
-			}
-		}
-		if( dlgsess->oroute) {
-			rv = uims_sipmsg_set_record_route( fwdmsg->mobj, dlgsess->oroute);
-			if( rv < UX_SUCCESS) { 
-				ux_log(UXL_MAJ, "Failed to set Record-Route header. (err=%d,%s)", rv, usip_errstr(rv));
-				return rv;
-			}
-		}
-		if( fwdmsg->mobj->contact) {
-			fwdmsg->mobj->contact->uri->host = ux_str_dup("192.168.1.182", usip_mobj_get_allocator(fwdmsg->mobj));
-			fwdmsg->mobj->contact->uri->port = ux_str_dup("15064", usip_mobj_get_allocator(fwdmsg->mobj));
-		}
-	
-		//Via thig 해제
-		if( plugin->conf->use_thig) {
-			rv = clicktocall_thig_decrypt_header( plugin->thid, fwdmsg, CLICKTOCALL_THIG_HDR_VIA);
-			if( rv < USIP_SUCCESS) {
-				ux_log(UXL_MAJ, "Failed to adjust decrypted Via header on SIP message. (from=%s, err=%d,%s)",
-						dlgsess->tpeer, rv, usip_errstr(rv));
-				dlgsess->error = CLICKTOCALL_ERR_SERVICE_LOGIC;
-				return rv;
-			}
-		}
-		
-	} else if( dlgsess->rtpolicy->svcmode == CLICKTOCALL_SVCMODE_PROXY) {
-		if( plugin->conf->use_thig) {
-			// Route thig 적용
-			rv = clicktocall_thig_encrypt_header( plugin->thid, fwdmsg, CLICKTOCALL_THIG_HDR_ROUTE);
-			if( rv < USIP_SUCCESS) {
-				ux_log(UXL_MAJ, "Failed to adjust THIG Route header on SIP message. (target=%s, err=%d,%s)",
-						dlgsess->tpeer, rv, usip_errstr(rv));
-				dlgsess->error = CLICKTOCALL_ERR_SERVICE_LOGIC;
-				return rv;
-			}
-			// Record-Route thig 적용
-			rv = clicktocall_thig_encrypt_header( plugin->thid, fwdmsg, CLICKTOCALL_THIG_HDR_RECROUTE);
-			if( rv < USIP_SUCCESS) {
-				ux_log(UXL_MAJ, "Failed to adjust THIG Record-Route header on SIP message. (target=%s, err=%d,%s)",
-						dlgsess->tpeer, rv, usip_errstr(rv));
-				dlgsess->error = CLICKTOCALL_ERR_SERVICE_LOGIC;
-				return rv;
-			}
-		}
-	} else {
-		;
-	}
-	*/
-
-	return UX_SUCCESS;
-}
-
-UX_DECLARE(ux_status_t) clicktocall_dlgsess_handle_notify_req( clicktocall_dlgsess_t *dlgsess,
-						upa_sipmsg_t *reqmsg, int *is_terminated)
-{
-	if( reqmsg->mobj->subs_state && reqmsg->mobj->subs_state->state) {
-		*is_terminated = (strcasecmp(reqmsg->mobj->subs_state->state, "terminated") == 0);
-		if( *is_terminated) {
-			dlgsess->dlgstate = CLICKTOCALL_DLGSTATE_TERMINATING;
-		}
-	} else {
-		*is_terminated = UX_FALSE;
-	}
-
-	return UX_SUCCESS;
-}
-
-UX_DECLARE(ux_status_t) clicktocall_dlgsess_make_forward_msg( clicktocall_dlgsess_t *dlgsess,
-						upa_sipmsg_t *srcmsg, upa_sipmsg_t *fwdmsg)
-{
-	/*
-	int rv;
-	const char *otag, *ttag;
-	ux_mem_t *allocator;
-	upa_sippa_t *sippa;
-	clicktocall_plugin_t *plugin;
-
-	plugin = clicktocall_plugin_instance();
-
-	sippa = (upa_sippa_t*)srcmsg->uxcmsg->paif;
-	rv = usip_mobj_copy( fwdmsg->mobj, srcmsg->mobj);
-	if( rv < USIP_SUCCESS) {
-		ux_log(UXL_MAJ, "Failed to copy SIP message. (err=%d,%s)", rv, usip_errstr(rv));
-		dlgsess->error = CLICKTOCALL_ERR_SERVICE_LOGIC;
-		return rv;
-	}
-
-	allocator = usip_mobj_get_allocator(fwdmsg->mobj);
-	//TODO ocseq, tcseq update
-
-	if( dlgsess->rtpolicy->svcmode == CLICKTOCALL_SVCMODE_B2BUA) {
-		if( srcmsg->mobj->request ) {
-			if(srcmsg->mobj->request->method == USIP_METHOD_BYE) {
-				dlgsess->dlgstate = CLICKTOCALL_DLGSTATE_TERMINATING;
-			}
-			dlgsess->hasreq = USIP_TRUE;
-			otag = uims_sess_get_ltag( dlgsess->sess);
-			usip_msg_remove_all_hdr_d( fwdmsg->mobj->base->msg, usip_route_hdef()); 
-			usip_msg_remove_all_hdr_d( fwdmsg->mobj->base->msg, usip_record_route_hdef());
-	
-			if( fwdmsg->mobj->contact) {
-				//external이냐 internal이냐에 따라 다른 정보 설정
-				fwdmsg->mobj->contact->uri->host = ux_str_dup("192.168.1.182", allocator);
-				fwdmsg->mobj->contact->uri->port = ux_str_dup("15064", allocator);
-			}
-
-			if( srcmsg->sessinfo->did == 0) { // Internal -> External Request
-				if( srcmsg->mobj->cseq && srcmsg->mobj->cseq->method != USIP_METHOD_ACK) {
-					dlgsess->ocseq = srcmsg->mobj->cseq->seq;
-				}
-				if( dlgsess->tcontact) {
-					rv = usip_uri_copy( fwdmsg->mobj->request->uri, dlgsess->tcontact->uri, allocator); 
-					if( rv < USIP_SUCCESS) {
-						ux_log(UXL_MAJ, "Failed to set Request-URI. (err=%d,%s)", rv, usip_errstr(rv));
-						dlgsess->error = CLICKTOCALL_ERR_SERVICE_LOGIC;
-						return rv;
-					}
-				}
-				rv = usip_nameaddr_set_param( fwdmsg->mobj->from, "tag", dlgsess->tstag);
-				if( rv < USIP_SUCCESS) {
-					ux_log(UXL_MAJ, "Failed to set tag of From header. (err=%d,%s)", rv, usip_errstr(rv));
-					dlgsess->error = CLICKTOCALL_ERR_SERVICE_LOGIC;
-					return rv;
-				}
-				rv = usip_nameaddr_set_param( fwdmsg->mobj->to, "tag", uims_sess_get_rtag(dlgsess->sess));
-				if( rv < UX_SUCCESS) {
-					ux_log(UXL_MAJ, "Failed to set tag of To header. (err=%d,%s)", rv, usip_errstr(rv));
-					dlgsess->error = CLICKTOCALL_ERR_SERVICE_LOGIC;
-					return rv;
-				}
-				if( dlgsess->troute) {
-					rv = usip_msg_add_hdr( fwdmsg->mobj->base->msg, (usip_hdr_t*)dlgsess->troute, USIP_HFLAG_APPEND);
-					if( rv < UX_SUCCESS) {
-						ux_log(UXL_MAJ, "Failed to set Route header. (err=%d,%s)", rv, usip_errstr(rv));
-						dlgsess->error = CLICKTOCALL_ERR_SERVICE_LOGIC;
-						return rv;
-					}
-				}
-				// external 전송 시 Via에 thig 적용
-				if( plugin->conf->use_thig) {
-					rv = clicktocall_thig_encrypt_header( plugin->thid, fwdmsg, CLICKTOCALL_THIG_HDR_VIA);
-					if( rv < USIP_SUCCESS) {
-						ux_log(UXL_MAJ, "Failed to adjust THIG Via header on SIP message. (target=%s, err=%d,%s)",
-								dlgsess->tpeer, rv, usip_errstr(rv));
-						dlgsess->error = CLICKTOCALL_ERR_SERVICE_LOGIC;
-						return rv;
-					}
-				}
-			} else {	// External -> Internal Request
-				if( srcmsg->mobj->cseq && srcmsg->mobj->cseq->method != USIP_METHOD_ACK) {
-					dlgsess->tcseq = srcmsg->mobj->cseq->seq;
-				}
-				if( dlgsess->ocontact) {
-					rv = usip_uri_copy( fwdmsg->mobj->request->uri, dlgsess->ocontact->uri, allocator); 
-					if( rv < USIP_SUCCESS) {
-						ux_log(UXL_MAJ, "Failed to set Request-URI. (err=%d,%s)", rv, usip_errstr(rv));
-						dlgsess->error = CLICKTOCALL_ERR_SERVICE_LOGIC;
-						return rv;
-					}
-				}
-				rv = usip_nameaddr_set_param( fwdmsg->mobj->from, "tag", dlgsess->ostag);
-				if( rv < USIP_SUCCESS) {
-					ux_log(UXL_MAJ, "Failed to set tag of From header. (err=%d,%s)", rv, usip_errstr(rv));
-					dlgsess->error = CLICKTOCALL_ERR_SERVICE_LOGIC;
-					return rv;
-				}
-				rv = usip_nameaddr_set_param( fwdmsg->mobj->to, "tag", uims_sess_get_ltag(dlgsess->sess));
-				if( rv < UX_SUCCESS) {
-					ux_log(UXL_MAJ, "Failed to set tag of To header. (err=%d,%s)", rv, usip_errstr(rv));
-					dlgsess->error = CLICKTOCALL_ERR_SERVICE_LOGIC;
-					return rv;
-				}
-				if( dlgsess->oroute) {
-					rv = usip_msg_add_hdr( fwdmsg->mobj->base->msg, (usip_hdr_t*)dlgsess->oroute, USIP_HFLAG_APPEND);
-					if( rv < UX_SUCCESS) {
-						ux_log(UXL_MAJ, "Failed to set Route header. (err=%d,%s)", rv, usip_errstr(rv));
-						dlgsess->error = CLICKTOCALL_ERR_SERVICE_LOGIC;
-						return rv;
-					}
-				}
-			}
-		} else {
-			ttag = uims_sess_get_rtag( dlgsess->sess);
-			usip_msg_remove_hdr_d( fwdmsg->mobj->base->msg, usip_via_hdef(), 0);
-			usip_msg_remove_all_hdr_d( fwdmsg->mobj->base->msg, usip_record_route_hdef());
-			if( fwdmsg->mobj->contact) {
-				//external이냐 internal이냐에 따라 다른 정보 설정
-				fwdmsg->mobj->contact->uri->host = ux_str_dup("192.168.1.182", allocator);
-				fwdmsg->mobj->contact->uri->port = ux_str_dup("15064", allocator);
-			}
-
-			if( srcmsg->sessinfo->did == 0 ) {	// Internal -> External Response
-				rv = usip_nameaddr_set_param( fwdmsg->mobj->from, "tag", uims_sess_get_rtag( dlgsess->sess));
-				if( rv < USIP_SUCCESS) {
-					ux_log(UXL_MAJ, "Failed to set tag of From header. (err=%d,%s)", rv, usip_errstr(rv));
-					dlgsess->error = CLICKTOCALL_ERR_SERVICE_LOGIC;
-					return rv;
-				}
-				rv = usip_nameaddr_set_param( fwdmsg->mobj->to, "tag", dlgsess->tstag);
-				if( rv < UX_SUCCESS) {
-					ux_log(UXL_MAJ, "Failed to set tag of To header. (err=%d,%s)", rv, usip_errstr(rv));
-					return rv;
-				}
-				if( srcmsg->mobj->record_route) {
-					//Record-Route가 있다면 oroute를 record-route에 설정 ?
-				}
-			} else {	// External -> Internal Response
-				rv = usip_nameaddr_set_param( fwdmsg->mobj->from, "tag", uims_sess_get_ltag( dlgsess->sess));
-				if( rv < USIP_SUCCESS) {
-					ux_log(UXL_MAJ, "Failed to set tag of From header. (err=%d,%s)", rv, usip_errstr(rv));
-					dlgsess->error = CLICKTOCALL_ERR_SERVICE_LOGIC;
-					return rv;
-				}
-				rv = usip_nameaddr_set_param( fwdmsg->mobj->to, "tag", dlgsess->ostag);
-				if( rv < UX_SUCCESS) {
-					ux_log(UXL_MAJ, "Failed to set tag of To header. (err=%d,%s)", rv, usip_errstr(rv));
-					return rv;
-				}
-				if( srcmsg->mobj->record_route) {
-					//Record-Route가 있다면 oroute를 record-route에 설정 ?
-				}
-				// Via thig 해제
-				if( plugin->conf->use_thig) {
-					rv = clicktocall_thig_decrypt_header( plugin->thid, fwdmsg, CLICKTOCALL_THIG_HDR_VIA);
-					if( rv < USIP_SUCCESS) {
-						ux_log(UXL_MAJ, "Failed to adjust decrypted Via header on SIP message. (from=%s, err=%d,%s)",
-								dlgsess->tpeer, rv, usip_errstr(rv));
-						dlgsess->error = CLICKTOCALL_ERR_SERVICE_LOGIC;
-						return rv;
-					}
-				}
-			}
-		}
-	} else if( dlgsess->rtpolicy->svcmode == CLICKTOCALL_SVCMODE_PROXY) {
-		if( srcmsg->mobj->request ) {
-			if(srcmsg->mobj->request->method == USIP_METHOD_BYE) {
-				dlgsess->dlgstate = CLICKTOCALL_DLGSTATE_TERMINATING;
-			}
-			dlgsess->hasreq = USIP_TRUE;
-			otag = uims_sess_get_ltag( dlgsess->sess);
-			usip_msg_remove_hdr_d( fwdmsg->mobj->base->msg, usip_route_hdef(), 0); 
-			if( srcmsg->mobj->cseq && srcmsg->mobj->cseq->method != USIP_METHOD_ACK) {
-				if( usip_str_cmp( srcmsg->mobj->from->tag, otag) == 0 &&
-					usip_uri_compare( srcmsg->mobj->from->uri, dlgsess->ouser->uri) == 0)
-				{
-					dlgsess->ocseq = srcmsg->mobj->cseq->seq;
-				} else {
-					dlgsess->tcseq = srcmsg->mobj->cseq->seq;
-				}
-			}
-			
-			// External -> Internal Request
-			if( usip_str_cmp( srcmsg->mobj->from->tag, otag) == 0) {
-				if( plugin->conf->use_thig) {
-					// Route thig 해제
-					rv = clicktocall_thig_decrypt_header( plugin->thid, fwdmsg, CLICKTOCALL_THIG_HDR_ROUTE);
-					if( rv < USIP_SUCCESS) {
-						ux_log(UXL_MAJ, "Failed to adjust decrypted Route header on SIP message. (from=%s, err=%d,%s)",
-								dlgsess->tpeer, rv, usip_errstr(rv));
-						dlgsess->error = CLICKTOCALL_ERR_SERVICE_LOGIC;
-						return rv;
-					}
-					// Record-Route thig 해제
-					rv = clicktocall_thig_decrypt_header( plugin->thid, fwdmsg, CLICKTOCALL_THIG_HDR_RECROUTE);
-					if( rv < USIP_SUCCESS) {
-						ux_log(UXL_MAJ, "Failed to adjust decrypted Record-Route header on SIP message. (from=%s, err=%d,%s)",
-								dlgsess->tpeer, rv, usip_errstr(rv));
-						dlgsess->error = CLICKTOCALL_ERR_SERVICE_LOGIC;
-						return rv;
-					}
-				}
-			} else {	// Internal -> External Request
-				if( plugin->conf->use_thig) { // Via thig 적용
-					rv = clicktocall_thig_encrypt_header( plugin->thid, fwdmsg, CLICKTOCALL_THIG_HDR_VIA);
-					if( rv < USIP_SUCCESS) {
-						ux_log(UXL_MAJ, "Failed to adjust THIG Via header on SIP message. (target=%s, err=%d,%s)",
-								dlgsess->tpeer, rv, usip_errstr(rv));
-						dlgsess->error = CLICKTOCALL_ERR_SERVICE_LOGIC;
-						return rv;
-					}
-				}
-			}
-		} else {
-			ttag = uims_sess_get_rtag( dlgsess->sess);
-			usip_msg_remove_hdr_d( fwdmsg->mobj->base->msg, usip_via_hdef(), 0);
-			// Internal -> External Response
-			if( usip_str_cmp( srcmsg->mobj->to->tag, ttag) == 0) {
-				if( plugin->conf->use_thig) {
-					// Record-Route thig 적용
-					rv = clicktocall_thig_encrypt_header( plugin->thid, fwdmsg, CLICKTOCALL_THIG_HDR_RECROUTE);
-					if( rv < USIP_SUCCESS) {
-						ux_log(UXL_MAJ, "Failed to adjust THIG Record-Route header on SIP message. (target=%s, err=%d,%s)",
-								dlgsess->tpeer, rv, usip_errstr(rv));
-						dlgsess->error = CLICKTOCALL_ERR_SERVICE_LOGIC;
-						return rv;
-					}
-				}
-			} else {	// External -> Internal Response
-				//Via header thig 해제
-				if( plugin->conf->use_thig) {
-					rv = clicktocall_thig_decrypt_header( plugin->thid, fwdmsg, CLICKTOCALL_THIG_HDR_VIA);
-					if( rv < USIP_SUCCESS) {
-						ux_log(UXL_MAJ, "Failed to adjust decrypted Via header on SIP message. (from=%s, err=%d,%s)",
-								dlgsess->tpeer, rv, usip_errstr(rv));
-						dlgsess->error = CLICKTOCALL_ERR_SERVICE_LOGIC;
-						return rv;
-					}
-				}
-			}
-		}
-	} else {
-		if( srcmsg->mobj->request ) {
-			if(srcmsg->mobj->request->method == USIP_METHOD_BYE) {
-				dlgsess->dlgstate = CLICKTOCALL_DLGSTATE_TERMINATING;
-			}
-			// TODO : for TEST
-			if( fwdmsg->mobj->route)
-				usip_msg_remove_hdr_d( fwdmsg->mobj->base->msg, usip_route_hdef(), 0); 
-		} else {
-			// TODO : for TEST
-			usip_msg_remove_hdr_d( fwdmsg->mobj->base->msg, usip_via_hdef(), 0);
-		}
-	}
-	*/
-
-	return UX_SUCCESS;
-}
-
 
 ////////////////////////////////////////////////////////////////////////////////
 // functions for clicktocall_dlgdao_t

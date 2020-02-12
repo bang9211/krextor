@@ -17,88 +17,30 @@
 			<script><![CDATA[
 				ux_log.always("http server is initialized");
 			]]></script>
-
-			<function name="parse_startreq" acttype="LUA">
-				<parameter name="text" type="char*"/>
-				<![CDATA[
-					local cjson = require "cjson"
-
-					local text = uxc_sdmvars.get(sdmvars, 0)
-					local startReq = cjson.decode(text)
-
-					local sess = uxc_sdmvars.get_sess(sdmvars)
-                    local sessval = sess:get_root()
-					sessval.session_id = startReq.sessionID
-					sessval.subscriber_name = startReq.subscriberName
-					sessval.calling_number = startReq.callingNumber
-					sessval.called_number = startReq.calledNumber
-					sessval.charging_number = startReq.chargingNumber
-					sessval.ringbacktone_type = startReq.ringBackToneType
-					sessval.waiting_mentid = startReq.waitingMentID
-					sessval.call_mentid = startReq.callMentID
-					sessval.calling_cid = startReq.callingCID
-					sessval.called_cid = startReq.calledCID
-					sessval.host_code = startReq.hostCode
-
-					ux_log.always("calling=%s", startReq.CallingNumber)
-					ux_log.always("sessval.called_number=%s", sessval.called_number)
-				]]>
-			</function>
-
-			<function name="parse_stopreq" acttype="LUA">
-				<parameter name="text" type="char*"/>
-				<![CDATA[
-					local cjson = require "cjson"
-
-					local text = uxc_sdmvars.get(sdmvars, 0);
-					local stopReq = cjson.decode(text)
-
-					local sess = uxc_sdmvars.get_sess(sdmvars)
-                    local sessval = sess:get_root()
-					sessval.session_id = stopReq.sessionID
-
-					ux_log.always("session_id=%s", stopReq.sessionID);
-					ux_log.always("sessval.session_id=%s", sessval.session_id);
-				]]>
-			</function>
-
 		</functions>
-		<mmfs>
-			<mmf name="httpreq" protocol="HTTP" operation="POST">
-				<map mparam=":authority" value="authority"/>
-			</mmf>
-		</mmfs>
 
 		<variables>
-			<member name="waitTime" type="int" value="3000"/>
+			<member name="CALL_TO_CALLING" type="int" value="0"/>
+			<member name="CALL_TO_CALLED" type="int" value="1"/>
+			<member name="CALL_TO_MS_CALLING" type="int" value="2"/>
+			<member name="CALL_TO_MS_CALLED" type="int" value="3"/>
 		</variables>
+
 		<session>
-			<member name="authority" type="char[256]"/>
-			<member name="result" type="int"/>
-			<member name="thread_id" type="int"/>
-			<member name="conn_id" type="int"/>
-			<member name="stream_id" type="int"/>
-			<member name="version" type="int"/>
-			<member name="body" type="char[1024]"/>
-			<member name="session_id" type="char[64]"/>
+			<member name="sdp_calling" type="char[1024]"/>
+			<member name="sdp_called" type="char[1024]"/>
+			<member name="sdp_ms" type="char[1024]"/>
 			<member name="subscriber_name" type="char[16]"/>
-			<member name="calling_number" type="char[12]"/>
-			<member name="called_number" type="char[12]"/>
-			<member name="charging_number" type="char[12]"/>
+			<member name="calling_number" type="char[16]"/>
+			<member name="called_number" type="char[16]"/>
+			<member name="charging_number" type="char[16]"/>
 			<member name="ringbacktone_type" type="int"/>
 			<member name="waiting_mentid" type="char[8]"/>
 			<member name="call_mentid" type="char[8]"/>
-			<member name="calling_cid" type="char[12]"/>
-			<member name="called_cid" type="char[12]"/>
+			<member name="calling_cid" type="char[16]"/>
+			<member name="called_cid" type="char[16]"/>
 			<member name="host_code" type="int"/>
-			<member name="start_rsp" type="char[256]"/>
 			<member name="status" type="int"/>
-			<member name="call_id" type="char[64]"/>
-			<member name="from" type="char[64]"/>
-			<member name="ltag" type="char[64]"/>
-			<member name="to" type="char[64]"/>
-			<member name="cseq" type="int"/>
-			
 		</session>
 
 		<fsm onerror="stop" ontimeout="stop">
@@ -107,9 +49,8 @@
 			</start>
 
 			<recv name="RECV_CLICKTOCALL_START" protocol="HTTP" operation="POST" url="/clicktocall/start" is_req="yes" did="0">
-				<oncall mmf="httpreq">
+				<oncall>
 					<call type="SYS" function="clicktocall_dlgsvc_on_recv_http_start_req(calling_number, called_number)"/>
-					<!--call function="parse_startreq(body)"/-->
 				</oncall>
 				<onsuccess>
 					<call function="log_msg('SUCCESS')"/>
@@ -118,49 +59,35 @@
 					<call function="log_msg('ERROR')"/>
 				</onerror>
 			</recv>
+
 			<send name="SEND_CLICKTOCALL_START_RSP" protocol="HTTP" operation="POST" rcode="200" phrase="OK" did="0">
 				<oncall>
 					<call type="SYS" function="clicktocall_dlgsvc_on_send_http_start_res(0)"/>
-					<!--call type="LUA">
-						<![CDATA[
-							local cjson = require "cjson"
-							local sess = uxc_sdmvars.get_sess(sdmvars)
-                    		local sessval = sess:get_root()
-							local sessid = sess:get_id()
-							local rsp = {}
-							rsp.gwSessionID = sessid
-							local text = cjson.encode(rsp)
-							sessval.start_rsp = text
-							ux_log.always("sessval.start_rsp=%s", sessval.start_rsp);
-						]]>
-					</call>
-					<call type="SYS" function="upa_httpcall_write_ids(thread_id, conn_id, stream_id, version)"/>
-					<call type="SYS" function="upa_httpcall_set_header('Agent', 0, 'UANGEL')"/>
-					<call type="SYS" function="upa_httpcall_set_body( start_rsp, 'application/json')"/-->
 				</oncall>
 			</send>
 
-			<send name="SEND_INVITE_TO_CALLING" protocol="SIP" operation="INVITE" is_req="yes">
+			<send name="SEND_INVITE_TO_CALLING" protocol="SIP" operation="INVITE" is_req="yes" did="0">
                 <oncall>
-                    <call type="SYS" function="clicktocall_dlgsvc_on_send_ssw_outgoing_req('INVITE', calling_number, called_number)"/>
+                    <call type="SYS" function="clicktocall_dlgsvc_on_send_sip_invite_req(CALL_TO_CALLING)"/>
                 </oncall>
                 <onerror target="stop"/>
             </send>
 
 			<wait name="CALLING_PROCEEDING" timeout="180000">
-				<onrecv target="RECV_INVITE_RSP"/>
+				<onrecv target="RECV_CALLING_INVITE_RSP"/>
 				<onerror target="stop"/>
 			</wait>
 
-			<recv name="RECV_INVITE_RSP" protocol="SIP" operation="INVITE" is_req="no">
+			<recv name="RECV_CALLING_INVITE_RSP" protocol="SIP" operation="INVITE" is_req="no" did="0">
 				<oncall>
-					<call type="SYS" function="clicktocall_dlgsvc_on_recv_origin_initial_rsp(status, body)"/>
+					<call type="SYS" function="clicktocall_dlgsvc_on_recv_sip_invite_res(CALL_TO_CALLING, status, sdp_calling)"/>
 				</oncall>
 			</recv>
-			<switch name="CHECK_INVITE_RSP" value="status">
+
+			<switch name="CHECK_CALLING_INVITE_RSP" value="status">
 				<case value="100" target="CALLING_PROCEEDING"/>
 				<case value="180" target="CALLING_PROCEEDING"/>
-				<case value="200" target="SEND_ACK"/>
+				<case value="200" target="SEND_INVITE_TO_MS"/>
 				<default target="stop"/>
 			</switch>
 
@@ -183,35 +110,215 @@
 				</ontimeout>
 			</invoke-->
 
-			<send name="SEND_ACK" protocol="SIP" operation="ACK" is_req="yes">
+			<send name="SEND_INVITE_TO_MS" protocol="SIP" operation="INVITE" is_req="yes" did="2">
+                <oncall>
+                    <call type="SYS" function="clicktocall_dlgsvc_on_send_sip_invite_req(CALL_TO_MS_CALLING, sdp_calling)"/>
+                </oncall>
+                <onerror target="stop"/>
+            </send>
+
+			<wait name="MS_CALLING_PROCEEDING" timeout="180000">
+				<onrecv target="RECV_MS_CALLING_INVITE_RSP"/>
+				<default target="stop"/>
+				<onerror target="stop"/>
+			</wait>
+
+			<recv name="RECV_MS_CALLING_INVITE_RSP" protocol="SIP" operation="INVITE" is_req="no" did="2">
 				<oncall>
-                    <call type="SYS" function="clicktocall_dlgsvc_on_send_originator_ack()"/>
+					<call type="SYS" function="clicktocall_dlgsvc_on_recv_sip_invite_res(CALL_TO_MS_CALLING, status, sdp_ms)"/>
+				</oncall>
+			</recv>
+
+			<switch name="CHECK_MS_CALLING_INVITE_RSP" value="status">
+				<case value="100" target="MS_CALLING_PROCEEDING"/>
+				<case value="180" target="MS_CALLING_PROCEEDING"/>
+				<case value="200" target="SEND_ACK_TO_MS"/>
+				<default target="stop"/>
+			</switch>
+
+			<send name="SEND_ACK_TO_MS" protocol="SIP" operation="ACK" is_req="yes" did="2">
+				<oncall>
+                    <call type="SYS" function="clicktocall_dlgsvc_on_send_sip_ack(CALL_TO_MS_CALLING)"/>
+                </oncall>
+				<onsuccess target="SEND_ACK_TO_CALLING"/>
+                <onerror target="stop"/>
+			</send>
+
+			<send name="SEND_ACK_TO_CALLING" protocol="SIP" operation="ACK" is_req="yes" did="0">
+				<oncall>
+                    <call type="SYS" function="clicktocall_dlgsvc_on_send_sip_ack(CALL_TO_CALLING, sdp_ms)"/>
                 </oncall>
                 <onerror target="stop"/>
 			</send>
 
-			<wait name="CALL_ESTABLISHED" timeout="180000">
-				<onrecv target="RECV_CLICKTOCALL_STOP"/>
-				<onrecv target="RECV_BYE"/>
-				<onerror target="stop"/>
+			<send name="SEND_INFO_TO_MS" protocol="SIP" operation="INFO" is_req="yes" did="2">
+				<oncall>
+                    <call type="SYS" function="clicktocall_dlgsvc_on_send_sip_dlgtransc_req(CALL_TO_MS_CALLING, 'INFO', 'application/aupkg', 'pa(an=2298 it=-1)')"/>
+                </oncall>
+                <onerror target="stop"/>
+			</send>
+
+			<wait name="WAIT_REQ" timeout="30000">
+				<onrecv target="RECV_MS_INFO_RSP"/>
+				<onrecv target="RECV_CALLING_BYE"/>
+				<onrecv target="RECV_MS_BYE"/>
+				<default target="stop"/>
 			</wait>
 
-			<recv name="RECV_BYE" protocol="SIP" operation="BYE" is_req="yes">
+			<recv name="RECV_MS_BYE" protocol="SIP" operation="BYE" is_req="yes" did="2">
 			</recv>
 
-			<send name="SEND_BYE_RSP" protocol="SIP" operation="BYE" is_req="no">
+			<send name="SEND_BYE_RSP_TO_MS" protocol="SIP" operation="BYE" is_req="no" did="2">
 				<oncall>
 					<call type="SYS" function="clicktocall_dlgsvc_on_send_rsp(200)"/>
 				</oncall>
-				<onsuccess target="SEND_CLICKTOCALL_RES"/>
+				<onsuccess target="SEND_INVITE_TO_CALLED"/>
+				<onerror target="stop"/>
+			</send>
+
+			<recv name="RECV_MS_INFO_RSP" protocol="SIP" operation="INFO" is_req="no" did="2">
+				<oncall>
+					<call type="SYS" function="clicktocall_dlgsvc_on_recv_sip_invite_res(CALL_TO_MS_CALLING, status)"/>
+				</oncall>
+				<onerror target="stop"/>
+			</recv>
+
+			<switch name="CHECK_MS_CALLING_INFO_RSP" value="status">
+				<case value="200" target="SEND_INVITE_TO_CALLED"/>
+				<default target="stop"/>
+			</switch>
+
+			<send name="SEND_INVITE_TO_CALLED" protocol="SIP" operation="INVITE" is_req="yes" did="1">
+                <oncall>
+                    <call type="SYS" function="clicktocall_dlgsvc_on_send_sip_invite_req(CALL_TO_CALLED)"/>
+                </oncall>
+                <onerror target="stop"/>
+            </send>
+
+			<wait name="CALLED_PROCEEDING" timeout="180000">
+				<onrecv target="RECV_CALLED_INVITE_RSP"/>
+				<onerror target="stop"/>
+			</wait>
+
+			<recv name="RECV_CALLED_INVITE_RSP" protocol="SIP" operation="INVITE" is_req="no" did="1">
+				<oncall>
+					<call type="SYS" function="clicktocall_dlgsvc_on_recv_sip_invite_res(CALL_TO_CALLED, status, sdp_called)"/>
+				</oncall>
+			</recv>
+
+			<switch name="CHECK_CALLED_INVITE_RSP" value="status">
+				<case value="100" target="CALLED_PROCEEDING"/>
+				<case value="180" target="CALLED_PROCEEDING"/>
+				<case value="200" target="SEND_BYE_TO_MS"/>
+				<default target="stop"/>
+			</switch>
+
+			<send name="SEND_BYE_TO_MS" protocol="SIP" operation="BYE" is_req="yes" did="2">
+				<oncall>
+                    <call type="SYS" function="clicktocall_dlgsvc_on_send_sip_dlgtransc_req(CALL_TO_MS_CALLING, 'BYE')"/>
+                </oncall>
+                <onerror target="stop"/>
+			</send>
+
+			<recv name="RECV_MS_BYE_RSP" protocol="SIP" operation="BYE" is_req="no" did="2">
+			</recv>
+
+			<send name="SEND_REINVITE_TO_CALLING" protocol="SIP" operation="INVITE" is_req="yes" did="0">
+                <oncall>
+                    <call type="SYS" function="clicktocall_dlgsvc_on_send_sip_reinvite_req(CALL_TO_CALLING, sdp_called)"/>
+                </oncall>
+                <onerror target="stop"/>
+            </send>
+
+			<wait name="REINVITE_CALLING_PROCEEDING" timeout="180000">
+				<onrecv target="RECV_CALLING_REINVITE_RSP"/>
+				<onerror target="stop"/>
+			</wait>
+
+			<recv name="RECV_CALLING_REINVITE_RSP" protocol="SIP" operation="INVITE" is_req="no" did="0">
+				<oncall>
+					<call type="SYS" function="clicktocall_dlgsvc_on_recv_sip_invite_res(CALL_TO_CALLING, status, sdp_calling)"/>
+				</oncall>
+			</recv>
+
+			<switch name="CHECK_CALLING_REINVITE_RSP" value="status">
+				<case value="100" target="REINVITE_CALLING_PROCEEDING"/>
+				<case value="180" target="REINVITE_CALLING_PROCEEDING"/>
+				<case value="200" target="SEND_REINVITE_ACK_TO_CALLING"/>
+				<default target="stop"/>
+			</switch>
+
+			<send name="SEND_REINVITE_ACK_TO_CALLING" protocol="SIP" operation="ACK" is_req="yes" did="0">
+				<oncall>
+                    <call type="SYS" function="clicktocall_dlgsvc_on_send_sip_ack(CALL_TO_CALLING)"/>
+                </oncall>
+                <onerror target="stop"/>
+			</send>
+
+			<send name="SEND_ACK_TO_CALLED" protocol="SIP" operation="ACK" is_req="yes" did="1">
+				<oncall>
+                    <call type="SYS" function="clicktocall_dlgsvc_on_send_sip_ack(CALL_TO_CALLED, sdp_calling)"/>
+                </oncall>
+                <onerror target="stop"/>
+			</send>
+
+
+			<wait name="CALL_ESTABLISHED" timeout="3600000">
+				<onrecv target="RECV_CLICKTOCALL_STOP"/>
+				<onrecv target="RECV_CALLING_BYE"/>
+				<onrecv target="RECV_CALLED_BYE"/>
+				<default target="stop"/>
+			</wait>
+
+			<recv name="RECV_CALLING_BYE" protocol="SIP" operation="BYE" is_req="yes" did="0">
+			</recv>
+
+			<send name="SEND_BYE_RSP_TO_CALLING" protocol="SIP" operation="BYE" is_req="no" did="0">
+				<oncall>
+					<call type="SYS" function="clicktocall_dlgsvc_on_send_rsp(200)"/>
+				</oncall>
+				<onsuccess target="SEND_BYE_TO_CALLED"/>
+				<onerror target="stop"/>
 			</send>
 			
+			<send name="SEND_BYE_TO_CALLED" protocol="SIP" operation="BYE" is_req="yes" did="1">
+				<oncall>
+                    <call type="SYS" function="clicktocall_dlgsvc_on_send_sip_dlgtransc_req(CALL_TO_CALLED, 'BYE')"/>
+                </oncall>
+                <onerror target="stop"/>
+			</send>
+
+			<recv name="RECV_CALLED_BYE_RSP" protocol="SIP" operation="BYE" is_req="no" did="1">
+				<onsuccess target="SEND_CLICKTOCALL_RES"/>
+				<onerror target="stop"/>
+			</recv>
+
+			<recv name="RECV_CALLED_BYE" protocol="SIP" operation="BYE" is_req="yes" did="1">
+			</recv>
+
+			<send name="SEND_BYE_RSP_TO_CALLED" protocol="SIP" operation="BYE" is_req="no" did="1">
+				<oncall>
+					<call type="SYS" function="clicktocall_dlgsvc_on_send_rsp(200)"/>
+				</oncall>
+				<onsuccess target="SEND_BYE_TO_CALLING"/>
+				<onerror target="stop"/>
+			</send>
+			
+			<send name="SEND_BYE_TO_CALLING" protocol="SIP" operation="BYE" is_req="yes" did="0">
+				<oncall>
+                    <call type="SYS" function="clicktocall_dlgsvc_on_send_sip_dlgtransc_req(CALL_TO_CALLING, 'BYE')"/>
+                </oncall>
+                <onerror target="stop"/>
+			</send>
+
+			<recv name="RECV_CALLING_BYE_RSP" protocol="SIP" operation="BYE" is_req="no" did="0">
+				<onsuccess target="SEND_CLICKTOCALL_RES"/>
+				<onerror target="stop"/>
+			</recv>
 
 			<recv name="RECV_CLICKTOCALL_STOP" protocol="HTTP" operation="POST" url="/clicktocall/stop" timeout="30000" is_req="yes" did="0">
-				<oncall mmf="httpreq">
-					<call type="SYS" function="upa_httpcall_read_ids(thread_id, conn_id, stream_id, version)"/>
-					<call type="SYS" function="upa_httpcall_get_body(body)"/>
-					<call function="parse_stopreq(body)"/>
+				<oncall>
+					<call type="SYS" function="clicktocall_dlgsvc_on_recv_http_start_req(calling_number, called_number)"/>
 				</oncall>
 				<onsuccess>
 					<call function="log_msg('SUCCESS')"/>
@@ -223,31 +330,41 @@
 
 			<send name="SEND_CLICKTOCALL_STOP_RSP" protocol="HTTP" operation="POST" rcode="200" phrase="OK" did="0">
 				<oncall>
-					<call type="SYS" function="upa_httpcall_write_ids(thread_id, conn_id, stream_id, version)"/>
-					<call type="SYS" function="upa_httpcall_set_header('Agent', 0, 'UANGEL')"/>
+					<call type="SYS" function="clicktocall_dlgsvc_on_send_http_start_res(0)"/>
 				</oncall>
 			</send>
 
-			<send name="SEND_BYE" protocol="SIP" operation="BYE" is_req="yes">
+			
+			<send name="SEND_BYE_TO_CALLING_2" protocol="SIP" operation="BYE" is_req="yes" did="0">
 				<oncall>
-                    <call type="SYS" function="clicktocall_dlgsvc_on_send_ssw_outgoing_req('BYE', 'sip:07076008398@127.0.0.1:5068', 'sip:1004@127.0.0.1', 'sip:07076008398@127.0.0.1')"/>
+                    <call type="SYS" function="clicktocall_dlgsvc_on_send_sip_dlgtransc_req(CALL_TO_CALLING, 'BYE')"/>
                 </oncall>
                 <onerror target="stop"/>
 			</send>
 
-			<recv name="RECV_BYE_RSP" protocol="SIP" operation="BYE" is_req="no">
+			<recv name="RECV_CALLING_BYE_RSP_2" protocol="SIP" operation="BYE" is_req="no" did="0">
+				<onerror target="stop"/>
 			</recv>
 
+			<send name="SEND_BYE_TO_CALLED_2" protocol="SIP" operation="BYE" is_req="yes" did="1">
+				<oncall>
+                    <call type="SYS" function="clicktocall_dlgsvc_on_send_sip_dlgtransc_req(CALL_TO_CALLED, 'BYE')"/>
+                </oncall>
+                <onerror target="stop"/>
+			</send>
+
+			<recv name="RECV_CALLED_BYE_RSP_2" protocol="SIP" operation="BYE" is_req="no" did="1">
+				<onsuccess target="SEND_CLICKTOCALL_RES"/>
+				<onerror target="stop"/>
+			</recv>
 
 			<invoke name="SEND_CLICKTOCALL_RES" protocol="HTTP" operation="POST" url="http://192.168.1.74:18443/clicktocall/respond" version="1.0" timeout="5000" is_req="yes">
 				<oncall>
-					<call type="SYS" function="upa_httpcall_set_header('Agent', 0, 'UANGEL')"/>
-					<call type="SYS" function="upa_httpcall_set_body( '{}', 'application/json')"/>
+					<call type="SYS" function="clicktocall_dlgsvc_on_send_http_start_res(0)"/>
 				</oncall>
 
 				<onsuccess>
 					<call function="log_msg('SUCCESS')"/>
-					<call type="SYS" function="upa_httpcall_get_body(body)"/>
 					<call function="dump_sdm()"/>
 				</onsuccess>
 				<onerror target="stop">

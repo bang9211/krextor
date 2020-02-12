@@ -9,8 +9,6 @@
 
 #include <stdio.h>
 
-
-
 /**
  * @brief CLICKTOCALL START REQUEST(HTTP) outgoing 메시지를 전달하기 위해 호출되는 함수
  * @param sfcall call fsm node
@@ -128,23 +126,30 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_send_http_start_res( uxc_sfcall_t *sfcall,
  * @param params sdm value parameter
  * @return 실행 결과
  */
-UX_DECLARE(int) clicktocall_dlgsvc_on_send_ssw_outgoing_req( uxc_sfcall_t *sfcall, uxc_sdmvars_t *params)
+UX_DECLARE(int) clicktocall_dlgsvc_on_send_sip_invite_req( uxc_sfcall_t *sfcall, uxc_sdmvars_t *params)
 {
-	enum { PARA_METHOD, PARA_CALLING, PARA_CALLED, PARA_BODY};
+	enum { PARA_CALL_TO, PARA_BODY};
 
-	static const char *func = "clicktocall_dlgsvc_on_send_ssw_outgoing_req";
+	static const char *func = "clicktocall_dlgsvc_on_send_sip_invite_req";
+
 	char *ssw = "127.0.0.1:5068";
+	char *ssw_bye = "127.0.0.1:5069";
 	char *host = "127.0.0.1";
+	char *ms = "127.0.0.1:5070";
+	char *msuser = "99980000";
 	int servicekey = 99;
 	int dp = 12;
 
 	int rv, urisize, bodysize;
+	clicktocall_callto_e callto;
 	usip_uri_t uri[1];
 	ux_time_t curtime[1];
-	const char *method, *calling, *called;
+	const char *calling, *called;
 	char requri[128], from[128], to[128];
 	uint8_t *body;
 	usip_payload_t *payload;
+	upa_sippa_t *sippa;
+	char tag[128];
 	upa_sipmsg_t *sipmsg;
 	uims_sess_t *sess;
 	clicktocall_dlgsess_t *dlgsess;
@@ -163,27 +168,64 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_send_ssw_outgoing_req( uxc_sfcall_t *sfcal
 		uxc_trace(UXCTL(1,MAJ), "%s: dialog session doesn' exist.", func);
 		return UX_EINVAL;
 	}
-
-	ux_log(UXL_INFO, "clicktocall_dlgsvc_on_send_ssw_outgoing_req: #1")
 	
-	method = uxc_sdmvars_get_str( params, PARA_METHOD, NULL, &rv);
-	if( rv < UX_SUCCESS || method == NULL) return rv;
+	callto = uxc_sdmvars_get_int( params, PARA_CALL_TO, 0, &rv);
+	if( rv < UX_SUCCESS) {
+		uxc_trace(UXCTL(1,MAJ), "%s: Fail to get CALL_TO parameter.", func);
+		return rv;
+	}
 
-	calling = uxc_sdmvars_get_str( params, PARA_CALLING, NULL, &rv);
-	if( rv < UX_SUCCESS || calling == NULL) return rv;
+	sippa = (upa_sippa_t*)sipmsg->uxcmsg->paif;
+	switch (callto) {
+		case CALL_TO_CALLING:
+			if (dlgsess->calledcid == NULL || strcmp(dlgsess->calledcid, "") == 0) {
+				calling = dlgsess->callednumber;
+			} else {
+				calling = dlgsess->calledcid;
+			}
+			called = dlgsess->callingnumber;
+			sprintf(requri, "sip:%s@%s;ServiceKey=%d;DP=%d", called, ssw, servicekey, dp);
+			sipmsg->sessinfo->did = 0;
+			
+			break;
+		case CALL_TO_CALLED:
+			if (dlgsess->callingcid == NULL || strcmp(dlgsess->callingcid, "") == 0) {
+				calling = dlgsess->callingnumber;
+			} else {
+				calling = dlgsess->callingcid;
+			}
+			called = dlgsess->callednumber;
+			sprintf(requri, "sip:%s@%s;ServiceKey=%d;DP=%d", called, ssw_bye, servicekey, dp);
+			sipmsg->sessinfo->did = 1;
+			break;
+		case CALL_TO_MS_CALLING:
+			calling = dlgsess->callingnumber;
+			called = msuser;
+			sprintf(requri, "sip:%s@%s", called, ms);
+			sipmsg->sessinfo->did = 2;
+			break;
+		case CALL_TO_MS_CALLED:
+			calling = dlgsess->callednumber;
+			called = msuser;
+			sprintf(requri, "sip:%s@%s", called, ms);
+			sipmsg->sessinfo->did = 3;
+			break;
+		default: 
+			uxc_trace(UXCTL(1,MAJ), "%s: Invalid CALL_TO parameter value=%d.", func, callto);
+			return UX_EINVAL;
+	}
+	upa_sippa_write_sessinfo( sippa, sipmsg, tag, sizeof(tag));
 
-	called = uxc_sdmvars_get_str( params, PARA_CALLED, NULL, &rv);
-	if( rv < UX_SUCCESS || called == NULL) return rv;
-
-	ux_log(UXL_INFO, "clicktocall_dlgsvc_on_send_ssw_outgoing_req: #3")
 	if( uxc_sdmvars_is_set(params, PARA_BODY) ) {
 		body = uxc_sdmvars_get_oct(params, PARA_BODY, NULL, &bodysize); 
-		if( rv < UX_SUCCESS) return rv;
+		if( body == NULL) {
+			uxc_trace(UXCTL(1,MAJ), "%s: Fail to get BODY parameter.", func);
+			return UX_EINVAL;
+		}
 	} else {
 		body = NULL;
 	}
-
-	sprintf(requri, "sip:%s@%s;ServiceKey=%d;DP=%d", called, ssw, servicekey, dp);
+	
 	urisize = strlen( requri);
 	usip_uri_init( uri);
 	rv = usip_uri_decode( uri, (char *)requri, urisize); 
@@ -191,33 +233,22 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_send_ssw_outgoing_req( uxc_sfcall_t *sfcal
 		ux_log(UXL_MAJ, "Failed to decode SIP URI. err=%d,%s)", rv, usip_errstr(rv));
 		return rv;
 	}
-
-	upa_sippa_t *sippa;
-	char tag[128];
-	sippa = (upa_sippa_t*)sipmsg->uxcmsg->paif;
-	sipmsg->sessinfo->did = 0;
-	upa_sippa_write_sessinfo( sippa, sipmsg, tag, sizeof(tag));
-	dlgsess->ostag = ux_str_dup( tag, uims_sess_get_allocator(dlgsess->sess)); 
-
 	sprintf(from, "sip:%s@%s;tag=%s", calling, host, tag);
 	sprintf(to, "sip:%s@%s", called, ssw);
 
-	ux_log(UXL_INFO, "clicktocall_dlgsvc_on_send_ssw_outgoing_req: #4 uri= " USIP_URI_PRINT_FORMAT ", size=%d", USIP_URI_PRINT_ARGS(uri), urisize)
-
-	rv = usip_mobj_make_request( sipmsg->mobj, method, uri, from, to);
+	rv = usip_mobj_make_request( sipmsg->mobj, "INVITE", uri, from, to);
 	if( rv < USIP_SUCCESS) {
 		ux_log(UXL_MAJ, "Failed to make SIP request. err=%d,%s)", rv, usip_errstr(rv));
 		return rv;
 	}
 
 	ux_time_get_current( curtime);
-	rv = usip_mobj_set_cseq( sipmsg->mobj, (curtime->tv_sec * 1000 + curtime->tv_usec / 1000) & 0xFFFFF, method);
+	rv = usip_mobj_set_cseq( sipmsg->mobj, (curtime->tv_sec * 1000 + curtime->tv_usec / 1000) & 0xFFFFF, "INVITE");
 	if( rv < USIP_SUCCESS) {
 		ux_log(UXL_MAJ, "Failed to make SIP CSeq header . err=%d,%s)", rv, usip_errstr(rv));
 		return rv;
 	}
 	
-	ux_log(UXL_INFO, "clicktocall_dlgsvc_on_send_ssw_outgoing_req: #5")
 	if (body != NULL) {
 		rv = usip_mobj_set_content_type(sipmsg->mobj, "application/sdp");
 		if( rv < USIP_SUCCESS) {
@@ -236,14 +267,11 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_send_ssw_outgoing_req( uxc_sfcall_t *sfcal
 			return rv;
 		}
 	}
-	ux_log(UXL_INFO, "clicktocall_dlgsvc_on_send_ssw_outgoing_req: #6")
 
 	rv = usip_mobj_complete_request( sipmsg->mobj);
 	if( rv < USIP_SUCCESS) return rv;
 
-	ux_log(UXL_INFO, "clicktocall_dlgsvc_on_send_ssw_outgoing_req: #7. request=%p", sipmsg->mobj->request);
-
-	rv = clicktocall_dlgsess_handle_ssw_outgoing_req( dlgsess, sipmsg);
+	rv = clicktocall_dlgsess_handle_sip_invite_req( dlgsess, sipmsg, callto);
 	if( rv < UX_SUCCESS) {
 		uxc_trace(UXCTL(1,MAJ), "%s: Failed to handle %s request. (phrase=%s, err=%d,%s)",
 				func,usip_mobj_get_method(sipmsg->mobj),
@@ -251,9 +279,188 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_send_ssw_outgoing_req( uxc_sfcall_t *sfcal
 		return rv;
 	}
 
+	ux_log(UXL_INFO, "%s: requri="USIP_URI_PRINT_FORMAT", call_id=%s, from=%s:%s, to=%s:%s", 
+		 func, USIP_URI_PRINT_ARGS(uri), USIP_MOBJ_GET_CALLID( sipmsg->mobj), 
+		 USIP_MOBJ_GET_FROMUSER( sipmsg->mobj), USIP_MOBJ_GET_FROMTAG( sipmsg->mobj),
+			USIP_MOBJ_GET_TOUSER( sipmsg->mobj), USIP_MOBJ_GET_TOTAG( sipmsg->mobj));
+
+
 	return UX_SUCCESS;
 }
 
+/**
+ * @brief DIALOG INITIAL REQUEST(INVITE) 새로운 outgoing 메시지를 전달하기 위해 호출되는 함수
+ * @param sfcall call fsm node
+ * @param params sdm value parameter
+ * @return 실행 결과
+ */
+UX_DECLARE(int) clicktocall_dlgsvc_on_send_sip_reinvite_req( uxc_sfcall_t *sfcall, uxc_sdmvars_t *params)
+{
+	enum { PARA_CALL_TO, PARA_BODY};
+
+	static const char *func = "clicktocall_dlgsvc_on_send_sip_reinvite_req";
+	char *ssw = "127.0.0.1:5068";
+	char *ssw_bye = "127.0.0.1:5069";
+	char *host = "127.0.0.1";
+	char *ms = "127.0.0.1:5070";
+	char *msuser = "99980000";
+	int servicekey = 99;
+	int dp = 12;
+
+	int rv, urisize, bodysize;
+	usip_uri_t uri[1];
+	uint8_t *body;
+	char requri[128];
+	char *call_id;
+	uint32_t cseq;
+	usip_nameaddr_t *from, *to;
+	clicktocall_callto_e callto;
+	usip_payload_t *payload;
+	upa_sipmsg_t *sipmsg;
+	uims_sess_t *sess;
+	clicktocall_dlgsess_t *dlgsess;
+	uxc_sess_t *uxcsess = (uxc_sess_t*)params->sdm->impl;
+	uxc_msg_t *sndmsg = uxc_sess_get_sndmsg(uxcsess);
+	if( sndmsg == NULL ) {
+		uxc_trace(UXCTL(1,MAJ), "%s: Send message instance in session doesn't exist.", func);
+		return UX_EINVAL;
+	}
+	sipmsg = (upa_sipmsg_t*)(sndmsg->data);
+
+	sess = uxc_sess_get_user_data( uxcsess);
+	dlgsess = (sess) ? uims_sess_get_data( sess) : NULL;
+	if( dlgsess == NULL ) {
+		uxc_trace(UXCTL(1,MAJ), "%s: dialog session doesn' exist.", func);
+		return UX_EINVAL;
+	}
+
+	char buf[1024];
+	int buflen = sizeof(buf);
+	clicktocall_dlgsess_sprint(dlgsess, buf, buflen);
+	ux_log(UXL_INFO, "%s", buf);
+
+	callto = uxc_sdmvars_get_int( params, PARA_CALL_TO, 0, &rv);
+	if( rv < UX_SUCCESS) {
+		uxc_trace(UXCTL(1,MAJ), "%s: Fail to get CALL_TO parameter.", func);
+		return rv;
+	}
+
+	switch (callto) {
+		case CALL_TO_CALLING:
+			dlgsess->ocseq++;
+			cseq = dlgsess->ocseq;
+			call_id = dlgsess->ocall_id;
+			from = dlgsess->ofrom;
+			to = dlgsess->oto;
+			sprintf(requri, "sip:%s@%s;ServiceKey=%d;DP=%d", dlgsess->callingnumber, ssw, servicekey, dp);
+			break;
+		case CALL_TO_CALLED:
+			dlgsess->tcseq++;
+			cseq = dlgsess->tcseq;
+			call_id = dlgsess->tcall_id;
+			from = dlgsess->tfrom;
+			to = dlgsess->tto;
+			sprintf(requri, "sip:%s@%s;ServiceKey=%d;DP=%d", dlgsess->callednumber, ssw_bye, servicekey, dp);
+			break;
+		case CALL_TO_MS_CALLING:
+		case CALL_TO_MS_CALLED:
+			dlgsess->mscseq++;
+			cseq = dlgsess->mscseq;
+			call_id = dlgsess->mscall_id;
+			from = dlgsess->msfrom;
+			to = dlgsess->msto;
+			sprintf(requri, "sip:%s@%s", msuser, ms);
+			break;
+		default:
+			uxc_trace(UXCTL(1,MAJ), "%s: Invalid CALL_TO parameter value=%d.", func, callto);
+			return UX_EINVAL;
+	}
+	
+	if( uxc_sdmvars_is_set(params, PARA_BODY) ) {
+		body = uxc_sdmvars_get_oct(params, PARA_BODY, NULL, &bodysize); 
+		if( body == NULL) return UX_EINVAL;
+	} else {
+		body = NULL;
+	}
+
+	urisize = strlen( requri);
+	usip_uri_init( uri);
+	rv = usip_uri_decode( uri, (char *)requri, urisize); 
+	if( rv < USIP_SUCCESS) {
+		ux_log(UXL_MAJ, "Failed to decode SIP URI. err=%d,%s)", rv, usip_errstr(rv));
+		return rv;
+	}
+
+	rv = usip_mobj_set_cseq( sipmsg->mobj, cseq, "INVITE");
+	if( rv < USIP_SUCCESS) {
+		ux_log(UXL_MAJ, "Failed to make cseq header. err=%d,%s)", rv, usip_errstr(rv));
+		return rv;
+	}
+
+	rv = usip_mobj_set_call_id( sipmsg->mobj, call_id);
+	if( rv < USIP_SUCCESS) {
+		ux_log(UXL_MAJ, "Failed to make call_id header. err=%d,%s)", rv, usip_errstr(rv));
+		return rv;
+	}
+
+	usip_from_hdr_t *hfrom = (usip_nameaddr_t*)usip_hdr_duplicate( (usip_hdr_t*)from, usip_msg_get_allocator(sipmsg->mobj->base->msg));
+	if( hfrom  == NULL) {
+		ux_log( UXL_CRT, "Failed to duplicate originator From header.");
+		return UX_ENOMEM;
+	}
+	rv = usip_msg_add_hdr( sipmsg->mobj->base->msg, hfrom->base, 0); 
+	if( rv < UX_SUCCESS) {
+		usip_log(USL_CRT, "Failed to add 'From' header. (value=%s:%s, err=%d,%s)",
+				USIP_MOBJ_GET_FROMUSER( sipmsg->mobj), USIP_MOBJ_GET_FROMTAG( sipmsg->mobj), 
+				rv, usip_errstr(rv));
+		return rv;
+	}
+
+	usip_to_hdr_t *hto= (usip_nameaddr_t*)usip_hdr_duplicate( (usip_hdr_t*)to, usip_msg_get_allocator(sipmsg->mobj->base->msg));
+	if( hto  == NULL) {
+		ux_log( UXL_CRT, "Failed to duplicate originator To header.");
+		return UX_ENOMEM;
+	}
+	rv = usip_msg_add_hdr( sipmsg->mobj->base->msg, hto->base, 0); 
+	if( rv < UX_SUCCESS) {
+		usip_log(USL_CRT, "Failed to add 'To' header. (value=%s:%s, err=%d,%s)",
+				USIP_MOBJ_GET_TOUSER( sipmsg->mobj), USIP_MOBJ_GET_TOTAG( sipmsg->mobj), 
+				rv, usip_errstr(rv));
+		return rv;
+	}
+	
+	rv = usip_mobj_set_request( sipmsg->mobj, "INVITE", uri);
+	if( rv < USIP_SUCCESS) return rv; 
+	
+	if (body != NULL) {
+		rv = usip_mobj_set_content_type(sipmsg->mobj, "application/sdp");
+		if( rv < USIP_SUCCESS) {
+			return rv;
+		}
+
+		payload = usip_payload_create( usip_msg_get_allocator(sipmsg->mobj->base->msg), (void*)body, bodysize);
+		if( payload == NULL) {
+			ux_log(UXL_MAJ, "Failed to set SIP payload. err=%d,%s)", rv, usip_errstr(bodysize));
+			return bodysize;
+		}
+
+		rv = usip_msg_add_hdr( sipmsg->mobj->base->msg, payload->base, 0);
+		if( rv < USIP_SUCCESS) {
+			ux_log(UXL_MAJ, "Failed to set SIP payload. err=%d,%s)", rv, usip_errstr(rv));
+			return rv;
+		}
+	}
+
+	rv = usip_mobj_complete_request( sipmsg->mobj);
+	if( rv < USIP_SUCCESS) return rv;
+
+	ux_log(UXL_DEBUG, "%s: requri="USIP_URI_PRINT_FORMAT", call_id=%s, from=%s:%s, to=%s:%s", 
+		 func, USIP_URI_PRINT_ARGS(uri), USIP_MOBJ_GET_CALLID( sipmsg->mobj), 
+		 USIP_MOBJ_GET_FROMUSER( sipmsg->mobj), USIP_MOBJ_GET_FROMTAG( sipmsg->mobj),
+			USIP_MOBJ_GET_TOUSER( sipmsg->mobj), USIP_MOBJ_GET_TOTAG( sipmsg->mobj));
+
+	return UX_SUCCESS;
+}
 
 
 /**
@@ -262,19 +469,24 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_send_ssw_outgoing_req( uxc_sfcall_t *sfcal
  * @param params sdm value parameter
  * @return 실행 결과
  */
-UX_DECLARE(int) clicktocall_dlgsvc_on_send_originator_ack( uxc_sfcall_t *sfcall, uxc_sdmvars_t *params)
+UX_DECLARE(int) clicktocall_dlgsvc_on_send_sip_ack( uxc_sfcall_t *sfcall, uxc_sdmvars_t *params)
 {
-	enum { PARA_BODY};
+	enum { PARA_CALL_TO, PARA_BODY};
 
-	static const char *func = "clicktocall_dlgsvc_on_send_originator_ack";
+	static const char *func = "clicktocall_dlgsvc_on_send_sip_ack";
 	char *ssw = "127.0.0.1:5068";
-	int rv, urisize, bodysize;
+	char *ssw_bye = "127.0.0.1:5069";
+	char *ms = "127.0.0.1:5070";
+	char *msuser = "99980000";
 
+	int rv, urisize, bodysize;
 	usip_uri_t uri[1];
 	uint8_t *body;
 	char requri[128];
-	char buf[1024];
-	int buflen = sizeof(buf);
+	char *call_id;
+	uint32_t cseq;
+	usip_nameaddr_t *from, *to;
+	clicktocall_callto_e callto;
 	usip_payload_t *payload;
 	upa_sipmsg_t *sipmsg;
 	uims_sess_t *sess;
@@ -294,10 +506,45 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_send_originator_ack( uxc_sfcall_t *sfcall,
 		return UX_EINVAL;
 	}
 
+	char buf[1024];
+	int buflen = sizeof(buf);
 	clicktocall_dlgsess_sprint(dlgsess, buf, buflen);
 	ux_log(UXL_INFO, "%s", buf);
 
-	ux_log(UXL_INFO, "clicktocall_dlgsvc_on_send_originator_ack: #1")
+	callto = uxc_sdmvars_get_int( params, PARA_CALL_TO, 0, &rv);
+	if( rv < UX_SUCCESS) {
+		uxc_trace(UXCTL(1,MAJ), "%s: Fail to get CALL_TO parameter.", func);
+		return rv;
+	}
+
+	switch (callto) {
+		case CALL_TO_CALLING:
+			cseq = dlgsess->ocseq;
+			call_id = dlgsess->ocall_id;
+			from = dlgsess->ofrom;
+			to = dlgsess->oto;
+			sprintf(requri, "sip:%s@%s", dlgsess->callingnumber, ssw);
+			break;
+		case CALL_TO_CALLED:
+			cseq = dlgsess->tcseq;
+			call_id = dlgsess->tcall_id;
+			from = dlgsess->tfrom;
+			to = dlgsess->tto;
+			sprintf(requri, "sip:%s@%s", dlgsess->callednumber, ssw_bye);
+			break;
+		case CALL_TO_MS_CALLING:
+		case CALL_TO_MS_CALLED:
+			cseq = dlgsess->mscseq;
+			call_id = dlgsess->mscall_id;
+			from = dlgsess->msfrom;
+			to = dlgsess->msto;
+			sprintf(requri, "sip:%s@%s", msuser, ms);
+			break;
+		default:
+			uxc_trace(UXCTL(1,MAJ), "%s: Invalid CALL_TO parameter value=%d.", func, callto);
+			return UX_EINVAL;
+	}
+	
 	if( uxc_sdmvars_is_set(params, PARA_BODY) ) {
 		body = uxc_sdmvars_get_oct(params, PARA_BODY, NULL, &bodysize); 
 		if( body == NULL) return UX_EINVAL;
@@ -305,7 +552,6 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_send_originator_ack( uxc_sfcall_t *sfcall,
 		body = NULL;
 	}
 
-	sprintf(requri, "sip:%s@%s", dlgsess->callingnumber, ssw);
 	urisize = strlen( requri);
 	usip_uri_init( uri);
 	rv = usip_uri_decode( uri, (char *)requri, urisize); 
@@ -314,26 +560,24 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_send_originator_ack( uxc_sfcall_t *sfcall,
 		return rv;
 	}
 
-	ux_log(UXL_INFO, "clicktocall_dlgsvc_on_send_originator_ack: #2 uri= " USIP_URI_PRINT_FORMAT ", size=%d", USIP_URI_PRINT_ARGS(uri), urisize)
-
-	rv = usip_mobj_set_cseq( sipmsg->mobj, dlgsess->ocseq, "ACK");
+	rv = usip_mobj_set_cseq( sipmsg->mobj, cseq, "ACK");
 	if( rv < USIP_SUCCESS) {
 		ux_log(UXL_MAJ, "Failed to make cseq header. err=%d,%s)", rv, usip_errstr(rv));
 		return rv;
 	}
 
-	rv = usip_mobj_set_call_id( sipmsg->mobj, dlgsess->ocall_id);
+	rv = usip_mobj_set_call_id( sipmsg->mobj, call_id);
 	if( rv < USIP_SUCCESS) {
 		ux_log(UXL_MAJ, "Failed to make call_id header. err=%d,%s)", rv, usip_errstr(rv));
 		return rv;
 	}
 
-	usip_from_hdr_t *from = (usip_nameaddr_t*)usip_hdr_duplicate( (usip_hdr_t*)dlgsess->ofrom, usip_msg_get_allocator(sipmsg->mobj->base->msg));
-	if( from  == NULL) {
+	usip_from_hdr_t *hfrom = (usip_nameaddr_t*)usip_hdr_duplicate( (usip_hdr_t*)from, usip_msg_get_allocator(sipmsg->mobj->base->msg));
+	if( hfrom  == NULL) {
 		ux_log( UXL_CRT, "Failed to duplicate originator From header.");
 		return UX_ENOMEM;
 	}
-	rv = usip_msg_add_hdr( sipmsg->mobj->base->msg, from->base, 0); 
+	rv = usip_msg_add_hdr( sipmsg->mobj->base->msg, hfrom->base, 0); 
 	if( rv < UX_SUCCESS) {
 		usip_log(USL_CRT, "Failed to add 'From' header. (value=%s:%s, err=%d,%s)",
 				USIP_MOBJ_GET_FROMUSER( sipmsg->mobj), USIP_MOBJ_GET_FROMTAG( sipmsg->mobj), 
@@ -341,12 +585,12 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_send_originator_ack( uxc_sfcall_t *sfcall,
 		return rv;
 	}
 
-	usip_to_hdr_t *to= (usip_nameaddr_t*)usip_hdr_duplicate( (usip_hdr_t*)dlgsess->oto, usip_msg_get_allocator(sipmsg->mobj->base->msg));
-	if( to  == NULL) {
+	usip_to_hdr_t *hto= (usip_nameaddr_t*)usip_hdr_duplicate( (usip_hdr_t*)to, usip_msg_get_allocator(sipmsg->mobj->base->msg));
+	if( hto  == NULL) {
 		ux_log( UXL_CRT, "Failed to duplicate originator To header.");
 		return UX_ENOMEM;
 	}
-	rv = usip_msg_add_hdr( sipmsg->mobj->base->msg, to->base, 0); 
+	rv = usip_msg_add_hdr( sipmsg->mobj->base->msg, hto->base, 0); 
 	if( rv < UX_SUCCESS) {
 		usip_log(USL_CRT, "Failed to add 'To' header. (value=%s:%s, err=%d,%s)",
 				USIP_MOBJ_GET_TOUSER( sipmsg->mobj), USIP_MOBJ_GET_TOTAG( sipmsg->mobj), 
@@ -354,12 +598,9 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_send_originator_ack( uxc_sfcall_t *sfcall,
 		return rv;
 	}
 	
-	if( sipmsg->mobj->request == NULL) {
-		rv = usip_mobj_set_request( sipmsg->mobj, "ACK", uri);
-		if( rv < USIP_SUCCESS) return rv; 
-	}
-
-	ux_log(UXL_INFO, "clicktocall_dlgsvc_on_send_originator_ack: #5")
+	rv = usip_mobj_set_request( sipmsg->mobj, "ACK", uri);
+	if( rv < USIP_SUCCESS) return rv; 
+	
 	if (body != NULL) {
 		rv = usip_mobj_set_content_type(sipmsg->mobj, "application/sdp");
 		if( rv < USIP_SUCCESS) {
@@ -378,18 +619,200 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_send_originator_ack( uxc_sfcall_t *sfcall,
 			return rv;
 		}
 	}
-	ux_log(UXL_INFO, "clicktocall_dlgsvc_on_send_originator_ack: #6")
 
 	rv = usip_mobj_complete_request( sipmsg->mobj);
 	if( rv < USIP_SUCCESS) return rv;
 
-	ux_log(UXL_INFO, "clicktocall_dlgsvc_on_send_originator_ack: #3  call_id=%s, from=%s:%s, to=%s:%s", 
-		 USIP_MOBJ_GET_CALLID( sipmsg->mobj), 
+	ux_log(UXL_DEBUG, "%s: requri="USIP_URI_PRINT_FORMAT", call_id=%s, from=%s:%s, to=%s:%s", 
+		 func, USIP_URI_PRINT_ARGS(uri), USIP_MOBJ_GET_CALLID( sipmsg->mobj), 
 		 USIP_MOBJ_GET_FROMUSER( sipmsg->mobj), USIP_MOBJ_GET_FROMTAG( sipmsg->mobj),
 			USIP_MOBJ_GET_TOUSER( sipmsg->mobj), USIP_MOBJ_GET_TOTAG( sipmsg->mobj));
 
+	return UX_SUCCESS;
+}
 
-	ux_log(UXL_INFO, "clicktocall_dlgsvc_on_send_originator_ack: #7. request=%p", sipmsg->mobj->request);
+/**
+ * @brief DIALOG INITIAL REQUEST(INVITE) 새로운 outgoing 메시지를 전달하기 위해 호출되는 함수
+ * @param sfcall call fsm node
+ * @param params sdm value parameter
+ * @return 실행 결과
+ */
+UX_DECLARE(int) clicktocall_dlgsvc_on_send_sip_dlgtransc_req( uxc_sfcall_t *sfcall, uxc_sdmvars_t *params)
+{
+	enum { PARA_CALL_TO, PARA_METHOD, PARA_CONTENTTYPE, PARA_BODY};
+
+	static const char *func = "clicktocall_dlgsvc_on_send_sip_dlgtransc_req";
+	char *ssw = "127.0.0.1:5068";
+	char *ssw_bye = "127.0.0.1:5069";
+	char *ms = "127.0.0.1:5070";
+	char *msuser = "99980000";
+
+	int rv, urisize, bodysize;
+	usip_uri_t uri[1];
+	uint8_t *body;
+	char requri[128];
+	const char *call_id, *method, *contenttype;
+	uint32_t cseq;
+	usip_nameaddr_t *from, *to;
+	clicktocall_callto_e callto;
+	usip_payload_t *payload;
+	upa_sipmsg_t *sipmsg;
+	uims_sess_t *sess;
+	clicktocall_dlgsess_t *dlgsess;
+	uxc_sess_t *uxcsess = (uxc_sess_t*)params->sdm->impl;
+	uxc_msg_t *sndmsg = uxc_sess_get_sndmsg(uxcsess);
+	if( sndmsg == NULL ) {
+		uxc_trace(UXCTL(1,MAJ), "%s: Send message instance in session doesn't exist.", func);
+		return UX_EINVAL;
+	}
+	sipmsg = (upa_sipmsg_t*)(sndmsg->data);
+
+	sess = uxc_sess_get_user_data( uxcsess);
+	dlgsess = (sess) ? uims_sess_get_data( sess) : NULL;
+	if( dlgsess == NULL ) {
+		uxc_trace(UXCTL(1,MAJ), "%s: dialog session doesn' exist.", func);
+		return UX_EINVAL;
+	}
+
+	char buf[1024];
+	int buflen = sizeof(buf);
+	clicktocall_dlgsess_sprint(dlgsess, buf, buflen);
+	ux_log(UXL_INFO, "%s", buf);
+
+	callto = uxc_sdmvars_get_int( params, PARA_CALL_TO, 0, &rv);
+	if( rv < UX_SUCCESS) {
+		uxc_trace(UXCTL(1,MAJ), "%s: Fail to get CALL_TO parameter.", func);
+		return rv;
+	}
+
+	switch (callto) {
+		case CALL_TO_CALLING:
+			dlgsess->ocseq++;
+			cseq = dlgsess->ocseq;
+			call_id = dlgsess->ocall_id;
+			from = dlgsess->ofrom;
+			to = dlgsess->oto;
+			sprintf(requri, "sip:%s@%s", dlgsess->callingnumber, ssw);
+			break;
+		case CALL_TO_CALLED:
+			dlgsess->tcseq++;
+			cseq = dlgsess->tcseq;
+			call_id = dlgsess->tcall_id;
+			from = dlgsess->tfrom;
+			to = dlgsess->tto;
+			sprintf(requri, "sip:%s@%s", dlgsess->callednumber, ssw_bye);
+			break;
+		case CALL_TO_MS_CALLING:
+		case CALL_TO_MS_CALLED:
+			dlgsess->mscseq++;
+			cseq = dlgsess->mscseq;
+			call_id = dlgsess->mscall_id;
+			from = dlgsess->msfrom;
+			to = dlgsess->msto;
+			sprintf(requri, "sip:%s@%s", msuser, ms);
+			break;
+		default:
+			uxc_trace(UXCTL(1,MAJ), "%s: Invalid CALL_TO parameter value=%d.", func, callto);
+			return UX_EINVAL;
+	}
+
+	method = uxc_sdmvars_get_str( params, PARA_METHOD, NULL, &rv);
+	if( rv < UX_SUCCESS) {
+		uxc_trace(UXCTL(1,MIN), "%s: Fail to get PARA_METHOD parameter. err=%d", func, rv);
+		return rv;
+	}
+	
+	if( uxc_sdmvars_is_set(params, PARA_CONTENTTYPE) ) {
+		contenttype = uxc_sdmvars_get_str( params, PARA_CONTENTTYPE, NULL, &rv);
+		if( rv < UX_SUCCESS) {
+			uxc_trace(UXCTL(1,MIN), "%s: Fail to get PARA_CONTENTTYPE parameter. err=%d", func, rv);
+			return rv;
+		}
+	} else {
+		contenttype = NULL;
+	}
+	if( uxc_sdmvars_is_set(params, PARA_BODY) ) {
+		body = uxc_sdmvars_get_oct(params, PARA_BODY, NULL, &bodysize); 
+		if( body == NULL) return UX_EINVAL;
+	} else {
+		body = NULL;
+	}
+
+	urisize = strlen( requri);
+	usip_uri_init( uri);
+	rv = usip_uri_decode( uri, (char *)requri, urisize); 
+	if( rv < USIP_SUCCESS) {
+		ux_log(UXL_MAJ, "Failed to decode SIP URI. err=%d,%s)", rv, usip_errstr(rv));
+		return rv;
+	}
+
+	rv = usip_mobj_set_cseq( sipmsg->mobj, cseq, method);
+	if( rv < USIP_SUCCESS) {
+		ux_log(UXL_MAJ, "Failed to make cseq header. err=%d,%s)", rv, usip_errstr(rv));
+		return rv;
+	}
+
+	rv = usip_mobj_set_call_id( sipmsg->mobj, call_id);
+	if( rv < USIP_SUCCESS) {
+		ux_log(UXL_MAJ, "Failed to make call_id header. err=%d,%s)", rv, usip_errstr(rv));
+		return rv;
+	}
+
+	usip_from_hdr_t *hfrom = (usip_nameaddr_t*)usip_hdr_duplicate( (usip_hdr_t*)from, usip_msg_get_allocator(sipmsg->mobj->base->msg));
+	if( hfrom  == NULL) {
+		ux_log( UXL_CRT, "Failed to duplicate originator From header.");
+		return UX_ENOMEM;
+	}
+	rv = usip_msg_add_hdr( sipmsg->mobj->base->msg, hfrom->base, 0); 
+	if( rv < UX_SUCCESS) {
+		usip_log(USL_CRT, "Failed to add 'From' header. (value=%s:%s, err=%d,%s)",
+				USIP_MOBJ_GET_FROMUSER( sipmsg->mobj), USIP_MOBJ_GET_FROMTAG( sipmsg->mobj), 
+				rv, usip_errstr(rv));
+		return rv;
+	}
+
+	usip_to_hdr_t *hto= (usip_nameaddr_t*)usip_hdr_duplicate( (usip_hdr_t*)to, usip_msg_get_allocator(sipmsg->mobj->base->msg));
+	if( hto  == NULL) {
+		ux_log( UXL_CRT, "Failed to duplicate originator To header.");
+		return UX_ENOMEM;
+	}
+	rv = usip_msg_add_hdr( sipmsg->mobj->base->msg, hto->base, 0); 
+	if( rv < UX_SUCCESS) {
+		usip_log(USL_CRT, "Failed to add 'To' header. (value=%s:%s, err=%d,%s)",
+				USIP_MOBJ_GET_TOUSER( sipmsg->mobj), USIP_MOBJ_GET_TOTAG( sipmsg->mobj), 
+				rv, usip_errstr(rv));
+		return rv;
+	}
+	
+	rv = usip_mobj_set_request( sipmsg->mobj, method, uri);
+	if( rv < USIP_SUCCESS) return rv; 
+	
+	if (contenttype != NULL && body != NULL) {
+		rv = usip_mobj_set_content_type(sipmsg->mobj, contenttype);
+		if( rv < USIP_SUCCESS) {
+			return rv;
+		}
+
+		payload = usip_payload_create( usip_msg_get_allocator(sipmsg->mobj->base->msg), (void*)body, bodysize);
+		if( payload == NULL) {
+			ux_log(UXL_MAJ, "Failed to set SIP payload. err=%d,%s)", rv, usip_errstr(bodysize));
+			return bodysize;
+		}
+
+		rv = usip_msg_add_hdr( sipmsg->mobj->base->msg, payload->base, 0);
+		if( rv < USIP_SUCCESS) {
+			ux_log(UXL_MAJ, "Failed to set SIP payload. err=%d,%s)", rv, usip_errstr(rv));
+			return rv;
+		}
+	}
+
+	rv = usip_mobj_complete_request( sipmsg->mobj);
+	if( rv < USIP_SUCCESS) return rv;
+
+	ux_log(UXL_INFO, "%s: call_id=%s, from=%s:%s, to=%s:%s", 
+		 func, USIP_MOBJ_GET_CALLID( sipmsg->mobj), 
+		 USIP_MOBJ_GET_FROMUSER( sipmsg->mobj), USIP_MOBJ_GET_FROMTAG( sipmsg->mobj),
+			USIP_MOBJ_GET_TOUSER( sipmsg->mobj), USIP_MOBJ_GET_TOTAG( sipmsg->mobj));
 
 	return UX_SUCCESS;
 }
@@ -403,10 +826,10 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_send_originator_ack( uxc_sfcall_t *sfcall,
  * @remark
  * para[0] = STATUS - response code
  */
-UX_DECLARE(int) clicktocall_dlgsvc_on_recv_origin_initial_rsp( uxc_sfcall_t *sfcall, uxc_sdmvars_t *params)
+UX_DECLARE(int) clicktocall_dlgsvc_on_recv_sip_invite_res( uxc_sfcall_t *sfcall, uxc_sdmvars_t *params)
 {
-	enum { PARA_STATUS, PARA_BODY};
-	static const char *func = "clicktocall_dlgsvc_on_recv_origin_initial_rsp";
+	enum { PARA_CALL_TO, PARA_STATUS, PARA_BODY};
+	static const char *func = "clicktocall_dlgsvc_on_recv_sip_invite_res";
 
 	int rv;
 	uxc_sess_t *uxcsess;
@@ -414,6 +837,7 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_recv_origin_initial_rsp( uxc_sfcall_t *sfc
 	upa_sipmsg_t *resmsg;
 	uims_sess_t *sess;
 	clicktocall_dlgsess_t *dlgsess;
+	clicktocall_callto_e callto;
 	char buf[1024];
 	int buflen = sizeof(buf);
 
@@ -432,7 +856,13 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_recv_origin_initial_rsp( uxc_sfcall_t *sfc
 		return UX_EINVAL;
 	}
 
-	rv = clicktocall_dlgsess_handle_initial_res( dlgsess, resmsg);
+	callto = uxc_sdmvars_get_int( params, PARA_CALL_TO, 0, &rv);
+	if( rv < UX_SUCCESS) {
+		uxc_trace(UXCTL(1,MAJ), "%s: Fail to get CALL_TO parameter.", func);
+		return rv;
+	}
+
+	rv = clicktocall_dlgsess_handle_sip_invite_res( dlgsess, resmsg, callto);
 	if( rv < UX_SUCCESS) {
 		uxc_trace(UXCTL(1,MAJ), "%s: Failed to make response. (phrase=%s, err=%d,%s)",
 				func,

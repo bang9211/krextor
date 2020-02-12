@@ -13,7 +13,6 @@
 /** @brief CLICKTOCALL dialog session */
 struct clicktocall_dlgsess_s {
 	uims_sess_t *sess; /**< 관련 IMS session */
-	upa_sipmsg_t *reqmsg; /**< request */
 	uint64_t extime; /**< executed time-sec*/
 	int32_t error; /**< 서비스 error code */
 	uint8_t dlgstate; /**< dialog state */
@@ -21,28 +20,6 @@ struct clicktocall_dlgsess_s {
 	uint8_t hasreq; /**< request 수신 여부 */
 	uint8_t method; /**< dialog 생성 메시지 method */
 	char *tpeer; /**< 착신 peer */
-	usip_nameaddr_t *ouser; /**< orignator user (From header) */
-	usip_contact_hdr_t *ocontact; /**< originator contact */
-	usip_route_hdr_t *oroute; /**< originator record-routes */
-	usip_nameaddr_t *tuser; /**< terminator user. (To header) */
-	usip_contact_hdr_t *tcontact; /**< terminator contact */
-	usip_route_hdr_t *troute; /**< terminator record-routes */
-	/* sip */
-	uint32_t mscseq; /**< ms cseq */
-	uint32_t ocseq; /**< originator cseq */
-	uint32_t tcseq; /**< terminator cseq */
-	char *msstag; /**< clicktocall ms session tag */
-	char *ostag; /**< clicktocall originator session tag */
-	char *tstag; /**< clicktocall terminator session tag */
-	char *mscall_id; /**< ms call-id */
-	usip_nameaddr_t *msfrom; /**< ms From header */
-	usip_nameaddr_t *msto; /**< ms To header */
-	char *ocall_id; /**< originator call-id */
-	usip_nameaddr_t *ofrom; /**< originator From header */
-	usip_nameaddr_t *oto; /**< originator To header */
-	char *tcall_id; /**< terminator call-id */
-	usip_nameaddr_t *tfrom; /**< terminator From header */
-	usip_nameaddr_t *tto; /**< terminator To header */
 
 	/* http */
 	uint32_t thread_id;
@@ -60,6 +37,24 @@ struct clicktocall_dlgsess_s {
 	char *callingcid;
 	char *calledcid;
 	uint8_t hostcode;
+
+	/* sip */
+	uint32_t ocseq; /**< originator cseq */
+	char *ostag; /**< clicktocall originator session tag */
+	char *ocall_id; /**< originator call-id */
+	usip_nameaddr_t *ofrom; /**< originator From header */
+	usip_nameaddr_t *oto; /**< originator To header */
+	uint32_t tcseq; /**< terminator cseq */
+	char *tstag; /**< clicktocall terminator session tag */
+	char *tcall_id; /**< terminator call-id */
+	usip_nameaddr_t *tfrom; /**< terminator From header */
+	usip_nameaddr_t *tto; /**< terminator To header */
+	uint32_t mscseq; /**< ms cseq */
+	char *msstag; /**< clicktocall ms session tag */
+	char *mscall_id; /**< ms call-id */
+	usip_nameaddr_t *msfrom; /**< ms From header */
+	usip_nameaddr_t *msto; /**< ms To header */
+	
 	void *data; /**< session 데이터 */
 	void *user_data; /**< 해당 session에 연결할 사용자 데이터 정보 */
 };
