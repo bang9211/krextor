@@ -26,10 +26,13 @@ struct clicktocall_dlgsess_s {
 	uint32_t conn_id;
 	uint32_t stream_id;
 	uint32_t version;
+
+	uint8_t networkType;
 	char *sessionid;
-	char *subscribername;
 	char *callingnumber;
 	char *callednumber;
+	uint8_t recording;
+	char *subscribername;
 	char *chargingnumber;
 	uint8_t ringbacktonetype;
 	char *watitngmentid;

@@ -87,28 +87,25 @@
 			<switch name="CHECK_CALLING_INVITE_RSP" value="status">
 				<case value="100" target="CALLING_PROCEEDING"/>
 				<case value="180" target="CALLING_PROCEEDING"/>
-				<case value="200" target="SEND_INVITE_TO_MS"/>
+				<case value="200" target="SEND_CALLING_CLICKTOCALL_NOTI"/>
 				<default target="stop"/>
 			</switch>
 
-			<!--invoke name="SEND_CLICKTOCALL_NOTI" protocol="HTTP" operation="POST" url="http://192.168.1.74:18443/clicktocall/notify" version="1.0" timeout="5000" is_req="yes">
-				<oncall>
-					<call type="SYS" function="upa_httpcall_set_header('Agent', 0, 'UANGEL')"/>
-					<call type="SYS" function="upa_httpcall_set_body( '{}', 'application/json')"/>
-				</oncall>
-
+			<invoke name="SEND_CALLING_CLICKTOCALL_NOTI" protocol="HTTP" operation="POST" url="http://localhost:8070/clicktocall/notify" version="1.0" timeout="5000" is_req="yes">
+				<onsend>
+					<call type="SYS" function="clicktocall_dlgsvc_on_send_http_notify(CALL_TO_CALLED, 0)"/>
+				</onsend>
 				<onsuccess>
-					<call function="log_msg('SUCCESS')"/>
-					<call type="SYS" function="upa_httpcall_get_body(body)"/>
+					<call function="log_msg('HTTP NOTIFY SUCCESS')"/>
 					<call function="dump_sdm()"/>
 				</onsuccess>
 				<onerror target="stop">
-					<call function="log_msg('ERROR')"/>
+					<call function="log_msg('HTTP NOTIFY ERROR')"/>
 				</onerror>
 				<ontimeout target="stop">
-					<call function="log_msg('TIMEOUT')"/>
+					<call function="log_msg('HTTP NOTIFY TIMEOUT')"/>
 				</ontimeout>
-			</invoke-->
+			</invoke>
 
 			<send name="SEND_INVITE_TO_MS" protocol="SIP" operation="INVITE" is_req="yes" did="2">
                 <oncall>
@@ -262,6 +259,22 @@
                 <onerror target="stop"/>
 			</send>
 
+			<invoke name="SEND_CALLED_CLICKTOCALL_NOTI" protocol="HTTP" operation="POST" url="http://localhost:8070/clicktocall/notify" version="1.0" timeout="5000" is_req="yes">
+				<onsend>
+					<call type="SYS" function="clicktocall_dlgsvc_on_send_http_notify(CALL_TO_CALLING, 0)"/>
+				</onsend>
+				<onsuccess>
+					<call function="log_msg('HTTP NOTIFY SUCCESS')"/>
+					<call function="dump_sdm()"/>
+				</onsuccess>
+				<onerror target="stop">
+					<call function="log_msg('HTTP NOTIFY ERROR')"/>
+				</onerror>
+				<ontimeout target="stop">
+					<call function="log_msg('HTTP NOTIFY TIMEOUT')"/>
+				</ontimeout>
+			</invoke>
+
 
 			<wait name="CALL_ESTABLISHED" timeout="3600000">
 				<onrecv target="RECV_CLICKTOCALL_STOP"/>
@@ -289,7 +302,7 @@
 			</send>
 
 			<recv name="RECV_CALLED_BYE_RSP" protocol="SIP" operation="BYE" is_req="no" did="1">
-				<onsuccess target="SEND_CLICKTOCALL_RES"/>
+				<onsuccess target="SEND_CLICKTOCALL_RESPOND"/>
 				<onerror target="stop"/>
 			</recv>
 
@@ -312,7 +325,7 @@
 			</send>
 
 			<recv name="RECV_CALLING_BYE_RSP" protocol="SIP" operation="BYE" is_req="no" did="0">
-				<onsuccess target="SEND_CLICKTOCALL_RES"/>
+				<onsuccess target="SEND_CLICKTOCALL_RESPOND"/>
 				<onerror target="stop"/>
 			</recv>
 
@@ -354,24 +367,23 @@
 			</send>
 
 			<recv name="RECV_CALLED_BYE_RSP_2" protocol="SIP" operation="BYE" is_req="no" did="1">
-				<onsuccess target="SEND_CLICKTOCALL_RES"/>
+				<onsuccess target="SEND_CLICKTOCALL_RESPOND"/>
 				<onerror target="stop"/>
 			</recv>
 
-			<invoke name="SEND_CLICKTOCALL_RES" protocol="HTTP" operation="POST" url="http://192.168.1.74:18443/clicktocall/respond" version="1.0" timeout="5000" is_req="yes">
-				<oncall>
-					<call type="SYS" function="clicktocall_dlgsvc_on_send_http_start_res(0)"/>
-				</oncall>
-
+			<invoke name="SEND_CLICKTOCALL_RESPOND" protocol="HTTP" operation="POST" url="http://localhost:8070/clicktocall/respond" version="1.0" timeout="5000" is_req="yes">
+				<onsend>
+					<call type="SYS" function="clicktocall_dlgsvc_on_send_http_respond(0)"/>
+				</onsend>
 				<onsuccess>
-					<call function="log_msg('SUCCESS')"/>
+					<call function="log_msg('HTTP RESPOND SUCCESS')"/>
 					<call function="dump_sdm()"/>
 				</onsuccess>
 				<onerror target="stop">
-					<call function="log_msg('ERROR')"/>
+					<call function="log_msg('HTTP RESPOND ERROR')"/>
 				</onerror>
 				<ontimeout target="stop">
-					<call function="log_msg('TIMEOUT')"/>
+					<call function="log_msg('HTTP RESPOND TIMEOUT')"/>
 				</ontimeout>
 			</invoke>
 

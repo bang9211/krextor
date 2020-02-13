@@ -87,7 +87,7 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_send_http_start_res( uxc_sfcall_t *sfcall,
 	int rv;
 	uxc_sess_t *uxcsess;
 	uxc_msg_t *sndmsg;
-	upa_httpmsg_t *resmsg;
+	upa_httpmsg_t *httpmsg;
 	uims_sess_t *sess;
 	clicktocall_dlgsess_t *dlgsess;
 
@@ -97,7 +97,7 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_send_http_start_res( uxc_sfcall_t *sfcall,
 		uxc_trace(UXCTL(1,MAJ), "%s: Send message instance in session doesn't exist.", func);
 		return UX_EINVAL;
 	}
-	resmsg = (upa_httpmsg_t*)sndmsg->data;
+	httpmsg = (upa_httpmsg_t*)sndmsg->data;
 
 	sess = uxc_sess_get_user_data( uxcsess);
 	dlgsess = (sess) ? uims_sess_get_data( sess) : NULL;
@@ -109,7 +109,116 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_send_http_start_res( uxc_sfcall_t *sfcall,
 	dlgsess->error = uxc_sdmvars_get_int( params, PARA_RESULT_CODE, 0, &rv);
 	if( rv < UX_SUCCESS) return rv;
 
-	rv = clicktocall_dlgsess_make_http_start_res( dlgsess, resmsg);
+	rv = clicktocall_dlgsess_make_http_start_res( dlgsess, httpmsg);
+	if( rv < UX_SUCCESS) {
+		uxc_trace(UXCTL(1,MAJ), "%s: Failed to make response. (phrase=%s, err=%d,%s)",
+				func,
+				clicktocall_err_to_phrase( dlgsess->error), rv, ux_errnostr(rv));
+		return rv;
+	}
+
+	return UX_SUCCESS;
+}
+
+/**
+ * @brief CLICKTOCALL NOTI REQUEST(HTTP) outgoing 메시지를 전달하기 위해 호출되는 함수
+ * @param sfcall call fsm node
+ * @param params sdm value parameter
+ * @return 실행 결과
+ */
+UX_DECLARE(int) clicktocall_dlgsvc_on_send_http_notify( uxc_sfcall_t *sfcall, uxc_sdmvars_t *params)
+{
+	enum { PARA_CALL_TO, PARA_EVENT};
+	static const char *func = "clicktocall_dlgsvc_on_send_http_notify";
+
+	int rv;
+	clicktocall_callto_e callto;
+	uxc_sess_t *uxcsess;
+	uxc_msg_t *sndmsg;
+	upa_httpmsg_t *httpmsg;
+	uims_sess_t *sess;
+	clicktocall_dlgsess_t *dlgsess;
+	
+	uxcsess = (uxc_sess_t*)params->sdm->impl;
+	sndmsg = uxc_sess_get_sndmsg( uxcsess);
+	if( sndmsg == NULL ) {
+		uxc_trace(UXCTL(1,MAJ), "%s: Send message instance in session doesn't exist.", func);
+		return UX_EINVAL;
+	}
+	httpmsg = (upa_httpmsg_t*)sndmsg->data;
+
+	sess = uxc_sess_get_user_data( uxcsess);
+	dlgsess = (sess) ? uims_sess_get_data( sess) : NULL;
+	if( dlgsess == NULL ) {
+		uxc_trace(UXCTL(1,MAJ), "%s: dialog session doesn' exist.", func);
+		return UX_EINVAL;
+	}
+
+	callto = uxc_sdmvars_get_int( params, PARA_CALL_TO, 0, &rv);
+	if( rv < UX_SUCCESS) {
+		uxc_trace(UXCTL(1,MIN), "%s: Fail to get CALL_TO parameter. err=%d", func, rv);
+		return rv;
+	}
+
+	dlgsess->error = uxc_sdmvars_get_int( params, PARA_EVENT, 0, &rv);
+	if( rv < UX_SUCCESS) {
+		uxc_trace(UXCTL(1,MIN), "%s: Fail to get EVENT_NUMBER parameter. err=%d", func, rv);
+		return rv;
+	}
+
+	rv = clicktocall_dlgsess_make_http_notify( dlgsess, httpmsg, callto);
+	if( rv < UX_SUCCESS) {
+		uxc_trace(UXCTL(1,MAJ), "%s: Failed to make response. (phrase=%s, err=%d,%s)",
+				func,
+				clicktocall_err_to_phrase( dlgsess->error), rv, ux_errnostr(rv));
+		return rv;
+	}
+
+	return UX_SUCCESS;
+}
+
+/**
+ * @brief CLICKTOCALL RESPOND REQUEST(HTTP) outgoing 메시지를 전달하기 위해 호출되는 함수
+ * @param sfcall call fsm node
+ * @param params sdm value parameter
+ * @return 실행 결과
+ */
+UX_DECLARE(int) clicktocall_dlgsvc_on_send_http_respond( uxc_sfcall_t *sfcall, uxc_sdmvars_t *params)
+{
+	enum { PARA_RESULT_CODE};
+	static const char *func = "clicktocall_dlgsvc_on_send_http_respond";
+
+	int rv;
+	clicktocall_callto_e callto;
+	uxc_sess_t *uxcsess;
+	uxc_msg_t *sndmsg;
+	upa_httpmsg_t *httpmsg;
+	uims_sess_t *sess;
+	clicktocall_dlgsess_t *dlgsess;
+	
+	uxcsess = (uxc_sess_t*)params->sdm->impl;
+	sndmsg = uxc_sess_get_sndmsg( uxcsess);
+	if( sndmsg == NULL ) {
+		uxc_trace(UXCTL(1,MAJ), "%s: Send message instance in session doesn't exist.", func);
+		return UX_EINVAL;
+	}
+	httpmsg = (upa_httpmsg_t*)sndmsg->data;
+
+	sess = uxc_sess_get_user_data( uxcsess);
+	dlgsess = (sess) ? uims_sess_get_data( sess) : NULL;
+	if( dlgsess == NULL ) {
+		uxc_trace(UXCTL(1,MAJ), "%s: dialog session doesn' exist.", func);
+		return UX_EINVAL;
+	}
+
+
+	dlgsess->error = uxc_sdmvars_get_int( params, PARA_RESULT_CODE, 0, &rv);
+	if( rv < UX_SUCCESS) {
+		uxc_trace(UXCTL(1,MIN), "%s: Fail to get EVENT_NUMBER parameter. err=%d", func, rv);
+		return rv;
+	}
+
+	rv = clicktocall_dlgsess_make_http_respond( dlgsess, httpmsg);
 	if( rv < UX_SUCCESS) {
 		uxc_trace(UXCTL(1,MAJ), "%s: Failed to make response. (phrase=%s, err=%d,%s)",
 				func,
@@ -301,7 +410,6 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_send_sip_reinvite_req( uxc_sfcall_t *sfcal
 	static const char *func = "clicktocall_dlgsvc_on_send_sip_reinvite_req";
 	char *ssw = "127.0.0.1:5068";
 	char *ssw_bye = "127.0.0.1:5069";
-	char *host = "127.0.0.1";
 	char *ms = "127.0.0.1:5070";
 	char *msuser = "99980000";
 	int servicekey = 99;
@@ -834,7 +942,7 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_recv_sip_invite_res( uxc_sfcall_t *sfcall,
 	int rv;
 	uxc_sess_t *uxcsess;
 	uxc_msg_t *rcvmsg;
-	upa_sipmsg_t *resmsg;
+	upa_sipmsg_t *sipmsg;
 	uims_sess_t *sess;
 	clicktocall_dlgsess_t *dlgsess;
 	clicktocall_callto_e callto;
@@ -848,7 +956,7 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_recv_sip_invite_res( uxc_sfcall_t *sfcall,
 		uxc_trace(UXCTL(1,MAJ), "%s: Recv message instance in session doesn't exist.", func);
 		return UX_EINVAL;
 	}
-	resmsg = (upa_sipmsg_t*)rcvmsg->data;
+	sipmsg = (upa_sipmsg_t*)rcvmsg->data;
 	sess = uxc_sess_get_user_data( uxcsess);
 	dlgsess = (sess) ? uims_sess_get_data( sess) : NULL;
 	if( dlgsess == NULL ) {
@@ -862,7 +970,7 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_recv_sip_invite_res( uxc_sfcall_t *sfcall,
 		return rv;
 	}
 
-	rv = clicktocall_dlgsess_handle_sip_invite_res( dlgsess, resmsg, callto);
+	rv = clicktocall_dlgsess_handle_sip_invite_res( dlgsess, sipmsg, callto);
 	if( rv < UX_SUCCESS) {
 		uxc_trace(UXCTL(1,MAJ), "%s: Failed to make response. (phrase=%s, err=%d,%s)",
 				func,
@@ -870,15 +978,15 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_recv_sip_invite_res( uxc_sfcall_t *sfcall,
 		return rv;
 	}
 
-	rv = uxc_sdmvars_set_int( params, PARA_STATUS, resmsg->mobj->status->code);
+	rv = uxc_sdmvars_set_int( params, PARA_STATUS, sipmsg->mobj->status->code);
 	if( rv < UX_SUCCESS) {
 		uxc_trace(UXCTL(1,MIN), "%s: Failed to set STATUS parameter. (err=%d,%s)",
 				func, rv, uxc_errnostr(rv));
 		return rv;
 	}
 
-	if (resmsg->mobj->payload != NULL) {
-		rv = uxc_sdmvars_set_str( params, PARA_BODY, resmsg->mobj->payload->data);
+	if (sipmsg->mobj->payload != NULL) {
+		rv = uxc_sdmvars_set_str( params, PARA_BODY, sipmsg->mobj->payload->data);
 		if( rv < UX_SUCCESS) {
 		uxc_trace(UXCTL(1,MIN), "%s: Failed to set BODY parameter. (err=%d,%s)",
 				func, rv, uxc_errnostr(rv));
@@ -906,7 +1014,7 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_send_rsp( uxc_sfcall_t *sfcall, uxc_sdmvar
 
 	int rv, status;
 
-	upa_sipmsg_t *rspmsg, *reqmsg;
+	upa_sipmsg_t *sipmsg, *reqmsg;
 	uxc_sess_t *uxcsess = (uxc_sess_t*)params->sdm->impl;
 	uxc_msg_t *sndmsg, *rcvmsg;
 	sndmsg = uxc_sess_get_sndmsg(uxcsess);
@@ -914,7 +1022,7 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_send_rsp( uxc_sfcall_t *sfcall, uxc_sdmvar
 		ux_log(UXL_MAJ, "%s: Send message instance in session doesn't exist.", func);
 		return UX_EINVAL;
 	}
-	rspmsg = (upa_sipmsg_t*)(sndmsg->data);
+	sipmsg = (upa_sipmsg_t*)(sndmsg->data);
 
 	rcvmsg = uxc_sess_get_rcvmsg( uxcsess);
 	if( rcvmsg == NULL ) {
@@ -929,7 +1037,7 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_send_rsp( uxc_sfcall_t *sfcall, uxc_sdmvar
 	if( rv < UX_SUCCESS) return rv;
 	
 	
-	rv = usip_mobj_make_response( rspmsg->mobj, clicktocall_err_to_rcode( status),
+	rv = usip_mobj_make_response( sipmsg->mobj, clicktocall_err_to_rcode( status),
 					clicktocall_err_to_phrase(status), reqmsg->mobj);
 	if( rv < USIP_SUCCESS) {
 		ux_log(UXL_MAJ, "%s: Failed to make SIP response. (status=%d,%s, err=%d,%s)",
@@ -938,7 +1046,7 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_send_rsp( uxc_sfcall_t *sfcall, uxc_sdmvar
 	}
 
 
-	rv = usip_mobj_complete( rspmsg->mobj);
+	rv = usip_mobj_complete( sipmsg->mobj);
 	if( rv < USIP_SUCCESS) return rv;
 
 	ux_log(UXL_INFO, "clicktocall_dlgsvc_on_send_rsp: #7");

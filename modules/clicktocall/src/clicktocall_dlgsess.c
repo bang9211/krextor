@@ -89,10 +89,12 @@ UX_DECLARE(ux_status_t) clicktocall_dlgsess_handle_http_start_req( clicktocall_d
 	uhttp_body_t *body;
 	const char *jsonstr;
 	cJSON *json = NULL;
+	const cJSON *networkType = NULL;
 	const cJSON *sessionid = NULL;
 	const cJSON *subscribername = NULL;
 	const cJSON *callingnumber = NULL;
 	const cJSON *callednumber = NULL;
+	const cJSON *recording = NULL;
 	const cJSON *chargingnumber = NULL;
 	const cJSON *ringbacktonetype = NULL;
 	const cJSON *watitngmentid = NULL;
@@ -124,6 +126,13 @@ UX_DECLARE(ux_status_t) clicktocall_dlgsess_handle_http_start_req( clicktocall_d
 		return UX_EINVAL;
 	}
 
+	networkType = cJSON_GetObjectItemCaseSensitive(json, "networkType");
+    if (!cJSON_IsNumber(networkType)) {
+		ux_log(UXL_MAJ, "Fail to get networkType JSON key");
+		return UX_EINVAL;
+	}
+	dlgsess->networkType = networkType->valueint;
+
 	sessionid = cJSON_GetObjectItemCaseSensitive(json, "sessionID");
     if (!cJSON_IsString(sessionid) || (sessionid->valuestring == NULL)) {
 		ux_log(UXL_MAJ, "Fail to get sessionID JSON key");
@@ -145,61 +154,52 @@ UX_DECLARE(ux_status_t) clicktocall_dlgsess_handle_http_start_req( clicktocall_d
     } 
 	dlgsess->callednumber = ux_str_dup( callednumber->valuestring, uims_sess_get_allocator(dlgsess->sess)); 
 
+	recording = cJSON_GetObjectItemCaseSensitive(json, "recording");
+    if (!cJSON_IsNumber(recording)) {
+		ux_log(UXL_MAJ, "Fail to get recording JSON key");
+		return UX_EINVAL;
+	}
+	dlgsess->recording = recording->valueint;
+
 	subscribername = cJSON_GetObjectItemCaseSensitive(json, "subscriberName");
-    if (!cJSON_IsString(subscribername) || (subscribername->valuestring == NULL)) {
-		ux_log(UXL_MAJ, "Fail to get subscriberName JSON key");
-		return UX_EINVAL;	
+    if (cJSON_IsString(subscribername) && (subscribername->valuestring != NULL)) {
+		dlgsess->subscribername = ux_str_dup( subscribername->valuestring, uims_sess_get_allocator(dlgsess->sess)); 
 	} 
-	dlgsess->subscribername = ux_str_dup( subscribername->valuestring, uims_sess_get_allocator(dlgsess->sess)); 
 
 	chargingnumber = cJSON_GetObjectItemCaseSensitive(json, "chargingNumber");
-    if (!cJSON_IsString(chargingnumber) || (chargingnumber->valuestring == NULL)) {
-		ux_log(UXL_MAJ, "Fail to get chargingNumber JSON key");
-		return UX_EINVAL;
+    if (cJSON_IsString(chargingnumber) && (chargingnumber->valuestring != NULL)) {
+		dlgsess->chargingnumber = ux_str_dup( chargingnumber->valuestring, uims_sess_get_allocator(dlgsess->sess)); 
 	} 
-	dlgsess->chargingnumber = ux_str_dup( chargingnumber->valuestring, uims_sess_get_allocator(dlgsess->sess)); 
 
 	ringbacktonetype = cJSON_GetObjectItemCaseSensitive(json, "ringBackToneType");
-    if (!cJSON_IsNumber(ringbacktonetype)) {
-		ux_log(UXL_MAJ, "Fail to get ringBackToneType JSON key");
-		return UX_EINVAL;
+    if (cJSON_IsNumber(ringbacktonetype)) {
+		dlgsess->ringbacktonetype = ringbacktonetype->valueint;
 	}
-	dlgsess->ringbacktonetype = ringbacktonetype->valueint;
 		
 	watitngmentid = cJSON_GetObjectItemCaseSensitive(json, "waitingMentID");
-    if (!cJSON_IsString(watitngmentid) || (watitngmentid->valuestring == NULL)) {
-		ux_log(UXL_MAJ, "Fail to get waitingMentID JSON key");
-		return UX_EINVAL;
+    if (cJSON_IsString(watitngmentid) && (watitngmentid->valuestring != NULL)) {
+		dlgsess->watitngmentid = ux_str_dup( watitngmentid->valuestring, uims_sess_get_allocator(dlgsess->sess)); 
     } 
-	dlgsess->watitngmentid = ux_str_dup( watitngmentid->valuestring, uims_sess_get_allocator(dlgsess->sess)); 
 
 	callmentid = cJSON_GetObjectItemCaseSensitive(json, "callMentID");
-    if (!cJSON_IsString(callmentid) || (callmentid->valuestring == NULL)) {
-		ux_log(UXL_MAJ, "Fail to get callMentID JSON key");
-		return UX_EINVAL;
+    if (cJSON_IsString(callmentid) && (callmentid->valuestring != NULL)) {
+		dlgsess->callmentid = ux_str_dup( callmentid->valuestring, uims_sess_get_allocator(dlgsess->sess)); 
     } 
-	dlgsess->callmentid = ux_str_dup( callmentid->valuestring, uims_sess_get_allocator(dlgsess->sess)); 
-
+	
 	callingcid = cJSON_GetObjectItemCaseSensitive(json, "callingCID");
-    if (!cJSON_IsString(callingcid) || (callingcid->valuestring == NULL)) {	
-		ux_log(UXL_MAJ, "Fail to get callingCID JSON key");
-		return UX_EINVAL;
+    if (cJSON_IsString(callingcid) && (callingcid->valuestring != NULL)) {	
+		dlgsess->callingcid = ux_str_dup( callingcid->valuestring, uims_sess_get_allocator(dlgsess->sess)); 
 	}
-	dlgsess->callingcid = ux_str_dup( callingcid->valuestring, uims_sess_get_allocator(dlgsess->sess)); 
 	
 	calledcid = cJSON_GetObjectItemCaseSensitive(json, "calledCID");
-    if (!cJSON_IsString(calledcid) || (calledcid->valuestring == NULL)) {
-		ux_log(UXL_MAJ, "Fail to get calledCID JSON key");
-		return UX_EINVAL;
+    if (cJSON_IsString(calledcid) && (calledcid->valuestring != NULL)) {
+		dlgsess->calledcid = ux_str_dup( calledcid->valuestring, uims_sess_get_allocator(dlgsess->sess)); 
     } 
-	dlgsess->calledcid = ux_str_dup( calledcid->valuestring, uims_sess_get_allocator(dlgsess->sess)); 
-
+	
 	hostcode = cJSON_GetObjectItemCaseSensitive(json, "hostCode");
-    if (!cJSON_IsNumber(hostcode)) {
-		ux_log(UXL_MAJ, "Fail to get hostCode JSON key");
-		return UX_EINVAL;
+    if (cJSON_IsNumber(hostcode)) {
+		dlgsess->hostcode = hostcode->valueint;
 	}
-	dlgsess->hostcode = hostcode->valueint;
 
 	return UX_SUCCESS;
 }
@@ -219,6 +219,7 @@ UX_DECLARE(ux_status_t) clicktocall_dlgsess_make_http_start_res( clicktocall_dlg
 
 	cJSON *json = cJSON_CreateObject();
 
+	cJSON_AddItemToObject(json, "networkType", cJSON_CreateNumber(dlgsess->networkType));
     cJSON_AddItemToObject(json, "sessionID", cJSON_CreateString(dlgsess->sessionid));
 	sprintf( sid, "%llu", (unsigned long long)uims_sess_get_id(dlgsess->sess));
 	cJSON_AddItemToObject(json, "gwSessionID", cJSON_CreateString(sid));
@@ -262,6 +263,142 @@ UX_DECLARE(ux_status_t) clicktocall_dlgsess_make_http_start_res( clicktocall_dlg
 
 	return UX_SUCCESS;
 }
+
+UX_DECLARE(ux_status_t) clicktocall_dlgsess_make_http_notify( clicktocall_dlgsess_t *dlgsess, upa_httpmsg_t *resmsg, clicktocall_callto_e callto)
+{
+	int rv, dlen;
+	char *data;
+	char sid[64];
+	uhttp_hdrs_t *hdrs;
+	uhttp_body_t *body;
+
+/*
+	uhttp_msg_set_thread_id(resmsg->msg, dlgsess->thread_id);
+	uhttp_msg_set_conn_id(resmsg->msg, dlgsess->conn_id);
+	uhttp_msg_set_id(resmsg->msg, dlgsess->stream_id);
+	uhttp_msg_set_version(resmsg->msg, dlgsess->version);
+*/
+	cJSON *json = cJSON_CreateObject();
+
+	cJSON_AddItemToObject(json, "networkType", cJSON_CreateNumber(dlgsess->networkType));
+    cJSON_AddItemToObject(json, "sessionID", cJSON_CreateString(dlgsess->sessionid));
+	sprintf( sid, "%llu", (unsigned long long)uims_sess_get_id(dlgsess->sess));
+	cJSON_AddItemToObject(json, "gwSessionID", cJSON_CreateString(sid));
+	cJSON_AddItemToObject(json, "event", cJSON_CreateNumber(dlgsess->error));
+	switch (callto) {
+		case CALL_TO_CALLED:
+			cJSON_AddItemToObject(json, "eventNumber", cJSON_CreateString(dlgsess->callingnumber));
+			break;
+		case CALL_TO_CALLING:
+			cJSON_AddItemToObject(json, "eventNumber", cJSON_CreateString(dlgsess->callednumber));
+			break;
+		default:
+			ux_log(UXL_MAJ, "Invalid callto parameter. callto=%d", callto);
+    		return UX_EBADMSG;
+	}
+
+	data = cJSON_Print(json);
+    if (data == NULL) {
+		ux_log(UXL_MAJ, "Failed to encode json");
+    	return UX_EBADMSG;
+    }
+
+	dlen = strlen(data);
+	hdrs = uhttp_msg_get_hdrs( resmsg->msg);
+	if( data[0]) {
+		body = uhttp_body_create_v( uhttp_msg_get_allocator(resmsg->msg), (uint8_t*)data, dlen); 
+		if( body == NULL) {
+			uxc_trace(UXCTL(1,MIN), "clicktocall_dlgsess_make_http_notify: Failed to create body. (body=%s, err=%d,%s)",
+					data, UX_ENOMEM, uhttp_errstr(UX_ENOMEM));
+			cJSON_Delete(json);
+			return UX_ENOMEM;
+		}
+		uhttp_msg_set_body( resmsg->msg, body);
+	}
+	rv = uhttp_hdrs_set_int( hdrs, "Content-Length", 0, dlen);
+	if( rv < UHTTP_SUCCESS) {
+		uxc_trace(UXCTL(1,MIN), "clicktocall_dlgsess_make_http_notify: Failed to set Content-Length value. (value=%d, err=%d,%s)",
+				dlen, rv, uhttp_errstr(rv));
+		cJSON_Delete(json);
+		return UX_EINVAL;
+	}
+	
+	rv = uhttp_hdrs_set_str( hdrs, "Content-Type", 0, "application/json");
+	if( rv < UHTTP_SUCCESS) {
+		uxc_trace(UXCTL(1,MIN), "clicktocall_dlgsess_make_http_notify: Failed to set Content-Type value. (content_type=%s, err=%d,%s)",
+				 "application/json", rv, uhttp_errstr(rv));
+		cJSON_Delete(json);
+		return UX_EINVAL;
+	}
+		
+	ux_log(UXL_INFO, "clicktocall_dlgsess_make_http_notify: body=%s, len=%d", data, dlen);	
+	cJSON_Delete(json);	
+
+	return UX_SUCCESS;
+}
+
+UX_DECLARE(ux_status_t) clicktocall_dlgsess_make_http_respond( clicktocall_dlgsess_t *dlgsess, upa_httpmsg_t *resmsg)
+{
+	int rv, dlen;
+	char *data;
+	char sid[64];
+	uhttp_hdrs_t *hdrs;
+	uhttp_body_t *body;
+
+/*
+	uhttp_msg_set_thread_id(resmsg->msg, dlgsess->thread_id);
+	uhttp_msg_set_conn_id(resmsg->msg, dlgsess->conn_id);
+	uhttp_msg_set_id(resmsg->msg, dlgsess->stream_id);
+	uhttp_msg_set_version(resmsg->msg, dlgsess->version);
+*/
+	cJSON *json = cJSON_CreateObject();
+
+	cJSON_AddItemToObject(json, "networkType", cJSON_CreateNumber(dlgsess->networkType));
+    cJSON_AddItemToObject(json, "sessionID", cJSON_CreateString(dlgsess->sessionid));
+	sprintf( sid, "%llu", (unsigned long long)uims_sess_get_id(dlgsess->sess));
+	cJSON_AddItemToObject(json, "gwSessionID", cJSON_CreateString(sid));
+	cJSON_AddItemToObject(json, "returnCode", cJSON_CreateNumber(dlgsess->error));
+
+	data = cJSON_Print(json);
+    if (data == NULL) {
+		ux_log(UXL_MAJ, "Failed to encode json");
+    	return UX_EBADMSG;
+    }
+
+	dlen = strlen(data);
+	hdrs = uhttp_msg_get_hdrs( resmsg->msg);
+	if( data[0]) {
+		body = uhttp_body_create_v( uhttp_msg_get_allocator(resmsg->msg), (uint8_t*)data, dlen); 
+		if( body == NULL) {
+			uxc_trace(UXCTL(1,MIN), "clicktocall_dlgsess_make_http_respond: Failed to create body. (body=%s, err=%d,%s)",
+					data, UX_ENOMEM, uhttp_errstr(UX_ENOMEM));
+			cJSON_Delete(json);
+			return UX_ENOMEM;
+		}
+		uhttp_msg_set_body( resmsg->msg, body);
+	}
+	rv = uhttp_hdrs_set_int( hdrs, "Content-Length", 0, dlen);
+	if( rv < UHTTP_SUCCESS) {
+		uxc_trace(UXCTL(1,MIN), "clicktocall_dlgsess_make_http_respond: Failed to set Content-Length value. (value=%d, err=%d,%s)",
+				dlen, rv, uhttp_errstr(rv));
+		cJSON_Delete(json);
+		return UX_EINVAL;
+	}
+	
+	rv = uhttp_hdrs_set_str( hdrs, "Content-Type", 0, "application/json");
+	if( rv < UHTTP_SUCCESS) {
+		uxc_trace(UXCTL(1,MIN), "clicktocall_dlgsess_make_http_respond: Failed to set Content-Type value. (content_type=%s, err=%d,%s)",
+				 "application/json", rv, uhttp_errstr(rv));
+		cJSON_Delete(json);
+		return UX_EINVAL;
+	}
+		
+	ux_log(UXL_INFO, "clicktocall_dlgsess_make_http_respond: body=%s, len=%d", data, dlen);	
+	cJSON_Delete(json);	
+
+	return UX_SUCCESS;
+}
+
 
 UX_DECLARE(ux_status_t) clicktocall_dlgsess_handle_sip_invite_req( clicktocall_dlgsess_t *dlgsess, upa_sipmsg_t *reqmsg, clicktocall_callto_e callto)
 {
