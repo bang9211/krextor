@@ -272,8 +272,8 @@ static int _uims_plugin_get_http_thrid( uxc_paif_t *paif, uxc_msg_t *msg)
 	uint32_t idx, thrid, nworker;
 	uhttp_hdrs_t *hdrs;
 	uhttp_value_t *value;
-	char *sessid = NULL;
-	char *gwsessid = NULL;
+	const char *sessid = NULL;
+	const char *gwsessid = NULL;
 	char temp[64];
 	upa_httpmsg_t *httpmsg = (upa_httpmsg_t*)msg->data;
 
@@ -293,15 +293,15 @@ static int _uims_plugin_get_http_thrid( uxc_paif_t *paif, uxc_msg_t *msg)
 		ux_log( UXL_INFO, "_uims_plugin_get_http_thrid: GW-SessionID HDR=%s", gwsessid );
 	}
 
-	if( httpmsg->sessid != UXC_SESSID_NULL) {
-		thrid = uxc_sessid_get_thread_id( httpmsg->sessid)-1;
+	if( httpmsg->appsessid != UIMS_SESSID_NULL) {
+		thrid = uims_sessid_get_thread_id( httpmsg->appsessid)-1;
 		ux_log( UXL_INFO, "idx: idx=%d", thrid % nworker );
 	} else if (sessid != NULL) {
-		thrid = (uint32_t)ux_str_hash(sessid);
+		thrid = (uint32_t)ux_str_hash((char *)sessid);
 		if (gwsessid != NULL) {
-			httpmsg->sessid = (uint32_t)atoi(gwsessid);
+			httpmsg->appsessid = (uint64_t)strtoull(gwsessid, NULL, 0);
 		}
-		ux_log( UXL_INFO, "idx: idx=%d, httpmsg->sessid=%d", thrid % nworker, httpmsg->sessid );
+		ux_log( UXL_INFO, "idx: idx=%d, httpmsg->appsessid=%llu", thrid % nworker, (unsigned long long)httpmsg->appsessid );
 	} else {
 		thrid = httpmsg->connid;
 		ux_log( UXL_INFO, "idx: idx=%d", thrid % nworker );
@@ -526,16 +526,11 @@ int uims_plugin_handle_http( uxc_action_t *action, uxc_worker_t* worker, uxc_msg
 {
 	int rv, proto, is_req;
 	int need_create_session;
-	ux_mem_t *allocator;
 	uxc_svcselinfo_t *ssinfo;
 	uxc_service_t *service;
 	uims_sess_t *sess;
 	uhttp_req_t *req;
 	uhttp_rsp_t *rsp;
-	uhttp_hdrs_t *hdrs;
-	uhttp_value_t *value;
-	char *sessid = NULL;
-	char temp[64];
 	upa_httppa_t *httppa = (upa_httppa_t*)msg->paif;
 	upa_httpmsg_t *httpmsg = (upa_httpmsg_t*)msg->data;
 	uims_sessmgr_t *sessmgr = uxc_sessmgr_get_user_data( uxc_worker_get_sessmgr( worker));
@@ -554,22 +549,22 @@ int uims_plugin_handle_http( uxc_action_t *action, uxc_worker_t* worker, uxc_msg
 	need_create_session = (is_req && strstr(uhttp_req_get_path(req), "/start") != NULL ? 1 : 0 );
 
 	if( !need_create_session ) {
-		if( httpmsg->sessid != UXC_SESSID_NULL ) {
-			sess = uims_sessmgr_find( sessmgr, httpmsg->sessid);
+		if( httpmsg->appsessid != UIMS_SESSID_NULL ) {
+			sess = uims_sessmgr_find( sessmgr, httpmsg->appsessid);
 		} else {
 			sess = NULL;
 		}
 		if( sess == NULL ) {
 			if( is_req) {
 				ux_log( UXL_MAJ, "Can't find session for HTTP message. "
-						"(sessid=%u, rid=%u, request=%s %s HTTP/%u.%u)",
-						httpmsg->sessid, httpmsg->rid, uhttp_req_get_method_name(req),
+						"(sessid=%llu, rid=%u, request=%s %s HTTP/%u.%u)",
+						(unsigned long long)httpmsg->appsessid, httpmsg->rid, uhttp_req_get_method_name(req),
 						uhttp_req_get_path(req), UHTTP_VER_MAJOR(uhttp_req_get_version(req)),
 						UHTTP_VER_MINOR(uhttp_req_get_version(req)));
 			} else {
 				ux_log( UXL_MAJ, "Can't find session for HTTP message. "
-						"(sessid=%u, rid=%u, response=%u %s HTTP/%u.%u)",
-						httpmsg->sessid, httpmsg->rid, uhttp_rsp_get_code(rsp),
+						"(sessid=%llu, rid=%u, response=%u %s HTTP/%u.%u)",
+						(unsigned long long)httpmsg->appsessid, httpmsg->rid, uhttp_rsp_get_code(rsp),
 						uhttp_rsp_get_phrase(rsp), UHTTP_VER_MAJOR(uhttp_rsp_get_version(rsp)),
 						UHTTP_VER_MINOR(uhttp_rsp_get_version(rsp)));
 			}
@@ -610,18 +605,10 @@ int uims_plugin_handle_http( uxc_action_t *action, uxc_worker_t* worker, uxc_msg
 			upa_httppa_reply( httppa, httpmsg, UHTTP_STATUS_500_INTERNAL_SERVER_ERROR, "Session memory is full");
 			return UX_ENOENT;
 		}
-		allocator = uims_sess_get_allocator( sess);
-		
-		hdrs = uhttp_msg_get_hdrs( httpmsg->msg);
-		value = uhttp_hdrs_get_value( hdrs, "SessionID", 0);
-		if (value != NULL) {
-			sessid = uhttp_value_get_str( value, temp, sizeof(temp), NULL);
-			sess->http_sessid = (sessid) ? ux_str_dup(sessid, allocator) : NULL;
-		}
-		httpmsg->sessid = sess->id;
+		httpmsg->appsessid = sess->id;
 		httpmsg->rid = 0;
 
-		ux_log( UXL_INFO, "uims_plugin_handle_http: sessid = %llu", (unsigned long long)httpmsg->sessid);
+		ux_log( UXL_INFO, "uims_plugin_handle_http: sessid = %llu", (unsigned long long)httpmsg->appsessid);
 	}
 
 	if( uxc_sess_is_trace_on( sess->uxcsess) ) {
@@ -633,8 +620,8 @@ int uims_plugin_handle_http( uxc_action_t *action, uxc_worker_t* worker, uxc_msg
 	if ( rv < UX_SUCCESS ) {
 		if( is_req) {
 			ux_log( UXL_MAJ, "Failed to process HTTP message. "
-					"(sessid=%s/%llu,%u, rid=%u, proto=%d, request=%s %s HTTP/%u.%u)",
-					sessid, (unsigned long long)httpmsg->sessid, uxc_sess_get_id(sess->uxcsess), 
+					"(sessid=%llu,%u, rid=%u, proto=%d, request=%s %s HTTP/%u.%u)",
+					(unsigned long long)httpmsg->appsessid, uxc_sess_get_id(sess->uxcsess), 
 					httpmsg->rid, proto,
 					uhttp_req_get_method_name(req), uhttp_req_get_path(req),
 					UHTTP_VER_MAJOR(uhttp_req_get_version(req)),
@@ -642,8 +629,8 @@ int uims_plugin_handle_http( uxc_action_t *action, uxc_worker_t* worker, uxc_msg
 			upa_httppa_reply( httppa, httpmsg, UHTTP_STATUS_503_SERVICE_UNAVAILABLE, "Service Fail");
 		} else {	
 			ux_log( UXL_MAJ, "Failed to process HTTP message. "
-					"(sessid=%s/%llu,%u, rid=%u, proto=%d, response=%u %s HTTP/%u.%u)",
-					sessid, (unsigned long long)httpmsg->sessid, uxc_sess_get_id(sess->uxcsess), 
+					"%llu,%u, rid=%u, proto=%d, response=%u %s HTTP/%u.%u)",
+					(unsigned long long)httpmsg->appsessid, uxc_sess_get_id(sess->uxcsess), 
 					httpmsg->rid, proto,
 					uhttp_rsp_get_code(rsp), uhttp_rsp_get_phrase(rsp),
 					UHTTP_VER_MAJOR(uhttp_rsp_get_version(rsp)),

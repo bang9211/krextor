@@ -57,7 +57,7 @@ UX_DECLARE(const char*) clicktocall_dlgstate_to_str( clicktocall_dlgstate_e dlgs
 UX_DECLARE(clicktocall_dlgsess_t*) clicktocall_dlgsess_create( uims_sess_t *imssess, int *err);
 
 UX_DECLARE(ux_status_t) clicktocall_dlgsess_handle_http_start_req( clicktocall_dlgsess_t *dlgsess, upa_httpmsg_t *reqmsg);
-UX_DECLARE(ux_status_t) clicktocall_dlgsess_make_http_start_res( clicktocall_dlgsess_t *dlgsess, upa_httpmsg_t *resmsg);
+UX_DECLARE(ux_status_t) clicktocall_dlgsess_make_http_res( clicktocall_dlgsess_t *dlgsess, upa_httpmsg_t *resmsg);
 UX_DECLARE(ux_status_t) clicktocall_dlgsess_make_http_notify( clicktocall_dlgsess_t *dlgsess, upa_httpmsg_t *resmsg, clicktocall_callto_e callto);
 UX_DECLARE(ux_status_t) clicktocall_dlgsess_make_http_respond( clicktocall_dlgsess_t *dlgsess, upa_httpmsg_t *resmsg);
 UX_DECLARE(ux_status_t) clicktocall_dlgsess_handle_sip_invite_req( clicktocall_dlgsess_t *dlgsess, upa_sipmsg_t *reqmsg, clicktocall_callto_e callto);

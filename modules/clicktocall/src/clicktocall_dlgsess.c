@@ -204,7 +204,7 @@ UX_DECLARE(ux_status_t) clicktocall_dlgsess_handle_http_start_req( clicktocall_d
 	return UX_SUCCESS;
 }
 
-UX_DECLARE(ux_status_t) clicktocall_dlgsess_make_http_start_res( clicktocall_dlgsess_t *dlgsess, upa_httpmsg_t *resmsg) 
+UX_DECLARE(ux_status_t) clicktocall_dlgsess_make_http_res( clicktocall_dlgsess_t *dlgsess, upa_httpmsg_t *resmsg) 
 {
 	int rv, dlen;
 	char *data;
@@ -959,7 +959,6 @@ void clicktocall_dlgdao_final( clicktocall_dlgdao_t *dao)
 clicktocall_dlgsess_t* clicktocall_dlgdao_find( clicktocall_dlgdao_t *dao,
 						uims_sessmgr_t *sessmgr, uims_sessid_t sessid)
 {
-	/*
 	static const char* stmtid = "DLGSESS:FIND";
 	static const char* query = "SELECT * FROM 1 WHERE 0=?";
 
@@ -1101,17 +1100,19 @@ clicktocall_dlgsess_t* clicktocall_dlgdao_find( clicktocall_dlgdao_t *dao,
 	dlgsess->ocseq = ocseq;
 	dlgsess->tcseq = tcseq;
 	dlgsess->method = method;
+	/*
 	dlgsess->rtpolicy->svcmode = svcmode;
 	dlgsess->rtpolicy->way = way;
 	dlgsess->rtpolicy->opt = opt;
 	dlgsess->rtpolicy->opeer_id = opeer_id;
 	dlgsess->rtpolicy->tpeer_id = tpeer_id;
-	
+	*/
 	uims_sess_set_call_id( sess, call_id);
 	uims_sess_set_ltag( sess, otag);
 	uims_sess_set_rtag( sess, ttag);
 	dlgsess->tpeer = ux_str_dup( tpeer,  allocator);
 
+/*
 	if( ouser && ouser[0]) {
 		dlgsess->ouser = (usip_from_hdr_t*)usip_hdr_create_v(
 								allocator, usip_from_hdef(), ouser);
@@ -1158,16 +1159,14 @@ clicktocall_dlgsess_t* clicktocall_dlgdao_find( clicktocall_dlgdao_t *dao,
 	sipmsg->sessinfo->did = 0;
 	upa_sippa_write_sessinfo( sippa, sipmsg, tag, sizeof(tag));
 	dlgsess->ostag = ux_str_dup( tag, allocator); 
+	*/
 
 	uims_dbstmt_close( stmt);
 	return dlgsess;
-	*/
-	return NULL;
 }
 
 ux_status_t clicktocall_dlgdao_insert( clicktocall_dlgdao_t *dao, clicktocall_dlgsess_t *dlgsess)
 {
-	/*
 	static const char* stmtid = "DLGSESS:INSERT";
 	static const char* query = "INSERT INTO table1 VALUES(?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?)";
 
@@ -1191,6 +1190,7 @@ ux_status_t clicktocall_dlgdao_insert( clicktocall_dlgdao_t *dao, clicktocall_dl
 	pbuffer = buffer; 
 	do {
 		buflen = 0;
+		/*
 		ouser = pbuffer+buflen; 
 		if( dlgsess->ouser) {
 			rv = usip_nameaddr_encode( dlgsess->ouser, ouser, bufsize-buflen, 0);
@@ -1239,6 +1239,7 @@ ux_status_t clicktocall_dlgdao_insert( clicktocall_dlgdao_t *dao, clicktocall_dl
 		}
 		if(buflen < bufsize) route[0] = '\0';
 		buflen++;
+		*/
 
 		if( buflen < bufsize) break;
 		if( pbuffer != buffer) free(pbuffer);
@@ -1273,11 +1274,13 @@ ux_status_t clicktocall_dlgdao_insert( clicktocall_dlgdao_t *dao, clicktocall_dl
 			"ocseq", UIMS_DBTYPE_UINT32, dlgsess->ocseq,
 			"tcseq", UIMS_DBTYPE_UINT32, dlgsess->tcseq,
 			"method", UIMS_DBTYPE_UINT8, dlgsess->method,
+			/*
 			"svcmode", UIMS_DBTYPE_UINT8, dlgsess->rtpolicy->svcmode,
 			"way", UIMS_DBTYPE_UINT8, dlgsess->rtpolicy->way,
 			"opt", UIMS_DBTYPE_UINT32, dlgsess->rtpolicy->opt,
 			"opeer", UIMS_DBTYPE_INT32, dlgsess->rtpolicy->opeer_id,
 			"tpeer", UIMS_DBTYPE_INT32, dlgsess->rtpolicy->tpeer_id,
+			*/
 			"call_id", UIMS_DBTYPE_STR, uims_sess_get_call_id(dlgsess->sess),
 			"ouser", UIMS_DBTYPE_STR, ouser,
 			"otag", UIMS_DBTYPE_STR, uims_sess_get_ltag(dlgsess->sess),
@@ -1308,13 +1311,12 @@ ux_status_t clicktocall_dlgdao_insert( clicktocall_dlgdao_t *dao, clicktocall_dl
 	uims_dbstmt_close( stmt);
 	if(pbuffer != buffer) free(pbuffer);
 	dlgsess->hasreq = USIP_FALSE;
-	*/
+
 	return UX_SUCCESS;
 }
 
 ux_status_t clicktocall_dlgdao_remove( clicktocall_dlgdao_t *dao, clicktocall_dlgsess_t *dlgsess)
 {
-	/*
 	static const char* stmtid = "DLGSESS:REMOVE";
 	static const char* query = "DELETE FROM table1 WHERE index0=?";
 
@@ -1357,13 +1359,12 @@ ux_status_t clicktocall_dlgdao_remove( clicktocall_dlgdao_t *dao, clicktocall_dl
 	}
 
 	uims_dbstmt_close( stmt);
-	*/
+	
 	return UX_SUCCESS;
 }
 
 ux_status_t clicktocall_dlgdao_update( clicktocall_dlgdao_t *dao, clicktocall_dlgsess_t *dlgsess)
 {
-	/*
 	dlgsess->extime = time(NULL);
 
 	if( dlgsess->dlgstate < CLICKTOCALL_DLGSTATE_PROCEEDING) {
@@ -1379,7 +1380,6 @@ ux_status_t clicktocall_dlgdao_update( clicktocall_dlgdao_t *dao, clicktocall_dl
 			return clicktocall_dlgdao_update_e( dao, dlgsess);
 		}
 	}
-	*/
 
 	return UX_SUCCESS;
 }
@@ -1391,7 +1391,6 @@ ux_status_t clicktocall_dlgdao_update( clicktocall_dlgdao_t *dao, clicktocall_dl
  */
 ux_status_t clicktocall_dlgdao_update_p( clicktocall_dlgdao_t *dao, clicktocall_dlgsess_t *dlgsess)
 {
-	/*
 	static const char* stmtid = "DLGSESS:UPDATE_P";
 	static const char* query = "UPDATE table1 SET column1=?, column2=?, column3=?, column4=?, "
 				"column5=?, column18=?, column19=?, column20=? WHERE index0=?";
@@ -1417,6 +1416,7 @@ ux_status_t clicktocall_dlgdao_update_p( clicktocall_dlgdao_t *dao, clicktocall_
 	do {
 		buflen = 0;
 	
+	/*
 		tcontact = pbuffer+buflen; 
 		if( dlgsess->tcontact) {
 			rv = usip_contact_encode( dlgsess->tcontact, tcontact, bufsize-buflen, 0);
@@ -1450,6 +1450,7 @@ ux_status_t clicktocall_dlgdao_update_p( clicktocall_dlgdao_t *dao, clicktocall_
 		}
 		if(buflen < bufsize) route[0] = '\0';
 		buflen++;
+		*/
 
 		if( buflen < bufsize) break;
 		if( pbuffer != buffer) free(pbuffer);
@@ -1477,10 +1478,10 @@ ux_status_t clicktocall_dlgdao_update_p( clicktocall_dlgdao_t *dao, clicktocall_
 	}
 
 	ux_log(UXL_DBG1, "DLGSESS:UPDATE_P (sess_id=%llu, state=%d, dlgstate=%d, extime=%llu, ocseq=%u, "
-			"tcseq=%u, ttag=%s, tcontact=%s, troute=%s)",
+			"tcseq=%u, ttag=%s)",
 			(unsigned long long)uims_sess_get_id( dlgsess->sess), sesshdr->state, dlgsess->dlgstate,
 			(unsigned long long)dlgsess->extime, dlgsess->ocseq, dlgsess->tcseq,
-			uims_sess_get_rtag(dlgsess->sess), tcontact, troute);
+			uims_sess_get_rtag(dlgsess->sess));
 
 	rv = uims_dbdataset_write( paraset, 9,
 			//name, type, value, [length:octet only]
@@ -1490,8 +1491,8 @@ ux_status_t clicktocall_dlgdao_update_p( clicktocall_dlgdao_t *dao, clicktocall_
 			"ocseq", UIMS_DBTYPE_UINT32, dlgsess->ocseq,
 			"tcseq", UIMS_DBTYPE_UINT32, dlgsess->tcseq,
 			"ttag", UIMS_DBTYPE_STR, uims_sess_get_rtag(dlgsess->sess),
-			"tcontact", UIMS_DBTYPE_STR, tcontact,
-			"troute", UIMS_DBTYPE_STR, troute, 
+			//"tcontact", UIMS_DBTYPE_STR, tcontact,
+			//"troute", UIMS_DBTYPE_STR, troute, 
 			"sess_id", UIMS_DBTYPE_UINT64, uims_sess_get_id( dlgsess->sess));
 
 	if( rv < UIMS_DB_SUCCESS) {
@@ -1518,7 +1519,7 @@ ux_status_t clicktocall_dlgdao_update_p( clicktocall_dlgdao_t *dao, clicktocall_
 		dlgsess->dlgstate = CLICKTOCALL_DLGSTATE_ESTABLISHED;
 		dlgsess->prevstate = dlgsess->dlgstate;
 	}
-	*/
+	
 	return UX_SUCCESS;
 }
 
@@ -1529,7 +1530,6 @@ ux_status_t clicktocall_dlgdao_update_p( clicktocall_dlgdao_t *dao, clicktocall_
  */
 ux_status_t clicktocall_dlgdao_update_e( clicktocall_dlgdao_t *dao, clicktocall_dlgsess_t *dlgsess)
 {
-	/*
 	static const char* stmtid = "DLGSESS:UPDATE_E";
 	static const char* query = "UPDATE table1 SET column1=?, column2=?, column3=?, column4=?, column5=? WHERE index0=?";
 
@@ -1587,7 +1587,7 @@ ux_status_t clicktocall_dlgdao_update_e( clicktocall_dlgdao_t *dao, clicktocall_
 	}
 
 	uims_dbstmt_close( stmt);
-	*/
+
 	return UX_SUCCESS;
 }
 

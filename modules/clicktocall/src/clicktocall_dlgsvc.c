@@ -79,10 +79,10 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_recv_http_start_req( uxc_sfcall_t *sfcall,
  * @param params sdm value parameter
  * @return 실행 결과
  */
-UX_DECLARE(int) clicktocall_dlgsvc_on_send_http_start_res( uxc_sfcall_t *sfcall, uxc_sdmvars_t *params)
+UX_DECLARE(int) clicktocall_dlgsvc_on_send_http_res( uxc_sfcall_t *sfcall, uxc_sdmvars_t *params)
 {
 	enum { PARA_RESULT_CODE };
-	static const char *func = "clicktocall_dlgsvc_on_send_http_start_res";
+	static const char *func = "clicktocall_dlgsvc_on_send_http_res";
 
 	int rv;
 	uxc_sess_t *uxcsess;
@@ -109,12 +109,46 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_send_http_start_res( uxc_sfcall_t *sfcall,
 	dlgsess->error = uxc_sdmvars_get_int( params, PARA_RESULT_CODE, 0, &rv);
 	if( rv < UX_SUCCESS) return rv;
 
-	rv = clicktocall_dlgsess_make_http_start_res( dlgsess, httpmsg);
+	rv = clicktocall_dlgsess_make_http_res( dlgsess, httpmsg);
 	if( rv < UX_SUCCESS) {
 		uxc_trace(UXCTL(1,MAJ), "%s: Failed to make response. (phrase=%s, err=%d,%s)",
 				func,
 				clicktocall_err_to_phrase( dlgsess->error), rv, ux_errnostr(rv));
 		return rv;
+	}
+
+	return UX_SUCCESS;
+}
+
+/**
+ * @brief CLICKTOCALL STOP REQUEST(HTTP) outgoing 메시지를 전달하기 위해 호출되는 함수
+ * @param sfcall call fsm node
+ * @param params sdm value parameter
+ * @return 실행 결과
+ */
+UX_DECLARE(int) clicktocall_dlgsvc_on_recv_http_stop_req( uxc_sfcall_t *sfcall, uxc_sdmvars_t *params)
+{
+	static const char *func = "clicktocall_dlgsvc_on_recv_http_stop_req";
+
+	uxc_sess_t *uxcsess;
+	uxc_msg_t *rcvmsg;
+	upa_httpmsg_t *reqmsg;
+	uims_sess_t *imssess;
+	clicktocall_dlgsess_t *dlgsess;
+
+	uxcsess = (uxc_sess_t*)params->sdm->impl;
+	rcvmsg = uxc_sess_get_rcvmsg( uxcsess);
+	if( rcvmsg == NULL ) {
+		uxc_trace(UXCTL(1,MAJ), "%s: Recv message instance in session doesn't exist.", func);
+		return UX_EINVAL;
+	}
+	reqmsg = (upa_httpmsg_t*)rcvmsg->data;
+
+	imssess = uxc_sess_get_user_data( uxcsess);
+	dlgsess = (imssess) ? uims_sess_get_data( imssess) : NULL;
+	if( dlgsess == NULL ) {
+		uxc_trace(UXCTL(1,MAJ), "%s: dialog session doesn' exist.", func);
+		return UX_EINVAL;
 	}
 
 	return UX_SUCCESS;
@@ -138,6 +172,8 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_send_http_notify( uxc_sfcall_t *sfcall, ux
 	upa_httpmsg_t *httpmsg;
 	uims_sess_t *sess;
 	clicktocall_dlgsess_t *dlgsess;
+	uhttp_hdrs_t *hdrs;
+	char sid[64];
 	
 	uxcsess = (uxc_sess_t*)params->sdm->impl;
 	sndmsg = uxc_sess_get_sndmsg( uxcsess);
@@ -174,6 +210,21 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_send_http_notify( uxc_sfcall_t *sfcall, ux
 		return rv;
 	}
 
+	hdrs = uhttp_msg_get_hdrs( httpmsg->msg);
+	sprintf( sid, "%llu", (unsigned long long)uims_sess_get_id(dlgsess->sess));
+	rv = uhttp_hdrs_set_str( hdrs, "SessionID", 0, dlgsess->sessionid);
+	if( rv < UHTTP_SUCCESS) {
+		uxc_trace(UXCTL(1,MIN), "%s: Failed to set header value. (name=%s[%d], sval=%s, err=%d,%s)", 
+			func, "SessionID", 0, dlgsess->sessionid, rv, uhttp_errstr(rv));
+		return UX_EINVAL;
+	}
+	rv = uhttp_hdrs_set_str( hdrs, "GW-SessionID", 0, sid);
+	if( rv < UHTTP_SUCCESS) {
+		uxc_trace(UXCTL(1,MIN), "%s: Failed to set header value. (name=%s[%d], sval=%s, err=%d,%s)", 
+			func, "GW-SessionID", 0, dlgsess->sessionid, rv, uhttp_errstr(rv));
+		return UX_EINVAL;
+	}
+
 	return UX_SUCCESS;
 }
 
@@ -189,12 +240,13 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_send_http_respond( uxc_sfcall_t *sfcall, u
 	static const char *func = "clicktocall_dlgsvc_on_send_http_respond";
 
 	int rv;
-	clicktocall_callto_e callto;
 	uxc_sess_t *uxcsess;
 	uxc_msg_t *sndmsg;
 	upa_httpmsg_t *httpmsg;
 	uims_sess_t *sess;
 	clicktocall_dlgsess_t *dlgsess;
+	uhttp_hdrs_t *hdrs;
+	char sid[64];
 	
 	uxcsess = (uxc_sess_t*)params->sdm->impl;
 	sndmsg = uxc_sess_get_sndmsg( uxcsess);
@@ -224,6 +276,21 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_send_http_respond( uxc_sfcall_t *sfcall, u
 				func,
 				clicktocall_err_to_phrase( dlgsess->error), rv, ux_errnostr(rv));
 		return rv;
+	}
+
+	hdrs = uhttp_msg_get_hdrs( httpmsg->msg);
+	sprintf( sid, "%llu", (unsigned long long)uims_sess_get_id(dlgsess->sess));
+	rv = uhttp_hdrs_set_str( hdrs, "SessionID", 0, dlgsess->sessionid);
+	if( rv < UHTTP_SUCCESS) {
+		uxc_trace(UXCTL(1,MIN), "%s: Failed to set header value. (name=%s[%d], sval=%s, err=%d,%s)", 
+			func, "SessionID", 0, dlgsess->sessionid, rv, uhttp_errstr(rv));
+		return UX_EINVAL;
+	}
+	rv = uhttp_hdrs_set_str( hdrs, "GW-SessionID", 0, sid);
+	if( rv < UHTTP_SUCCESS) {
+		uxc_trace(UXCTL(1,MIN), "%s: Failed to set header value. (name=%s[%d], sval=%s, err=%d,%s)", 
+			func, "GW-SessionID", 0, dlgsess->sessionid, rv, uhttp_errstr(rv));
+		return UX_EINVAL;
 	}
 
 	return UX_SUCCESS;

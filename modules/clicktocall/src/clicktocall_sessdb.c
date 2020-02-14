@@ -51,8 +51,7 @@ static uims_sess_t* _clicktocall_sessdb_find( uims_sessdb_t *sessdb, uims_sessmg
 	svcid = uims_sessid_get_service_id( sessid);
 	ux_log(UXL_INFO, "CLICKTOCALL SESSDB find. (sessid=%llu, svcid=%d)", (unsigned long long) sessid, svcid);
 	switch( svcid ) {
-		case 2 :
-		case 4 :
+		case 0: 
 			dlgsess = clicktocall_dlgdao_find( ((clicktocall_sessdb_t*)sessdb)->dlgdao, sessmgr, sessid);
 			sess = (dlgsess) ? dlgsess->sess : NULL;
 			break;
@@ -75,8 +74,7 @@ static ux_status_t _clicktocall_sessdb_insert( uims_sessdb_t *sessdb, uims_sessm
 	svcid = uims_sessid_get_service_id( sessid);
 	ux_log(UXL_INFO, "CLICKTOCALL SESSDB insert. (sessid=%llu, svcid=%d)", (unsigned long long) sessid, svcid);
 	switch( svcid ) {
-		case 2 :
-		case 4 :
+		case 0: 
 			dlgsess = (clicktocall_dlgsess_t*)uims_sess_get_data( sess);
 			return clicktocall_dlgdao_insert( ((clicktocall_sessdb_t*)sessdb)->dlgdao, dlgsess); 
 		default : break;
@@ -96,8 +94,7 @@ static ux_status_t _clicktocall_sessdb_remove( uims_sessdb_t *sessdb, uims_sessm
 	svcid = uims_sessid_get_service_id( sessid);
 	ux_log(UXL_INFO, "CLICKTOCALL SESSDB remove. (sessid=%llu, svcid=%d)", (unsigned long long) sessid, svcid);
 	switch( svcid ) {
-		case 2 :
-		case 4 :
+		case 0 :
 			dlgsess = (clicktocall_dlgsess_t*)uims_sess_get_data( sess);
 			return clicktocall_dlgdao_remove( ((clicktocall_sessdb_t*)sessdb)->dlgdao, dlgsess); 
 		default : break;
@@ -117,8 +114,7 @@ static ux_status_t _clicktocall_sessdb_update( uims_sessdb_t *sessdb, uims_sessm
 	svcid = uims_sessid_get_service_id( sessid);
 	ux_log(UXL_INFO, "CLICKTOCALL SESSDB update. (sessid=%llu, svcid=%d)", (unsigned long long) sessid, svcid);
 	switch( svcid ) {
-		case 2 :
-		case 4 :
+		case 0 :
 			dlgsess = (clicktocall_dlgsess_t*)uims_sess_get_data( sess);
 			return clicktocall_dlgdao_update( ((clicktocall_sessdb_t*)sessdb)->dlgdao, dlgsess); 
 		default : break;

@@ -62,7 +62,7 @@
 
 			<send name="SEND_CLICKTOCALL_START_RSP" protocol="HTTP" operation="POST" rcode="200" phrase="OK" did="0">
 				<oncall>
-					<call type="SYS" function="clicktocall_dlgsvc_on_send_http_start_res(0)"/>
+					<call type="SYS" function="clicktocall_dlgsvc_on_send_http_res(0)"/>
 				</oncall>
 			</send>
 
@@ -331,7 +331,7 @@
 
 			<recv name="RECV_CLICKTOCALL_STOP" protocol="HTTP" operation="POST" url="/clicktocall/stop" timeout="30000" is_req="yes" did="0">
 				<oncall>
-					<call type="SYS" function="clicktocall_dlgsvc_on_recv_http_start_req(calling_number, called_number)"/>
+					<call type="SYS" function="clicktocall_dlgsvc_on_recv_http_stop_req()"/>
 				</oncall>
 				<onsuccess>
 					<call function="log_msg('SUCCESS')"/>
@@ -343,7 +343,7 @@
 
 			<send name="SEND_CLICKTOCALL_STOP_RSP" protocol="HTTP" operation="POST" rcode="200" phrase="OK" did="0">
 				<oncall>
-					<call type="SYS" function="clicktocall_dlgsvc_on_send_http_start_res(0)"/>
+					<call type="SYS" function="clicktocall_dlgsvc_on_send_http_res(0)"/>
 				</oncall>
 			</send>
 
