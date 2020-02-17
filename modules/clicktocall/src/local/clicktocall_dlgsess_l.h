@@ -2,6 +2,7 @@
 #define __CLICKTOCALL_DLGSESS_L_H__
 
 #include "../clicktocall/clicktocall_dlgsess.h"
+#include "../clicktocall/clicktocall_conf.h"
 #include <uims/uims_db.h>
 #include <uims/uims_sess.h>
 #include <uxlib/ux_def.h>
@@ -68,6 +69,7 @@ typedef struct clicktocall_dlgdao_s clicktocall_dlgdao_t;
 struct clicktocall_dlgdao_s {
 	uims_db_t *db; /**< 사용할 DB 타입 */
 	uims_dbmgr_t *dbmgr; /** dbmgr */
+	clicktocall_conf_t *conf; /** plugin conf */
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -79,7 +81,7 @@ ux_status_t clicktocall_dlgsess_final( clicktocall_dlgsess_t *dlgsess);
 ////////////////////////////////////////////////////////////////////////////////
 // functions for clicktocall_dlgdao_t
 ////////////////////////////////////////////////////////////////////////////////
-ux_status_t clicktocall_dlgdao_init( clicktocall_dlgdao_t *dao, uims_dbmgr_t *dbmgr);
+ux_status_t clicktocall_dlgdao_init( clicktocall_dlgdao_t *dao, uims_dbmgr_t *dbmgr, clicktocall_conf_t *conf);
 void clicktocall_dlgdao_final( clicktocall_dlgdao_t *dao);
 clicktocall_dlgsess_t* clicktocall_dlgdao_find( clicktocall_dlgdao_t *dao,
 						uims_sessmgr_t *sessmgr, uims_sessid_t sessid);

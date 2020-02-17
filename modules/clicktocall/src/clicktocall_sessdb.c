@@ -13,13 +13,14 @@ static ux_status_t _clicktocall_sessdb_remove( uims_sessdb_t *sessdb, uims_sessm
 static ux_status_t _clicktocall_sessdb_update( uims_sessdb_t *sessdb, uims_sessmgr_t *sessmgr,
 		                        uims_sess_t *sess);
 
-ux_status_t clicktocall_sessdb_init( clicktocall_sessdb_t *sessdb)
+ux_status_t clicktocall_sessdb_init( clicktocall_sessdb_t *sessdb, clicktocall_conf_t *conf)
 {
 	int rv;
 	sessdb->base->find = _clicktocall_sessdb_find;
 	sessdb->base->insert = _clicktocall_sessdb_insert;
 	sessdb->base->remove = _clicktocall_sessdb_remove;
 	sessdb->base->update = _clicktocall_sessdb_update;
+	sessdb->conf = conf;
 
 	sessdb->dbmgr = uims_plugin_get_dbmgr( uims_plugin_instance());
 	if( sessdb->dbmgr == NULL) {
@@ -27,7 +28,7 @@ ux_status_t clicktocall_sessdb_init( clicktocall_sessdb_t *sessdb)
 		return UX_ENOENT;
 	}
 
-	rv = clicktocall_dlgdao_init( sessdb->dlgdao, sessdb->dbmgr);
+	rv = clicktocall_dlgdao_init( sessdb->dlgdao, sessdb->dbmgr, conf);
 	if( rv < UX_SUCCESS) {
 		ux_log(UXL_MAJ, "Failed to initialize Call Session DAO. (err=%d,%s)", rv, uxc_errnostr(rv));
 		return rv;

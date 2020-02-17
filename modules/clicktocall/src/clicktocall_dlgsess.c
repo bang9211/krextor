@@ -939,7 +939,7 @@ UX_DECLARE(ux_mem_t*) clicktocall_dlgsess_get_allocator( clicktocall_dlgsess_t *
  * @param routermgr router manager
  * @return 실행 결과
  */
-ux_status_t clicktocall_dlgdao_init( clicktocall_dlgdao_t *dao, uims_dbmgr_t *dbmgr)
+ux_status_t clicktocall_dlgdao_init( clicktocall_dlgdao_t *dao, uims_dbmgr_t *dbmgr, clicktocall_conf_t *conf)
 {
 	dao->dbmgr = dbmgr;
 	dao->db = uims_dbmgr_get_n( dbmgr, "TNTDB");
@@ -947,6 +947,7 @@ ux_status_t clicktocall_dlgdao_init( clicktocall_dlgdao_t *dao, uims_dbmgr_t *db
 		ux_log(UXL_MAJ, "Failed to get TNTDB");
 		return UX_ENOENT;
 	}
+	dao->conf = conf;
 
 	return UX_SUCCESS;
 }
@@ -963,13 +964,12 @@ clicktocall_dlgsess_t* clicktocall_dlgdao_find( clicktocall_dlgdao_t *dao,
 	static const char* query = "SELECT * FROM 1 WHERE 0=?";
 
 	int rv;
-	uint8_t dlgstate, method, svcmode, way;
+	uint8_t dlgstate, method, network_type, recording, ringbacktone_type, hostcode;
 	uint16_t state;
-	uint32_t ocseq, tcseq, opt;
-	int32_t opeer_id, tpeer_id;
+	uint32_t ocseq, tcseq, mscseq;
 	uint64_t rsessid, extime;
-	char *call_id, *ouser, *otag, *ocontact, *oroute;
-	char *tuser, *ttag, *tcontact, *troute, *tpeer;
+	char *http_session_id, *calling_number, *called_number, *subscriber_name, *charging_number, *waitingment_id, *callment_id, *calling_cid, *called_cid;
+	char *ostag, *ocall_id, *ofrom, *oto, *tstag, *tcall_id, *tfrom, *tto, *msstag, *mscall_id, *msfrom, *msto;
 	ux_mem_t *allocator;
 	uxc_sesshdr_t *sesshdr;
 	uxc_service_t *service;
@@ -1035,30 +1035,39 @@ clicktocall_dlgsess_t* clicktocall_dlgdao_find( clicktocall_dlgdao_t *dao,
 		return NULL;
 	}
 
-	rv = uims_dbdataset_read( rsltset, 22,
+	rv = uims_dbdataset_read( rsltset, 30,
 			//name, type, value, [length:octet only]
 			"sess_id", UIMS_DBTYPE_UINT64, &rsessid,
 			"extime", UIMS_DBTYPE_UINT64, &extime,
 			"state", UIMS_DBTYPE_UINT16, &state,
 			"dlgstate", UIMS_DBTYPE_UINT8, &dlgstate,
-			"ocseq", UIMS_DBTYPE_UINT32, &ocseq,
-			"tcseq", UIMS_DBTYPE_UINT32, &tcseq,
 			"method", UIMS_DBTYPE_UINT8, &method,
-			"svcmode", UIMS_DBTYPE_UINT8, &svcmode,
-			"way", UIMS_DBTYPE_UINT8, &way,
-			"opt", UIMS_DBTYPE_UINT32, &opt,
-			"opeer_id", UIMS_DBTYPE_INT32, &opeer_id,
-			"tpeer_id", UIMS_DBTYPE_INT32, &tpeer_id,
-			"call_id", UIMS_DBTYPE_STR, &call_id,
-			"ouser", UIMS_DBTYPE_STR, &ouser,
-			"otag", UIMS_DBTYPE_STR, &otag,
-			"ocontact", UIMS_DBTYPE_STR, &ocontact,
-			"oroute", UIMS_DBTYPE_STR, &oroute,
-			"tuser", UIMS_DBTYPE_STR, &tuser,
-			"ttag", UIMS_DBTYPE_STR, &ttag,
-			"tcontact", UIMS_DBTYPE_STR, &tcontact,
-			"troute", UIMS_DBTYPE_STR, &troute,
-			"tpeer", UIMS_DBTYPE_STR, &tpeer);
+			"network_type", UIMS_DBTYPE_UINT8, &network_type, 
+			"http_session_id", UIMS_DBTYPE_STR, &http_session_id,
+			"calling_number", UIMS_DBTYPE_STR, &calling_number,
+			"called_number", UIMS_DBTYPE_STR, &called_number,
+			"recording", UIMS_DBTYPE_UINT8, &recording, 
+			"subscriber_name", UIMS_DBTYPE_STR, &subscriber_name,
+			"charging_number", UIMS_DBTYPE_STR, &charging_number,
+			"ringbacktone_type", UIMS_DBTYPE_UINT8, &ringbacktone_type, 
+			"waitingment_id", UIMS_DBTYPE_STR, &waitingment_id,
+			"callment_id", UIMS_DBTYPE_STR, &callment_id,
+			"calling_cid", UIMS_DBTYPE_STR, &calling_cid,
+			"called_cid", UIMS_DBTYPE_STR, &called_cid,
+			"hostcode", UIMS_DBTYPE_UINT8, &hostcode, 
+			"ocseq", UIMS_DBTYPE_UINT32, &ocseq,
+			"ocall_id", UIMS_DBTYPE_STR, &ocall_id,
+			"ofrom", UIMS_DBTYPE_STR, &ofrom,
+			"oto", UIMS_DBTYPE_STR, &oto,
+			"tcseq", UIMS_DBTYPE_UINT32, &tcseq,
+			"tcall_id", UIMS_DBTYPE_STR, &tcall_id,
+			"tfrom", UIMS_DBTYPE_STR, &tfrom,
+			"tto", UIMS_DBTYPE_STR, &tto,
+			"mscseq", UIMS_DBTYPE_UINT32, &mscseq,
+			"mscall_id", UIMS_DBTYPE_STR, &mscall_id,
+			"msfrom", UIMS_DBTYPE_STR, &msfrom,
+			"msto", UIMS_DBTYPE_STR, &msto	
+			);
 	if( rv < UIMS_DB_SUCCESS) {
 		ux_log(UXL_MIN, "Failed to read value from result set. (stmtid=%s, err=%d,%s)",
 				stmtid, rv, uims_dberr_to_str(rv));
@@ -1066,14 +1075,20 @@ clicktocall_dlgsess_t* clicktocall_dlgdao_find( clicktocall_dlgdao_t *dao,
 		return NULL;
 	}
 
-	ux_log(UXL_INFO, "[DLGSESS:FIND] (sessid=%llu, state=%d, dlgstate=%d, extime=%llu, ocseq=%u, tcseq=%u, method=%u, "
-			"svcmode=%d, way=%d, opt=%u, opeer_id=%d, tpeer_id=%d, call_id=%s, ouser=%s, otag=%s, ocontact=%s, "
-			"oroute=%s, tuser=%s, ttag=%s, tcontact=%s, troute=%s, tpeer=%s)",
-			(unsigned long long)rsessid, state, dlgstate, (unsigned long long)extime, ocseq, tcseq, method,
-			svcmode, way, opt, opeer_id,
-			tpeer_id, call_id ? call_id : "NULL", ouser ? ouser : "NULL", otag ? otag : "NULL", ocontact ? ocontact : "NULL",
-			oroute ? oroute : "NULL", tuser ? tuser : "NULL", ttag ? ttag : "NULL", tcontact ? tcontact : "NULL",
-			troute ? troute : "NULL", tpeer ? tpeer : "NULL");
+	ux_log(UXL_INFO, "[DLGSESS:FIND] (sess_id=%llu, state=%d, extime=%llu, dlgstate=%d, method=%u, "
+			"network_type=%u, http_session_id=%s, calling_number=%s, called_number=%s, recording=%u, "
+			"subscriber_name=%s, charging_number=%s, ringbacktone_type=%u, waitingment_id=%s, "
+			"callment_id=%s, calling_cid=%s, called_cid=%s, hostcode=%u, "
+			"ocseq=%d, ostag=%s, ocall_id=%s, ofrom=%s, oto=%s, "
+			"tcseq=%d, tstag=%s, tcall_id=%s, tfrom=%s, tto=%s, "
+			"mscseq=%d, msstag=%s, mscall_id=%s, msfrom=%s, msto=%s)",
+			(unsigned long long)rsessid, state, (unsigned long long)extime, dlgstate, method, 
+			network_type, http_session_id ? http_session_id : "NULL", calling_number ? calling_number : "NULL", called_number ? called_number : "NULL", recording, 
+			subscriber_name ? subscriber_name : "NULL", charging_number ? charging_number : "NULL", ringbacktone_type, waitingment_id ? waitingment_id : "NULL",
+			callment_id ? callment_id : "NULL", calling_cid ? calling_cid : "NULL", called_cid ? called_cid : "NULL", hostcode,
+			ocseq, ostag ? ostag : "NULL", ocall_id ? ocall_id : "NULL", ofrom ? ofrom : "NULL", oto ? oto : "NULL",
+			tcseq, tstag ? tstag : "NULL", tcall_id ? tcall_id : "NULL", tfrom ? tfrom : "NULL", tto ? tto : "NULL",
+			mscseq, msstag ? msstag : "NULL", mscall_id ? mscall_id : "NULL", msfrom ? msfrom : "NULL", msto ? msto : "NULL");
 
 	sess = uims_sessmgr_alloc_with_id( sessmgr, service, sessid, &rv);
 	if( sess == NULL) {
@@ -1095,71 +1110,77 @@ clicktocall_dlgsess_t* clicktocall_dlgdao_find( clicktocall_dlgdao_t *dao,
 	allocator = uims_sess_get_allocator(sess);
 	sesshdr = uims_sess_get_sesshdr( sess);
 	sesshdr->state = state;
-	dlgsess->dlgstate = dlgstate;
 	dlgsess->extime = extime;
-	dlgsess->ocseq = ocseq;
-	dlgsess->tcseq = tcseq;
+	dlgsess->dlgstate = dlgstate;
 	dlgsess->method = method;
-	/*
-	dlgsess->rtpolicy->svcmode = svcmode;
-	dlgsess->rtpolicy->way = way;
-	dlgsess->rtpolicy->opt = opt;
-	dlgsess->rtpolicy->opeer_id = opeer_id;
-	dlgsess->rtpolicy->tpeer_id = tpeer_id;
-	*/
-	uims_sess_set_call_id( sess, call_id);
-	uims_sess_set_ltag( sess, otag);
-	uims_sess_set_rtag( sess, ttag);
-	dlgsess->tpeer = ux_str_dup( tpeer,  allocator);
 
-/*
-	if( ouser && ouser[0]) {
-		dlgsess->ouser = (usip_from_hdr_t*)usip_hdr_create_v(
-								allocator, usip_from_hdef(), ouser);
-	} else {
-		dlgsess->ouser = NULL;
-	}
-	if( ocontact && ocontact[0]) {
-		dlgsess->ocontact = (usip_contact_hdr_t*)usip_hdr_create_v(
-								allocator, usip_contact_hdef(), ocontact);
-	} else {
-		dlgsess->ocontact = NULL;
-	}
-	if( oroute && oroute[0]) {
-		dlgsess->oroute = (usip_route_hdr_t*)usip_hdr_create_v(
-								allocator, usip_route_hdef(), oroute);
-	} else {
-		dlgsess->oroute = NULL;
-	}
-	if( tuser && tuser[0]) {
-		dlgsess->tuser = (usip_from_hdr_t*)usip_hdr_create_v(
-								allocator, usip_from_hdef(), tuser);
-	} else {
-		dlgsess->tuser = NULL;
-	}
-	if( tcontact && tcontact[0]) {
-		dlgsess->tcontact = (usip_contact_hdr_t*)usip_hdr_create_v(
-								allocator, usip_contact_hdef(), tcontact);
-	} else {
-		dlgsess->tcontact = NULL;
-	}
-	if( troute && troute[0]) {
-		dlgsess->troute = (usip_route_hdr_t*)usip_hdr_create_v(
-								allocator, usip_route_hdef(), troute);
-	} else {
-		dlgsess->troute = NULL;
-	}
+	dlgsess->networkType = network_type;
+	dlgsess->sessionid =  ux_str_dup( http_session_id,  allocator);
+	dlgsess->callingnumber =  ux_str_dup( calling_number,  allocator);
+	dlgsess->callednumber =  ux_str_dup( called_number,  allocator);
+	dlgsess->recording = recording;
+	dlgsess->subscribername =  ux_str_dup( subscriber_name,  allocator);
+	dlgsess->chargingnumber =  ux_str_dup( charging_number,  allocator);
+	dlgsess->ringbacktonetype = ringbacktone_type;
+	dlgsess->watitngmentid =  ux_str_dup( waitingment_id,  allocator);
+	dlgsess->callmentid =  ux_str_dup( callment_id,  allocator);
+	dlgsess->callingcid =  ux_str_dup( calling_cid,  allocator);
+	dlgsess->calledcid =  ux_str_dup( called_cid,  allocator);
+	dlgsess->hostcode = hostcode;
 
-	sippa = dao->routermgr->conf->sippa;
+	sippa = dao->conf->sippa;
 	sipmsg->sessinfo->sessid = sessid; 
-	sipmsg->sessinfo->did = 1;
-	upa_sippa_write_sessinfo( sippa, sipmsg, tag, sizeof(tag));
-	dlgsess->tstag = ux_str_dup( tag, allocator); 
-
 	sipmsg->sessinfo->did = 0;
 	upa_sippa_write_sessinfo( sippa, sipmsg, tag, sizeof(tag));
 	dlgsess->ostag = ux_str_dup( tag, allocator); 
-	*/
+	dlgsess->ocseq = ocseq;
+	dlgsess->ocall_id =  ux_str_dup( ocall_id,  allocator);
+	if( ofrom && ofrom[0]) {
+		dlgsess->ofrom = (usip_from_hdr_t*)usip_hdr_create_v(
+								allocator, usip_from_hdef(), ofrom);
+	} else {
+		dlgsess->ofrom = NULL;
+	}
+	if( oto && oto[0]) {
+		dlgsess->oto = (usip_to_hdr_t*)usip_hdr_create_v(
+								allocator, usip_from_hdef(), oto);
+	} else {
+		dlgsess->oto = NULL;
+	}
+	sipmsg->sessinfo->did = 1;
+	upa_sippa_write_sessinfo( sippa, sipmsg, tag, sizeof(tag));
+	dlgsess->tstag = ux_str_dup( tag, allocator); 
+	dlgsess->tcseq = tcseq;
+	dlgsess->tcall_id =  ux_str_dup( tcall_id,  allocator);
+	if( tfrom && tfrom[0]) {
+		dlgsess->tfrom = (usip_from_hdr_t*)usip_hdr_create_v(
+								allocator, usip_from_hdef(), tfrom);
+	} else {
+		dlgsess->tfrom = NULL;
+	}
+	if( tto && tto[0]) {
+		dlgsess->tto = (usip_to_hdr_t*)usip_hdr_create_v(
+								allocator, usip_to_hdef(), tto);
+	} else {
+		dlgsess->tto = NULL;
+	}
+	sipmsg->sessinfo->did = 2;
+	upa_sippa_write_sessinfo( sippa, sipmsg, tag, sizeof(tag));
+	dlgsess->msstag = ux_str_dup( tag, allocator); 
+	dlgsess->mscseq = mscseq;
+	dlgsess->mscall_id =  ux_str_dup( mscall_id,  allocator);
+	if( msfrom && msfrom[0]) {
+		dlgsess->msfrom = (usip_from_hdr_t*)usip_hdr_create_v(
+								allocator, usip_from_hdef(), msfrom);
+	} else {
+		dlgsess->msfrom = NULL;
+	}
+	if( msto && msto[0]) {
+		dlgsess->msto = (usip_to_hdr_t*)usip_hdr_create_v(
+								allocator, usip_to_hdef(), msto);
+	} else {
+		dlgsess->msto = NULL;
+	}
 
 	uims_dbstmt_close( stmt);
 	return dlgsess;
@@ -1168,7 +1189,7 @@ clicktocall_dlgsess_t* clicktocall_dlgdao_find( clicktocall_dlgdao_t *dao,
 ux_status_t clicktocall_dlgdao_insert( clicktocall_dlgdao_t *dao, clicktocall_dlgsess_t *dlgsess)
 {
 	static const char* stmtid = "DLGSESS:INSERT";
-	static const char* query = "INSERT INTO table1 VALUES(?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?)";
+	static const char* query = "INSERT INTO table1 VALUES(?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?)";
 
 	int rv, bufsize, buflen, idx;
 	uxc_sess_t *uxcsess;
@@ -1176,7 +1197,7 @@ ux_status_t clicktocall_dlgdao_insert( clicktocall_dlgdao_t *dao, clicktocall_dl
 	uims_dbstmt_t *stmt;
 	uims_dbdataset_t *paraset;
 	usip_route_hdr_t *rthdr;
-	char *ouser, *ocontact, *oroute, *tuser, *route;
+	char *ofrom, *oto, *tfrom, *tto, *msfrom, *msto;
 	char *pbuffer, buffer[8192];
 
 	uxcsess = uims_sess_get_uxcsess( dlgsess->sess);
@@ -1190,56 +1211,65 @@ ux_status_t clicktocall_dlgdao_insert( clicktocall_dlgdao_t *dao, clicktocall_dl
 	pbuffer = buffer; 
 	do {
 		buflen = 0;
-		/*
-		ouser = pbuffer+buflen; 
-		if( dlgsess->ouser) {
-			rv = usip_nameaddr_encode( dlgsess->ouser, ouser, bufsize-buflen, 0);
+		ofrom = pbuffer+buflen; 
+		if( dlgsess->ofrom) {
+			rv = usip_nameaddr_encode( dlgsess->ofrom, ofrom, bufsize-buflen, 0);
 			if( rv < 0) return rv; 
 			buflen += rv;
 		} else {
-			if(buflen < bufsize) ouser[0] = '\0';
+			if(buflen < bufsize) ofrom[0] = '\0';
 		}
 		buflen++;
 
-		tuser = pbuffer+buflen; 
-		if( dlgsess->tuser) {
-			rv = usip_nameaddr_encode( dlgsess->tuser, tuser, bufsize-buflen, 0);
+		oto = pbuffer+buflen; 
+		if( dlgsess->oto) {
+			rv = usip_nameaddr_encode( dlgsess->oto, oto, bufsize-buflen, 0);
 			if( rv < 0) return rv; 
 			buflen += rv;
 		} else {
-			if(buflen < bufsize) tuser[0] = '\0';
+			if(buflen < bufsize) oto[0] = '\0';
 		}
 		buflen++;
 	
-		ocontact = pbuffer+buflen; 
-		if( dlgsess->ocontact) {
-			rv = usip_contact_encode( dlgsess->ocontact, ocontact, bufsize-buflen, 0);
+		tfrom = pbuffer+buflen; 
+		if( dlgsess->tfrom) {
+			rv = usip_nameaddr_encode( dlgsess->tfrom, tfrom, bufsize-buflen, 0);
 			if( rv < 0) return rv; 
 			buflen += rv;
 		} else {
-			if(buflen < bufsize) ocontact[0] = '\0';
+			if(buflen < bufsize) tfrom[0] = '\0';
 		}
 		buflen++;
 
-		oroute = pbuffer+buflen; 
-		rthdr = dlgsess->oroute;
-		route = oroute;
-		idx = 0;
-		while( rthdr ) {
-			if( route != oroute ) {
-				if( bufsize > buflen+2) strlcpy(route, ", ", bufsize-buflen);
-				buflen += 2;
-				route += 2;
-			}
-			rv = usip_route_encode( rthdr, route, bufsize-buflen, 0);
+		tto = pbuffer+buflen; 
+		if( dlgsess->tto) {
+			rv = usip_nameaddr_encode( dlgsess->tto, tto, bufsize-buflen, 0);
 			if( rv < 0) return rv; 
 			buflen += rv;
-			route += rv;
-			rthdr = (usip_route_hdr_t*)rthdr->base->next;
+		} else {
+			if(buflen < bufsize) tto[0] = '\0';
 		}
-		if(buflen < bufsize) route[0] = '\0';
 		buflen++;
-		*/
+
+		msfrom = pbuffer+buflen; 
+		if( dlgsess->msfrom) {
+			rv = usip_nameaddr_encode( dlgsess->msfrom, msfrom, bufsize-buflen, 0);
+			if( rv < 0) return rv; 
+			buflen += rv;
+		} else {
+			if(buflen < bufsize) msfrom[0] = '\0';
+		}
+		buflen++;
+
+		msto = pbuffer+buflen; 
+		if( dlgsess->msto) {
+			rv = usip_nameaddr_encode( dlgsess->msto, msto, bufsize-buflen, 0);
+			if( rv < 0) return rv; 
+			buflen += rv;
+		} else {
+			if(buflen < bufsize) msto[0] = '\0';
+		}
+		buflen++;
 
 		if( buflen < bufsize) break;
 		if( pbuffer != buffer) free(pbuffer);
@@ -1265,32 +1295,38 @@ ux_status_t clicktocall_dlgdao_insert( clicktocall_dlgdao_t *dao, clicktocall_dl
 		return UX_ERR_FAILED;
 	}
 
-	rv = uims_dbdataset_write( paraset, 22,
+	rv = uims_dbdataset_write( paraset, 30,
 			//name, type, value, [length:octet only]
 			"sess_id", UIMS_DBTYPE_UINT64, uims_sess_get_id(dlgsess->sess),
 			"extime", UIMS_DBTYPE_UINT64, dlgsess->extime,
 			"state", UIMS_DBTYPE_UINT16, sesshdr->state,
 			"dlgstate", UIMS_DBTYPE_UINT8, dlgsess->dlgstate,
-			"ocseq", UIMS_DBTYPE_UINT32, dlgsess->ocseq,
-			"tcseq", UIMS_DBTYPE_UINT32, dlgsess->tcseq,
 			"method", UIMS_DBTYPE_UINT8, dlgsess->method,
-			/*
-			"svcmode", UIMS_DBTYPE_UINT8, dlgsess->rtpolicy->svcmode,
-			"way", UIMS_DBTYPE_UINT8, dlgsess->rtpolicy->way,
-			"opt", UIMS_DBTYPE_UINT32, dlgsess->rtpolicy->opt,
-			"opeer", UIMS_DBTYPE_INT32, dlgsess->rtpolicy->opeer_id,
-			"tpeer", UIMS_DBTYPE_INT32, dlgsess->rtpolicy->tpeer_id,
-			*/
-			"call_id", UIMS_DBTYPE_STR, uims_sess_get_call_id(dlgsess->sess),
-			"ouser", UIMS_DBTYPE_STR, ouser,
-			"otag", UIMS_DBTYPE_STR, uims_sess_get_ltag(dlgsess->sess),
-			"ocontact", UIMS_DBTYPE_STR, ocontact,
-			"oroute", UIMS_DBTYPE_STR, oroute,
-			"tuser", UIMS_DBTYPE_STR, tuser,
-			"ttag", UIMS_DBTYPE_STR, "",
-			"tcontact", UIMS_DBTYPE_STR, "",
-			"troute", UIMS_DBTYPE_STR, "",
-			"tpeer", UIMS_DBTYPE_STR, dlgsess->tpeer ? dlgsess->tpeer : "");
+			"network_type", UIMS_DBTYPE_UINT8, dlgsess->networkType, 
+			"http_session_id", UIMS_DBTYPE_STR, dlgsess->sessionid,
+			"calling_number", UIMS_DBTYPE_STR, dlgsess->callingnumber,
+			"called_number", UIMS_DBTYPE_STR, dlgsess->callednumber,
+			"recording", UIMS_DBTYPE_UINT8, dlgsess->recording, 
+			"subscriber_name", UIMS_DBTYPE_STR, dlgsess->subscribername ? dlgsess->subscribername : "",
+			"charging_number", UIMS_DBTYPE_STR, dlgsess->chargingnumber ? dlgsess->chargingnumber : "",
+			"ringbacktone_type", UIMS_DBTYPE_UINT8, dlgsess->ringbacktonetype, 
+			"waitingment_id", UIMS_DBTYPE_STR, dlgsess->watitngmentid ? dlgsess->watitngmentid : "",
+			"callment_id", UIMS_DBTYPE_STR, dlgsess->callmentid ? dlgsess->callmentid : "",
+			"calling_cid", UIMS_DBTYPE_STR, dlgsess->callingcid ? dlgsess->callingcid : "",
+			"called_cid", UIMS_DBTYPE_STR, dlgsess->calledcid ? dlgsess->calledcid : "",
+			"hostcode", UIMS_DBTYPE_UINT8, dlgsess->hostcode, 
+			"ocseq", UIMS_DBTYPE_UINT32, dlgsess->ocseq,
+			"ocall_id", UIMS_DBTYPE_STR, dlgsess->ocall_id,
+			"ofrom", UIMS_DBTYPE_STR, ofrom,
+			"oto", UIMS_DBTYPE_STR, oto,
+			"tcseq", UIMS_DBTYPE_UINT32, dlgsess->tcseq,
+			"tcall_id", UIMS_DBTYPE_STR, dlgsess->tcall_id,
+			"tfrom", UIMS_DBTYPE_STR, tfrom,
+			"tto", UIMS_DBTYPE_STR, tto,
+			"mscseq", UIMS_DBTYPE_UINT32, dlgsess->mscseq,
+			"mscall_id", UIMS_DBTYPE_STR, dlgsess->mscall_id,
+			"msfrom", UIMS_DBTYPE_STR, msfrom,
+			"msto", UIMS_DBTYPE_STR, msto);
 	if( rv < UIMS_DB_SUCCESS) {
 		ux_log(UXL_MIN, "Failed to set parameters to statement. (stmtid=%s, err=%d,%s)",
 				stmtid, rv, uims_dberr_to_str(rv));
@@ -1367,17 +1403,37 @@ ux_status_t clicktocall_dlgdao_update( clicktocall_dlgdao_t *dao, clicktocall_dl
 {
 	dlgsess->extime = time(NULL);
 
-	if( dlgsess->dlgstate < CLICKTOCALL_DLGSTATE_PROCEEDING) {
+	if( dlgsess->dlgstate < CLICKTOCALL_DLGSTATE_CALLING_PROCEEDING) {
 		return UX_SUCCESS;
-	} else if( dlgsess->dlgstate < CLICKTOCALL_DLGSTATE_ESTABLISHED) {
+	} else if( dlgsess->dlgstate == CLICKTOCALL_DLGSTATE_CALLING_PROCEEDING) {
 		if( dlgsess->prevstate != dlgsess->dlgstate) {
 			dlgsess->prevstate = dlgsess->dlgstate;
-			return clicktocall_dlgdao_update_p( dao, dlgsess);
+			return clicktocall_dlgdao_update_calling_p( dao, dlgsess);
 		}
-	} else if( dlgsess->dlgstate == CLICKTOCALL_DLGSTATE_ESTABLISHED) {
+	} else if( dlgsess->dlgstate == CLICKTOCALL_DLGSTATE_CALLED_PROCEEDING) {
+		if( dlgsess->prevstate != dlgsess->dlgstate) {
+			dlgsess->prevstate = dlgsess->dlgstate;
+			return clicktocall_dlgdao_update_called_p( dao, dlgsess);
+		}	
+	} else if( dlgsess->dlgstate == CLICKTOCALL_DLGSTATE_MS_PROCEEDING) {
+		if( dlgsess->prevstate != dlgsess->dlgstate) {
+			dlgsess->prevstate = dlgsess->dlgstate;
+			return clicktocall_dlgdao_update_ms_p( dao, dlgsess);
+		}		
+	} else if( dlgsess->dlgstate == CLICKTOCALL_DLGSTATE_CALLING_ESTABLISHED) {
 		if( dlgsess->hasreq) {
 			dlgsess->hasreq = UX_FALSE;
-			return clicktocall_dlgdao_update_e( dao, dlgsess);
+			return clicktocall_dlgdao_update_calling_e( dao, dlgsess);
+		}
+	} else if( dlgsess->dlgstate == CLICKTOCALL_DLGSTATE_CALLED_ESTABLISHED) {
+		if( dlgsess->hasreq) {
+			dlgsess->hasreq = UX_FALSE;
+			return clicktocall_dlgdao_update_called_e( dao, dlgsess);
+		}
+	} else if( dlgsess->dlgstate == CLICKTOCALL_DLGSTATE_MS_ESTABLISHED) {
+		if( dlgsess->hasreq) {
+			dlgsess->hasreq = UX_FALSE;
+			return clicktocall_dlgdao_update_ms_e( dao, dlgsess);
 		}
 	}
 
@@ -1385,15 +1441,15 @@ ux_status_t clicktocall_dlgdao_update( clicktocall_dlgdao_t *dao, clicktocall_dl
 }
 
 /**
- * @internal proceeding 상태에서 session을 update 한다.
+ * @internal calling proceeding 상태에서 session을 update 한다.
  * @param dao DAO
  * @param dlgsess dialog session
  */
-ux_status_t clicktocall_dlgdao_update_p( clicktocall_dlgdao_t *dao, clicktocall_dlgsess_t *dlgsess)
+ux_status_t clicktocall_dlgdao_update_calling_p( clicktocall_dlgdao_t *dao, clicktocall_dlgsess_t *dlgsess)
 {
-	static const char* stmtid = "DLGSESS:UPDATE_P";
-	static const char* query = "UPDATE table1 SET column1=?, column2=?, column3=?, column4=?, "
-				"column5=?, column18=?, column19=?, column20=? WHERE index0=?";
+	static const char* stmtid = "DLGSESS:UPDATE_CALLING_P";
+	static const char* query = "UPDATE table1 SET column1=?, column2=?, column3=?, "
+				"column18=?, column19=?, column20=?, column21=? WHERE index0=?";
 
 	int rv, bufsize, buflen;
 	uxc_sess_t *uxcsess;
@@ -1401,13 +1457,13 @@ ux_status_t clicktocall_dlgdao_update_p( clicktocall_dlgdao_t *dao, clicktocall_
 	uims_dbstmt_t *stmt;
 	uims_dbdataset_t *paraset;
 	usip_route_hdr_t *rthdr;
-	char *tcontact, *troute, *route;
+	char *ofrom, *oto;
 	char *pbuffer, buffer[8192];
 
 	uxcsess = uims_sess_get_uxcsess( dlgsess->sess);
 	sesshdr = uxc_sess_get_hdr( uxcsess);
 
-	ux_log(UXL_INFO, "CLICKTOCALL DLGSESS UPDATE. (sessid=%llu, svcst=%d, state=%s, extime=%lu)",
+	ux_log(UXL_INFO, "CLICKTOCALL DLGSESS CALLING UPDATE. (sessid=%llu, svcst=%d, state=%s, extime=%lu)",
 			(unsigned long long)uims_sess_get_id( dlgsess->sess), sesshdr->state,
 			clicktocall_dlgstate_to_str( dlgsess->dlgstate), dlgsess->extime);
 
@@ -1415,42 +1471,25 @@ ux_status_t clicktocall_dlgdao_update_p( clicktocall_dlgdao_t *dao, clicktocall_
 	pbuffer = buffer; 
 	do {
 		buflen = 0;
-	
-	/*
-		tcontact = pbuffer+buflen; 
-		if( dlgsess->tcontact) {
-			rv = usip_contact_encode( dlgsess->tcontact, tcontact, bufsize-buflen, 0);
-			if( rv < 0) {
-				ux_log(UXL_MAJ, "Failed to encode contact. (err=%d,%s)", rv, usip_errstr(rv));
-				return rv; 
-			}
+		ofrom = pbuffer+buflen; 
+		if( dlgsess->ofrom) {
+			rv = usip_nameaddr_encode( dlgsess->ofrom, ofrom, bufsize-buflen, 0);
+			if( rv < 0) return rv; 
 			buflen += rv;
 		} else {
-			if(buflen < bufsize) tcontact[0] = '\0';
+			if(buflen < bufsize) ofrom[0] = '\0';
 		}
 		buflen++;
 
-		troute = pbuffer+buflen; 
-		rthdr = dlgsess->troute;
-		route = troute;
-		while( rthdr ) {
-			if( route != troute ) {
-				if( bufsize > buflen+2) strlcpy(route, ", ", bufsize-buflen);
-				buflen += 2;
-				route += 2;
-			}
-			rv = usip_route_encode( rthdr, route, bufsize-buflen, 0);
-			if( rv < 0) {
-				ux_log(UXL_MAJ, "Failed to encode contact. (err=%d,%s)", rv, usip_errstr(rv));
-				return rv; 
-			}
+		oto = pbuffer+buflen; 
+		if( dlgsess->oto) {
+			rv = usip_nameaddr_encode( dlgsess->oto, oto, bufsize-buflen, 0);
+			if( rv < 0) return rv; 
 			buflen += rv;
-			route += rv;
-			rthdr = (usip_route_hdr_t*)rthdr->base->next;
+		} else {
+			if(buflen < bufsize) oto[0] = '\0';
 		}
-		if(buflen < bufsize) route[0] = '\0';
 		buflen++;
-		*/
 
 		if( buflen < bufsize) break;
 		if( pbuffer != buffer) free(pbuffer);
@@ -1477,23 +1516,24 @@ ux_status_t clicktocall_dlgdao_update_p( clicktocall_dlgdao_t *dao, clicktocall_
 		return UX_ERR_FAILED;
 	}
 
-	ux_log(UXL_DBG1, "DLGSESS:UPDATE_P (sess_id=%llu, state=%d, dlgstate=%d, extime=%llu, ocseq=%u, "
-			"tcseq=%u, ttag=%s)",
+	ux_log(UXL_DBG1, "DLGSESS:UPDATE_CALLING_P (sess_id=%llu, state=%d, dlgstate=%d, extime=%llu, "
+			"ocseq=%u, ocall_id=%s, ofrom=%s, oto=%s)",
 			(unsigned long long)uims_sess_get_id( dlgsess->sess), sesshdr->state, dlgsess->dlgstate,
-			(unsigned long long)dlgsess->extime, dlgsess->ocseq, dlgsess->tcseq,
-			uims_sess_get_rtag(dlgsess->sess));
+			(unsigned long long)dlgsess->extime, 
+			dlgsess->tcseq, dlgsess->tcall_id, ofrom, oto);
 
-	rv = uims_dbdataset_write( paraset, 9,
+	rv = uims_dbdataset_write( paraset, 8,
 			//name, type, value, [length:octet only]
 			"extime", UIMS_DBTYPE_UINT64, dlgsess->extime,
 			"state", UIMS_DBTYPE_UINT16, sesshdr->state,
 			"dlgstate", UIMS_DBTYPE_UINT8, dlgsess->dlgstate,
 			"ocseq", UIMS_DBTYPE_UINT32, dlgsess->ocseq,
-			"tcseq", UIMS_DBTYPE_UINT32, dlgsess->tcseq,
-			"ttag", UIMS_DBTYPE_STR, uims_sess_get_rtag(dlgsess->sess),
-			//"tcontact", UIMS_DBTYPE_STR, tcontact,
-			//"troute", UIMS_DBTYPE_STR, troute, 
+			"ocall_id", UIMS_DBTYPE_STR, dlgsess->ocall_id,
+			"ofrom", UIMS_DBTYPE_STR, ofrom,
+			"oto", UIMS_DBTYPE_STR, oto,
 			"sess_id", UIMS_DBTYPE_UINT64, uims_sess_get_id( dlgsess->sess));
+
+	
 
 	if( rv < UIMS_DB_SUCCESS) {
 		ux_log(UXL_MIN, "Failed to set parameters to statement. (stmtid=%s, err=%d,%s)",
@@ -1515,8 +1555,8 @@ ux_status_t clicktocall_dlgdao_update_p( clicktocall_dlgdao_t *dao, clicktocall_
 	uims_dbstmt_close( stmt);
 	if( pbuffer != buffer) free( pbuffer);
 
-	if( dlgsess->dlgstate >= CLICKTOCALL_DLGSTATE_ACCEPTED) { 
-		dlgsess->dlgstate = CLICKTOCALL_DLGSTATE_ESTABLISHED;
+	if( dlgsess->dlgstate >= CLICKTOCALL_DLGSTATE_CALLING_ACCEPTED) { 
+		dlgsess->dlgstate = CLICKTOCALL_DLGSTATE_CALLING_ESTABLISHED;
 		dlgsess->prevstate = dlgsess->dlgstate;
 	}
 	
@@ -1524,14 +1564,258 @@ ux_status_t clicktocall_dlgdao_update_p( clicktocall_dlgdao_t *dao, clicktocall_
 }
 
 /**
- * @internal established 상태에서 session을 update 한다.
+ * @internal called proceeding 상태에서 session을 update 한다.
  * @param dao DAO
  * @param dlgsess dialog session
  */
-ux_status_t clicktocall_dlgdao_update_e( clicktocall_dlgdao_t *dao, clicktocall_dlgsess_t *dlgsess)
+ux_status_t clicktocall_dlgdao_update_called_p( clicktocall_dlgdao_t *dao, clicktocall_dlgsess_t *dlgsess)
 {
-	static const char* stmtid = "DLGSESS:UPDATE_E";
-	static const char* query = "UPDATE table1 SET column1=?, column2=?, column3=?, column4=?, column5=? WHERE index0=?";
+	static const char* stmtid = "DLGSESS:UPDATE_CALLED_P";
+	static const char* query = "UPDATE table1 SET column1=?, column2=?, column3=?, "
+				"column22=?, column23=?, column24=?, column25=? WHERE index0=?";
+
+	int rv, bufsize, buflen;
+	uxc_sess_t *uxcsess;
+	uxc_sesshdr_t *sesshdr;
+	uims_dbstmt_t *stmt;
+	uims_dbdataset_t *paraset;
+	usip_route_hdr_t *rthdr;
+	char *tfrom, *tto;
+	char *pbuffer, buffer[8192];
+
+	uxcsess = uims_sess_get_uxcsess( dlgsess->sess);
+	sesshdr = uxc_sess_get_hdr( uxcsess);
+
+	ux_log(UXL_INFO, "CLICKTOCALL DLGSESS CALLED UPDATE. (sessid=%llu, svcst=%d, state=%s, extime=%lu)",
+			(unsigned long long)uims_sess_get_id( dlgsess->sess), sesshdr->state,
+			clicktocall_dlgstate_to_str( dlgsess->dlgstate), dlgsess->extime);
+
+	bufsize = sizeof(buffer); 
+	pbuffer = buffer; 
+	do {
+		buflen = 0;
+		tfrom = pbuffer+buflen; 
+		if( dlgsess->tfrom) {
+			rv = usip_nameaddr_encode( dlgsess->tfrom, tfrom, bufsize-buflen, 0);
+			if( rv < 0) return rv; 
+			buflen += rv;
+		} else {
+			if(buflen < bufsize) tfrom[0] = '\0';
+		}
+		buflen++;
+
+		tto = pbuffer+buflen; 
+		if( dlgsess->tto) {
+			rv = usip_nameaddr_encode( dlgsess->tto, tto, bufsize-buflen, 0);
+			if( rv < 0) return rv; 
+			buflen += rv;
+		} else {
+			if(buflen < bufsize) tto[0] = '\0';
+		}
+		buflen++;
+
+		if( buflen < bufsize) break;
+		if( pbuffer != buffer) free(pbuffer);
+		bufsize = buflen+1;
+		pbuffer = malloc( bufsize);
+		if(pbuffer == NULL) {
+			ux_log(UXL_MAJ, "Failed to allocate update buffer.");
+			return UIMS_DBERR_NO_MEMORY;
+		}
+	} while(buflen < bufsize);
+
+	stmt = uims_db_open_stmt( dao->db, stmtid, query, &rv); 
+	if( stmt == NULL) {
+		ux_log(UXL_MIN, "Failed to open statement. (stmtid=%s)", stmtid);
+		if( pbuffer != buffer) free( pbuffer);
+		return UX_ERR_FAILED;
+	}
+
+	paraset = uims_dbstmt_get_paraset( stmt);
+	if( paraset == NULL) {
+		ux_log(UXL_MIN, "Failed to get parameter set from statement. (stmtid=%s)", stmtid);
+		if( pbuffer != buffer) free( pbuffer);
+		uims_dbstmt_close( stmt);
+		return UX_ERR_FAILED;
+	}
+
+	ux_log(UXL_DBG1, "DLGSESS:UPDATE_CALLED_P (sess_id=%llu, state=%d, dlgstate=%d, extime=%llu, "
+			"tcseq=%u, tcall_id=%s, tfrom=%s, tto=%s)",
+			(unsigned long long)uims_sess_get_id( dlgsess->sess), sesshdr->state, dlgsess->dlgstate,
+			(unsigned long long)dlgsess->extime, 
+			dlgsess->tcseq, dlgsess->tcall_id, tfrom, tto);
+
+	rv = uims_dbdataset_write( paraset, 8,
+			//name, type, value, [length:octet only]
+			"extime", UIMS_DBTYPE_UINT64, dlgsess->extime,
+			"state", UIMS_DBTYPE_UINT16, sesshdr->state,
+			"dlgstate", UIMS_DBTYPE_UINT8, dlgsess->dlgstate,
+			"tcseq", UIMS_DBTYPE_UINT32, dlgsess->tcseq,
+			"tcall_id", UIMS_DBTYPE_STR, dlgsess->tcall_id,
+			"tfrom", UIMS_DBTYPE_STR, tfrom,
+			"tto", UIMS_DBTYPE_STR, tto,
+			"sess_id", UIMS_DBTYPE_UINT64, uims_sess_get_id( dlgsess->sess));
+	
+
+	if( rv < UIMS_DB_SUCCESS) {
+		ux_log(UXL_MIN, "Failed to set parameters to statement. (stmtid=%s, err=%d,%s)",
+				stmtid, rv, uims_dberr_to_str(rv));
+		uims_dbstmt_close( stmt);
+		if( pbuffer != buffer) free( pbuffer);
+		return UX_ERR_FAILED;
+	}
+
+	rv = uims_dbstmt_execute( stmt);
+	if( rv < UIMS_DB_SUCCESS) {
+		ux_log(UXL_MIN, "Failed to execute statement. (stmtid=%s, err=%d,%s)",
+				stmtid, rv, uims_dberr_to_str(rv));
+		uims_dbstmt_close( stmt);
+		if( pbuffer != buffer) free( pbuffer);
+		return UX_ERR_FAILED;
+	}
+
+	uims_dbstmt_close( stmt);
+	if( pbuffer != buffer) free( pbuffer);
+
+	if( dlgsess->dlgstate >= CLICKTOCALL_DLGSTATE_CALLED_ACCEPTED) { 
+		dlgsess->dlgstate = CLICKTOCALL_DLGSTATE_CALLED_ESTABLISHED;
+		dlgsess->prevstate = dlgsess->dlgstate;
+	}
+	
+	return UX_SUCCESS;
+}
+
+/**
+ * @internal ms proceeding 상태에서 session을 update 한다.
+ * @param dao DAO
+ * @param dlgsess dialog session
+ */
+ux_status_t clicktocall_dlgdao_update_ms_p( clicktocall_dlgdao_t *dao, clicktocall_dlgsess_t *dlgsess)
+{
+	static const char* stmtid = "DLGSESS:UPDATE_MS_P";
+	static const char* query = "UPDATE table1 SET column1=?, column2=?, column3=?, "
+				"column26=?, column27=?, column28=?, column29=? WHERE index0=?";
+
+	int rv, bufsize, buflen;
+	uxc_sess_t *uxcsess;
+	uxc_sesshdr_t *sesshdr;
+	uims_dbstmt_t *stmt;
+	uims_dbdataset_t *paraset;
+	usip_route_hdr_t *rthdr;
+	char *msfrom, *msto;
+	char *pbuffer, buffer[8192];
+
+	uxcsess = uims_sess_get_uxcsess( dlgsess->sess);
+	sesshdr = uxc_sess_get_hdr( uxcsess);
+
+	ux_log(UXL_INFO, "CLICKTOCALL DLGSESS MS UPDATE. (sessid=%llu, svcst=%d, state=%s, extime=%lu)",
+			(unsigned long long)uims_sess_get_id( dlgsess->sess), sesshdr->state,
+			clicktocall_dlgstate_to_str( dlgsess->dlgstate), dlgsess->extime);
+
+	bufsize = sizeof(buffer); 
+	pbuffer = buffer; 
+	do {
+		buflen = 0;
+		msfrom = pbuffer+buflen; 
+		if( dlgsess->msfrom) {
+			rv = usip_nameaddr_encode( dlgsess->msfrom, msfrom, bufsize-buflen, 0);
+			if( rv < 0) return rv; 
+			buflen += rv;
+		} else {
+			if(buflen < bufsize) msfrom[0] = '\0';
+		}
+		buflen++;
+
+		msto = pbuffer+buflen; 
+		if( dlgsess->msto) {
+			rv = usip_nameaddr_encode( dlgsess->msto, msto, bufsize-buflen, 0);
+			if( rv < 0) return rv; 
+			buflen += rv;
+		} else {
+			if(buflen < bufsize) msto[0] = '\0';
+		}
+		buflen++;
+
+		if( buflen < bufsize) break;
+		if( pbuffer != buffer) free(pbuffer);
+		bufsize = buflen+1;
+		pbuffer = malloc( bufsize);
+		if(pbuffer == NULL) {
+			ux_log(UXL_MAJ, "Failed to allocate update buffer.");
+			return UIMS_DBERR_NO_MEMORY;
+		}
+	} while(buflen < bufsize);
+
+	stmt = uims_db_open_stmt( dao->db, stmtid, query, &rv); 
+	if( stmt == NULL) {
+		ux_log(UXL_MIN, "Failed to open statement. (stmtid=%s)", stmtid);
+		if( pbuffer != buffer) free( pbuffer);
+		return UX_ERR_FAILED;
+	}
+
+	paraset = uims_dbstmt_get_paraset( stmt);
+	if( paraset == NULL) {
+		ux_log(UXL_MIN, "Failed to get parameter set from statement. (stmtid=%s)", stmtid);
+		if( pbuffer != buffer) free( pbuffer);
+		uims_dbstmt_close( stmt);
+		return UX_ERR_FAILED;
+	}
+
+	ux_log(UXL_DBG1, "DLGSESS:UPDATE_MS_P (sess_id=%llu, state=%d, dlgstate=%d, extime=%llu, "
+			"mscseq=%u, mscall_id=%s, msfrom=%s, msto=%s)",
+			(unsigned long long)uims_sess_get_id( dlgsess->sess), sesshdr->state, dlgsess->dlgstate,
+			(unsigned long long)dlgsess->extime, 
+			dlgsess->mscseq, dlgsess->mscall_id, msfrom, msto);
+
+	rv = uims_dbdataset_write( paraset, 8,
+			//name, type, value, [length:octet only]
+			"extime", UIMS_DBTYPE_UINT64, dlgsess->extime,
+			"state", UIMS_DBTYPE_UINT16, sesshdr->state,
+			"dlgstate", UIMS_DBTYPE_UINT8, dlgsess->dlgstate,
+			"mscseq", UIMS_DBTYPE_UINT32, dlgsess->mscseq,
+			"mscall_id", UIMS_DBTYPE_STR, dlgsess->mscall_id,
+			"msfrom", UIMS_DBTYPE_STR, msfrom,
+			"msto", UIMS_DBTYPE_STR, msto,
+			"sess_id", UIMS_DBTYPE_UINT64, uims_sess_get_id( dlgsess->sess));
+	
+
+	if( rv < UIMS_DB_SUCCESS) {
+		ux_log(UXL_MIN, "Failed to set parameters to statement. (stmtid=%s, err=%d,%s)",
+				stmtid, rv, uims_dberr_to_str(rv));
+		uims_dbstmt_close( stmt);
+		if( pbuffer != buffer) free( pbuffer);
+		return UX_ERR_FAILED;
+	}
+
+	rv = uims_dbstmt_execute( stmt);
+	if( rv < UIMS_DB_SUCCESS) {
+		ux_log(UXL_MIN, "Failed to execute statement. (stmtid=%s, err=%d,%s)",
+				stmtid, rv, uims_dberr_to_str(rv));
+		uims_dbstmt_close( stmt);
+		if( pbuffer != buffer) free( pbuffer);
+		return UX_ERR_FAILED;
+	}
+
+	uims_dbstmt_close( stmt);
+	if( pbuffer != buffer) free( pbuffer);
+
+	if( dlgsess->dlgstate >= CLICKTOCALL_DLGSTATE_MS_ACCEPTED) { 
+		dlgsess->dlgstate = CLICKTOCALL_DLGSTATE_MS_ESTABLISHED;
+		dlgsess->prevstate = dlgsess->dlgstate;
+	}
+	
+	return UX_SUCCESS;
+}
+
+/**
+ * @internal calling established 상태에서 session을 update 한다.
+ * @param dao DAO
+ * @param dlgsess dialog session
+ */
+ux_status_t clicktocall_dlgdao_update_calling_e( clicktocall_dlgdao_t *dao, clicktocall_dlgsess_t *dlgsess)
+{
+	static const char* stmtid = "DLGSESS:UPDATE_CALLING_E";
+	static const char* query = "UPDATE table1 SET column1=?, column2=?, column3=?, column18=? WHERE index0=?";
 
 	int rv;
 	uxc_sess_t *uxcsess;
@@ -1542,7 +1826,7 @@ ux_status_t clicktocall_dlgdao_update_e( clicktocall_dlgdao_t *dao, clicktocall_
 	uxcsess = uims_sess_get_uxcsess( dlgsess->sess);
 	sesshdr = uxc_sess_get_hdr( uxcsess);
 
-	ux_log(UXL_INFO, "CLICKTOCALL DLGSESS UPDATE. (sessid=%llu, svcst=%d, state=ESTABLISHED, extime=%lu)",
+	ux_log(UXL_INFO, "CLICKTOCALL DLGSESS CALLING UPDATE. (sessid=%llu, svcst=%d, state=CALLING_ESTABLISHED, extime=%lu)",
 			(unsigned long long)uims_sess_get_id( dlgsess->sess), sesshdr->state, dlgsess->extime);
 
 	stmt = uims_db_open_stmt( dao->db, stmtid, query, &rv); 
@@ -1558,16 +1842,82 @@ ux_status_t clicktocall_dlgdao_update_e( clicktocall_dlgdao_t *dao, clicktocall_
 		return UX_ERR_FAILED;
 	}
 
-	ux_log(UXL_DBG1, "DLGSESS:UPDATE_E (sess_id=%llu, state=%d, dlgstate=%d, extime=%llu, ocseq=%u, tcseq=%u)",
+	ux_log(UXL_DBG1, "DLGSESS:UPDATE_CALLING_E (sess_id=%llu, state=%d, dlgstate=%d, extime=%llu, ocseq=%u)",
 			(unsigned long long)uims_sess_get_id( dlgsess->sess), sesshdr->state, dlgsess->dlgstate,
-			(unsigned long long)dlgsess->extime, dlgsess->ocseq, dlgsess->tcseq);
+			(unsigned long long)dlgsess->extime, dlgsess->ocseq);
 
-	rv = uims_dbdataset_write( paraset, 6,
+	rv = uims_dbdataset_write( paraset, 5,
 			//name, type, value, [length:octet only]
 			"extime", UIMS_DBTYPE_UINT64, dlgsess->extime,
 			"state", UIMS_DBTYPE_UINT16, sesshdr->state,
 			"dlgstate", UIMS_DBTYPE_UINT8, dlgsess->dlgstate,
 			"ocseq", UIMS_DBTYPE_UINT32, dlgsess->ocseq,
+			"sess_id", UIMS_DBTYPE_UINT64, uims_sess_get_id( dlgsess->sess));
+
+	if( rv < UIMS_DB_SUCCESS) {
+		ux_log(UXL_MIN, "Failed to set parameters to statement. (stmtid=%s, err=%d,%s)",
+				stmtid, rv, uims_dberr_to_str(rv));
+		uims_dbstmt_close( stmt);
+		return UX_ERR_FAILED;
+	}
+
+	rv = uims_dbstmt_execute( stmt);
+	if( rv < UIMS_DB_SUCCESS) {
+		ux_log(UXL_MIN, "Failed to execute statement. (stmtid=%s, err=%d,%s)",
+				stmtid, rv, uims_dberr_to_str(rv));
+		uims_dbstmt_close( stmt);
+		return UX_ERR_FAILED;
+	}
+
+	uims_dbstmt_close( stmt);
+
+	return UX_SUCCESS;
+}
+
+/**
+ * @internal called established 상태에서 session을 update 한다.
+ * @param dao DAO
+ * @param dlgsess dialog session
+ */
+ux_status_t clicktocall_dlgdao_update_called_e( clicktocall_dlgdao_t *dao, clicktocall_dlgsess_t *dlgsess)
+{
+	static const char* stmtid = "DLGSESS:UPDATE_CALLED_E";
+	static const char* query = "UPDATE table1 SET column1=?, column2=?, column3=?, column22=? WHERE index0=?";
+
+	int rv;
+	uxc_sess_t *uxcsess;
+	uxc_sesshdr_t *sesshdr;
+	uims_dbstmt_t *stmt;
+	uims_dbdataset_t *paraset;
+
+	uxcsess = uims_sess_get_uxcsess( dlgsess->sess);
+	sesshdr = uxc_sess_get_hdr( uxcsess);
+
+	ux_log(UXL_INFO, "CLICKTOCALL DLGSESS CALLING UPDATE. (sessid=%llu, svcst=%d, state=CALLED_ESTABLISHED, extime=%lu)",
+			(unsigned long long)uims_sess_get_id( dlgsess->sess), sesshdr->state, dlgsess->extime);
+
+	stmt = uims_db_open_stmt( dao->db, stmtid, query, &rv); 
+	if( stmt == NULL) {
+		ux_log(UXL_MIN, "Failed to open statement. (stmtid=%s)", stmtid);
+		return UX_ERR_FAILED;
+	}
+
+	paraset = uims_dbstmt_get_paraset( stmt);
+	if( paraset == NULL) {
+		ux_log(UXL_MIN, "Failed to get parameter set from statement. (stmtid=%s)", stmtid);
+		uims_dbstmt_close( stmt);
+		return UX_ERR_FAILED;
+	}
+
+	ux_log(UXL_DBG1, "DLGSESS:UPDATE_CALLED_E (sess_id=%llu, state=%d, dlgstate=%d, extime=%llu, tcseq=%u)",
+			(unsigned long long)uims_sess_get_id( dlgsess->sess), sesshdr->state, dlgsess->dlgstate,
+			(unsigned long long)dlgsess->extime, dlgsess->tcseq);
+
+	rv = uims_dbdataset_write( paraset, 5,
+			//name, type, value, [length:octet only]
+			"extime", UIMS_DBTYPE_UINT64, dlgsess->extime,
+			"state", UIMS_DBTYPE_UINT16, sesshdr->state,
+			"dlgstate", UIMS_DBTYPE_UINT8, dlgsess->dlgstate,
 			"tcseq", UIMS_DBTYPE_UINT32, dlgsess->tcseq,
 			"sess_id", UIMS_DBTYPE_UINT64, uims_sess_get_id( dlgsess->sess));
 
@@ -1591,4 +1941,69 @@ ux_status_t clicktocall_dlgdao_update_e( clicktocall_dlgdao_t *dao, clicktocall_
 	return UX_SUCCESS;
 }
 
+/**
+ * @internal ms established 상태에서 session을 update 한다.
+ * @param dao DAO
+ * @param dlgsess dialog session
+ */
+ux_status_t clicktocall_dlgdao_update_ms_e( clicktocall_dlgdao_t *dao, clicktocall_dlgsess_t *dlgsess)
+{
+	static const char* stmtid = "DLGSESS:UPDATE_MS_E";
+	static const char* query = "UPDATE table1 SET column1=?, column2=?, column3=?, column26=? WHERE index0=?";
 
+	int rv;
+	uxc_sess_t *uxcsess;
+	uxc_sesshdr_t *sesshdr;
+	uims_dbstmt_t *stmt;
+	uims_dbdataset_t *paraset;
+
+	uxcsess = uims_sess_get_uxcsess( dlgsess->sess);
+	sesshdr = uxc_sess_get_hdr( uxcsess);
+
+	ux_log(UXL_INFO, "CLICKTOCALL DLGSESS MS UPDATE. (sessid=%llu, svcst=%d, state=MS_ESTABLISHED, extime=%lu)",
+			(unsigned long long)uims_sess_get_id( dlgsess->sess), sesshdr->state, dlgsess->extime);
+
+	stmt = uims_db_open_stmt( dao->db, stmtid, query, &rv); 
+	if( stmt == NULL) {
+		ux_log(UXL_MIN, "Failed to open statement. (stmtid=%s)", stmtid);
+		return UX_ERR_FAILED;
+	}
+
+	paraset = uims_dbstmt_get_paraset( stmt);
+	if( paraset == NULL) {
+		ux_log(UXL_MIN, "Failed to get parameter set from statement. (stmtid=%s)", stmtid);
+		uims_dbstmt_close( stmt);
+		return UX_ERR_FAILED;
+	}
+
+	ux_log(UXL_DBG1, "DLGSESS:UPDATE_MS_E (sess_id=%llu, state=%d, dlgstate=%d, extime=%llu, mscseq=%u)",
+			(unsigned long long)uims_sess_get_id( dlgsess->sess), sesshdr->state, dlgsess->dlgstate,
+			(unsigned long long)dlgsess->extime, dlgsess->mscseq);
+
+	rv = uims_dbdataset_write( paraset, 5,
+			//name, type, value, [length:octet only]
+			"extime", UIMS_DBTYPE_UINT64, dlgsess->extime,
+			"state", UIMS_DBTYPE_UINT16, sesshdr->state,
+			"dlgstate", UIMS_DBTYPE_UINT8, dlgsess->dlgstate,
+			"mscseq", UIMS_DBTYPE_UINT32, dlgsess->mscseq,
+			"sess_id", UIMS_DBTYPE_UINT64, uims_sess_get_id( dlgsess->sess));
+
+	if( rv < UIMS_DB_SUCCESS) {
+		ux_log(UXL_MIN, "Failed to set parameters to statement. (stmtid=%s, err=%d,%s)",
+				stmtid, rv, uims_dberr_to_str(rv));
+		uims_dbstmt_close( stmt);
+		return UX_ERR_FAILED;
+	}
+
+	rv = uims_dbstmt_execute( stmt);
+	if( rv < UIMS_DB_SUCCESS) {
+		ux_log(UXL_MIN, "Failed to execute statement. (stmtid=%s, err=%d,%s)",
+				stmtid, rv, uims_dberr_to_str(rv));
+		uims_dbstmt_close( stmt);
+		return UX_ERR_FAILED;
+	}
+
+	uims_dbstmt_close( stmt);
+
+	return UX_SUCCESS;
+}
