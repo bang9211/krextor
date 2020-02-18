@@ -34,7 +34,7 @@ void clicktocall_conf_final( clicktocall_conf_t *conf )
  */
 ux_status_t clicktocall_conf_load( clicktocall_conf_t *conf, const char *cfile)
 {
-/*
+/*   
 	char buf[512];
 
 	conf->use_thig = uxc_get_conf_bool( cfile, "[UXCUTOR/GW/COMMON]", "USE_THIG", UX_FALSE);

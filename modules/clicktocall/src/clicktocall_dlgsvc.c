@@ -132,7 +132,6 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_recv_http_stop_req( uxc_sfcall_t *sfcall, 
 
 	uxc_sess_t *uxcsess;
 	uxc_msg_t *rcvmsg;
-	upa_httpmsg_t *reqmsg;
 	uims_sess_t *imssess;
 	clicktocall_dlgsess_t *dlgsess;
 
@@ -142,7 +141,6 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_recv_http_stop_req( uxc_sfcall_t *sfcall, 
 		uxc_trace(UXCTL(1,MAJ), "%s: Recv message instance in session doesn't exist.", func);
 		return UX_EINVAL;
 	}
-	reqmsg = (upa_httpmsg_t*)rcvmsg->data;
 
 	imssess = uxc_sess_get_user_data( uxcsess);
 	dlgsess = (imssess) ? uims_sess_get_data( imssess) : NULL;
@@ -1013,8 +1011,6 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_recv_sip_invite_res( uxc_sfcall_t *sfcall,
 	uims_sess_t *sess;
 	clicktocall_dlgsess_t *dlgsess;
 	clicktocall_callto_e callto;
-	char buf[1024];
-	int buflen = sizeof(buf);
 
 	uxcsess = (uxc_sess_t*)params->sdm->impl;
 
@@ -1037,12 +1033,14 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_recv_sip_invite_res( uxc_sfcall_t *sfcall,
 		return rv;
 	}
 
-	rv = clicktocall_dlgsess_handle_sip_invite_res( dlgsess, sipmsg, callto);
-	if( rv < UX_SUCCESS) {
-		uxc_trace(UXCTL(1,MAJ), "%s: Failed to make response. (phrase=%s, err=%d,%s)",
-				func,
-				clicktocall_err_to_phrase( dlgsess->error), rv, ux_errnostr(rv));
-		return rv;
+	if ( sipmsg->mobj->status->code > 100) {
+		rv = clicktocall_dlgsess_handle_sip_invite_res( dlgsess, sipmsg, callto);
+		if( rv < UX_SUCCESS) {
+			uxc_trace(UXCTL(1,MAJ), "%s: Failed to make response. (phrase=%s, err=%d,%s)",
+					func,
+					clicktocall_err_to_phrase( dlgsess->error), rv, ux_errnostr(rv));
+			return rv;
+		}
 	}
 
 	rv = uxc_sdmvars_set_int( params, PARA_STATUS, sipmsg->mobj->status->code);
@@ -1061,6 +1059,8 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_recv_sip_invite_res( uxc_sfcall_t *sfcall,
 		}
 	}
 
+	char buf[1024];
+	int buflen = sizeof(buf);
 	clicktocall_dlgsess_sprint(dlgsess, buf, buflen);
 	ux_log(UXL_INFO, "%s", buf);
 

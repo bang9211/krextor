@@ -18,9 +18,7 @@ struct clicktocall_dlgsess_s {
 	int32_t error; /**< 서비스 error code */
 	uint8_t dlgstate; /**< dialog state */
 	uint8_t prevstate; /**< preivios dialog state */
-	uint8_t hasreq; /**< request 수신 여부 */
 	uint8_t method; /**< dialog 생성 메시지 method */
-	char *tpeer; /**< 착신 peer */
 
 	/* http */
 	uint32_t thread_id;
@@ -88,7 +86,11 @@ clicktocall_dlgsess_t* clicktocall_dlgdao_find( clicktocall_dlgdao_t *dao,
 ux_status_t clicktocall_dlgdao_insert( clicktocall_dlgdao_t *dao, clicktocall_dlgsess_t *dlgsess);
 ux_status_t clicktocall_dlgdao_remove( clicktocall_dlgdao_t *dao, clicktocall_dlgsess_t *dlgsess);
 ux_status_t clicktocall_dlgdao_update( clicktocall_dlgdao_t *dao, clicktocall_dlgsess_t *dlgsess);
-ux_status_t clicktocall_dlgdao_update_p( clicktocall_dlgdao_t *dao, clicktocall_dlgsess_t *dlgsess);
-ux_status_t clicktocall_dlgdao_update_e( clicktocall_dlgdao_t *dao, clicktocall_dlgsess_t *dlgsess);
+ux_status_t clicktocall_dlgdao_update_calling_p( clicktocall_dlgdao_t *dao, clicktocall_dlgsess_t *dlgsess);
+ux_status_t clicktocall_dlgdao_update_called_p( clicktocall_dlgdao_t *dao, clicktocall_dlgsess_t *dlgsess);
+ux_status_t clicktocall_dlgdao_update_ms_p( clicktocall_dlgdao_t *dao, clicktocall_dlgsess_t *dlgsess);
+ux_status_t clicktocall_dlgdao_update_calling_e( clicktocall_dlgdao_t *dao, clicktocall_dlgsess_t *dlgsess);
+ux_status_t clicktocall_dlgdao_update_called_e( clicktocall_dlgdao_t *dao, clicktocall_dlgsess_t *dlgsess);
+ux_status_t clicktocall_dlgdao_update_ms_e( clicktocall_dlgdao_t *dao, clicktocall_dlgsess_t *dlgsess);
 
 #endif // #ifndef __CLICKTOCALL_DLGSESS_L_H__

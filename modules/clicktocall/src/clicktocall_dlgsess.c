@@ -12,10 +12,18 @@ UX_DECLARE(const char*) clicktocall_dlgstate_to_str( clicktocall_dlgstate_e dlgs
 {
 	switch( dlgstate ) {
 		case CLICKTOCALL_DLGSTATE_INIT : return "INIT";
-		case CLICKTOCALL_DLGSTATE_PROCEEDING : return "PROCEEDING";
-		case CLICKTOCALL_DLGSTATE_ACCEPTED : return "ACCEPTED";
-		case CLICKTOCALL_DLGSTATE_REJECTED : return "REJECTED";
-		case CLICKTOCALL_DLGSTATE_ESTABLISHED : return "ESTABLISHED";
+		case CLICKTOCALL_DLGSTATE_CALLING_PROCEEDING : return "CALLING_PROCEEDING";
+		case CLICKTOCALL_DLGSTATE_CALLING_ACCEPTED : return "CALLING_ACCEPTED";
+		case CLICKTOCALL_DLGSTATE_CALLING_REJECTED : return "CALLING_REJECTED";
+		case CLICKTOCALL_DLGSTATE_CALLING_ESTABLISHED : return "CALLING_ESTABLISHED";
+		case CLICKTOCALL_DLGSTATE_CALLED_PROCEEDING : return "CALLED_PROCEEDING";
+		case CLICKTOCALL_DLGSTATE_CALLED_ACCEPTED : return "CALLED_ACCEPTED";
+		case CLICKTOCALL_DLGSTATE_CALLED_REJECTED : return "CALLED_REJECTED";
+		case CLICKTOCALL_DLGSTATE_CALLED_ESTABLISHED : return "CALLED_ESTABLISHED";
+		case CLICKTOCALL_DLGSTATE_MS_PROCEEDING : return "MS_PROCEEDING";
+		case CLICKTOCALL_DLGSTATE_MS_ACCEPTED : return "MS_ACCEPTED";
+		case CLICKTOCALL_DLGSTATE_MS_REJECTED : return "MS_REJECTED";
+		case CLICKTOCALL_DLGSTATE_MS_ESTABLISHED : return "MS_ESTABLISHED";
 		case CLICKTOCALL_DLGSTATE_TERMINATING : return "TERMINATING";
 		case CLICKTOCALL_DLGSTATE_TERMINATED : return "TERMINATED";
 		default : break;
@@ -111,6 +119,8 @@ UX_DECLARE(ux_status_t) clicktocall_dlgsess_handle_http_start_req( clicktocall_d
 		ux_log(UXL_MAJ, "Fail to get HTTP body");
 		return rv;
 	}
+
+	dlgsess->prevstate = dlgsess->dlgstate = CLICKTOCALL_DLGSTATE_INIT;
 
 	dlgsess->thread_id = uhttp_msg_get_thread_id(reqmsg->msg);
 	dlgsess->conn_id = uhttp_msg_get_conn_id(reqmsg->msg);
@@ -515,6 +525,15 @@ UX_DECLARE(ux_status_t) clicktocall_dlgsess_handle_sip_invite_res( clicktocall_d
 
 	switch (callto) {
 		case CALL_TO_CALLING:
+			if( resmsg->mobj->status->code < 200) {
+				dlgsess->dlgstate = CLICKTOCALL_DLGSTATE_CALLING_PROCEEDING;
+			} else {
+				if( resmsg->mobj->status->code < 300) {
+					dlgsess->dlgstate = CLICKTOCALL_DLGSTATE_CALLING_ACCEPTED;
+				} else {
+					dlgsess->dlgstate = CLICKTOCALL_DLGSTATE_CALLING_REJECTED;
+				}
+			}
 			rv = clicktocall_dlgsess_set_ocall_id( dlgsess, res->call_id->id);
 			if( rv < UX_SUCCESS) {
 				ux_log( UXL_MAJ, "Failed to set ocall-id. (method=%s, call_id=%s, err=%d,%s)",
@@ -537,6 +556,15 @@ UX_DECLARE(ux_status_t) clicktocall_dlgsess_handle_sip_invite_res( clicktocall_d
 			}
 			break;
 		case CALL_TO_CALLED:
+			if( resmsg->mobj->status->code < 200) {
+				dlgsess->dlgstate = CLICKTOCALL_DLGSTATE_CALLED_PROCEEDING;
+			} else {
+				if( resmsg->mobj->status->code < 300) {
+					dlgsess->dlgstate = CLICKTOCALL_DLGSTATE_CALLED_ACCEPTED;
+				} else {
+					dlgsess->dlgstate = CLICKTOCALL_DLGSTATE_CALLED_REJECTED;
+				}
+			}
 			rv = clicktocall_dlgsess_set_tcall_id( dlgsess, res->call_id->id);
 			if( rv < UX_SUCCESS) {
 				ux_log( UXL_MAJ, "Failed to set tcall-id. (method=%s, call_id=%s, err=%d,%s)",
@@ -560,6 +588,15 @@ UX_DECLARE(ux_status_t) clicktocall_dlgsess_handle_sip_invite_res( clicktocall_d
 			break;
 		case CALL_TO_MS_CALLING:
 		case CALL_TO_MS_CALLED:
+			if( resmsg->mobj->status->code < 200) {
+				dlgsess->dlgstate = CLICKTOCALL_DLGSTATE_MS_PROCEEDING;
+			} else {
+				if( resmsg->mobj->status->code < 300) {
+					dlgsess->dlgstate = CLICKTOCALL_DLGSTATE_MS_ACCEPTED;
+				} else {
+					dlgsess->dlgstate = CLICKTOCALL_DLGSTATE_MS_REJECTED;
+				}
+			}
 			rv = clicktocall_dlgsess_set_mscall_id( dlgsess, res->call_id->id);
 			if( rv < UX_SUCCESS) {
 				ux_log( UXL_MAJ, "Failed to set mscall-id. (method=%s, call_id=%s, err=%d,%s)",
@@ -887,38 +924,48 @@ UX_DECLARE(int) clicktocall_dlgsess_sprint( clicktocall_dlgsess_t *dlgsess, char
 	len =  uims_util_sprint_ttl( buffer,     buflen,     "[CLICKTOCALL SESSION]\n");
 	len += uims_util_sprint_u64( buffer+len, buflen-len, " - UXC_SESS     = %lld\n", 
 			(unsigned long long)uims_sess_get_id( dlgsess->sess), 20);
-	len += uims_util_sprint_str( buffer+len, buflen-len, " - CALL_ID      = %s\n", 
-			(char*)uims_sess_get_call_id( dlgsess->sess), 20);
-	len += uims_util_sprint_str( buffer+len, buflen-len, " - LTAG         = %s\n", 
-			(char*)uims_sess_get_ltag( dlgsess->sess), 20)			;
-	len += uims_util_sprint_str( buffer+len, buflen-len, " - RTAG         = %s\n", 
-			(char*)uims_sess_get_rtag( dlgsess->sess), 20);
+	len += uims_util_sprint_u64( buffer+len, buflen-len, " - EXTIME       = %lld\n", 
+			(unsigned long long)dlgsess->extime, 20);
+	len += uims_util_sprint_int( buffer+len, buflen-len, " - ERROR        = %d\n", dlgsess->error, 20);
+	len += uims_util_sprint_str( buffer+len, buflen-len, " - DLGSTATE     = %s\n", 
+			(char*)clicktocall_dlgstate_to_str(dlgsess->dlgstate), 20);
+	len += uims_util_sprint_str( buffer+len, buflen-len, " - PREVSTATE     = %s\n", 
+			(char*)clicktocall_dlgstate_to_str(dlgsess->prevstate), 20);
+	len += uims_util_sprint_str( buffer+len, buflen-len, " - METHOD     = %s\n", 
+			(char*)usip_method_to_str( dlgsess->method), 20);
 	len += uims_util_sprint_str( buffer+len, buflen-len, "   + HTTP SESSION_ID = %s\n",dlgsess->sessionid, 20);
 	len += uims_util_sprint_str( buffer+len, buflen-len, "   + CALLING    = %s\n", dlgsess->callingnumber, 20);
 	len += uims_util_sprint_str( buffer+len, buflen-len, "   + CALLED     = %s\n", dlgsess->callednumber, 20);
-	len += uims_util_sprint_str( buffer+len, buflen-len, "   + METHOD     = %s\n", 
-			(char*)usip_method_to_str( dlgsess->method), 20);
+	len += uims_util_sprint_int( buffer+len, buflen-len, "   + RECORDING  = %d\n", dlgsess->recording, 20);
+	len += uims_util_sprint_str( buffer+len, buflen-len, "   + SUBSCRIBER = %s\n", dlgsess->subscribername, 20);
+	len += uims_util_sprint_str( buffer+len, buflen-len, "   + CHARGING   = %s\n", dlgsess->chargingnumber, 20);
+	len += uims_util_sprint_int( buffer+len, buflen-len, "   + RINGTONE   = %d\n", dlgsess->ringbacktonetype, 20);
+	len += uims_util_sprint_str( buffer+len, buflen-len, "   + WTMENTID   = %s\n", dlgsess->watitngmentid, 20);
+	len += uims_util_sprint_str( buffer+len, buflen-len, "   + CALLMENTID = %s\n", dlgsess->callmentid, 20);
+	len += uims_util_sprint_str( buffer+len, buflen-len, "   + CALLINGCID = %s\n", dlgsess->callingcid, 20);
+	len += uims_util_sprint_str( buffer+len, buflen-len, "   + CALLEDCID  = %s\n", dlgsess->calledcid, 20);
+	len += uims_util_sprint_int( buffer+len, buflen-len, "   + HOSTCODE   = %d\n", dlgsess->hostcode, 20);
 	len += uims_util_sprint_int( buffer+len, buflen-len, "   + OCSEQ      = %d\n", dlgsess->ocseq, 20);
 	len += uims_util_sprint_str( buffer+len, buflen-len, "   + OSTAG      = %s\n", dlgsess->ostag, 20);
+	len += uims_util_sprint_str( buffer+len, buflen-len, "   + OCALL_ID   = %s\n", dlgsess->ocall_id, 20);	
 	len += uims_util_sprint_hdr( buffer+len, buflen-len, "   + OFROM      = %s\n", 
 			(usip_hdr_t*)dlgsess->ofrom, 20);
 	len += uims_util_sprint_hdr( buffer+len, buflen-len, "   + OTO        = %s\n", 
 			(usip_hdr_t*)dlgsess->oto, 20);
-	len += uims_util_sprint_str( buffer+len, buflen-len, "   + OCALL_ID   = %s\n", dlgsess->ocall_id, 20);		
 	len += uims_util_sprint_int( buffer+len, buflen-len, "   + TCSEQ      = %d\n", dlgsess->tcseq, 20);
 	len += uims_util_sprint_str( buffer+len, buflen-len, "   + TSTAG      = %s\n", dlgsess->tstag, 20);
+	len += uims_util_sprint_str( buffer+len, buflen-len, "   + TCALL_ID   = %s\n", dlgsess->tcall_id, 20);
 	len += uims_util_sprint_hdr( buffer+len, buflen-len, "   + TFROM      = %s\n", 
 			(usip_hdr_t*)dlgsess->tfrom, 20);
 	len += uims_util_sprint_hdr( buffer+len, buflen-len, "   + TTO        = %s\n", 
 			(usip_hdr_t*)dlgsess->tto, 20);
-	len += uims_util_sprint_str( buffer+len, buflen-len, "   + TCALL_ID   = %s\n", dlgsess->tcall_id, 20);
 	len += uims_util_sprint_int( buffer+len, buflen-len, "   + MSCSEQ      = %d\n", dlgsess->mscseq, 20);
 	len += uims_util_sprint_str( buffer+len, buflen-len, "   + MSSTAG      = %s\n", dlgsess->msstag, 20);
+	len += uims_util_sprint_str( buffer+len, buflen-len, "   + MSCALL_ID   = %s\n", dlgsess->mscall_id, 20);
 	len += uims_util_sprint_hdr( buffer+len, buflen-len, "   + MSFROM      = %s\n", 
 			(usip_hdr_t*)dlgsess->msfrom, 20);
 	len += uims_util_sprint_hdr( buffer+len, buflen-len, "   + MSTO        = %s\n", 
 			(usip_hdr_t*)dlgsess->msto, 20);
-	len += uims_util_sprint_str( buffer+len, buflen-len, "   + MSCALL_ID   = %s\n", dlgsess->mscall_id, 20);
 
 	return len;
 }
@@ -1183,6 +1230,12 @@ clicktocall_dlgsess_t* clicktocall_dlgdao_find( clicktocall_dlgdao_t *dao,
 	}
 
 	uims_dbstmt_close( stmt);
+
+	char buf[1024];
+	int buflen = sizeof(buf);
+	clicktocall_dlgsess_sprint(dlgsess, buf, buflen);
+	ux_log(UXL_INFO, "%s", buf);
+	
 	return dlgsess;
 }
 
@@ -1191,12 +1244,11 @@ ux_status_t clicktocall_dlgdao_insert( clicktocall_dlgdao_t *dao, clicktocall_dl
 	static const char* stmtid = "DLGSESS:INSERT";
 	static const char* query = "INSERT INTO table1 VALUES(?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?)";
 
-	int rv, bufsize, buflen, idx;
+	int rv, bufsize, buflen;
 	uxc_sess_t *uxcsess;
 	uxc_sesshdr_t *sesshdr;
 	uims_dbstmt_t *stmt;
 	uims_dbdataset_t *paraset;
-	usip_route_hdr_t *rthdr;
 	char *ofrom, *oto, *tfrom, *tto, *msfrom, *msto;
 	char *pbuffer, buffer[8192];
 
@@ -1346,7 +1398,6 @@ ux_status_t clicktocall_dlgdao_insert( clicktocall_dlgdao_t *dao, clicktocall_dl
 
 	uims_dbstmt_close( stmt);
 	if(pbuffer != buffer) free(pbuffer);
-	dlgsess->hasreq = USIP_FALSE;
 
 	return UX_SUCCESS;
 }
@@ -1421,20 +1472,11 @@ ux_status_t clicktocall_dlgdao_update( clicktocall_dlgdao_t *dao, clicktocall_dl
 			return clicktocall_dlgdao_update_ms_p( dao, dlgsess);
 		}		
 	} else if( dlgsess->dlgstate == CLICKTOCALL_DLGSTATE_CALLING_ESTABLISHED) {
-		if( dlgsess->hasreq) {
-			dlgsess->hasreq = UX_FALSE;
-			return clicktocall_dlgdao_update_calling_e( dao, dlgsess);
-		}
+		return clicktocall_dlgdao_update_calling_e( dao, dlgsess);
 	} else if( dlgsess->dlgstate == CLICKTOCALL_DLGSTATE_CALLED_ESTABLISHED) {
-		if( dlgsess->hasreq) {
-			dlgsess->hasreq = UX_FALSE;
-			return clicktocall_dlgdao_update_called_e( dao, dlgsess);
-		}
+		return clicktocall_dlgdao_update_called_e( dao, dlgsess);
 	} else if( dlgsess->dlgstate == CLICKTOCALL_DLGSTATE_MS_ESTABLISHED) {
-		if( dlgsess->hasreq) {
-			dlgsess->hasreq = UX_FALSE;
-			return clicktocall_dlgdao_update_ms_e( dao, dlgsess);
-		}
+		return clicktocall_dlgdao_update_ms_e( dao, dlgsess);
 	}
 
 	return UX_SUCCESS;
@@ -1456,7 +1498,6 @@ ux_status_t clicktocall_dlgdao_update_calling_p( clicktocall_dlgdao_t *dao, clic
 	uxc_sesshdr_t *sesshdr;
 	uims_dbstmt_t *stmt;
 	uims_dbdataset_t *paraset;
-	usip_route_hdr_t *rthdr;
 	char *ofrom, *oto;
 	char *pbuffer, buffer[8192];
 
@@ -1579,7 +1620,6 @@ ux_status_t clicktocall_dlgdao_update_called_p( clicktocall_dlgdao_t *dao, click
 	uxc_sesshdr_t *sesshdr;
 	uims_dbstmt_t *stmt;
 	uims_dbdataset_t *paraset;
-	usip_route_hdr_t *rthdr;
 	char *tfrom, *tto;
 	char *pbuffer, buffer[8192];
 
@@ -1701,7 +1741,6 @@ ux_status_t clicktocall_dlgdao_update_ms_p( clicktocall_dlgdao_t *dao, clicktoca
 	uxc_sesshdr_t *sesshdr;
 	uims_dbstmt_t *stmt;
 	uims_dbdataset_t *paraset;
-	usip_route_hdr_t *rthdr;
 	char *msfrom, *msto;
 	char *pbuffer, buffer[8192];
 
