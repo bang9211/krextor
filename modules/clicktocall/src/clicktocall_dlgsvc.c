@@ -358,9 +358,11 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_send_sip_invite_req( uxc_sfcall_t *sfcall,
 				calling = dlgsess->calledcid;
 			}
 			called = dlgsess->callingnumber;
-			sprintf(requri, "sip:%s@%s;ServiceKey=%d;DP=%d", called, ssw, servicekey, dp);
 			sipmsg->sessinfo->did = 0;
-			
+			upa_sippa_write_sessinfo( sippa, sipmsg, tag, sizeof(tag));
+			sprintf(requri, "sip:%s@%s;ServiceKey=%d;DP=%d", called, ssw, servicekey, dp);
+			sprintf(from, "sip:%s@%s;tag=%s", calling, host, tag);
+			sprintf(to, "sip:%s@%s", called, ssw);
 			break;
 		case CALL_TO_CALLED:
 			if (dlgsess->callingcid == NULL || strcmp(dlgsess->callingcid, "") == 0) {
@@ -369,26 +371,34 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_send_sip_invite_req( uxc_sfcall_t *sfcall,
 				calling = dlgsess->callingcid;
 			}
 			called = dlgsess->callednumber;
-			sprintf(requri, "sip:%s@%s;ServiceKey=%d;DP=%d", called, ssw_bye, servicekey, dp);
 			sipmsg->sessinfo->did = 1;
+			upa_sippa_write_sessinfo( sippa, sipmsg, tag, sizeof(tag));
+			sprintf(requri, "sip:%s@%s;ServiceKey=%d;DP=%d", called, ssw_bye, servicekey, dp);
+			sprintf(from, "sip:%s@%s;tag=%s", calling, host, tag);
+			sprintf(to, "sip:%s@%s", called, ssw_bye);
 			break;
 		case CALL_TO_MS_CALLING:
 			calling = dlgsess->callingnumber;
 			called = msuser;
-			sprintf(requri, "sip:%s@%s", called, ms);
 			sipmsg->sessinfo->did = 2;
+			upa_sippa_write_sessinfo( sippa, sipmsg, tag, sizeof(tag));
+			sprintf(requri, "sip:%s@%s", called, ms);
+			sprintf(from, "sip:%s@%s;tag=%s", calling, host, tag);
+			sprintf(to, "sip:%s@%s", called, ms);
 			break;
 		case CALL_TO_MS_CALLED:
 			calling = dlgsess->callednumber;
 			called = msuser;
-			sprintf(requri, "sip:%s@%s", called, ms);
 			sipmsg->sessinfo->did = 3;
+			upa_sippa_write_sessinfo( sippa, sipmsg, tag, sizeof(tag));
+			sprintf(requri, "sip:%s@%s", called, ms);
+			sprintf(from, "sip:%s@%s;tag=%s", calling, host, tag);
+			sprintf(to, "sip:%s@%s", called, ms);
 			break;
 		default: 
 			uxc_trace(UXCTL(1,MAJ), "%s: Invalid CALL_TO parameter value=%d.", func, callto);
 			return UX_EINVAL;
 	}
-	upa_sippa_write_sessinfo( sippa, sipmsg, tag, sizeof(tag));
 
 	if( uxc_sdmvars_is_set(params, PARA_BODY) ) {
 		body = uxc_sdmvars_get_oct(params, PARA_BODY, NULL, &bodysize); 
@@ -407,9 +417,7 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_send_sip_invite_req( uxc_sfcall_t *sfcall,
 		ux_log(UXL_MAJ, "Failed to decode SIP URI. err=%d,%s)", rv, usip_errstr(rv));
 		return rv;
 	}
-	sprintf(from, "sip:%s@%s;tag=%s", calling, host, tag);
-	sprintf(to, "sip:%s@%s", called, ssw);
-
+	
 	rv = usip_mobj_make_request( sipmsg->mobj, "INVITE", uri, from, to);
 	if( rv < USIP_SUCCESS) {
 		ux_log(UXL_MAJ, "Failed to make SIP request. err=%d,%s)", rv, usip_errstr(rv));
@@ -506,11 +514,6 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_send_sip_reinvite_req( uxc_sfcall_t *sfcal
 		uxc_trace(UXCTL(1,MAJ), "%s: dialog session doesn' exist.", func);
 		return UX_EINVAL;
 	}
-
-	char buf[1024];
-	int buflen = sizeof(buf);
-	clicktocall_dlgsess_sprint(dlgsess, buf, buflen);
-	ux_log(UXL_INFO, "%s", buf);
 
 	callto = uxc_sdmvars_get_int( params, PARA_CALL_TO, 0, &rv);
 	if( rv < UX_SUCCESS) {
@@ -679,11 +682,6 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_send_sip_ack( uxc_sfcall_t *sfcall, uxc_sd
 		return UX_EINVAL;
 	}
 
-	char buf[1024];
-	int buflen = sizeof(buf);
-	clicktocall_dlgsess_sprint(dlgsess, buf, buflen);
-	ux_log(UXL_INFO, "%s", buf);
-
 	callto = uxc_sdmvars_get_int( params, PARA_CALL_TO, 0, &rv);
 	if( rv < UX_SUCCESS) {
 		uxc_trace(UXCTL(1,MAJ), "%s: Fail to get CALL_TO parameter.", func);
@@ -846,11 +844,6 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_send_sip_dlgtransc_req( uxc_sfcall_t *sfca
 		uxc_trace(UXCTL(1,MAJ), "%s: dialog session doesn' exist.", func);
 		return UX_EINVAL;
 	}
-
-	char buf[1024];
-	int buflen = sizeof(buf);
-	clicktocall_dlgsess_sprint(dlgsess, buf, buflen);
-	ux_log(UXL_INFO, "%s", buf);
 
 	callto = uxc_sdmvars_get_int( params, PARA_CALL_TO, 0, &rv);
 	if( rv < UX_SUCCESS) {
@@ -1058,11 +1051,6 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_recv_sip_invite_res( uxc_sfcall_t *sfcall,
 		return rv;
 		}
 	}
-
-	char buf[1024];
-	int buflen = sizeof(buf);
-	clicktocall_dlgsess_sprint(dlgsess, buf, buflen);
-	ux_log(UXL_INFO, "%s", buf);
 
 	return UX_SUCCESS;
 }

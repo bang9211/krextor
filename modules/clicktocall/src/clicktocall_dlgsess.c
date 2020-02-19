@@ -12,14 +12,17 @@ UX_DECLARE(const char*) clicktocall_dlgstate_to_str( clicktocall_dlgstate_e dlgs
 {
 	switch( dlgstate ) {
 		case CLICKTOCALL_DLGSTATE_INIT : return "INIT";
+		case CLICKTOCALL_DLGSTATE_CALLING_TRYING : return "CALLING_TRYING";
 		case CLICKTOCALL_DLGSTATE_CALLING_PROCEEDING : return "CALLING_PROCEEDING";
 		case CLICKTOCALL_DLGSTATE_CALLING_ACCEPTED : return "CALLING_ACCEPTED";
 		case CLICKTOCALL_DLGSTATE_CALLING_REJECTED : return "CALLING_REJECTED";
 		case CLICKTOCALL_DLGSTATE_CALLING_ESTABLISHED : return "CALLING_ESTABLISHED";
+		case CLICKTOCALL_DLGSTATE_CALLED_TRYING : return "CALLED_TRYING";
 		case CLICKTOCALL_DLGSTATE_CALLED_PROCEEDING : return "CALLED_PROCEEDING";
 		case CLICKTOCALL_DLGSTATE_CALLED_ACCEPTED : return "CALLED_ACCEPTED";
 		case CLICKTOCALL_DLGSTATE_CALLED_REJECTED : return "CALLED_REJECTED";
 		case CLICKTOCALL_DLGSTATE_CALLED_ESTABLISHED : return "CALLED_ESTABLISHED";
+		case CLICKTOCALL_DLGSTATE_MS_TRYING : return "MS_TRYING";
 		case CLICKTOCALL_DLGSTATE_MS_PROCEEDING : return "MS_PROCEEDING";
 		case CLICKTOCALL_DLGSTATE_MS_ACCEPTED : return "MS_ACCEPTED";
 		case CLICKTOCALL_DLGSTATE_MS_REJECTED : return "MS_REJECTED";
@@ -30,6 +33,12 @@ UX_DECLARE(const char*) clicktocall_dlgstate_to_str( clicktocall_dlgstate_e dlgs
 	}
 
 	return "UNKNOWN";
+}
+
+UX_DECLARE(void) clicktocall_dlgstate_change( clicktocall_dlgsess_t *dlgsess, clicktocall_dlgstate_e dlgstate)
+{
+	dlgsess->prevstate = dlgsess->dlgstate;
+	dlgsess->dlgstate = dlgstate;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -423,11 +432,12 @@ UX_DECLARE(ux_status_t) clicktocall_dlgsess_handle_sip_invite_req( clicktocall_d
 				USIP_MOBJ_GET_TOUSER( req), USIP_MOBJ_GET_TOTAG( req));
 		return UX_EBADMSG;
 	}
-
+	
 	dlgsess->method = req->request->method;
 
 	switch (callto) {
 		case CALL_TO_CALLING:
+			clicktocall_dlgstate_change(dlgsess, CLICKTOCALL_DLGSTATE_CALLING_TRYING);
 			dlgsess->ocseq = (req->cseq) ? req->cseq->seq : 1;
 			dlgsess->ostag = ux_str_dup( req->from->tag, uims_sess_get_allocator(dlgsess->sess)); 
 
@@ -452,6 +462,7 @@ UX_DECLARE(ux_status_t) clicktocall_dlgsess_handle_sip_invite_req( clicktocall_d
 			}
 			break;
 		case CALL_TO_CALLED:
+			clicktocall_dlgstate_change(dlgsess, CLICKTOCALL_DLGSTATE_CALLED_TRYING);
 			dlgsess->tcseq = (req->cseq) ? req->cseq->seq : 1;
 			dlgsess->tstag = ux_str_dup( req->from->tag, uims_sess_get_allocator(dlgsess->sess)); 
 			
@@ -477,8 +488,9 @@ UX_DECLARE(ux_status_t) clicktocall_dlgsess_handle_sip_invite_req( clicktocall_d
 			break;
 		case CALL_TO_MS_CALLING:
 		case CALL_TO_MS_CALLED:
+			clicktocall_dlgstate_change(dlgsess, CLICKTOCALL_DLGSTATE_MS_TRYING);
 			dlgsess->mscseq = (req->cseq) ? req->cseq->seq : 1;
-						dlgsess->tstag = ux_str_dup( req->from->tag, uims_sess_get_allocator(dlgsess->sess)); 
+			dlgsess->msstag = ux_str_dup( req->from->tag, uims_sess_get_allocator(dlgsess->sess)); 
 			
 			rv = clicktocall_dlgsess_set_mscall_id( dlgsess, req->call_id->id);
 			if( rv < USIP_SUCCESS) {
@@ -523,15 +535,16 @@ UX_DECLARE(ux_status_t) clicktocall_dlgsess_handle_sip_invite_res( clicktocall_d
 		return UX_EBADMSG;
 	}
 
+	ux_log(UXL_INFO, "clicktocall_dlgsess_handle_sip_invite_res: status=%d", resmsg->mobj->status->code)
 	switch (callto) {
 		case CALL_TO_CALLING:
 			if( resmsg->mobj->status->code < 200) {
-				dlgsess->dlgstate = CLICKTOCALL_DLGSTATE_CALLING_PROCEEDING;
+				clicktocall_dlgstate_change(dlgsess, CLICKTOCALL_DLGSTATE_CALLING_PROCEEDING);
 			} else {
 				if( resmsg->mobj->status->code < 300) {
-					dlgsess->dlgstate = CLICKTOCALL_DLGSTATE_CALLING_ACCEPTED;
+					clicktocall_dlgstate_change(dlgsess, CLICKTOCALL_DLGSTATE_CALLING_ACCEPTED);
 				} else {
-					dlgsess->dlgstate = CLICKTOCALL_DLGSTATE_CALLING_REJECTED;
+					clicktocall_dlgstate_change(dlgsess, CLICKTOCALL_DLGSTATE_CALLING_REJECTED);
 				}
 			}
 			rv = clicktocall_dlgsess_set_ocall_id( dlgsess, res->call_id->id);
@@ -557,12 +570,12 @@ UX_DECLARE(ux_status_t) clicktocall_dlgsess_handle_sip_invite_res( clicktocall_d
 			break;
 		case CALL_TO_CALLED:
 			if( resmsg->mobj->status->code < 200) {
-				dlgsess->dlgstate = CLICKTOCALL_DLGSTATE_CALLED_PROCEEDING;
+				clicktocall_dlgstate_change(dlgsess, CLICKTOCALL_DLGSTATE_CALLED_PROCEEDING);
 			} else {
 				if( resmsg->mobj->status->code < 300) {
-					dlgsess->dlgstate = CLICKTOCALL_DLGSTATE_CALLED_ACCEPTED;
+					clicktocall_dlgstate_change(dlgsess, CLICKTOCALL_DLGSTATE_CALLED_ACCEPTED);
 				} else {
-					dlgsess->dlgstate = CLICKTOCALL_DLGSTATE_CALLED_REJECTED;
+					clicktocall_dlgstate_change(dlgsess, CLICKTOCALL_DLGSTATE_CALLED_REJECTED);
 				}
 			}
 			rv = clicktocall_dlgsess_set_tcall_id( dlgsess, res->call_id->id);
@@ -589,12 +602,12 @@ UX_DECLARE(ux_status_t) clicktocall_dlgsess_handle_sip_invite_res( clicktocall_d
 		case CALL_TO_MS_CALLING:
 		case CALL_TO_MS_CALLED:
 			if( resmsg->mobj->status->code < 200) {
-				dlgsess->dlgstate = CLICKTOCALL_DLGSTATE_MS_PROCEEDING;
+				clicktocall_dlgstate_change(dlgsess, CLICKTOCALL_DLGSTATE_MS_PROCEEDING);
 			} else {
 				if( resmsg->mobj->status->code < 300) {
-					dlgsess->dlgstate = CLICKTOCALL_DLGSTATE_MS_ACCEPTED;
+					clicktocall_dlgstate_change(dlgsess, CLICKTOCALL_DLGSTATE_MS_ACCEPTED);
 				} else {
-					dlgsess->dlgstate = CLICKTOCALL_DLGSTATE_MS_REJECTED;
+					clicktocall_dlgstate_change(dlgsess, CLICKTOCALL_DLGSTATE_MS_REJECTED);
 				}
 			}
 			rv = clicktocall_dlgsess_set_mscall_id( dlgsess, res->call_id->id);
@@ -967,6 +980,7 @@ UX_DECLARE(int) clicktocall_dlgsess_sprint( clicktocall_dlgsess_t *dlgsess, char
 	len += uims_util_sprint_hdr( buffer+len, buflen-len, "   + MSTO        = %s\n", 
 			(usip_hdr_t*)dlgsess->msto, 20);
 
+	ux_log(UXL_INFO, "clicktocall_dlgsess_sprint: len=%d", len);
 	return len;
 }
 
@@ -1231,7 +1245,7 @@ clicktocall_dlgsess_t* clicktocall_dlgdao_find( clicktocall_dlgdao_t *dao,
 
 	uims_dbstmt_close( stmt);
 
-	char buf[1024];
+	char buf[4096];
 	int buflen = sizeof(buf);
 	clicktocall_dlgsess_sprint(dlgsess, buf, buflen);
 	ux_log(UXL_INFO, "%s", buf);
@@ -1258,6 +1272,11 @@ ux_status_t clicktocall_dlgdao_insert( clicktocall_dlgdao_t *dao, clicktocall_dl
 
 	ux_log(UXL_INFO, "CLICKTOCALL DLGSESS INSERT. (sessid=%llu, svcst=%d, extime=%lu)",
 			(unsigned long long)uims_sess_get_id(dlgsess->sess), sesshdr->state, dlgsess->extime);
+
+	char buf[4096];
+	buflen = sizeof(buf);
+	clicktocall_dlgsess_sprint(dlgsess, buf, buflen);
+	ux_log(UXL_INFO, "%s", buf);		
 
 	bufsize = sizeof(buffer); 
 	pbuffer = buffer; 
@@ -1414,6 +1433,11 @@ ux_status_t clicktocall_dlgdao_remove( clicktocall_dlgdao_t *dao, clicktocall_dl
 	ux_log(UXL_INFO, "CLICKTOCALL DLGSESS REMOVE. (sessid=%llu, extime=%lu)",
 			(unsigned long long)uims_sess_get_id(dlgsess->sess), dlgsess->extime);
 
+	char buf[4096];
+	int buflen = sizeof(buf);
+	clicktocall_dlgsess_sprint(dlgsess, buf, buflen);
+	ux_log(UXL_INFO, "%s", buf);
+
 	stmt = uims_db_open_stmt( dao->db, stmtid, query, &rv); 
 	if( stmt == NULL) {
 		ux_log(UXL_MIN, "Failed to open statement. (stmtid=%s)", stmtid);
@@ -1454,21 +1478,29 @@ ux_status_t clicktocall_dlgdao_update( clicktocall_dlgdao_t *dao, clicktocall_dl
 {
 	dlgsess->extime = time(NULL);
 
+	char buf[4096];
+	int buflen = sizeof(buf);
+	clicktocall_dlgsess_sprint(dlgsess, buf, buflen);
+	ux_log(UXL_INFO, "%s", buf);
+
 	if( dlgsess->dlgstate < CLICKTOCALL_DLGSTATE_CALLING_PROCEEDING) {
 		return UX_SUCCESS;
-	} else if( dlgsess->dlgstate == CLICKTOCALL_DLGSTATE_CALLING_PROCEEDING) {
+	} else if( dlgsess->dlgstate == CLICKTOCALL_DLGSTATE_CALLING_PROCEEDING || 
+		dlgsess->dlgstate == CLICKTOCALL_DLGSTATE_CALLING_ACCEPTED) {
 		if( dlgsess->prevstate != dlgsess->dlgstate) {
-			dlgsess->prevstate = dlgsess->dlgstate;
+			clicktocall_dlgstate_change(dlgsess,  dlgsess->dlgstate);
 			return clicktocall_dlgdao_update_calling_p( dao, dlgsess);
 		}
-	} else if( dlgsess->dlgstate == CLICKTOCALL_DLGSTATE_CALLED_PROCEEDING) {
+	} else if( dlgsess->dlgstate == CLICKTOCALL_DLGSTATE_CALLED_PROCEEDING ||
+		dlgsess->dlgstate == CLICKTOCALL_DLGSTATE_CALLED_ACCEPTED) {
 		if( dlgsess->prevstate != dlgsess->dlgstate) {
-			dlgsess->prevstate = dlgsess->dlgstate;
+			clicktocall_dlgstate_change(dlgsess,  dlgsess->dlgstate);
 			return clicktocall_dlgdao_update_called_p( dao, dlgsess);
 		}	
-	} else if( dlgsess->dlgstate == CLICKTOCALL_DLGSTATE_MS_PROCEEDING) {
+	} else if( dlgsess->dlgstate == CLICKTOCALL_DLGSTATE_MS_PROCEEDING ||
+		dlgsess->dlgstate == CLICKTOCALL_DLGSTATE_MS_ACCEPTED) {
 		if( dlgsess->prevstate != dlgsess->dlgstate) {
-			dlgsess->prevstate = dlgsess->dlgstate;
+			clicktocall_dlgstate_change(dlgsess,  dlgsess->dlgstate);
 			return clicktocall_dlgdao_update_ms_p( dao, dlgsess);
 		}		
 	} else if( dlgsess->dlgstate == CLICKTOCALL_DLGSTATE_CALLING_ESTABLISHED) {
@@ -1504,7 +1536,7 @@ ux_status_t clicktocall_dlgdao_update_calling_p( clicktocall_dlgdao_t *dao, clic
 	uxcsess = uims_sess_get_uxcsess( dlgsess->sess);
 	sesshdr = uxc_sess_get_hdr( uxcsess);
 
-	ux_log(UXL_INFO, "CLICKTOCALL DLGSESS CALLING UPDATE. (sessid=%llu, svcst=%d, state=%s, extime=%lu)",
+	ux_log(UXL_INFO, "CLICKTOCALL DLGSESS UPDATE_CALLING_P. (sessid=%llu, svcst=%d, state=%s, extime=%lu)",
 			(unsigned long long)uims_sess_get_id( dlgsess->sess), sesshdr->state,
 			clicktocall_dlgstate_to_str( dlgsess->dlgstate), dlgsess->extime);
 
@@ -1561,7 +1593,7 @@ ux_status_t clicktocall_dlgdao_update_calling_p( clicktocall_dlgdao_t *dao, clic
 			"ocseq=%u, ocall_id=%s, ofrom=%s, oto=%s)",
 			(unsigned long long)uims_sess_get_id( dlgsess->sess), sesshdr->state, dlgsess->dlgstate,
 			(unsigned long long)dlgsess->extime, 
-			dlgsess->tcseq, dlgsess->tcall_id, ofrom, oto);
+			dlgsess->ocseq, dlgsess->ocall_id, ofrom, oto);
 
 	rv = uims_dbdataset_write( paraset, 8,
 			//name, type, value, [length:octet only]
@@ -1596,9 +1628,8 @@ ux_status_t clicktocall_dlgdao_update_calling_p( clicktocall_dlgdao_t *dao, clic
 	uims_dbstmt_close( stmt);
 	if( pbuffer != buffer) free( pbuffer);
 
-	if( dlgsess->dlgstate >= CLICKTOCALL_DLGSTATE_CALLING_ACCEPTED) { 
-		dlgsess->dlgstate = CLICKTOCALL_DLGSTATE_CALLING_ESTABLISHED;
-		dlgsess->prevstate = dlgsess->dlgstate;
+	if( dlgsess->dlgstate == CLICKTOCALL_DLGSTATE_CALLING_ACCEPTED) { 
+		clicktocall_dlgstate_change(dlgsess, CLICKTOCALL_DLGSTATE_CALLING_ESTABLISHED);
 	}
 	
 	return UX_SUCCESS;
@@ -1626,7 +1657,7 @@ ux_status_t clicktocall_dlgdao_update_called_p( clicktocall_dlgdao_t *dao, click
 	uxcsess = uims_sess_get_uxcsess( dlgsess->sess);
 	sesshdr = uxc_sess_get_hdr( uxcsess);
 
-	ux_log(UXL_INFO, "CLICKTOCALL DLGSESS CALLED UPDATE. (sessid=%llu, svcst=%d, state=%s, extime=%lu)",
+	ux_log(UXL_INFO, "CLICKTOCALL DLGSESS UPDATE_CALLED_P. (sessid=%llu, svcst=%d, state=%s, extime=%lu)",
 			(unsigned long long)uims_sess_get_id( dlgsess->sess), sesshdr->state,
 			clicktocall_dlgstate_to_str( dlgsess->dlgstate), dlgsess->extime);
 
@@ -1718,8 +1749,7 @@ ux_status_t clicktocall_dlgdao_update_called_p( clicktocall_dlgdao_t *dao, click
 	if( pbuffer != buffer) free( pbuffer);
 
 	if( dlgsess->dlgstate >= CLICKTOCALL_DLGSTATE_CALLED_ACCEPTED) { 
-		dlgsess->dlgstate = CLICKTOCALL_DLGSTATE_CALLED_ESTABLISHED;
-		dlgsess->prevstate = dlgsess->dlgstate;
+		clicktocall_dlgstate_change(dlgsess, CLICKTOCALL_DLGSTATE_CALLED_ESTABLISHED);
 	}
 	
 	return UX_SUCCESS;
@@ -1747,7 +1777,7 @@ ux_status_t clicktocall_dlgdao_update_ms_p( clicktocall_dlgdao_t *dao, clicktoca
 	uxcsess = uims_sess_get_uxcsess( dlgsess->sess);
 	sesshdr = uxc_sess_get_hdr( uxcsess);
 
-	ux_log(UXL_INFO, "CLICKTOCALL DLGSESS MS UPDATE. (sessid=%llu, svcst=%d, state=%s, extime=%lu)",
+	ux_log(UXL_INFO, "CLICKTOCALL DLGSESS UPDATE_MS_P. (sessid=%llu, svcst=%d, state=%s, extime=%lu)",
 			(unsigned long long)uims_sess_get_id( dlgsess->sess), sesshdr->state,
 			clicktocall_dlgstate_to_str( dlgsess->dlgstate), dlgsess->extime);
 
@@ -1838,9 +1868,8 @@ ux_status_t clicktocall_dlgdao_update_ms_p( clicktocall_dlgdao_t *dao, clicktoca
 	uims_dbstmt_close( stmt);
 	if( pbuffer != buffer) free( pbuffer);
 
-	if( dlgsess->dlgstate >= CLICKTOCALL_DLGSTATE_MS_ACCEPTED) { 
-		dlgsess->dlgstate = CLICKTOCALL_DLGSTATE_MS_ESTABLISHED;
-		dlgsess->prevstate = dlgsess->dlgstate;
+	if( dlgsess->dlgstate == CLICKTOCALL_DLGSTATE_MS_ACCEPTED) { 
+		clicktocall_dlgstate_change(dlgsess, CLICKTOCALL_DLGSTATE_MS_ESTABLISHED);
 	}
 	
 	return UX_SUCCESS;
@@ -1865,7 +1894,7 @@ ux_status_t clicktocall_dlgdao_update_calling_e( clicktocall_dlgdao_t *dao, clic
 	uxcsess = uims_sess_get_uxcsess( dlgsess->sess);
 	sesshdr = uxc_sess_get_hdr( uxcsess);
 
-	ux_log(UXL_INFO, "CLICKTOCALL DLGSESS CALLING UPDATE. (sessid=%llu, svcst=%d, state=CALLING_ESTABLISHED, extime=%lu)",
+	ux_log(UXL_INFO, "CLICKTOCALL DLGSESS UPDATE_CALLING_E. (sessid=%llu, svcst=%d, state=CALLING_ESTABLISHED, extime=%lu)",
 			(unsigned long long)uims_sess_get_id( dlgsess->sess), sesshdr->state, dlgsess->extime);
 
 	stmt = uims_db_open_stmt( dao->db, stmtid, query, &rv); 
@@ -1932,7 +1961,7 @@ ux_status_t clicktocall_dlgdao_update_called_e( clicktocall_dlgdao_t *dao, click
 	uxcsess = uims_sess_get_uxcsess( dlgsess->sess);
 	sesshdr = uxc_sess_get_hdr( uxcsess);
 
-	ux_log(UXL_INFO, "CLICKTOCALL DLGSESS CALLING UPDATE. (sessid=%llu, svcst=%d, state=CALLED_ESTABLISHED, extime=%lu)",
+	ux_log(UXL_INFO, "CLICKTOCALL DLGSESS UPDATE_CALLED_E. (sessid=%llu, svcst=%d, state=CALLED_ESTABLISHED, extime=%lu)",
 			(unsigned long long)uims_sess_get_id( dlgsess->sess), sesshdr->state, dlgsess->extime);
 
 	stmt = uims_db_open_stmt( dao->db, stmtid, query, &rv); 
@@ -1999,7 +2028,7 @@ ux_status_t clicktocall_dlgdao_update_ms_e( clicktocall_dlgdao_t *dao, clicktoca
 	uxcsess = uims_sess_get_uxcsess( dlgsess->sess);
 	sesshdr = uxc_sess_get_hdr( uxcsess);
 
-	ux_log(UXL_INFO, "CLICKTOCALL DLGSESS MS UPDATE. (sessid=%llu, svcst=%d, state=MS_ESTABLISHED, extime=%lu)",
+	ux_log(UXL_INFO, "CLICKTOCALL DLGSESS UPDATE_MS_E. (sessid=%llu, svcst=%d, state=MS_ESTABLISHED, extime=%lu)",
 			(unsigned long long)uims_sess_get_id( dlgsess->sess), sesshdr->state, dlgsess->extime);
 
 	stmt = uims_db_open_stmt( dao->db, stmtid, query, &rv); 

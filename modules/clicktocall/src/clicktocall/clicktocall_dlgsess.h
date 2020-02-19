@@ -22,14 +22,17 @@ extern "C" {
 
 typedef enum clicktocall_dlgstate_e {
 	CLICKTOCALL_DLGSTATE_INIT = 0,
+	CLICKTOCALL_DLGSTATE_CALLING_TRYING, 
 	CLICKTOCALL_DLGSTATE_CALLING_PROCEEDING, 
 	CLICKTOCALL_DLGSTATE_CALLING_ACCEPTED,
 	CLICKTOCALL_DLGSTATE_CALLING_REJECTED,
 	CLICKTOCALL_DLGSTATE_CALLING_ESTABLISHED,
+	CLICKTOCALL_DLGSTATE_CALLED_TRYING,
 	CLICKTOCALL_DLGSTATE_CALLED_PROCEEDING, 
 	CLICKTOCALL_DLGSTATE_CALLED_ACCEPTED,
 	CLICKTOCALL_DLGSTATE_CALLED_REJECTED,
 	CLICKTOCALL_DLGSTATE_CALLED_ESTABLISHED,
+	CLICKTOCALL_DLGSTATE_MS_TRYING,
 	CLICKTOCALL_DLGSTATE_MS_PROCEEDING, 
 	CLICKTOCALL_DLGSTATE_MS_ACCEPTED,
 	CLICKTOCALL_DLGSTATE_MS_REJECTED,
@@ -53,6 +56,7 @@ typedef struct clicktocall_dlgsess_s clicktocall_dlgsess_t;
 // functions for clicktocall_dlgstate_t
 ////////////////////////////////////////////////////////////////////////////////
 UX_DECLARE(const char*) clicktocall_dlgstate_to_str( clicktocall_dlgstate_e dlgstate);
+UX_DECLARE(void) clicktocall_dlgstate_change( clicktocall_dlgsess_t *dlgsess, clicktocall_dlgstate_e dlgstate);
 
 ////////////////////////////////////////////////////////////////////////////////
 // functions for clicktocall_dlgsess_t

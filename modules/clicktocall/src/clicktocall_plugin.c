@@ -60,7 +60,7 @@ UX_DECLARE(uxc_plugin_t*) clicktocall_plugin_create( void *xcutor, const char *c
  */
 ux_status_t  clicktocall_plugin_init( clicktocall_plugin_t *plugin, uxc_xcutor_t *xcutor, const char *cfile)
 {
-	int rv, nworkers;
+	int rv;
 	upa_sippa_t *sippa;
 
 	sippa = (upa_sippa_t*)uxc_xcutor_get_paif( xcutor, "PA_SIP");
@@ -86,9 +86,7 @@ ux_status_t  clicktocall_plugin_init( clicktocall_plugin_t *plugin, uxc_xcutor_t
 	plugin->conf->xcutor = xcutor;
 	plugin->conf->sippa = sippa;
 
-	nworkers = uxc_xcutor_get_worker_count( xcutor)+1;
-
-	rv = clicktocall_sessdb_init( plugin->sessdb);
+	rv = clicktocall_sessdb_init( plugin->sessdb, plugin->conf);
 	if( rv < eUXC_SUCCESS) {
 		ux_log( UXL_ERR, "Failed to initialize GW session DB. (err=%d,%s)", rv, ux_errnostr(rv));
 		clicktocall_conf_final( plugin->conf);
@@ -140,12 +138,12 @@ static void _clicktocall_plugin_destroy( uxc_plugin_t *pi)
  */
 static int _clicktocall_plugin_reload( uxc_plugin_t *pi, void *pworker)
 {
-	uxc_worker_t *worker;
-	clicktocall_plugin_t *plugin;
+	//uxc_worker_t *worker;
+	//clicktocall_plugin_t *plugin;
 
 	ux_log( UXL_DEBUG, "Process _clicktocall_plugin_reload.");
-	plugin = (clicktocall_plugin_t*)pi;
-	worker = (uxc_worker_t*)pworker;
+	//plugin = (clicktocall_plugin_t*)pi;
+	//worker = (uxc_worker_t*)pworker;
 
 	return UX_SUCCESS;
 }
@@ -157,10 +155,10 @@ static int _clicktocall_plugin_reload( uxc_plugin_t *pi, void *pworker)
  */
 static int _clicktocall_plugin_reconf( uxc_plugin_t *pi)
 {
-	clicktocall_plugin_t *plugin;
+	//clicktocall_plugin_t *plugin;
 
 	ux_log( UXL_DEBUG, "Process _clicktocall_plugin_reconf.");
-	plugin = (clicktocall_plugin_t*)pi;
+	//plugin = (clicktocall_plugin_t*)pi;
 
 	return UX_SUCCESS;
 }

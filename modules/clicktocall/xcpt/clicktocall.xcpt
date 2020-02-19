@@ -97,7 +97,6 @@
 				</onsend>
 				<onsuccess>
 					<call function="log_msg('HTTP NOTIFY SUCCESS')"/>
-					<call function="dump_sdm()"/>
 				</onsuccess>
 				<onerror target="stop">
 					<call function="log_msg('HTTP NOTIFY ERROR')"/>
@@ -265,7 +264,6 @@
 				</onsend>
 				<onsuccess>
 					<call function="log_msg('HTTP NOTIFY SUCCESS')"/>
-					<call function="dump_sdm()"/>
 				</onsuccess>
 				<onerror target="stop">
 					<call function="log_msg('HTTP NOTIFY ERROR')"/>
@@ -377,7 +375,6 @@
 				</onsend>
 				<onsuccess>
 					<call function="log_msg('HTTP RESPOND SUCCESS')"/>
-					<call function="dump_sdm()"/>
 				</onsuccess>
 				<onerror target="stop">
 					<call function="log_msg('HTTP RESPOND ERROR')"/>
