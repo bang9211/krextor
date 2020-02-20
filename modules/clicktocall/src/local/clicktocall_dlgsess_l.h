@@ -39,6 +39,7 @@ struct clicktocall_dlgsess_s {
 	char *callingcid;
 	char *calledcid;
 	uint8_t hostcode;
+	char *recordingfile;
 
 	/* sip */
 	uint32_t ocseq; /**< originator cseq */

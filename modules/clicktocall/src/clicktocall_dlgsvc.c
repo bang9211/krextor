@@ -18,7 +18,7 @@
 UX_DECLARE(int) clicktocall_dlgsvc_on_recv_http_start_req( uxc_sfcall_t *sfcall, uxc_sdmvars_t *params)
 {
 	enum { PARA_CALLING_NUMBER, PARA_CALLED_NUMBER, PARA_RINGBACKTONE_TYPE, PARA_WAITNG_MENTID, PARA_CALL_MENTID, PARA_CALLING_CID, PARA_CALLED_CID };
-	static const char *func = "";
+	static const char *func = "clicktocall_dlgsvc_on_recv_http_start_req";
 
 	int rv;
 	uxc_sess_t *uxcsess;
@@ -70,6 +70,7 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_recv_http_start_req( uxc_sfcall_t *sfcall,
 		return rv;
 	}
 
+	ux_log(UXL_DBG1, "%s completed", func);	
 	return UX_SUCCESS;
 }
 
@@ -117,6 +118,7 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_send_http_res( uxc_sfcall_t *sfcall, uxc_s
 		return rv;
 	}
 
+	ux_log(UXL_DBG1, "%s completed", func);	
 	return UX_SUCCESS;
 }
 
@@ -130,8 +132,10 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_recv_http_stop_req( uxc_sfcall_t *sfcall, 
 {
 	static const char *func = "clicktocall_dlgsvc_on_recv_http_stop_req";
 
+	int rv;
 	uxc_sess_t *uxcsess;
 	uxc_msg_t *rcvmsg;
+	upa_httpmsg_t *httpmsg;
 	uims_sess_t *imssess;
 	clicktocall_dlgsess_t *dlgsess;
 
@@ -141,6 +145,7 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_recv_http_stop_req( uxc_sfcall_t *sfcall, 
 		uxc_trace(UXCTL(1,MAJ), "%s: Recv message instance in session doesn't exist.", func);
 		return UX_EINVAL;
 	}
+	httpmsg = (upa_httpmsg_t*)rcvmsg->data;
 
 	imssess = uxc_sess_get_user_data( uxcsess);
 	dlgsess = (imssess) ? uims_sess_get_data( imssess) : NULL;
@@ -149,6 +154,15 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_recv_http_stop_req( uxc_sfcall_t *sfcall, 
 		return UX_EINVAL;
 	}
 
+	rv = clicktocall_dlgsess_handle_http_stop_req( dlgsess, httpmsg);
+	if( rv < UX_SUCCESS) {
+		uxc_trace(UXCTL(1,MAJ), "%s: Failed to handle %s request. (phrase=%s, err=%d,%s)",
+				func, uhttp_req_get_path((uhttp_req_t*)httpmsg->msg),
+				clicktocall_err_to_phrase( dlgsess->error), rv, ux_errnostr(rv));
+		return rv;
+	}
+
+	ux_log(UXL_DBG1, "%s completed", func);	
 	return UX_SUCCESS;
 }
 
@@ -223,6 +237,7 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_send_http_notify( uxc_sfcall_t *sfcall, ux
 		return UX_EINVAL;
 	}
 
+	ux_log(UXL_DBG1, "%s completed", func);	
 	return UX_SUCCESS;
 }
 
@@ -291,6 +306,7 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_send_http_respond( uxc_sfcall_t *sfcall, u
 		return UX_EINVAL;
 	}
 
+	ux_log(UXL_DBG1, "%s completed", func);	
 	return UX_SUCCESS;
 }
 
@@ -466,6 +482,7 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_send_sip_invite_req( uxc_sfcall_t *sfcall,
 		 USIP_MOBJ_GET_FROMUSER( sipmsg->mobj), USIP_MOBJ_GET_FROMTAG( sipmsg->mobj),
 			USIP_MOBJ_GET_TOUSER( sipmsg->mobj), USIP_MOBJ_GET_TOTAG( sipmsg->mobj));
 
+	ux_log(UXL_DBG1, "%s completed", func);	
 
 	return UX_SUCCESS;
 }
@@ -635,6 +652,8 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_send_sip_reinvite_req( uxc_sfcall_t *sfcal
 		 USIP_MOBJ_GET_FROMUSER( sipmsg->mobj), USIP_MOBJ_GET_FROMTAG( sipmsg->mobj),
 			USIP_MOBJ_GET_TOUSER( sipmsg->mobj), USIP_MOBJ_GET_TOTAG( sipmsg->mobj));
 
+	ux_log(UXL_DBG1, "%s completed", func);	
+
 	return UX_SUCCESS;
 }
 
@@ -799,6 +818,7 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_send_sip_ack( uxc_sfcall_t *sfcall, uxc_sd
 		 USIP_MOBJ_GET_FROMUSER( sipmsg->mobj), USIP_MOBJ_GET_FROMTAG( sipmsg->mobj),
 			USIP_MOBJ_GET_TOUSER( sipmsg->mobj), USIP_MOBJ_GET_TOTAG( sipmsg->mobj));
 
+	ux_log(UXL_DBG1, "%s completed", func);	
 	return UX_SUCCESS;
 }
 
@@ -980,6 +1000,8 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_send_sip_dlgtransc_req( uxc_sfcall_t *sfca
 		 USIP_MOBJ_GET_FROMUSER( sipmsg->mobj), USIP_MOBJ_GET_FROMTAG( sipmsg->mobj),
 			USIP_MOBJ_GET_TOUSER( sipmsg->mobj), USIP_MOBJ_GET_TOTAG( sipmsg->mobj));
 
+	ux_log(UXL_DBG1, "%s completed", func);		
+
 	return UX_SUCCESS;
 }
 
@@ -1052,6 +1074,67 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_recv_sip_invite_res( uxc_sfcall_t *sfcall,
 		}
 	}
 
+	ux_log(UXL_DBG1, "%s completed", func);	
+	return UX_SUCCESS;
+}
+
+/**
+ * @brief DIALOG INITIAL REQUEST(INVITE) 새로운 outgoing 메시지를 전달하기 위해 호출되는 함수
+ * @param sfcall call fsm node
+ * @param params sdm value parameter
+ * @return 실행 결과
+ */
+UX_DECLARE(int) clicktocall_dlgsvc_on_recv_sip_dlgtransc_res( uxc_sfcall_t *sfcall, uxc_sdmvars_t *params)
+{
+	enum { PARA_CALL_TO, PARA_STATUS, PARA_BODY};
+	static const char *func = "clicktocall_dlgsvc_on_recv_sip_dlgtransc_res";
+
+	int rv;
+	uxc_sess_t *uxcsess;
+	uxc_msg_t *rcvmsg;
+	upa_sipmsg_t *sipmsg;
+	uims_sess_t *sess;
+	clicktocall_dlgsess_t *dlgsess;
+	clicktocall_callto_e callto;
+
+	uxcsess = (uxc_sess_t*)params->sdm->impl;
+
+	rcvmsg = uxc_sess_get_rcvmsg( uxcsess);
+	if( rcvmsg == NULL ) {
+		uxc_trace(UXCTL(1,MAJ), "%s: Recv message instance in session doesn't exist.", func);
+		return UX_EINVAL;
+	}
+	sipmsg = (upa_sipmsg_t*)rcvmsg->data;
+	sess = uxc_sess_get_user_data( uxcsess);
+	dlgsess = (sess) ? uims_sess_get_data( sess) : NULL;
+	if( dlgsess == NULL ) {
+		uxc_trace(UXCTL(1,MAJ), "%s: dialog session doesn' exist.", func);
+		return UX_EINVAL;
+	}
+
+	callto = uxc_sdmvars_get_int( params, PARA_CALL_TO, 0, &rv);
+	if( rv < UX_SUCCESS) {
+		uxc_trace(UXCTL(1,MAJ), "%s: Fail to get CALL_TO parameter.", func);
+		return rv;
+	}
+
+	rv = uxc_sdmvars_set_int( params, PARA_STATUS, sipmsg->mobj->status->code);
+	if( rv < UX_SUCCESS) {
+		uxc_trace(UXCTL(1,MIN), "%s: Failed to set STATUS parameter. (err=%d,%s)",
+				func, rv, uxc_errnostr(rv));
+		return rv;
+	}
+
+	if (sipmsg->mobj->payload != NULL) {
+		rv = uxc_sdmvars_set_str( params, PARA_BODY, sipmsg->mobj->payload->data);
+		if( rv < UX_SUCCESS) {
+		uxc_trace(UXCTL(1,MIN), "%s: Failed to set BODY parameter. (err=%d,%s)",
+				func, rv, uxc_errnostr(rv));
+		return rv;
+		}
+	}
+
+	ux_log(UXL_DBG1, "%s completed", func);	
 	return UX_SUCCESS;
 }
 
@@ -1085,8 +1168,6 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_send_rsp( uxc_sfcall_t *sfcall, uxc_sdmvar
 		return UX_EINVAL;
 	}
 	reqmsg = (upa_sipmsg_t*)rcvmsg->data;
-
-	ux_log(UXL_INFO, "clicktocall_dlgsvc_on_send_rsp: #1")
 	
 	status = uxc_sdmvars_get_int( params, PARA_STATUS, 0, &rv);
 	if( rv < UX_SUCCESS) return rv;
@@ -1104,7 +1185,7 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_send_rsp( uxc_sfcall_t *sfcall, uxc_sdmvar
 	rv = usip_mobj_complete( sipmsg->mobj);
 	if( rv < USIP_SUCCESS) return rv;
 
-	ux_log(UXL_INFO, "clicktocall_dlgsvc_on_send_rsp: #7");
+	ux_log(UXL_DBG1, "%s completed", func);	
 
 	return UX_SUCCESS;
 }

@@ -223,6 +223,75 @@ UX_DECLARE(ux_status_t) clicktocall_dlgsess_handle_http_start_req( clicktocall_d
 	return UX_SUCCESS;
 }
 
+UX_DECLARE(ux_status_t) clicktocall_dlgsess_handle_http_stop_req( clicktocall_dlgsess_t *dlgsess, upa_httpmsg_t *reqmsg) 
+{
+	int rv;
+	char buffer[2048];
+	int bufsize = sizeof(buffer); 
+	uhttp_body_t *body;
+	const char *jsonstr;
+	cJSON *json = NULL;
+	const cJSON *networktype = NULL;
+	const cJSON *sessionid = NULL;
+	const cJSON *gwsessionid = NULL;
+	const cJSON *recordingfilename = NULL;
+
+	body = uhttp_msg_get_body( reqmsg->msg);
+	if( body) {
+		jsonstr = uhttp_body_get_str( body, buffer, bufsize, &rv);
+		ux_log(UXL_INFO, "get_body(len=%d, %s)", bufsize, buffer);
+	} else {
+		ux_log(UXL_MAJ, "Fail to get HTTP body");
+		return rv;
+	}
+
+	clicktocall_dlgstate_change(dlgsess, CLICKTOCALL_DLGSTATE_TERMINATING);
+
+	dlgsess->thread_id = uhttp_msg_get_thread_id(reqmsg->msg);
+	dlgsess->conn_id = uhttp_msg_get_conn_id(reqmsg->msg);
+	dlgsess->stream_id = uhttp_msg_get_id(reqmsg->msg);
+	dlgsess->version = uhttp_msg_get_version(reqmsg->msg);
+
+	json = cJSON_Parse(jsonstr);
+	if ( json == NULL) {
+		const char *error_ptr = cJSON_GetErrorPtr();
+        if (error_ptr != NULL) {
+			ux_log(UXL_MAJ, "Fail to parse HTTP body. err=%s", error_ptr);
+        }
+		return UX_EINVAL;
+	}
+
+	networktype = cJSON_GetObjectItemCaseSensitive(json, "networkType");
+    if (!cJSON_IsNumber(networktype)) {
+		ux_log(UXL_MAJ, "Fail to get networkType JSON key");
+		return UX_EINVAL;
+	}
+	dlgsess->networkType = networktype->valueint;
+
+	sessionid = cJSON_GetObjectItemCaseSensitive(json, "sessionID");
+    if (!cJSON_IsString(sessionid) || (sessionid->valuestring == NULL)) {
+		ux_log(UXL_MAJ, "Fail to get sessionID JSON key");
+		return UX_EINVAL;	
+    } 
+	dlgsess->sessionid = ux_str_dup( sessionid->valuestring, uims_sess_get_allocator(dlgsess->sess)); 
+
+	gwsessionid = cJSON_GetObjectItemCaseSensitive(json, "gwSessionID");
+    if (!cJSON_IsString(gwsessionid) || (gwsessionid->valuestring == NULL)) {
+		ux_log(UXL_MAJ, "Fail to get gwSessionID JSON key");
+		return UX_EINVAL;
+    } 
+
+	recordingfilename = cJSON_GetObjectItemCaseSensitive(json, "recordingFileName");
+    if (!cJSON_IsString(recordingfilename) || (recordingfilename->valuestring == NULL)) {
+		ux_log(UXL_MAJ, "Fail to get recordingFileName JSON key");
+		return UX_EINVAL;
+    } 
+	dlgsess->recordingfile = ux_str_dup( recordingfilename->valuestring, uims_sess_get_allocator(dlgsess->sess)); 
+
+	return UX_SUCCESS;
+}
+
+
 UX_DECLARE(ux_status_t) clicktocall_dlgsess_make_http_res( clicktocall_dlgsess_t *dlgsess, upa_httpmsg_t *resmsg) 
 {
 	int rv, dlen;
@@ -957,6 +1026,7 @@ UX_DECLARE(int) clicktocall_dlgsess_sprint( clicktocall_dlgsess_t *dlgsess, char
 	len += uims_util_sprint_str( buffer+len, buflen-len, "   + CALLMENTID = %s\n", dlgsess->callmentid, 20);
 	len += uims_util_sprint_str( buffer+len, buflen-len, "   + CALLINGCID = %s\n", dlgsess->callingcid, 20);
 	len += uims_util_sprint_str( buffer+len, buflen-len, "   + CALLEDCID  = %s\n", dlgsess->calledcid, 20);
+	len += uims_util_sprint_str( buffer+len, buflen-len, "   + RECORDINGFILE = %s\n", dlgsess->recordingfile, 20);
 	len += uims_util_sprint_int( buffer+len, buflen-len, "   + HOSTCODE   = %d\n", dlgsess->hostcode, 20);
 	len += uims_util_sprint_int( buffer+len, buflen-len, "   + OCSEQ      = %d\n", dlgsess->ocseq, 20);
 	len += uims_util_sprint_str( buffer+len, buflen-len, "   + OSTAG      = %s\n", dlgsess->ostag, 20);
@@ -1021,7 +1091,7 @@ void clicktocall_dlgdao_final( clicktocall_dlgdao_t *dao)
 clicktocall_dlgsess_t* clicktocall_dlgdao_find( clicktocall_dlgdao_t *dao,
 						uims_sessmgr_t *sessmgr, uims_sessid_t sessid)
 {
-	static const char* stmtid = "DLGSESS:FIND";
+	static const char* stmtid = "CLICKTOCALL:FIND";
 	static const char* query = "SELECT * FROM 1 WHERE 0=?";
 
 	int rv;
@@ -1136,7 +1206,7 @@ clicktocall_dlgsess_t* clicktocall_dlgdao_find( clicktocall_dlgdao_t *dao,
 		return NULL;
 	}
 
-	ux_log(UXL_INFO, "[DLGSESS:FIND] (sess_id=%llu, state=%d, extime=%llu, dlgstate=%d, method=%u, "
+	ux_log(UXL_INFO, "[CLICKTOCALL:FIND] (sess_id=%llu, state=%d, extime=%llu, dlgstate=%d, method=%u, "
 			"network_type=%u, http_session_id=%s, calling_number=%s, called_number=%s, recording=%u, "
 			"subscriber_name=%s, charging_number=%s, ringbacktone_type=%u, waitingment_id=%s, "
 			"callment_id=%s, calling_cid=%s, called_cid=%s, hostcode=%u, "
@@ -1204,7 +1274,7 @@ clicktocall_dlgsess_t* clicktocall_dlgdao_find( clicktocall_dlgdao_t *dao,
 	}
 	if( oto && oto[0]) {
 		dlgsess->oto = (usip_to_hdr_t*)usip_hdr_create_v(
-								allocator, usip_from_hdef(), oto);
+								allocator, usip_to_hdef(), oto);
 	} else {
 		dlgsess->oto = NULL;
 	}
@@ -1255,7 +1325,7 @@ clicktocall_dlgsess_t* clicktocall_dlgdao_find( clicktocall_dlgdao_t *dao,
 
 ux_status_t clicktocall_dlgdao_insert( clicktocall_dlgdao_t *dao, clicktocall_dlgsess_t *dlgsess)
 {
-	static const char* stmtid = "DLGSESS:INSERT";
+	static const char* stmtid = "CLICKTOCALL:INSERT";
 	static const char* query = "INSERT INTO table1 VALUES(?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?)";
 
 	int rv, bufsize, buflen;
@@ -1270,7 +1340,7 @@ ux_status_t clicktocall_dlgdao_insert( clicktocall_dlgdao_t *dao, clicktocall_dl
 	sesshdr = uxc_sess_get_hdr( uxcsess);
 	dlgsess->extime = time(NULL);
 
-	ux_log(UXL_INFO, "CLICKTOCALL DLGSESS INSERT. (sessid=%llu, svcst=%d, extime=%lu)",
+	ux_log(UXL_INFO, "CLICKTOCALL:INSERT. (sessid=%llu, svcst=%d, extime=%lu)",
 			(unsigned long long)uims_sess_get_id(dlgsess->sess), sesshdr->state, dlgsess->extime);
 
 	char buf[4096];
@@ -1423,14 +1493,14 @@ ux_status_t clicktocall_dlgdao_insert( clicktocall_dlgdao_t *dao, clicktocall_dl
 
 ux_status_t clicktocall_dlgdao_remove( clicktocall_dlgdao_t *dao, clicktocall_dlgsess_t *dlgsess)
 {
-	static const char* stmtid = "DLGSESS:REMOVE";
+	static const char* stmtid = "CLICKTOCALL:REMOVE";
 	static const char* query = "DELETE FROM table1 WHERE index0=?";
 
 	int rv;
 	uims_dbstmt_t *stmt;
 	uims_dbdataset_t *paraset;
 
-	ux_log(UXL_INFO, "CLICKTOCALL DLGSESS REMOVE. (sessid=%llu, extime=%lu)",
+	ux_log(UXL_INFO, "CLICKTOCALL:REMOVE. (sessid=%llu, extime=%lu)",
 			(unsigned long long)uims_sess_get_id(dlgsess->sess), dlgsess->extime);
 
 	char buf[4096];
@@ -1521,7 +1591,7 @@ ux_status_t clicktocall_dlgdao_update( clicktocall_dlgdao_t *dao, clicktocall_dl
  */
 ux_status_t clicktocall_dlgdao_update_calling_p( clicktocall_dlgdao_t *dao, clicktocall_dlgsess_t *dlgsess)
 {
-	static const char* stmtid = "DLGSESS:UPDATE_CALLING_P";
+	static const char* stmtid = "CLICKTOCALL:UPDATE_CALLING_P";
 	static const char* query = "UPDATE table1 SET column1=?, column2=?, column3=?, "
 				"column18=?, column19=?, column20=?, column21=? WHERE index0=?";
 
@@ -1536,7 +1606,7 @@ ux_status_t clicktocall_dlgdao_update_calling_p( clicktocall_dlgdao_t *dao, clic
 	uxcsess = uims_sess_get_uxcsess( dlgsess->sess);
 	sesshdr = uxc_sess_get_hdr( uxcsess);
 
-	ux_log(UXL_INFO, "CLICKTOCALL DLGSESS UPDATE_CALLING_P. (sessid=%llu, svcst=%d, state=%s, extime=%lu)",
+	ux_log(UXL_INFO, "CLICKTOCALL:UPDATE_CALLING_P. (sessid=%llu, svcst=%d, state=%s, extime=%lu)",
 			(unsigned long long)uims_sess_get_id( dlgsess->sess), sesshdr->state,
 			clicktocall_dlgstate_to_str( dlgsess->dlgstate), dlgsess->extime);
 
@@ -1589,7 +1659,7 @@ ux_status_t clicktocall_dlgdao_update_calling_p( clicktocall_dlgdao_t *dao, clic
 		return UX_ERR_FAILED;
 	}
 
-	ux_log(UXL_DBG1, "DLGSESS:UPDATE_CALLING_P (sess_id=%llu, state=%d, dlgstate=%d, extime=%llu, "
+	ux_log(UXL_DBG1, "CLICKTOCALL:UPDATE_CALLING_P (sess_id=%llu, state=%d, dlgstate=%d, extime=%llu, "
 			"ocseq=%u, ocall_id=%s, ofrom=%s, oto=%s)",
 			(unsigned long long)uims_sess_get_id( dlgsess->sess), sesshdr->state, dlgsess->dlgstate,
 			(unsigned long long)dlgsess->extime, 
@@ -1642,7 +1712,7 @@ ux_status_t clicktocall_dlgdao_update_calling_p( clicktocall_dlgdao_t *dao, clic
  */
 ux_status_t clicktocall_dlgdao_update_called_p( clicktocall_dlgdao_t *dao, clicktocall_dlgsess_t *dlgsess)
 {
-	static const char* stmtid = "DLGSESS:UPDATE_CALLED_P";
+	static const char* stmtid = "CLICKTOCALL:UPDATE_CALLED_P";
 	static const char* query = "UPDATE table1 SET column1=?, column2=?, column3=?, "
 				"column22=?, column23=?, column24=?, column25=? WHERE index0=?";
 
@@ -1657,7 +1727,7 @@ ux_status_t clicktocall_dlgdao_update_called_p( clicktocall_dlgdao_t *dao, click
 	uxcsess = uims_sess_get_uxcsess( dlgsess->sess);
 	sesshdr = uxc_sess_get_hdr( uxcsess);
 
-	ux_log(UXL_INFO, "CLICKTOCALL DLGSESS UPDATE_CALLED_P. (sessid=%llu, svcst=%d, state=%s, extime=%lu)",
+	ux_log(UXL_INFO, "CLICKTOCALL:UPDATE_CALLED_P. (sessid=%llu, svcst=%d, state=%s, extime=%lu)",
 			(unsigned long long)uims_sess_get_id( dlgsess->sess), sesshdr->state,
 			clicktocall_dlgstate_to_str( dlgsess->dlgstate), dlgsess->extime);
 
@@ -1710,7 +1780,7 @@ ux_status_t clicktocall_dlgdao_update_called_p( clicktocall_dlgdao_t *dao, click
 		return UX_ERR_FAILED;
 	}
 
-	ux_log(UXL_DBG1, "DLGSESS:UPDATE_CALLED_P (sess_id=%llu, state=%d, dlgstate=%d, extime=%llu, "
+	ux_log(UXL_DBG1, "CLICKTOCALL:UPDATE_CALLED_P (sess_id=%llu, state=%d, dlgstate=%d, extime=%llu, "
 			"tcseq=%u, tcall_id=%s, tfrom=%s, tto=%s)",
 			(unsigned long long)uims_sess_get_id( dlgsess->sess), sesshdr->state, dlgsess->dlgstate,
 			(unsigned long long)dlgsess->extime, 
@@ -1762,7 +1832,7 @@ ux_status_t clicktocall_dlgdao_update_called_p( clicktocall_dlgdao_t *dao, click
  */
 ux_status_t clicktocall_dlgdao_update_ms_p( clicktocall_dlgdao_t *dao, clicktocall_dlgsess_t *dlgsess)
 {
-	static const char* stmtid = "DLGSESS:UPDATE_MS_P";
+	static const char* stmtid = "CLICKTOCALL:UPDATE_MS_P";
 	static const char* query = "UPDATE table1 SET column1=?, column2=?, column3=?, "
 				"column26=?, column27=?, column28=?, column29=? WHERE index0=?";
 
@@ -1777,7 +1847,7 @@ ux_status_t clicktocall_dlgdao_update_ms_p( clicktocall_dlgdao_t *dao, clicktoca
 	uxcsess = uims_sess_get_uxcsess( dlgsess->sess);
 	sesshdr = uxc_sess_get_hdr( uxcsess);
 
-	ux_log(UXL_INFO, "CLICKTOCALL DLGSESS UPDATE_MS_P. (sessid=%llu, svcst=%d, state=%s, extime=%lu)",
+	ux_log(UXL_INFO, "CLICKTOCALL:UPDATE_MS_P. (sessid=%llu, svcst=%d, state=%s, extime=%lu)",
 			(unsigned long long)uims_sess_get_id( dlgsess->sess), sesshdr->state,
 			clicktocall_dlgstate_to_str( dlgsess->dlgstate), dlgsess->extime);
 
@@ -1830,7 +1900,7 @@ ux_status_t clicktocall_dlgdao_update_ms_p( clicktocall_dlgdao_t *dao, clicktoca
 		return UX_ERR_FAILED;
 	}
 
-	ux_log(UXL_DBG1, "DLGSESS:UPDATE_MS_P (sess_id=%llu, state=%d, dlgstate=%d, extime=%llu, "
+	ux_log(UXL_DBG1, "CLICKTOCALL:UPDATE_MS_P (sess_id=%llu, state=%d, dlgstate=%d, extime=%llu, "
 			"mscseq=%u, mscall_id=%s, msfrom=%s, msto=%s)",
 			(unsigned long long)uims_sess_get_id( dlgsess->sess), sesshdr->state, dlgsess->dlgstate,
 			(unsigned long long)dlgsess->extime, 
@@ -1882,7 +1952,7 @@ ux_status_t clicktocall_dlgdao_update_ms_p( clicktocall_dlgdao_t *dao, clicktoca
  */
 ux_status_t clicktocall_dlgdao_update_calling_e( clicktocall_dlgdao_t *dao, clicktocall_dlgsess_t *dlgsess)
 {
-	static const char* stmtid = "DLGSESS:UPDATE_CALLING_E";
+	static const char* stmtid = "CLICKTOCALL:UPDATE_CALLING_E";
 	static const char* query = "UPDATE table1 SET column1=?, column2=?, column3=?, column18=? WHERE index0=?";
 
 	int rv;
@@ -1894,7 +1964,7 @@ ux_status_t clicktocall_dlgdao_update_calling_e( clicktocall_dlgdao_t *dao, clic
 	uxcsess = uims_sess_get_uxcsess( dlgsess->sess);
 	sesshdr = uxc_sess_get_hdr( uxcsess);
 
-	ux_log(UXL_INFO, "CLICKTOCALL DLGSESS UPDATE_CALLING_E. (sessid=%llu, svcst=%d, state=CALLING_ESTABLISHED, extime=%lu)",
+	ux_log(UXL_INFO, "CLICKTOCALL:UPDATE_CALLING_E. (sessid=%llu, svcst=%d, state=CALLING_ESTABLISHED, extime=%lu)",
 			(unsigned long long)uims_sess_get_id( dlgsess->sess), sesshdr->state, dlgsess->extime);
 
 	stmt = uims_db_open_stmt( dao->db, stmtid, query, &rv); 
@@ -1910,7 +1980,7 @@ ux_status_t clicktocall_dlgdao_update_calling_e( clicktocall_dlgdao_t *dao, clic
 		return UX_ERR_FAILED;
 	}
 
-	ux_log(UXL_DBG1, "DLGSESS:UPDATE_CALLING_E (sess_id=%llu, state=%d, dlgstate=%d, extime=%llu, ocseq=%u)",
+	ux_log(UXL_DBG1, "CLICKTOCALL:UPDATE_CALLING_E (sess_id=%llu, state=%d, dlgstate=%d, extime=%llu, ocseq=%u)",
 			(unsigned long long)uims_sess_get_id( dlgsess->sess), sesshdr->state, dlgsess->dlgstate,
 			(unsigned long long)dlgsess->extime, dlgsess->ocseq);
 
@@ -1949,7 +2019,7 @@ ux_status_t clicktocall_dlgdao_update_calling_e( clicktocall_dlgdao_t *dao, clic
  */
 ux_status_t clicktocall_dlgdao_update_called_e( clicktocall_dlgdao_t *dao, clicktocall_dlgsess_t *dlgsess)
 {
-	static const char* stmtid = "DLGSESS:UPDATE_CALLED_E";
+	static const char* stmtid = "CLICKTOCALL:UPDATE_CALLED_E";
 	static const char* query = "UPDATE table1 SET column1=?, column2=?, column3=?, column22=? WHERE index0=?";
 
 	int rv;
@@ -1961,7 +2031,7 @@ ux_status_t clicktocall_dlgdao_update_called_e( clicktocall_dlgdao_t *dao, click
 	uxcsess = uims_sess_get_uxcsess( dlgsess->sess);
 	sesshdr = uxc_sess_get_hdr( uxcsess);
 
-	ux_log(UXL_INFO, "CLICKTOCALL DLGSESS UPDATE_CALLED_E. (sessid=%llu, svcst=%d, state=CALLED_ESTABLISHED, extime=%lu)",
+	ux_log(UXL_INFO, "CLICKTOCALL:UPDATE_CALLED_E. (sessid=%llu, svcst=%d, state=CALLED_ESTABLISHED, extime=%lu)",
 			(unsigned long long)uims_sess_get_id( dlgsess->sess), sesshdr->state, dlgsess->extime);
 
 	stmt = uims_db_open_stmt( dao->db, stmtid, query, &rv); 
@@ -1977,7 +2047,7 @@ ux_status_t clicktocall_dlgdao_update_called_e( clicktocall_dlgdao_t *dao, click
 		return UX_ERR_FAILED;
 	}
 
-	ux_log(UXL_DBG1, "DLGSESS:UPDATE_CALLED_E (sess_id=%llu, state=%d, dlgstate=%d, extime=%llu, tcseq=%u)",
+	ux_log(UXL_DBG1, "CLICKTOCALL:UPDATE_CALLED_E (sess_id=%llu, state=%d, dlgstate=%d, extime=%llu, tcseq=%u)",
 			(unsigned long long)uims_sess_get_id( dlgsess->sess), sesshdr->state, dlgsess->dlgstate,
 			(unsigned long long)dlgsess->extime, dlgsess->tcseq);
 
@@ -2016,7 +2086,7 @@ ux_status_t clicktocall_dlgdao_update_called_e( clicktocall_dlgdao_t *dao, click
  */
 ux_status_t clicktocall_dlgdao_update_ms_e( clicktocall_dlgdao_t *dao, clicktocall_dlgsess_t *dlgsess)
 {
-	static const char* stmtid = "DLGSESS:UPDATE_MS_E";
+	static const char* stmtid = "CLICKTOCALL:UPDATE_MS_E";
 	static const char* query = "UPDATE table1 SET column1=?, column2=?, column3=?, column26=? WHERE index0=?";
 
 	int rv;
@@ -2028,7 +2098,7 @@ ux_status_t clicktocall_dlgdao_update_ms_e( clicktocall_dlgdao_t *dao, clicktoca
 	uxcsess = uims_sess_get_uxcsess( dlgsess->sess);
 	sesshdr = uxc_sess_get_hdr( uxcsess);
 
-	ux_log(UXL_INFO, "CLICKTOCALL DLGSESS UPDATE_MS_E. (sessid=%llu, svcst=%d, state=MS_ESTABLISHED, extime=%lu)",
+	ux_log(UXL_INFO, "CLICKTOCALL:UPDATE_MS_E. (sessid=%llu, svcst=%d, state=MS_ESTABLISHED, extime=%lu)",
 			(unsigned long long)uims_sess_get_id( dlgsess->sess), sesshdr->state, dlgsess->extime);
 
 	stmt = uims_db_open_stmt( dao->db, stmtid, query, &rv); 
@@ -2044,7 +2114,7 @@ ux_status_t clicktocall_dlgdao_update_ms_e( clicktocall_dlgdao_t *dao, clicktoca
 		return UX_ERR_FAILED;
 	}
 
-	ux_log(UXL_DBG1, "DLGSESS:UPDATE_MS_E (sess_id=%llu, state=%d, dlgstate=%d, extime=%llu, mscseq=%u)",
+	ux_log(UXL_DBG1, "CLICKTOCALL:UPDATE_MS_E (sess_id=%llu, state=%d, dlgstate=%d, extime=%llu, mscseq=%u)",
 			(unsigned long long)uims_sess_get_id( dlgsess->sess), sesshdr->state, dlgsess->dlgstate,
 			(unsigned long long)dlgsess->extime, dlgsess->mscseq);
 

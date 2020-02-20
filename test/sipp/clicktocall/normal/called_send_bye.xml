@@ -5,6 +5,8 @@
   <recv request="INVITE" crlf="true" rrs="true">
     <action>
 	  <ereg regexp=" ([0-9a-zA-Z_\+\-]*)" search_in="hdr" header="To:" check_it="true" assign_to="dummy,callee"/>
+     <ereg regexp=".*" search_in="hdr" header="From:" check_it="true" assign_to="remote"/>
+	  <ereg regexp=".*" search_in="hdr" header="To:" check_it="true" assign_to="local"/>
     </action>
   </recv>
   <Reference variables="dummy"/>
@@ -91,23 +93,28 @@
         crlf="true">
   </recv>
 
-  <recv request="BYE">
-  </recv>
+  <pause milliseconds="30000"/>
 
-  <send>
+  <send retrans="500">
     <![CDATA[
 
-      SIP/2.0 200 OK
+      BYE sip:07076008397@127.0.0.1:5060 SIP/2.0
+      Accept-Contact: *;+g.3gpp.icsi-ref="urn%3Aurn-7%3A3gpp-service.ims.icsi.mmtel";require;explicit
       [last_Via:]
-      [last_From:]
-      [last_To:]
+      From: [$local];tag=[call_number]
+      To: [$remote]
       [last_Call-ID:]
-      [last_CSeq:]
-      Contact: <sip:[$callee]@[local_ip]:[local_port]>
+      CSeq: 2 BYE
+      [last_Contact:]
+      [routes]
+      Max-Forwards: 70
       Content-Length: 0
 
     ]]>
   </send>
+
+  <recv response="200" crlf="true">
+  </recv>
 
   <!-- Keep the call open for a while in case the 200 is lost to be     -->
   <!-- able to retransmit it if we receive the BYE again.               -->

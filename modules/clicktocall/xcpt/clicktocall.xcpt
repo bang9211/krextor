@@ -154,7 +154,7 @@
                 <onerror target="stop"/>
 			</send>
 
-			<wait name="WAIT_REQ" timeout="30000">
+			<wait name="WAIT_REQ" timeout="180000">
 				<onrecv target="RECV_MS_INFO_RSP"/>
 				<onrecv target="RECV_CALLING_BYE"/>
 				<onrecv target="RECV_MS_BYE"/>
@@ -174,7 +174,7 @@
 
 			<recv name="RECV_MS_INFO_RSP" protocol="SIP" operation="INFO" is_req="no" did="2">
 				<oncall>
-					<call type="SYS" function="clicktocall_dlgsvc_on_recv_sip_invite_res(CALL_TO_MS_CALLING, status)"/>
+					<call type="SYS" function="clicktocall_dlgsvc_on_recv_sip_dlgtransc_res(CALL_TO_MS_CALLING, status)"/>
 				</oncall>
 				<onerror target="stop"/>
 			</recv>
@@ -327,7 +327,7 @@
 				<onerror target="stop"/>
 			</recv>
 
-			<recv name="RECV_CLICKTOCALL_STOP" protocol="HTTP" operation="POST" url="/clicktocall/stop" timeout="30000" is_req="yes" did="0">
+			<recv name="RECV_CLICKTOCALL_STOP" protocol="HTTP" operation="DELETE" url="/clicktocall/stop" timeout="30000" is_req="yes" did="0">
 				<oncall>
 					<call type="SYS" function="clicktocall_dlgsvc_on_recv_http_stop_req()"/>
 				</oncall>
@@ -339,7 +339,7 @@
 				</onerror>
 			</recv>
 
-			<send name="SEND_CLICKTOCALL_STOP_RSP" protocol="HTTP" operation="POST" rcode="200" phrase="OK" did="0">
+			<send name="SEND_CLICKTOCALL_STOP_RSP" protocol="HTTP" operation="DELETE" rcode="200" phrase="OK" did="0">
 				<oncall>
 					<call type="SYS" function="clicktocall_dlgsvc_on_send_http_res(0)"/>
 				</oncall>
