@@ -1,4 +1,4 @@
-SubDir TOP modules eipms src ;
+SubDir TOP modules eipmsib src ;
 
 SubDirHdrs $(UALIB_SRC_HOME)/include ;
 SubDirHdrs $(UXLIB_SRC_HOME)/include ;
