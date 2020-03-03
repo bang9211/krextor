@@ -2,3 +2,4 @@ SubDir TOP modules ;
 
 SubInclude TOP modules clicktocall ;
 SubInclude TOP modules uims ;
+SubInclude TOP modules eipmsib ;

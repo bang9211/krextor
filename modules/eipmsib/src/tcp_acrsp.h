@@ -1,0 +1,28 @@
+#ifndef __TCP_ACRSP_H__
+#define __TCP_ACRSP_H__
+
+#include "tcp_msg.h"
+
+///////////////////////////////////////////////////////////////////////////////////
+// tcp_ac Response Message Structure & Macro 
+///////////////////////////////////////////////////////////////////////////////////
+
+typedef struct tcp_acrsp_s tcp_acrsp_t; 
+struct tcp_acrsp_s {
+	int result;
+	int callTime;
+	int finalUnitAction;
+	int lang;
+	char annStr[256];
+};
+
+///////////////////////////////////////////////////////////////////////////////////
+// tcp_ac Response Message Functions 
+///////////////////////////////////////////////////////////////////////////////////
+
+int tcp_acrsp_encode_ipcmsg( tcp_acrsp_t *acrsp, tcp_msg_t *msg);
+
+int tcp_acrsp_init( tcp_acrsp_t *acrsp);
+void tcp_acrsp_final( tcp_acrsp_t *acrsp);
+
+#endif // #ifndef __TCP_ ACRSP_H__
