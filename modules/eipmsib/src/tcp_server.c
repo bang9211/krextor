@@ -145,7 +145,7 @@ static int tcp_server_handle_clicktocall_req( tcp_server_t *server, uxc_worker_t
 	ux_log(UXL_CRT, "  [scenarioType] %s", clicktocall_req->scenarioType);
 	ux_log(UXL_CRT, "  [callMentID] %s", clicktocall_req->callMentID);
 	ux_log(UXL_CRT, "  [callingCID] %s", clicktocall_req->callingCID);
-	ux_log(UXL_CRT, "  [calledCID] %s", clicktocall_req->subscriberNcalledCIDame);
+	ux_log(UXL_CRT, "  [calledCID] %s", clicktocall_req->calledCID);
 	ux_log(UXL_CRT, "  [recordingFileName] %s", clicktocall_req->recordingFileName);
 	ux_log(UXL_CRT, "  [isAllRecording] %s", clicktocall_req->isAllRecording);
 	ux_log(UXL_CRT, "  [endIfRecordingFailed] %s", clicktocall_req->endIfRecordingFailed);
