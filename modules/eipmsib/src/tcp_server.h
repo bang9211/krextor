@@ -5,9 +5,11 @@
 #include <upa/upa_tcp.h>
 #include "tcp_msg.h"
 #include "tcp_idprsp.h"
+#include "tcp_clicktocall_rsp.h"
 #include "tcp_acrsp.h"
 #include "tcp_cirrsp.h"
 #include "tcp_idpreq.h"
+#include "tcp_clicktocall_req.h"
 #include "tcp_acreq.h"
 #include "tcp_cirreq.h"
 

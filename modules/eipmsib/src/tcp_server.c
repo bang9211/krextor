@@ -122,12 +122,12 @@ static int tcp_server_handle_clicktocall_req( tcp_server_t *server, uxc_worker_t
 					upa_tcpmsg_t *tcpmsg, tcp_msg_t *msg )
 {
 	int rv;
-	tcp_rsp_t clicktocall_rsp[1];
+	tcp_clicktocall_start_rsp_t clicktocall_rsp[1];
 	tcp_clicktocall_start_req_t clicktocall_req[1];
 
 	ux_log( UXL_INFO, "* tcp_server_handle_clicktocall_req ");
-	tcp_idpreq_init(clicktocall_req);
-	tcp_idprsp_init(clicktocall_rsp);
+	tcp_clicktocall_req_init(clicktocall_req);
+	tcp_clicktocall_rsp_init(clicktocall_rsp);
 
 	rv = tcp_clicktocall_start_req_decode_msg(clicktocall_req, msg);
 	if (rv <eUXC_SUCCESS) return rv;
