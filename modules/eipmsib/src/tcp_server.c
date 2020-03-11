@@ -102,6 +102,8 @@ int tcp_server_handle_svrreq( tcp_server_t *server, uxc_worker_t* worker, upa_tc
 	// 3. response to uxcutor
 	switch(msgID)
 	{
+		case TCP_MSGID_CLICK_TO_CALL:
+			return tcp_server_handle_clicktocall_req(server, worker, tcpmsg, msg);
 		case TCP_MSGID_IDP :
 			return tcp_server_handle_idpreq(server, worker, tcpmsg, msg);
 		case TCP_MSGID_AC:
@@ -112,6 +114,39 @@ int tcp_server_handle_svrreq( tcp_server_t *server, uxc_worker_t* worker, upa_tc
 			break;	
 	}			
 	return -1;
+}
+
+static int tcp_server_handle_clicktocall_req( tcp_server_t *server, uxc_worker_t *worker,
+					upa_tcpmsg_t *tcpmsg, tcp_msg_t *msg )
+{
+	int rv;
+	tcp_rsp_t clicktocall_rsp[1];
+	tcp_clicktocall_start_req_t clicktocall_req[1];
+
+	ux_log( UXL_INFO, "* tcp_server_handle_clicktocall_req ");
+	tcp_idpreq_init(clicktocall_req);
+	tcp_idprsp_init(clicktocall_rsp);
+
+	rv = tcp_clicktocall_start_req_decode_msg(clicktocall_req, msg);
+	if (rv <eUXC_SUCCESS) return rv;
+
+	/* To do.. */	
+	ux_log(UXL_CRT, "  [sessionID] %d", clicktocall_req->ccrCount);
+	ux_log(UXL_CRT, "  [called] %s", clicktocall_req->called);
+	ux_log(UXL_CRT, "  [dialed] %s", clicktocall_req->dialed);
+
+	clicktocall_rsp->result = 0;
+	clicktocall_rsp->callTime = 0;
+	clicktocall_rsp->finalUnitAction = idpreq->ccrCount * 100;
+	clicktocall_rsp->brandId = 0;
+	clicktocall_rsp->lang= 0;
+
+	rv = tcp_idprsp_encode_ipcmsg(idprsp, msg);
+	if (rv <eUXC_SUCCESS) return rv;
+	rv = tcp_msg_send(msg, server->patcp, &tcpmsg->peerkey);	
+	if (rv <eUXC_SUCCESS) return rv;
+
+	return 0;
 }
 
 static int tcp_server_handle_idpreq( tcp_server_t *server, uxc_worker_t *worker,

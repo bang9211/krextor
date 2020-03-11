@@ -11,6 +11,7 @@
 // TCP Common Message Structure & Macro 
 ///////////////////////////////////////////////////////////////////////////////////
 
+#define TCP_MSGID_CLICK_TO_CALL 			100
 #define TCP_MSGID_IDP 						701 
 #define TCP_MSGID_AC 						702 
 #define TCP_MSGID_CIR	 					703 
