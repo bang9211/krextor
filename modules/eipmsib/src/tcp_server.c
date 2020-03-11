@@ -240,8 +240,7 @@ static int tcp_server_handle_cirreq( tcp_server_t *server, uxc_worker_t *worker,
 	tcp_cirrsp_t cirrsp[1];
 	tcp_cirreq_t cirreq[1];
 
-	ux_log( UXL_INFO, "* tcp_server_handle_cirreq",
-			tcpmsg->peerkey);
+	ux_log( UXL_INFO, "* tcp_server_handle_cirreq", tcpmsg->peerkey);
 	tcp_cirreq_init(cirreq);
 	tcp_cirrsp_init(cirrsp);
 
