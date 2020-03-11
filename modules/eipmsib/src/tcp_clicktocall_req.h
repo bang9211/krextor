@@ -10,22 +10,26 @@
 typedef struct tcp_clicktocall_start_req_s tcp_clicktocall_start_req_t; 
 struct tcp_clicktocall_start_req_s {
 	tcp_msg_t base[1];
-	int networkType;
 	char *sessionID;
 	char *gwSessionID;
+	char *subscriberName;
+	int recordingType;
 	char *callingNumber;
 	char *calledNumber;
-	int recording;
-	char *subscirberName;
-	char *chargingNumber;
+	int serviceCode;
 	int ringBackToneType;
 	int waitingMentID;
+	int scenarioType;
 	int callMentID;
 	char *callingCID;
 	char *calledCID;
-	int hostingCode;
-	int scenarioType;
 	char *recordingFileName;
+	int isAllRecording;
+	int endIfRecordingFailed;
+	int endIfRecordingEnded;
+	int hostingCode;
+	int wirelessTimeout;
+	int wiredTimeout;
 };
 
 typedef struct tcp_clicktocall_stop_req_s tcp_clicktocall_stop_req_t; 

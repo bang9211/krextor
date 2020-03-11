@@ -133,17 +133,34 @@ static int tcp_server_handle_clicktocall_req( tcp_server_t *server, uxc_worker_t
 	if (rv <eUXC_SUCCESS) return rv;
 
 	/* To do.. */	
-	ux_log(UXL_CRT, "  [sessionID] %d", clicktocall_req->ccrCount);
-	ux_log(UXL_CRT, "  [called] %s", clicktocall_req->called);
-	ux_log(UXL_CRT, "  [dialed] %s", clicktocall_req->dialed);
+	ux_log(UXL_CRT, "  [sessionID] %d", clicktocall_req->sessionID);
+	ux_log(UXL_CRT, "  [gwSessionID] %s", clicktocall_req->gwSessionID);
+	ux_log(UXL_CRT, "  [subscriberName] %s", clicktocall_req->subscriberName);
+	ux_log(UXL_CRT, "  [recordingType] %s", clicktocall_req->recordingType);
+	ux_log(UXL_CRT, "  [callingNumber] %s", clicktocall_req->callingNumber);
+	ux_log(UXL_CRT, "  [calledNumber] %s", clicktocall_req->calledNumber);
+	ux_log(UXL_CRT, "  [serviceCode] %s", clicktocall_req->serviceCode);
+	ux_log(UXL_CRT, "  [ringBackToneType] %s", clicktocall_req->ringBackToneType);
+	ux_log(UXL_CRT, "  [waitingMentID] %s", clicktocall_req->waitingMentID);
+	ux_log(UXL_CRT, "  [scenarioType] %s", clicktocall_req->scenarioType);
+	ux_log(UXL_CRT, "  [callMentID] %s", clicktocall_req->callMentID);
+	ux_log(UXL_CRT, "  [callingCID] %s", clicktocall_req->callingCID);
+	ux_log(UXL_CRT, "  [calledCID] %s", clicktocall_req->subscriberNcalledCIDame);
+	ux_log(UXL_CRT, "  [recordingFileName] %s", clicktocall_req->recordingFileName);
+	ux_log(UXL_CRT, "  [isAllRecording] %s", clicktocall_req->isAllRecording);
+	ux_log(UXL_CRT, "  [endIfRecordingFailed] %s", clicktocall_req->endIfRecordingFailed);
+	ux_log(UXL_CRT, "  [endIfRecordingEnded] %s", clicktocall_req->endIfRecordingEnded);
+	ux_log(UXL_CRT, "  [hostingCode] %s", clicktocall_req->hostingCode);
+	ux_log(UXL_CRT, "  [wirelessTimeout] %s", clicktocall_req->wirelessTimeout);
+	ux_log(UXL_CRT, "  [wiredTimeout] %s", clicktocall_req->wiredTimeout);
 
 	clicktocall_rsp->result = 0;
 	clicktocall_rsp->callTime = 0;
-	clicktocall_rsp->finalUnitAction = idpreq->ccrCount * 100;
+	clicktocall_rsp->finalUnitAction = 100;
 	clicktocall_rsp->brandId = 0;
 	clicktocall_rsp->lang= 0;
 
-	rv = tcp_idprsp_encode_ipcmsg(idprsp, msg);
+	rv = tcp_clicktocall_rsp_encode_ipcmsg(clicktocall_rsp, msg);
 	if (rv <eUXC_SUCCESS) return rv;
 	rv = tcp_msg_send(msg, server->patcp, &tcpmsg->peerkey);	
 	if (rv <eUXC_SUCCESS) return rv;
