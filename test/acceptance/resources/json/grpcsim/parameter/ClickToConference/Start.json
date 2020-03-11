@@ -1,0 +1,20 @@
+{
+    "networkType":0,
+    "sessionID":"s0001",
+    "subject":"test",
+    "chairmanName":"ythan",
+    "chairmanNumber":"01055554444",
+    "chargingNumber":"666",
+    "participantScenario":1,
+    "cidType":1,
+    "chairmanCID":"cid0002",
+    "isRecording":false,
+    "hostingCode":1,
+    "serviceMentGroupID":1,
+    "callingCategoryType":1,
+    "participantNumber":[
+        "777",
+        "888",
+        "999"
+    ]
+}

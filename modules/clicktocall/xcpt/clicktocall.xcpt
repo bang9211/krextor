@@ -90,16 +90,8 @@
 				<case value="183" target="CALLING_PROCEEDING"/>
 				<case value="200" target="SEND_CALLING_CLICKTOCALL_NOTI"/>
 				<case value="202" target="SEND_CALLING_CLICKTOCALL_NOTI"/>
-				<default target="SEND_ACK_TO_CALLING_ON_ERROR"/>
+				<default target="SEND_CLICKTOCALL_RESPOND"/>
 			</switch>
-
-			<send name="SEND_ACK_TO_CALLING_ON_ERROR" protocol="SIP" operation="ACK" is_req="yes" did="0">
-				<oncall>
-                    <call type="SYS" function="clicktocall_dlgsvc_on_send_sip_ack(CALL_TO_CALLING, sdp_ms)"/>
-                </oncall>
-				<onsuccess target ="stop"/>
-                <onerror target="SEND_CLICKTOCALL_RESPOND"/>
-			</send>
 
 			<invoke name="SEND_CALLING_CLICKTOCALL_NOTI" protocol="HTTP" operation="POST" url="http://localhost:8070/clicktocall/notify" version="1.0" timeout="5000" is_req="yes">
 				<onsend>

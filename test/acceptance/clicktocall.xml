@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<scenarios>
+    <configuration>
+		<!-- È­¸é¿¡ ½Ã³ª¸®¿À ½ÇÇà³»¿ë Ãâ·Â ¿©ºÎ. (on/off) (default:on) -->
+		<define name="display-trace-log" value="on"/>
+		<!-- È­¸é¿¡ ½Ã³ª¸®¿À ½ÇÇà³»¿ë ½Ç½Ã°£ Ãâ·Â ¿©ºÎ. (on/off) (default:off) -->
+		<define name="realtime-display" value="off"/>
+		<!-- ½Ã³ª¸®¿À ¼öÇà °á°ú¸¦ ÆÄÀÏ¿¡ ±â·ÏÇÒÁö ¿©ºÎ. (on/off) (default:off) -->
+		<define name="file-report" value="off"/>
+		<!-- ½Ã³ª¸®¿À ½ÇÇà Å¸ÀÓ¾Æ¿ô ½Ã°£(ÃÊ) (default:0(none)) -->
+		<define name="scenario-timeout" value="60"/>
+		<!-- ½Ã³ª¸®¿À ¼öÇà ÈÄ ´ÙÀ½ ½Ã³ª¸®¿À ¼öÇà Àü À¯ÈÞ ½Ã°£(ÃÊ) (default:0) -->
+		<define name="scenario-interval" value="0"/>
+		<!-- ½Ã³ª¸®¿À Å¸ÀÔ (seagull/sipp/none) (default:none) -->
+		<define name="scenario-type" value="sipp"/>
+		<!-- MMCD ¿¬°á Á¤º¸ - RMI HOST / PORT (default:null) -->
+		<!--define name="rmi-host" value="sktdb2"/>
+		<define name="rmi-port" value="15003"/-->
+		<!-- Report plugin Á¤º¸ - library name (default:null) -->
+		<!--define name="report-plugin" value="libsimctrl_plugin.so"/-->
+		<!-- ignore list - ÇØ´ç keyword°¡ ÀÖÀ¸¸é ÇØ´ç ¶óÀÎ¿¡¼­ keyword ÀÌÈÄ´Â ºñ±³ÇÏÁö ¾Ê´Â´Ù. -->
+		<!-- sipp Àü¿ë ignore keyword -->
+		<define name="ignore-keyword" value="-----------------------------------------------"/>
+		<define name="ignore-keyword" value=";branch="/>
+		<define name="ignore-keyword" value=";tag="/>
+		<define name="ignore-keyword" value="Call-ID: "/>
+		<define name="ignore-keyword" value="i: 1-"/> <!-- Call-ID short form -->
+		<define name="ignore-keyword" value="CSeq: "/>
+		<define name="ignore-keyword" value="RSeq: "/>
+		<define name="ignore-keyword" value="RAck: "/>
+		<define name="ignore-keyword" value="UDP message received ["/>
+		<define name="ignore-keyword" value="UDP message sent ("/>
+		<define name="ignore-keyword" value="m=audio "/>
+		<define name="ignore-keyword" value="m=video "/>
+	</configuration>
+
+	<class name="NORMAL_CALL">
+		<scenario name="normal_clickto_call" description="CLICK TO CALL Á¤»ó È£ ÄÉÀÌ½º">
+			<command script="/home/gw/UANGEL/SKBIB/cmds/assim/scenario_test.sh" check="" display="false" report="false" serial="false"/>
+			<command script="$SKBGW_SRC_HOME/test/sipp/clicktocall/normal/calling.sh simctrl" check="$SKBGW_SRC_HOME/test/sipp/clicktocall/report/calling.res"/>
+			<command script="$SKBGW_SRC_HOME/test/sipp/clicktocall/normal/called.sh simctrl" check="$SKBGW_SRC_HOME/test/sipp/clicktocall/report/called.res"/> 
+			<command script="$SKBGW_SRC_HOME/test/sipp/clicktocall/normal/ms.sh simctrl" check="$SKBGW_SRC_HOME/test/sipp/clicktocall/report/ms.res"/> 
+		</scenario>
+   </class>
+</scenarios>

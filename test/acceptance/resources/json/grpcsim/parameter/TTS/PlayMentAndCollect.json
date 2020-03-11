@@ -1,0 +1,11 @@
+{
+    "networkType":0,
+    "sessionID":"s0001",
+    "gwSessionID":"g0001",
+    "confID":"c0001",
+    "aupkg":"S: pa(an=vb(mny,usd,1153))",
+    "maxDigits":11,
+    "minDigits":9,
+    "firstDigitTimer":3,
+    "interDigitTimer":3
+}

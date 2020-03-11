@@ -1,0 +1,8 @@
+{
+    "networkType":0,
+    "sessionID":"s0001",
+    "callingNumber":"01012345678",
+    "calledNumber":"01098765432",
+    "callbackNumber":"01012345678",
+    "message":"HELLOWORLD!"
+}

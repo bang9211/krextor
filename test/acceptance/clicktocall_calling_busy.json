@@ -1,0 +1,7 @@
+{
+    "scenario" : [
+        "ClickToCall;   Start;      ./resources/json/grpcsim/parameter/ClickToCall/Start.json",
+        "ClickToCall;   Notify;     ./resources/json/grpcsim/response/ClickToCallNoti/Notify.json",
+        "ClickToCall;   Respond;    ./resources/json/grpcsim/response/ClickToCallNoti/Respond.json"
+    ]
+}

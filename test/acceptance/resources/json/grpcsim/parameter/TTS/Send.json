@@ -1,0 +1,13 @@
+{
+    "networkType":0,
+    "sessionID":"s0001",
+    "callingNumber":"01012345678",
+    "calledNumber":"01098765432",
+    "userName":"ythan",
+    "message":"HELLOWORLD!",
+    "messageID":"MID0001",
+    "messageConfirm":"TEST",
+    "notification":"test",
+    "authorization":"AUTH",
+    "dtmfList":[1, 2, 3]
+}

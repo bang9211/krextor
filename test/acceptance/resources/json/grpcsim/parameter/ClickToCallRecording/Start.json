@@ -1,0 +1,16 @@
+{
+    "sessionID":"s0001",
+    "subscriberName":"ythan",
+    "callingNumber":"01012345678",
+    "calledNumber":"01098765432",
+    "chargingNumber":"1111",
+    "ringBackToneType":1,
+    "waitingMentID":1,
+    "scenarioType":1,
+    "callMentID":1,
+    "callingCID":"cid0001",
+    "calledCID":"cid1000",
+    "hostingCode":1,
+    "isFullRecording":false,
+    "recordingFileName":"test"
+}

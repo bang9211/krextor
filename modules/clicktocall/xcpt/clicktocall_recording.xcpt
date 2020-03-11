@@ -66,32 +66,20 @@
 				</oncall>
 			</send>
 
-			<send name="SEND_INVITE_TO_CALLING" protocol="SIP" operation="INVITE" is_req="yes" did="0">
-                <oncall>
-                    <call type="SYS" function="clicktocall_dlgsvc_on_send_sip_invite_req(CALL_TO_CALLING)"/>
-                </oncall>
-                <onerror target="SEND_CLICKTOCALL_RESPOND"/>
-            </send>
-
-			<wait name="CALLING_PROCEEDING" timeout="180000">
-				<onrecv target="RECV_CALLING_INVITE_RSP"/>
-				<onerror target="SEND_CLICKTOCALL_RESPOND"/>
-			</wait>
-
-			<recv name="RECV_CALLING_INVITE_RSP" protocol="SIP" operation="INVITE" is_req="no" did="0">
-				<oncall>
-					<call type="SYS" function="clicktocall_dlgsvc_on_recv_sip_invite_res(CALL_TO_CALLING, status, sdp_calling)"/>
-				</oncall>
-			</recv>
-
-			<switch name="CHECK_CALLING_INVITE_RSP" value="status">
-				<case value="100" target="CALLING_PROCEEDING"/>
-				<case value="180" target="CALLING_PROCEEDING"/>
-				<case value="183" target="CALLING_PROCEEDING"/>
-				<case value="200" target="SEND_CALLING_CLICKTOCALL_NOTI"/>
-				<case value="202" target="SEND_CALLING_CLICKTOCALL_NOTI"/>
-				<default target="SEND_CLICKTOCALL_RESPOND"/>
-			</switch>
+			<invoke name="number_normalizing" protocol="DBIF_SLEE" operation="100" procname="EIPMSIB" timeout="5000">
+				<onsend >
+					<call type="SYS" function="upa_dbifcall_write_hdr(,,,,,)"/>
+				</onsend>
+				<onrecv/>
+				<onsuccess>
+				</onsuccess>
+				<onerror target="SEND_CLICKTOCALL_RESPOND">
+				</onerror>
+				<ontimeout target="SEND_CLICKTOCALL_RESPOND">
+					<log trclvl="1" function="info('timeout checking number')"/>
+					<stat defname="failure"/>
+				</ontimeout>
+			</invoke>
 
 			<invoke name="SEND_CALLING_CLICKTOCALL_NOTI" protocol="HTTP" operation="POST" url="http://localhost:8070/clicktocall/notify" version="1.0" timeout="5000" is_req="yes">
 				<onsend>
@@ -108,159 +96,7 @@
 				</ontimeout>
 			</invoke>
 
-			<send name="SEND_INVITE_TO_MS" protocol="SIP" operation="INVITE" is_req="yes" did="2">
-                <oncall>
-                    <call type="SYS" function="clicktocall_dlgsvc_on_send_sip_invite_req(CALL_TO_MS_CALLING, sdp_calling)"/>
-                </oncall>
-                <onerror target="SEND_CLICKTOCALL_RESPOND"/>
-            </send>
-
-			<wait name="MS_CALLING_PROCEEDING" timeout="180000">
-				<onrecv target="RECV_MS_CALLING_INVITE_RSP"/>
-				<default target="stop"/>
-				<onerror target="SEND_CLICKTOCALL_RESPOND"/>
-			</wait>
-
-			<recv name="RECV_MS_CALLING_INVITE_RSP" protocol="SIP" operation="INVITE" is_req="no" did="2">
-				<oncall>
-					<call type="SYS" function="clicktocall_dlgsvc_on_recv_sip_invite_res(CALL_TO_MS_CALLING, status, sdp_ms)"/>
-				</oncall>
-			</recv>
-
-			<switch name="CHECK_MS_CALLING_INVITE_RSP" value="status">
-				<case value="100" target="MS_CALLING_PROCEEDING"/>
-				<case value="180" target="MS_CALLING_PROCEEDING"/>
-				<case value="200" target="SEND_ACK_TO_MS"/>
-				<default target="stop"/>
-			</switch>
-
-			<send name="SEND_ACK_TO_MS" protocol="SIP" operation="ACK" is_req="yes" did="2">
-				<oncall>
-                    <call type="SYS" function="clicktocall_dlgsvc_on_send_sip_ack(CALL_TO_MS_CALLING)"/>
-                </oncall>
-				<onsuccess target="SEND_ACK_TO_CALLING"/>
-                <onerror target="SEND_CLICKTOCALL_RESPOND"/>
-			</send>
-
-			<send name="SEND_ACK_TO_CALLING" protocol="SIP" operation="ACK" is_req="yes" did="0">
-				<oncall>
-                    <call type="SYS" function="clicktocall_dlgsvc_on_send_sip_ack(CALL_TO_CALLING, sdp_ms)"/>
-                </oncall>
-                <onerror target="SEND_CLICKTOCALL_RESPOND"/>
-			</send>
-
-			<send name="SEND_INFO_TO_MS" protocol="SIP" operation="INFO" is_req="yes" did="2">
-				<oncall>
-                    <call type="SYS" function="clicktocall_dlgsvc_on_send_sip_dlgtransc_req(CALL_TO_MS_CALLING, 'INFO', 'application/aupkg', 'pa(an=2298 it=-1)')"/>
-                </oncall>
-                <onerror target="SEND_CLICKTOCALL_RESPOND"/>
-			</send>
-
-			<wait name="WAIT_REQ" timeout="180000">
-				<onrecv target="RECV_MS_INFO_RSP"/>
-				<onrecv target="RECV_CALLING_BYE"/>
-				<onrecv target="RECV_MS_BYE"/>
-				<default target="stop"/>
-			</wait>
-
-			<recv name="RECV_MS_BYE" protocol="SIP" operation="BYE" is_req="yes" did="2">
-			</recv>
-
-			<send name="SEND_BYE_RSP_TO_MS" protocol="SIP" operation="BYE" is_req="no" did="2">
-				<oncall>
-					<call type="SYS" function="clicktocall_dlgsvc_on_send_rsp(200)"/>
-				</oncall>
-				<onsuccess target="SEND_INVITE_TO_CALLED"/>
-				<onerror target="SEND_CLICKTOCALL_RESPOND"/>
-			</send>
-
-			<recv name="RECV_MS_INFO_RSP" protocol="SIP" operation="INFO" is_req="no" did="2">
-				<oncall>
-					<call type="SYS" function="clicktocall_dlgsvc_on_recv_sip_dlgtransc_res(CALL_TO_MS_CALLING, status)"/>
-				</oncall>
-				<onerror target="SEND_CLICKTOCALL_RESPOND"/>
-			</recv>
-
-			<switch name="CHECK_MS_CALLING_INFO_RSP" value="status">
-				<case value="200" target="SEND_INVITE_TO_CALLED"/>
-				<default target="stop"/>
-			</switch>
-
-			<send name="SEND_INVITE_TO_CALLED" protocol="SIP" operation="INVITE" is_req="yes" did="1">
-                <oncall>
-                    <call type="SYS" function="clicktocall_dlgsvc_on_send_sip_invite_req(CALL_TO_CALLED)"/>
-                </oncall>
-                <onerror target="SEND_CLICKTOCALL_RESPOND"/>
-            </send>
-
-			<wait name="CALLED_PROCEEDING" timeout="180000">
-				<onrecv target="RECV_CALLED_INVITE_RSP"/>
-				<onerror target="SEND_CLICKTOCALL_RESPOND"/>
-			</wait>
-
-			<recv name="RECV_CALLED_INVITE_RSP" protocol="SIP" operation="INVITE" is_req="no" did="1">
-				<oncall>
-					<call type="SYS" function="clicktocall_dlgsvc_on_recv_sip_invite_res(CALL_TO_CALLED, status, sdp_called)"/>
-				</oncall>
-			</recv>
-
-			<switch name="CHECK_CALLED_INVITE_RSP" value="status">
-				<case value="100" target="CALLED_PROCEEDING"/>
-				<case value="180" target="CALLED_PROCEEDING"/>
-				<case value="200" target="SEND_BYE_TO_MS"/>
-				<default target="stop"/>
-			</switch>
-
-			<send name="SEND_BYE_TO_MS" protocol="SIP" operation="BYE" is_req="yes" did="2">
-				<oncall>
-                    <call type="SYS" function="clicktocall_dlgsvc_on_send_sip_dlgtransc_req(CALL_TO_MS_CALLING, 'BYE')"/>
-                </oncall>
-                <onerror target="SEND_CLICKTOCALL_RESPOND"/>
-			</send>
-
-			<recv name="RECV_MS_BYE_RSP" protocol="SIP" operation="BYE" is_req="no" did="2">
-			</recv>
-
-			<send name="SEND_REINVITE_TO_CALLING" protocol="SIP" operation="INVITE" is_req="yes" did="0">
-                <oncall>
-                    <call type="SYS" function="clicktocall_dlgsvc_on_send_sip_reinvite_req(CALL_TO_CALLING, sdp_called)"/>
-                </oncall>
-                <onerror target="SEND_CLICKTOCALL_RESPOND"/>
-            </send>
-
-			<wait name="REINVITE_CALLING_PROCEEDING" timeout="180000">
-				<onrecv target="RECV_CALLING_REINVITE_RSP"/>
-				<onerror target="SEND_CLICKTOCALL_RESPOND"/>
-			</wait>
-
-			<recv name="RECV_CALLING_REINVITE_RSP" protocol="SIP" operation="INVITE" is_req="no" did="0">
-				<oncall>
-					<call type="SYS" function="clicktocall_dlgsvc_on_recv_sip_invite_res(CALL_TO_CALLING, status, sdp_calling)"/>
-				</oncall>
-			</recv>
-
-			<switch name="CHECK_CALLING_REINVITE_RSP" value="status">
-				<case value="100" target="REINVITE_CALLING_PROCEEDING"/>
-				<case value="180" target="REINVITE_CALLING_PROCEEDING"/>
-				<case value="200" target="SEND_REINVITE_ACK_TO_CALLING"/>
-				<default target="stop"/>
-			</switch>
-
-			<send name="SEND_REINVITE_ACK_TO_CALLING" protocol="SIP" operation="ACK" is_req="yes" did="0">
-				<oncall>
-                    <call type="SYS" function="clicktocall_dlgsvc_on_send_sip_ack(CALL_TO_CALLING)"/>
-                </oncall>
-                <onerror target="SEND_CLICKTOCALL_RESPOND"/>
-			</send>
-
-			<send name="SEND_ACK_TO_CALLED" protocol="SIP" operation="ACK" is_req="yes" did="1">
-				<oncall>
-                    <call type="SYS" function="clicktocall_dlgsvc_on_send_sip_ack(CALL_TO_CALLED, sdp_calling)"/>
-                </oncall>
-                <onerror target="SEND_CLICKTOCALL_RESPOND"/>
-			</send>
-
-			<invoke name="SEND_CALLED_CLICKTOCALL_NOTI" protocol="HTTP" operation="POST" url="http://localhost:8070/clicktocall/notify" version="1.0" timeout="5000" is_req="yes">
+			<invoke name="SEND_CALLED_CLICKTOCALL_NOTI" protocol="HTTP" operation="POST" url="http://localhost:8070/clicktocallrecording/notify" version="1.0" timeout="5000" is_req="yes">
 				<onsend>
 					<call type="SYS" function="clicktocall_dlgsvc_on_send_http_notify(CALL_TO_CALLING, 0)"/>
 				</onsend>
@@ -277,58 +113,10 @@
 
 			<wait name="CALL_ESTABLISHED" timeout="3600000">
 				<onrecv target="RECV_CLICKTOCALL_STOP"/>
-				<onrecv target="RECV_CALLING_BYE"/>
-				<onrecv target="RECV_CALLED_BYE"/>
 				<default target="stop"/>
 			</wait>
 
-			<recv name="RECV_CALLING_BYE" protocol="SIP" operation="BYE" is_req="yes" did="0">
-			</recv>
-
-			<send name="SEND_BYE_RSP_TO_CALLING" protocol="SIP" operation="BYE" is_req="no" did="0">
-				<oncall>
-					<call type="SYS" function="clicktocall_dlgsvc_on_send_rsp(200)"/>
-				</oncall>
-				<onsuccess target="SEND_BYE_TO_CALLED"/>
-				<onerror target="SEND_CLICKTOCALL_RESPOND"/>
-			</send>
-			
-			<send name="SEND_BYE_TO_CALLED" protocol="SIP" operation="BYE" is_req="yes" did="1">
-				<oncall>
-                    <call type="SYS" function="clicktocall_dlgsvc_on_send_sip_dlgtransc_req(CALL_TO_CALLED, 'BYE')"/>
-                </oncall>
-                <onerror target="SEND_CLICKTOCALL_RESPOND"/>
-			</send>
-
-			<recv name="RECV_CALLED_BYE_RSP" protocol="SIP" operation="BYE" is_req="no" did="1">
-				<onsuccess target="SEND_CLICKTOCALL_RESPOND"/>
-				<onerror target="SEND_CLICKTOCALL_RESPOND"/>
-			</recv>
-
-			<recv name="RECV_CALLED_BYE" protocol="SIP" operation="BYE" is_req="yes" did="1">
-			</recv>
-
-			<send name="SEND_BYE_RSP_TO_CALLED" protocol="SIP" operation="BYE" is_req="no" did="1">
-				<oncall>
-					<call type="SYS" function="clicktocall_dlgsvc_on_send_rsp(200)"/>
-				</oncall>
-				<onsuccess target="SEND_BYE_TO_CALLING"/>
-				<onerror target="SEND_CLICKTOCALL_RESPOND"/>
-			</send>
-			
-			<send name="SEND_BYE_TO_CALLING" protocol="SIP" operation="BYE" is_req="yes" did="0">
-				<oncall>
-                    <call type="SYS" function="clicktocall_dlgsvc_on_send_sip_dlgtransc_req(CALL_TO_CALLING, 'BYE')"/>
-                </oncall>
-                <onerror target="SEND_CLICKTOCALL_RESPOND"/>
-			</send>
-
-			<recv name="RECV_CALLING_BYE_RSP" protocol="SIP" operation="BYE" is_req="no" did="0">
-				<onsuccess target="SEND_CLICKTOCALL_RESPOND"/>
-				<onerror target="SEND_CLICKTOCALL_RESPOND"/>
-			</recv>
-
-			<recv name="RECV_CLICKTOCALL_STOP" protocol="HTTP" operation="DELETE" url="/clicktocall/stop" timeout="30000" is_req="yes" did="0">
+			<recv name="RECV_CLICKTOCALL_STOP" protocol="HTTP" operation="DELETE" url="/clicktocallrecording/stop" timeout="30000" is_req="yes" did="0">
 				<oncall>
 					<call type="SYS" function="clicktocall_dlgsvc_on_recv_http_stop_req()"/>
 				</oncall>
@@ -346,30 +134,7 @@
 				</oncall>
 			</send>
 
-			<send name="SEND_BYE_TO_CALLING_2" protocol="SIP" operation="BYE" is_req="yes" did="0">
-				<oncall>
-                    <call type="SYS" function="clicktocall_dlgsvc_on_send_sip_dlgtransc_req(CALL_TO_CALLING, 'BYE')"/>
-                </oncall>
-                <onerror target="SEND_CLICKTOCALL_RESPOND"/>
-			</send>
-
-			<recv name="RECV_CALLING_BYE_RSP_2" protocol="SIP" operation="BYE" is_req="no" did="0">
-				<onerror target="SEND_CLICKTOCALL_RESPOND"/>
-			</recv>
-
-			<send name="SEND_BYE_TO_CALLED_2" protocol="SIP" operation="BYE" is_req="yes" did="1">
-				<oncall>
-                    <call type="SYS" function="clicktocall_dlgsvc_on_send_sip_dlgtransc_req(CALL_TO_CALLED, 'BYE')"/>
-                </oncall>
-                <onerror target="SEND_CLICKTOCALL_RESPOND"/>
-			</send>
-
-			<recv name="RECV_CALLED_BYE_RSP_2" protocol="SIP" operation="BYE" is_req="no" did="1">
-				<onsuccess target="SEND_CLICKTOCALL_RESPOND"/>
-				<onerror target="SEND_CLICKTOCALL_RESPOND"/>
-			</recv>
-
-			<invoke name="SEND_CLICKTOCALL_RESPOND" protocol="HTTP" operation="POST" url="http://localhost:8070/clicktocall/respond" version="1.0" timeout="5000" is_req="yes">
+			<invoke name="SEND_CLICKTOCALL_RESPOND" protocol="HTTP" operation="POST" url="http://localhost:8070/clicktocallrecording/respond" version="1.0" timeout="5000" is_req="yes">
 				<onsend>
 					<call type="SYS" function="clicktocall_dlgsvc_on_send_http_respond(0)"/>
 				</onsend>

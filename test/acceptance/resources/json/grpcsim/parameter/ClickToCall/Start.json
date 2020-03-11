@@ -1,0 +1,17 @@
+{
+    "networkType":0,
+    "sessionID":"s0001",
+    "subscriberName":"021004",
+    "callingNumber":"07087196189",
+    "calledNumber":"0263861940",
+    "chargingNumber":"07087196189",
+    "recording":0,
+    "ringBackToneType":1,
+    "waitingMentID":2298,
+    "callMentID":1,
+    "callingCID":"021004",
+    "calledCID":"07087196189",
+    "hostingCode":1,
+    "scenarioType":0,
+    "recordingFileName":""
+}

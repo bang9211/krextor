@@ -3,6 +3,8 @@
 #include <uxcutor/uxc_sfsm.h>
 #include <upa/upa_sippa.h>
 #include <upa/upa_httppa.h>
+#include <uxcutor/uxc_dbif.h>
+
 #include "uims/uims_sipmsg.h"
 #include "local/clicktocall_dlgsess_l.h"
 #include "clicktocall/clicktocall_error.h"
@@ -1187,5 +1189,279 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_send_rsp( uxc_sfcall_t *sfcall, uxc_sdmvar
 
 	ux_log(UXL_DBG1, "%s completed", func);	
 
+	return UX_SUCCESS;
+}
+
+/**
+ * @brief CLICKTOCALL START REQUEST(DBIF) 설정 함수
+ * @param sfcall call fsm node
+ * @param params sdm value parameter
+ * @return 실행 결과
+ */
+UX_DECLARE(int) clicktocall_dlgsvc_on_send_dbif_start_req( uxc_sfcall_t *sfcall, uxc_sdmvars_t *params)
+{
+	static const char *func = "clicktocall_dlgsvc_on_send_dbif_start_req";
+
+	int rv;
+	char sid[64];
+	uxc_ipcmsg_t *ipcmsg;
+	uxc_dbif_t *dbif;
+	uims_sess_t *sess;
+	clicktocall_dlgsess_t *dlgsess;
+	uxc_sess_t *uxcsess = (uxc_sess_t*)params->sdm->impl;
+	uxc_msg_t *sndmsg = uxc_sess_get_sndmsg( uxcsess);
+	if( sndmsg == NULL ) {
+		uxc_trace(UXCTL(1,MAJ), "Dont' exist send message instance in session");
+		return UX_EINVAL;
+	}
+	ipcmsg = (uxc_ipcmsg_t*)sndmsg->data;
+	dbif = ipcmsg->data;
+
+	sess = uxc_sess_get_user_data( uxcsess);
+	dlgsess = (sess) ? uims_sess_get_data( sess) : NULL;
+	if( dlgsess == NULL ) {
+		uxc_trace(UXCTL(1,MAJ), "%s: dialog session doesn' exist.", func);
+		return UX_EINVAL;
+	}
+
+	ipcmsg->header.cmdId = uxc_sess_get_id(uxcsess);
+	ipcmsg->header.userData = uxc_sess_get_id(uxcsess);
+
+	uxc_dbif_set_str(dbif, 0, dlgsess->sessionid);
+	sprintf( sid, "%llu", (unsigned long long)uims_sess_get_id(sess));
+	uxc_dbif_set_str(dbif, 1, sid);
+	uxc_dbif_set_int(dbif, 2, 1); //voip
+	uxc_dbif_set_str(dbif, 3, dlgsess->callingnumber);
+	uxc_dbif_set_str(dbif, 4, dlgsess->callednumber);
+	uxc_dbif_set_int(dbif, 5, 1); // service code
+	uxc_dbif_set_int(dbif, 6, dlgsess->ringbacktonetype);
+	uxc_dbif_set_int(dbif, 7, dlgsess->watitngmentid);
+	uxc_dbif_set_int(dbif, 8, 0);
+	uxc_dbif_set_int(dbif, 9, dlgsess->callmentid);
+	uxc_dbif_set_str(dbif, 10, dlgsess->callingcid);
+	uxc_dbif_set_str(dbif, 11, dlgsess->calledcid);
+	uxc_dbif_set_str(dbif, 12, dlgsess->recordingfile);
+	switch (dlgsess->ringbacktonetype) {
+		case 1: uxc_dbif_set_int(dbif, 13, 1); break;
+		case 2: uxc_dbif_set_int(dbif, 13, 0); break;
+		default:
+			uxc_trace(UXCTL(1,MAJ), "%s: Invalid recording type.", func);
+			return UX_EINVAL;
+	}
+	uxc_dbif_set_int(dbif, 14, 1); 
+	uxc_dbif_set_int(dbif, 15, 1);
+	uxc_dbif_set_int(dbif, 16, dlgsess->hostcode);
+	uxc_dbif_set_int(dbif, 17, 0);
+	uxc_dbif_set_int(dbif, 18, 0);
+
+	ux_log(UXL_DBG1, "%s completed", func);	
+	return UX_SUCCESS;
+}
+
+/**
+ * @brief CLICKTOCALL START RESPONSE(DBIF) 설정 함수
+ * @param sfcall call fsm node
+ * @param params sdm value parameter
+ * @return 실행 결과
+ */
+UX_DECLARE(int) clicktocall_dlgsvc_on_recv_dbif_start_res( uxc_sfcall_t *sfcall, uxc_sdmvars_t *params)
+{
+	static const char *func = "clicktocall_dlgsvc_on_recv_http_res";
+
+	int rv;
+	uxc_sess_t *uxcsess;
+	uxc_msg_t *rcvmsg;
+	uxc_ipcmsg_t *ipcmsg;
+	uxc_dbif_t *dbif;
+	uims_sess_t *sess;
+	clicktocall_dlgsess_t *dlgsess;
+	int64_t ival;
+	const char *sval;
+
+	uxcsess = (uxc_sess_t*)params->sdm->impl;
+	rcvmsg = uxc_sess_get_rcvmsg( uxcsess);
+	if( rcvmsg == NULL ) {
+		uxc_trace(UXCTL(1,MAJ), "%s: Recv message instance in session doesn't exist.", func);
+		return UX_EINVAL;
+	}
+	ipcmsg = (uxc_ipcmsg_t*)rcvmsg->data;
+	dbif = ipcmsg->data;
+
+	sess = uxc_sess_get_user_data( uxcsess);
+	dlgsess = (sess) ? uims_sess_get_data( sess) : NULL;
+	if( dlgsess == NULL ) {
+		uxc_trace(UXCTL(1,MAJ), "%s: dialog session doesn' exist.", func);
+		return UX_EINVAL;
+	}
+
+	ival = uxc_dbif_get_str( dbif, 2, &rv); 
+	if( rv < UX_SUCCESS) {
+		uxc_trace(UXCTL(1,MAJ), "%s: Can't get int value of dbif[%d](err=%d,%s)",
+			func, 2, rv, uxc_errnostr(rv));
+		return rv;
+	}
+	dlgsess->error = ival;
+
+	sval = uxc_dbif_get_str( dbif, 3, &rv); 
+	if( rv < UX_SUCCESS) {
+		uxc_trace(UXCTL(1,MAJ), "%s: Can't get string value of dbif[%d](err=%d,%s)",
+			func, 3, rv, uxc_errnostr(rv));
+		return rv;
+	}
+	dlgsess->serviceid = ux_str_dup( sval, uims_sess_get_allocator(sess)); 
+
+	sval = uxc_dbif_get_str( dbif, 5, &rv); 
+	if( rv < UX_SUCCESS) {
+		uxc_trace(UXCTL(1,MAJ), "%s: Can't get string value of dbif[%d](err=%d,%s)",
+			func, 5, rv, uxc_errnostr(rv));
+		return rv;
+	}
+	dlgsess->recordingfile = ux_str_dup( sval, uims_sess_get_allocator(sess)); 
+
+	ux_log(UXL_DBG1, "%s: ipcmsg cmdId=%d", func, ipcmsg->header.cmdId);
+	ux_log(UXL_DBG1, "%s: ipcmsg userData=%d", func, ipcmsg->header.userData);	
+	ux_log(UXL_DBG1, "%s: ipcmsg srcSubSysId=%d", func, ipcmsg->header.srcSubSysId);	
+	ux_log(UXL_DBG1, "%s: ipcmsg srcProcId=%d", func, ipcmsg->header.srcProcId);	
+	ux_log(UXL_DBG1, "%s: ipcmsg srcQid=%d", func, ipcmsg->header.srcQid);	
+	ux_log(UXL_DBG1, "%s: ipcmsg result=%d", func, ipcmsg->header.result);	
+
+	ux_log(UXL_DBG1, "%s completed", func);	
+	return UX_SUCCESS;
+}
+
+/**
+ * @brief CLICKTOCALL START RECORDING REQUEST(DBIF) 설정 함수
+ * @param sfcall call fsm node
+ * @param params sdm value parameter
+ * @return 실행 결과
+ */
+UX_DECLARE(int) clicktocall_dlgsvc_on_send_dbif_start_recording_req( uxc_sfcall_t *sfcall, uxc_sdmvars_t *params)
+{
+	static const char *func = "clicktocall_dlgsvc_on_send_dbif_start_recording_req";
+
+	int rv;
+	char sid[64];
+	uxc_ipcmsg_t *ipcmsg;
+	uxc_dbif_t *dbif;
+	uims_sess_t *sess;
+	clicktocall_dlgsess_t *dlgsess;
+	uxc_sess_t *uxcsess = (uxc_sess_t*)params->sdm->impl;
+	uxc_msg_t *sndmsg = uxc_sess_get_sndmsg( uxcsess);
+	if( sndmsg == NULL ) {
+		uxc_trace(UXCTL(1,MAJ), "Dont' exist send message instance in session");
+		return UX_EINVAL;
+	}
+	ipcmsg = (uxc_ipcmsg_t*)sndmsg->data;
+	dbif = ipcmsg->data;
+
+	sess = uxc_sess_get_user_data( uxcsess);
+	dlgsess = (sess) ? uims_sess_get_data( sess) : NULL;
+	if( dlgsess == NULL ) {
+		uxc_trace(UXCTL(1,MAJ), "%s: dialog session doesn' exist.", func);
+		return UX_EINVAL;
+	}
+
+	ipcmsg->header.cmdId = uxc_sess_get_id(uxcsess);
+	ipcmsg->header.userData = uxc_sess_get_id(uxcsess);
+
+	uxc_dbif_set_str(dbif, 0, dlgsess->sessionid);
+	sprintf( sid, "%llu", (unsigned long long)uims_sess_get_id(sess));
+	uxc_dbif_set_str(dbif, 1, sid);
+	uxc_dbif_set_int(dbif, 2, 1); //voip
+	uxc_dbif_set_str(dbif, 3, dlgsess->callingnumber);
+	uxc_dbif_set_str(dbif, 4, dlgsess->callednumber);
+	uxc_dbif_set_int(dbif, 5, 1); // service code
+	uxc_dbif_set_int(dbif, 6, dlgsess->ringbacktonetype);
+	uxc_dbif_set_int(dbif, 7, dlgsess->watitngmentid);
+	uxc_dbif_set_int(dbif, 8, 0);
+	uxc_dbif_set_int(dbif, 9, dlgsess->callmentid);
+	uxc_dbif_set_str(dbif, 10, dlgsess->callingcid);
+	uxc_dbif_set_str(dbif, 11, dlgsess->calledcid);
+	uxc_dbif_set_str(dbif, 12, dlgsess->recordingfile);
+	switch (dlgsess->ringbacktonetype) {
+		case 1: uxc_dbif_set_int(dbif, 13, 1); break;
+		case 2: uxc_dbif_set_int(dbif, 13, 0); break;
+		default:
+			uxc_trace(UXCTL(1,MAJ), "%s: Invalid recording type.", func);
+			return UX_EINVAL;
+	}
+	uxc_dbif_set_int(dbif, 14, 1); 
+	uxc_dbif_set_int(dbif, 15, 1);
+	uxc_dbif_set_int(dbif, 16, dlgsess->hostcode);
+	uxc_dbif_set_int(dbif, 17, 0);
+	uxc_dbif_set_int(dbif, 18, 0);
+
+	ux_log(UXL_DBG1, "%s completed", func);	
+	return UX_SUCCESS;
+}
+
+/**
+ * @brief CLICKTOCALL START RECORDING RESPONSE(DBIF) 설정 함수
+ * @param sfcall call fsm node
+ * @param params sdm value parameter
+ * @return 실행 결과
+ */
+UX_DECLARE(int) clicktocall_dlgsvc_on_recv_dbif_start_recording_res( uxc_sfcall_t *sfcall, uxc_sdmvars_t *params)
+{
+	static const char *func = "clicktocall_dlgsvc_on_recv_dbif_start_recording_res";
+
+	int rv;
+	uxc_sess_t *uxcsess;
+	uxc_msg_t *rcvmsg;
+	uxc_ipcmsg_t *ipcmsg;
+	uxc_dbif_t *dbif;
+	uims_sess_t *sess;
+	clicktocall_dlgsess_t *dlgsess;
+	int64_t ival;
+	const char *sval;
+
+	uxcsess = (uxc_sess_t*)params->sdm->impl;
+	rcvmsg = uxc_sess_get_rcvmsg( uxcsess);
+	if( rcvmsg == NULL ) {
+		uxc_trace(UXCTL(1,MAJ), "%s: Recv message instance in session doesn't exist.", func);
+		return UX_EINVAL;
+	}
+	ipcmsg = (uxc_ipcmsg_t*)rcvmsg->data;
+	dbif = ipcmsg->data;
+
+	sess = uxc_sess_get_user_data( uxcsess);
+	dlgsess = (sess) ? uims_sess_get_data( sess) : NULL;
+	if( dlgsess == NULL ) {
+		uxc_trace(UXCTL(1,MAJ), "%s: dialog session doesn' exist.", func);
+		return UX_EINVAL;
+	}
+
+	ival = uxc_dbif_get_str( dbif, 2, &rv); 
+	if( rv < UX_SUCCESS) {
+		uxc_trace(UXCTL(1,MAJ), "%s: Can't get int value of dbif[%d](err=%d,%s)",
+			func, 2, rv, uxc_errnostr(rv));
+		return rv;
+	}
+	dlgsess->error = ival;
+
+	sval = uxc_dbif_get_str( dbif, 3, &rv); 
+	if( rv < UX_SUCCESS) {
+		uxc_trace(UXCTL(1,MAJ), "%s: Can't get string value of dbif[%d](err=%d,%s)",
+			func, 3, rv, uxc_errnostr(rv));
+		return rv;
+	}
+	dlgsess->serviceid = ux_str_dup( sval, uims_sess_get_allocator(sess)); 
+
+	sval = uxc_dbif_get_str( dbif, 5, &rv); 
+	if( rv < UX_SUCCESS) {
+		uxc_trace(UXCTL(1,MAJ), "%s: Can't get string value of dbif[%d](err=%d,%s)",
+			func, 5, rv, uxc_errnostr(rv));
+		return rv;
+	}
+	dlgsess->recordingfile = ux_str_dup( sval, uims_sess_get_allocator(sess)); 
+
+	ux_log(UXL_DBG1, "%s: ipcmsg cmdId=%d", func, ipcmsg->header.cmdId);
+	ux_log(UXL_DBG1, "%s: ipcmsg userData=%d", func, ipcmsg->header.userData);	
+	ux_log(UXL_DBG1, "%s: ipcmsg srcSubSysId=%d", func, ipcmsg->header.srcSubSysId);	
+	ux_log(UXL_DBG1, "%s: ipcmsg srcProcId=%d", func, ipcmsg->header.srcProcId);	
+	ux_log(UXL_DBG1, "%s: ipcmsg srcQid=%d", func, ipcmsg->header.srcQid);	
+	ux_log(UXL_DBG1, "%s: ipcmsg result=%d", func, ipcmsg->header.result);	
+
+	ux_log(UXL_DBG1, "%s completed", func);	
 	return UX_SUCCESS;
 }

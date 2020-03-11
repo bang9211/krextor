@@ -14,7 +14,7 @@ uasaddr=$ipaddr:$uasport
 
 cmd="sipp $ipaddr -p $uasport -l 100 -sf calling.xml" 
 
-simctrl="-m 1 -f 600 -nostdin -trace_msg -message_file ../report/calling.res.tmp -trace_err"
+simctrl="-m 1 -f 600 -nostdin -trace_msg -message_file ../report/calling_busy.res.tmp -trace_err -error_file ../report/calling_busy.err.tmp"
 simctrl2="-m 1 -f 600 -nostdin -trace_msg -message_file -trace_err"
 args=""
 
