@@ -6,8 +6,6 @@
 #include <upa/upa_dbif.h>
 #include "tcp_msg.h"
 #include "tcp_idprsp.h"
-#include "tcp_acrsp.h"
-#include "tcp_cirrsp.h"
 
 ///////////////////////////////////////////////////////////////////////////////////
 // TCP Client Service Manager(plugin) Structure & Macro 
