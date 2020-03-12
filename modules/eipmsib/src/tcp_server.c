@@ -114,6 +114,7 @@ int tcp_server_handle_svrreq( tcp_server_t *server, uxc_worker_t* worker, upa_tc
 		case TCP_MSGID_CIR:
 			return tcp_server_handle_cirreq(server, worker, tcpmsg, msg);
 		default:
+			ux_log(UXL_INFO, "* tcp_server_handle_clicktocall_req -1");
 			break;	
 	}			
 	return -1;
