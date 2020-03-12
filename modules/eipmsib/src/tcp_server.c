@@ -87,7 +87,6 @@ int tcp_server_handle_svrreq( tcp_server_t *server, uxc_worker_t* worker, upa_tc
 	tcp_msg_t *msg;
 	int msgID,rv;
 
-			ux_log(UXL_INFO, "* tcp_server_handle_clicktocall_req -4");
 	// 1. receive msg 
 	msg = (tcp_msg_t *)tcpmsg->netmsg->buffer;
 	
@@ -99,16 +98,13 @@ int tcp_server_handle_svrreq( tcp_server_t *server, uxc_worker_t* worker, upa_tc
 
 	msgID = msg->header.msgId;
 
-			ux_log(UXL_INFO, "* tcp_server_handle_clicktocall_req -2");
 	// 2. display msg
 	rv = tcp_msg_display(msg);
-			ux_log(UXL_INFO, "* tcp_server_handle_clicktocall_req -3");
 
 	// 3. response to uxcutor
 	switch(msgID)
 	{
 		case TCP_MSGID_CLICK_TO_CALL:
-			ux_log(UXL_INFO, "* tcp_server_handle_clicktocall_req 0");
 			return tcp_server_handle_clicktocall_req(server, worker, tcpmsg, msg);
 		case TCP_MSGID_IDP :
 			return tcp_server_handle_idpreq(server, worker, tcpmsg, msg);
@@ -117,7 +113,6 @@ int tcp_server_handle_svrreq( tcp_server_t *server, uxc_worker_t* worker, upa_tc
 		case TCP_MSGID_CIR:
 			return tcp_server_handle_cirreq(server, worker, tcpmsg, msg);
 		default:
-			ux_log(UXL_INFO, "* tcp_server_handle_clicktocall_req -1");
 			break;	
 	}			
 	return -1;
@@ -126,7 +121,6 @@ int tcp_server_handle_svrreq( tcp_server_t *server, uxc_worker_t* worker, upa_tc
 static int tcp_server_handle_clicktocall_req( tcp_server_t *server, uxc_worker_t *worker,
 					upa_tcpmsg_t *tcpmsg, tcp_msg_t *msg )
 {
-	ux_log(UXL_INFO, "* tcp_server_handle_clicktocall_req 1");
 	int rv;
 	tcp_clicktocall_start_rsp_t clicktocall_rsp[1];
 	tcp_clicktocall_start_req_t clicktocall_req[1];

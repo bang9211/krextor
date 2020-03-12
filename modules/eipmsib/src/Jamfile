@@ -15,9 +15,11 @@ SRCS =
     tcp_conf
     tcp_dlmain
     tcp_idprsp
+    tcp_clicktocall_rsp
     tcp_cirrsp
     tcp_acrsp
     tcp_idpreq
+    tcp_clicktocall_req
     tcp_cirreq
     tcp_acreq
     tcp_server
