@@ -87,6 +87,7 @@ int tcp_server_handle_svrreq( tcp_server_t *server, uxc_worker_t* worker, upa_tc
 	tcp_msg_t *msg;
 	int msgID,rv;
 
+			ux_log(UXL_INFO, "* tcp_server_handle_clicktocall_req -4");
 	// 1. receive msg 
 	msg = (tcp_msg_t *)tcpmsg->netmsg->buffer;
 	
@@ -98,8 +99,10 @@ int tcp_server_handle_svrreq( tcp_server_t *server, uxc_worker_t* worker, upa_tc
 
 	msgID = msg->header.msgId;
 
+			ux_log(UXL_INFO, "* tcp_server_handle_clicktocall_req -2");
 	// 2. display msg
 	rv = tcp_msg_display(msg);
+			ux_log(UXL_INFO, "* tcp_server_handle_clicktocall_req -3");
 
 	// 3. response to uxcutor
 	switch(msgID)
@@ -243,7 +246,7 @@ static int tcp_server_handle_cirreq( tcp_server_t *server, uxc_worker_t *worker,
 	tcp_cirrsp_t cirrsp[1];
 	tcp_cirreq_t cirreq[1];
 
-	ux_log( UXL_INFO, "* tcp_server_handle_cirreq", tcpmsg->peerkey);
+	// ux_log( UXL_INFO, "* tcp_server_handle_cirreq", tcpmsg->peerkey);
 	tcp_cirreq_init(cirreq);
 	tcp_cirrsp_init(cirrsp);
 
