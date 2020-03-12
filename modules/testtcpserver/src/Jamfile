@@ -1,10 +1,10 @@
-SubDir TOP modules eipmsib src ;
+SubDir TOP modules testtcpserver src ;
 
 SubDirHdrs $(UALIB_SRC_HOME)/include ;
 SubDirHdrs $(UXLIB_SRC_HOME)/include ;
 SubDirHdrs $(UXCUTOR_SRC_HOME)/include ;
 
-LIB_NAME = libeipmsib ;
+LIB_NAME = libtesttcpserver ;
 LIB_VERSION_NAME = $(LIB_NAME)-1.0.0 ;
 LIB_VERLINK_NAME = $(LIB_NAME)-1.0 ;
 
@@ -13,7 +13,7 @@ LOCAL_DEF = $(SYS_CCFLAGS) ;
 SRCS =
     tcp_client
     tcp_conf
-    eipmsib_main
+    tcp_dlmain
     tcp_idprsp
     tcp_clicktocall_rsp
     tcp_cirrsp

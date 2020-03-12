@@ -94,7 +94,7 @@ void tcp_client_final( tcp_client_t *client)
 	//nothing
 }
 
-int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ipcmsg_t *ipcmsg )
+int tcp_client_handle_dbifreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ipcmsg_t *ipcmsg )
 {
 	int rv, msg_size, msgId;
 	upa_peerkey_t peerkey;
@@ -110,7 +110,7 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 		return rv;
 	}
 
-	ux_log( UXL_INFO, "2. CALL tcp_client_forward_gwreq (len:%d, msgId:%d) ", msg_size, msgId);
+	ux_log( UXL_INFO, "2. CALL tcp_client_handle_dbifreq (len:%d, msgId:%d) ", msg_size, msgId);
 
 	if( msgId / 100 == 1) {
 		ux_log(UXL_INFO, "2.1. Set Channel clicktocall");
@@ -131,19 +131,19 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 		ux_log( UXL_CRT, "can't send data.");
 		return -1;
 	} else {
-		ux_log( UXL_INFO, "3. Forwarded dbif msg. from gw to eipms (len:%d)", msg_size);
+		ux_log( UXL_INFO, "3. Relay dbif msg. from uxcutor to tcp server (len:%d)", msg_size);
 		return UX_SUCCESS;
 	}
 }
 
-int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpmsg_t *tcpmsg)
+int tcp_client_handle_dbifrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpmsg_t *tcpmsg)
 {
 	int rv;
 	tcp_msg_t *msg;
 
 	msg = (tcp_msg_t *) tcpmsg->netmsg->buffer;
 
-	ux_log( UXL_INFO, "5. CALL dbif_forward_eipmsrsp =");
+	ux_log( UXL_INFO, "5. CALL tcp_client_handle_dbifrsp =");
 
 	rv = tcp_msg_cvt_order_ntoh(msg);
 	if( rv < UX_SUCCESS) {

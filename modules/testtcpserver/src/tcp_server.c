@@ -81,8 +81,7 @@ static int _tcp_server_get_thrid( uxc_paif_t *paif, uxc_msg_t *msg)
 	return idx;
 }
 
-
-int tcp_server_handle_eipmsreq( tcp_server_t *server, uxc_worker_t* worker, upa_tcpmsg_t *tcpmsg)
+int tcp_server_handle_svrreq( tcp_server_t *server, uxc_worker_t* worker, upa_tcpmsg_t *tcpmsg)
 {
 	tcp_msg_t *msg;
 	int msgID,rv;
@@ -101,20 +100,18 @@ int tcp_server_handle_eipmsreq( tcp_server_t *server, uxc_worker_t* worker, upa_
 	// 2. display msg
 	rv = tcp_msg_display(msg);
 
-	// 3. process and response to uxcutor
+	// 3. response to uxcutor
 	switch(msgID)
 	{
-		case TCP_MSGID_CLICKTOCALL_CALL_SERVICE_STATUS_REPORT:
-			return tcp_server_handle_clicktocall_req(server, worker, tcpmsg, msg);
-		case TCP_MSGID_CLICKTOCALL_CALL_END_REPORT:
-			return tcp_server_handle_clicktocall_req(server, worker, tcpmsg, msg);
+		case TCP_MSGID_CLICKTOCALL_START:
+			return tcp_testserver_handle_clicktocall_req(server, worker, tcpmsg, msg);
 		default:
 			break;	
 	}			
 	return -1;
 }
 
-static int tcp_server_handle_clicktocall_req( tcp_server_t *server, uxc_worker_t *worker,
+static int tcp_testserver_handle_clicktocall_req( tcp_server_t *server, uxc_worker_t *worker,
 					upa_tcpmsg_t *tcpmsg, tcp_msg_t *msg )
 {
 	int rv;
@@ -163,6 +160,7 @@ static int tcp_server_handle_clicktocall_req( tcp_server_t *server, uxc_worker_t
 
 	return 0;
 }
+
 
 static int _tcp_server_on_accept(upa_tcp_t *tcp, ux_channel_t *channel, ux_accptor_t *accptor,
 				ux_cnector_t *cnector, upa_peerkey_t *peerkey)

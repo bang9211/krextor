@@ -33,8 +33,8 @@ tcp_client_t* tcp_client_instance();
 int  tcp_client_init( tcp_client_t *client, uxc_xcutor_t *xcutor, const char *cfile);
 void tcp_client_final( tcp_client_t *client);
 
-int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ipcmsg_t *ipcmsg);
-int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpmsg_t *tcpmsg);
+int tcp_client_handle_dbifreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ipcmsg_t *ipcmsg);
+int tcp_client_handle_dbifrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpmsg_t *tcpmsg);
 int tcp_client_send_ipcmsg( tcp_client_t *client,  tcp_msg_t* msg, int rv);
 
 #endif // #ifndef __TCP_CLIENT_H__

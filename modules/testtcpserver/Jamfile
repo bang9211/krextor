@@ -1,0 +1,5 @@
+SubDir TOP modules testtcpserver ;
+
+SubInclude TOP modules testtcpserver src ;
+
+InstallFile $(UXCUTOR_CONF_HOME)/uxcserv.conf : conf/uxcserv.conf ;

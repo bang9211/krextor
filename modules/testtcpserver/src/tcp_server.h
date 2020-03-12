@@ -32,6 +32,6 @@ uxc_plugin_t* tcp_server_create( void *xcutor, const char *cfile);
 
 tcp_server_t* tcp_server_instance();
 
-int tcp_server_handle_eipmsreq( tcp_server_t *server, uxc_worker_t* worker, upa_tcpmsg_t *tcpmsg);
+int tcp_server_handle_svrreq( tcp_server_t *server, uxc_worker_t* worker, upa_tcpmsg_t *tcpmsg);
 
 #endif // #ifndef __TCP_SERVER_H__

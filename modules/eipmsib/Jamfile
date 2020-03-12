@@ -3,5 +3,4 @@ SubDir TOP modules eipmsib ;
 SubInclude TOP modules eipmsib src ;
 
 InstallFile $(UXCUTOR_CONF_HOME)/eipmsib.conf : conf/eipmsib.conf ;
-InstallFile $(UXCUTOR_CONF_HOME)/uxcserv.conf : conf/uxcserv.conf ;
 InstallFile $(UXCUTOR_CONF_HOME)/../bin/dbif.send.sh : script/dbif.send.sh ;
