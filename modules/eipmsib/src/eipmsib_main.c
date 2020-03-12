@@ -8,7 +8,7 @@
 int dbif_handle_gwreq(uxc_action_t *action, uxc_worker_t* worker, uxc_msg_t *msg)
 {
 	uxc_ipcmsg_t *ipcmsg;
-	dbif_server_t *client;
+	tcp_client_t *client;
 
 	client = tcp_client_instance();
 	ipcmsg = (uxc_ipcmsg_t*)msg->data;
@@ -23,7 +23,7 @@ int dbif_handle_gwreq(uxc_action_t *action, uxc_worker_t* worker, uxc_msg_t *msg
 int tcp_client_handle_eipmsrsp(uxc_action_t *action, uxc_worker_t* worker, uxc_msg_t *uxcmsg)
 {
 	int rv;
-	dbif_server_t *client;
+	tcp_client_t *client;
 	upa_tcpmsg_t *tcpmsg;
 
 	client = tcp_client_instance();
@@ -71,7 +71,7 @@ int tcp_handle_eipmsreq( uxc_action_t *action, uxc_worker_t* worker, uxc_msg_t *
 int dbif_handle_gwrsp(uxc_action_t *action, uxc_worker_t* worker, uxc_msg_t *msg)
 {
 	uxc_ipcmsg_t *ipcmsg;
-	dbif_server_t *client;
+	tcp_client_t *client;
 
 	client = tcp_client_instance();
 	ipcmsg = (uxc_ipcmsg_t*)msg->data;
