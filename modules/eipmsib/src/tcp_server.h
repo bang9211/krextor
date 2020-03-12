@@ -8,8 +8,6 @@
 #include "tcp_clicktocall_rsp.h"
 #include "tcp_idpreq.h"
 #include "tcp_clicktocall_req.h"
-#include "tcp_acreq.h"
-#include "tcp_cirreq.h"
 
 ///////////////////////////////////////////////////////////////////////////////////
 // TCP Server Service Manager(plugin) Structure & Macro 
