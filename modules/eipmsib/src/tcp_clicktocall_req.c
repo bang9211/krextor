@@ -37,8 +37,6 @@ int tcp_clicktocall_start_req_decode_msg( tcp_clicktocall_start_req_t *clicktoca
 	if( rv < eUXC_SUCCESS ) goto final;
 	clicktocall_start_req->serviceCode = uxc_dbif_get_int( dbif, 6, &rv);
 	if( rv < eUXC_SUCCESS ) goto final;
-	clicktocall_start_req->chargingNumber = uxc_dbif_get_str( dbif, 7, &rv);
-	if( rv < eUXC_SUCCESS ) goto final;
 	clicktocall_start_req->ringBackToneType = uxc_dbif_get_int( dbif, 8, &rv);
 	if( rv < eUXC_SUCCESS ) goto final;
 	clicktocall_start_req->waitingMentID = uxc_dbif_get_int( dbif, 9, &rv);
@@ -65,9 +63,6 @@ int tcp_clicktocall_start_req_decode_msg( tcp_clicktocall_start_req_t *clicktoca
 	if( rv < eUXC_SUCCESS ) goto final;
 	clicktocall_start_req->wiredTimeout = uxc_dbif_get_int( dbif, 20, &rv);
 	if( rv < eUXC_SUCCESS ) goto final;
-	if ( clicktocall_start_req->dialed == NULL || clicktocall_start_req->dialed[0] == '\0') {
-		clicktocall_start_req->dialed = clicktocall_start_req->called;
-	}
 
 	return eUXC_SUCCESS;
 
