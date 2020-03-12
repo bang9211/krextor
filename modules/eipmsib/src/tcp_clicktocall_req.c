@@ -103,9 +103,6 @@ int tcp_clicktocall_stop_req_decode_msg( tcp_clicktocall_stop_req_t *clicktocall
 	if( rv < eUXC_SUCCESS ) goto final;
 	clicktocall_stop_req->recordingFileName = uxc_dbif_get_str( dbif, 15, &rv);
 	if( rv < eUXC_SUCCESS ) goto final;
-	if ( clicktocall_stop_req->dialed == NULL || clicktocall_stop_req->dialed[0] == '\0') {
-		clicktocall_stop_req->dialed = clicktocall_stop_req->called;
-	}
 
 	return eUXC_SUCCESS;
 
@@ -145,9 +142,6 @@ int tcp_clicktocall_startrecording_req_decode_msg( tcp_clicktocall_startrecordin
 	if( rv < eUXC_SUCCESS ) goto final;
 	clicktocall_startrecording_req->recordingFileName = uxc_dbif_get_str( dbif, 15, &rv);
 	if( rv < eUXC_SUCCESS ) goto final;
-	if ( clicktocall_startrecording_req->dialed == NULL || clicktocall_startrecording_req->dialed[0] == '\0') {
-		clicktocall_startrecording_req->dialed = clicktocall_startrecording_req->called;
-	}
 
 	return eUXC_SUCCESS;
 
@@ -185,9 +179,6 @@ int tcp_clicktocall_stoprecording_req_decode_msg( tcp_clicktocall_stoprecording_
 	if( rv < eUXC_SUCCESS ) goto final;
 	clicktocall_stoprecording_req->gwSessionID = uxc_dbif_get_str( dbif, 2, &rv);
 	if( rv < eUXC_SUCCESS ) goto final;
-	if ( clicktocall_stoprecording_req->dialed == NULL || clicktocall_stoprecording_req->dialed[0] == '\0') {
-		clicktocall_stoprecording_req->dialed = clicktocall_stoprecording_req->called;
-	}
 
 	return eUXC_SUCCESS;
 
