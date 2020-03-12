@@ -113,15 +113,15 @@ int tcp_client_handle_dbifreq( tcp_client_t *client, uxc_worker_t *worker, uxc_i
 	ux_log( UXL_INFO, "2. CALL tcp_client_handle_dbifreq (len:%d, msgId:%d) ", msg_size, msgId);
 
 	if( msgId / 100 == 1) {
-		ux_log(UXL_INFO, "2.1 Set Channel clicktocall");
+		ux_log(UXL_INFO, "2.1. Set Channel clicktocall");
 		peerkey.chnl_idx = 0; // configuration 첫번째 채널
 		peerkey.peer_key = 0; // 채널의 첫번째 PEER 
 	} else if( msgId / 100 == 2) {
-		ux_log(UXL_INFO, "2.2 Set Channel clicktocallrecording");
+		ux_log(UXL_INFO, "2.2. Set Channel clicktocallrecording");
 		peerkey.chnl_idx = 1; //  채널
 		peerkey.peer_key = 0; // 채널의 첫번째 PEER 
 	} else if( msgId / 100 == 3) {
-		ux_log(UXL_INFO, "2.3 Set Channel clicktoconference");
+		ux_log(UXL_INFO, "2.3. Set Channel clicktoconference");
 		peerkey.chnl_idx = 2; //  채널
 		peerkey.peer_key = 0; // 채널의 첫번째 PEER 
 	}

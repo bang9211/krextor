@@ -105,6 +105,7 @@ int tcp_server_handle_svrreq( tcp_server_t *server, uxc_worker_t* worker, upa_tc
 	switch(msgID)
 	{
 		case TCP_MSGID_CLICK_TO_CALL:
+			ux_log(UXL_INFO, "* tcp_server_handle_clicktocall_req 0");
 			return tcp_server_handle_clicktocall_req(server, worker, tcpmsg, msg);
 		case TCP_MSGID_IDP :
 			return tcp_server_handle_idpreq(server, worker, tcpmsg, msg);
@@ -121,11 +122,12 @@ int tcp_server_handle_svrreq( tcp_server_t *server, uxc_worker_t* worker, upa_tc
 static int tcp_server_handle_clicktocall_req( tcp_server_t *server, uxc_worker_t *worker,
 					upa_tcpmsg_t *tcpmsg, tcp_msg_t *msg )
 {
+	ux_log(UXL_INFO, "* tcp_server_handle_clicktocall_req 1");
 	int rv;
 	tcp_clicktocall_start_rsp_t clicktocall_rsp[1];
 	tcp_clicktocall_start_req_t clicktocall_req[1];
 
-	ux_log( UXL_INFO, "* tcp_server_handle_clicktocall_req ");
+	ux_log(UXL_INFO, "* tcp_server_handle_clicktocall_req ");
 	tcp_clicktocall_start_req_init(clicktocall_req);
 	tcp_clicktocall_start_rsp_init(clicktocall_rsp);
 
