@@ -11,10 +11,6 @@ static int tcp_server_handle_idpreq( tcp_server_t *server, uxc_worker_t *worker,
 					upa_tcpmsg_t *tcpmsg, tcp_msg_t *msg );
 static int tcp_server_handle_clicktocall_req( tcp_server_t *server, uxc_worker_t *worker,
 					upa_tcpmsg_t *tcpmsg, tcp_msg_t *msg );
-static int tcp_server_handle_acreq( tcp_server_t *server, uxc_worker_t *worker,
-					upa_tcpmsg_t *tcpmsg, tcp_msg_t *msg );
-static int tcp_server_handle_cirreq( tcp_server_t *server, uxc_worker_t *worker,
-					upa_tcpmsg_t *tcpmsg, tcp_msg_t *msg );
 static int _tcp_server_get_thrid( uxc_paif_t *paif, uxc_msg_t *msg);
 static int _tcp_server_on_accept(upa_tcp_t *tcp, ux_channel_t *channel, ux_accptor_t *accptor,
 				ux_cnector_t *cnector, upa_peerkey_t *peerkey);
@@ -104,14 +100,14 @@ int tcp_server_handle_svrreq( tcp_server_t *server, uxc_worker_t* worker, upa_tc
 	switch(msgID)
 	{
 		case TCP_MSGID_CLICKTOCALL_START:
-			return tcp_testserver_handle_clicktocall_req(server, worker, tcpmsg, msg);
+			return tcp_server_handle_clicktocall_req(server, worker, tcpmsg, msg);
 		default:
 			break;	
 	}			
 	return -1;
 }
 
-static int tcp_testserver_handle_clicktocall_req( tcp_server_t *server, uxc_worker_t *worker,
+static int tcp_server_handle_clicktocall_req( tcp_server_t *server, uxc_worker_t *worker,
 					upa_tcpmsg_t *tcpmsg, tcp_msg_t *msg )
 {
 	int rv;
