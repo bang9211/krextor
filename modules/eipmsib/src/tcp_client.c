@@ -109,11 +109,11 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 	msg_size = sizeof(uxc_ixpc_t) + msg->header.length;
 	msgId = msg->header.msgId;
 
-	// rv = tcp_msg_cvt_order_hton(msg);
-	// if( rv< UX_SUCCESS) {
-	// 	ux_log(UXL_INFO, "msg data error");
-	// 	return rv;
-	// }
+	rv = tcp_msg_cvt_order_hton(msg);
+	if( rv< UX_SUCCESS) {
+		ux_log(UXL_INFO, "msg data error");
+		return rv;
+	}
 
 	ux_log( UXL_INFO, "2. CALL tcp_client_forward_gwreq (len:%d, msgId:%d) ", msg_size, msgId);
 
