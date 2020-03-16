@@ -10,11 +10,12 @@
 typedef struct tcp_clicktocall_start_req_s tcp_clicktocall_start_req_t; 
 struct tcp_clicktocall_start_req_s {
 	tcp_msg_t base[1];
+	char *sessionID;
+	char *gwSessionID;
 	char *subscriberName;
 	int recordingType;
 	char *callingNumber;
 	char *calledNumber;
-	char *chargingNumber;
 	int serviceCode;
 	int ringBackToneType;
 	int waitingMentID;
