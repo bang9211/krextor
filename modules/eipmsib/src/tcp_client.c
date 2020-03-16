@@ -179,7 +179,7 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 			ux_log(UXL_INFO, "sessionID : %s", sessionID);
 			ux_log(UXL_INFO, "gwSessionID : %s", gwSessionID);
 			ux_log(UXL_INFO, "subscriberName : %s", clicktocall_start_req.subscriberName);
-			ux_log(UXL_INFO, "serviceCode : %d", serviceCode);
+			ux_log(UXL_INFO, "serviceCode : %d", clicktocall_start_req.serviceCode);
 			break;
 		case 1:
 		
@@ -190,7 +190,6 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 		case 3:
 		
 			break;
-		default:
 		}
 	} else if( msgId / 100 == 2) {
 		ux_log(UXL_INFO, "2.2. Set Channel clicktocallrecording");
@@ -210,6 +209,10 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 		ux_log( UXL_INFO, "3. Forwarded dbif msg. from gw to eipms (len:%d)", msg_size);
 		return UX_SUCCESS;
 	}
+
+errst:
+	ux_log( UXL_CRT, "uxc_dbif_clicktocall_start is failed (rv=%d)", rv);
+	return rv;
 }
 
 int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpmsg_t *tcpmsg)
