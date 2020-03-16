@@ -125,8 +125,8 @@ static int tcp_server_handle_clicktocall_req( tcp_server_t *server, uxc_worker_t
 	if (rv <eUXC_SUCCESS) return rv;
 
 	//TODO 5 : 받은 Notification 처리
-	// ux_log(UXL_CRT, "  [sessionID] %s", clicktocall_req->sessionID);
-	// ux_log(UXL_CRT, "  [gwSessionID] %s", clicktocall_req->gwSessionID);
+	ux_log(UXL_CRT, "  [sessionID] %s", clicktocall_req->sessionID);
+	ux_log(UXL_CRT, "  [gwSessionID] %s", clicktocall_req->gwSessionID);
 	ux_log(UXL_CRT, "  [subscriberName] %s", clicktocall_req->subscriberName);
 	ux_log(UXL_CRT, "  [recordingType] %d", clicktocall_req->recordingType);
 	ux_log(UXL_CRT, "  [callingNumber] %s", clicktocall_req->callingNumber);
