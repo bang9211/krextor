@@ -30,15 +30,19 @@ int tcp_clicktocall_start_rsp_encode_ipcmsg( tcp_clicktocall_start_rsp_t *clickt
 		return rv;
 	}
 
-	rv = uxc_dbif_set_int( dbif, 0, clicktocall_start_rsp->result);
+	rv = uxc_dbif_set_int( dbif, 0, clicktocall_start_rsp->resultCode);
 	if( rv < eUXC_SUCCESS ) goto final; 
-	rv = uxc_dbif_set_int( dbif, 1, clicktocall_start_rsp->callTime);
+	rv = uxc_dbif_set_str( dbif, 1, clicktocall_start_rsp->serviceID);
 	if( rv < eUXC_SUCCESS ) goto final; 
-	rv = uxc_dbif_set_int( dbif, 2, clicktocall_start_rsp->finalUnitAction);
+	rv = uxc_dbif_set_int( dbif, 2, clicktocall_start_rsp->isRecording);
 	if( rv < eUXC_SUCCESS ) goto final; 
-	rv = uxc_dbif_set_int( dbif, 3, clicktocall_start_rsp->lang);
+	rv = uxc_dbif_set_int( dbif, 3, clicktocall_start_rsp->filler1);
 	if( rv < eUXC_SUCCESS ) goto final; 
-	rv = uxc_dbif_set_int( dbif, 4, clicktocall_start_rsp->brandId);
+	rv = uxc_dbif_set_int( dbif, 4, clicktocall_start_rsp->filler2);
+	if( rv < eUXC_SUCCESS ) goto final; 
+	rv = uxc_dbif_set_str( dbif, 5, clicktocall_start_rsp->recordingFileURL);
+	if( rv < eUXC_SUCCESS ) goto final; 
+	rv = uxc_dbif_set_str( dbif, 6, clicktocall_start_rsp->recordingFileName);
 	if( rv < eUXC_SUCCESS ) goto final; 
 
 	return rv;
