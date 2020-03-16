@@ -100,6 +100,8 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 	upa_peerkey_t peerkey;
 	tcp_msg_t *msg;
 	uxc_dbif_t *rcv;
+	int tcpmsg_size;
+	tcp_msg_t *tcpmsg;
 
 	char *sessionID;
 	char *gwSessionID;
@@ -116,8 +118,6 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 	}
 
 	ux_log( UXL_INFO, "2. CALL tcp_client_forward_gwreq (len:%d, msgId:%d) ", msg_size, msgId);
-
-	uxc_ipcmsg_t smsg;
 
 	if( msgId / 100 == 1) {
 		ux_log(UXL_INFO, "2.1. Set Channel clicktocall");
@@ -181,6 +181,8 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 			ux_log(UXL_INFO, "subscriberName : %s", clicktocall_start_req.subscriberName);
 			ux_log(UXL_INFO, "serviceCode : %d", clicktocall_start_req.serviceCode);
 			ux_log(UXL_INFO, "serviceCode : %d", clicktocall_start_req.serviceCode);
+			tcpmsg = (unsigned char*)clicktocall_start_req;
+			tcpmsg_size = sizeof(tcpmsg)
 			break;
 		case 1:
 		
@@ -202,7 +204,8 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 		peerkey.peer_key = 0; // 채널의 첫번째 PEER 
 	}
 
-	rv = upa_tcp_send2(_g_client->patcp, &peerkey, msg, msg_size, 1);
+	// rv = upa_tcp_send2(_g_client->patcp, &peerkey, msg, msg_size, 1);
+	rv = upa_tcp_send2(_g_client->patcp, &peerkey, tcpmsg, tcpmsg_size, 1);
 	if( rv < UX_SUCCESS) {
 		ux_log( UXL_CRT, "can't send data.");
 		return -1;

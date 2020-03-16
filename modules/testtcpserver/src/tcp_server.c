@@ -79,9 +79,13 @@ int tcp_server_handle_svrreq( tcp_server_t *server, uxc_worker_t* worker, upa_tc
 {
 	tcp_msg_t *msg;
 	int msgID,rv;
+	tcp_clicktocall_start_req_t *tcp_clicktocall_start_req;
 
 	// 1. receive msg 
 	msg = (tcp_msg_t *)tcpmsg->netmsg->buffer;
+	tcp_clicktocall_start_req = (tcp_clicktocall_start_req_t *)msg->data;
+	
+	ux_log(UXL_INFO, "received : %s", tcp_clicktocall_start_req->subscriberName);
 	
 	rv = tcp_msg_cvt_order_ntoh(msg);
 	if( rv < UX_SUCCESS) {
@@ -90,6 +94,7 @@ int tcp_server_handle_svrreq( tcp_server_t *server, uxc_worker_t* worker, upa_tc
 	}
 
 	msgID = msg->header.msgId;
+	ux_log(UXL_INFO, "received : %d", msgID);
 
 	// 2. display msg
 	rv = tcp_msg_display(msg);
