@@ -182,7 +182,7 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 			ux_log(UXL_INFO, "serviceCode : %d", clicktocall_start_req.serviceCode);
 			ux_log(UXL_INFO, "serviceCode : %d", clicktocall_start_req.serviceCode);
 
-			tcpmsg->header = msg->header
+			tcpmsg->header = msg->header;
 			tcpmsg->data = (unsigned char*)&clicktocall_start_req;
 			tcpmsg_size = sizeof(uxc_ixpc_t) + sizeof(tcpmsg);
 			break;
