@@ -101,7 +101,7 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 	tcp_msg_t *msg;
 	uxc_dbif_t *rcv;
 	int tcpmsg_size;
-	tcp_msg_t *tcpmsg;
+	unsigned char *tcpmsg;
 
 	char *sessionID;
 	char *gwSessionID;
@@ -182,9 +182,8 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 			ux_log(UXL_INFO, "serviceCode : %d", clicktocall_start_req.serviceCode);
 			ux_log(UXL_INFO, "serviceCode : %d", clicktocall_start_req.serviceCode);
 
-			tcpmsg->header = msg->header;
-			tcpmsg->data = (unsigned char*)&clicktocall_start_req;
-			tcpmsg_size = sizeof(uxc_ixpc_t) + sizeof(tcpmsg);
+			tcpmsg = (unsigned char*)&clicktocall_start_req;
+			tcpmsg_size = sizeof(tcpmsg);
 			break;
 		case 1:
 		
@@ -212,7 +211,8 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 		ux_log( UXL_CRT, "can't send data.");
 		return -1;
 	} else {
-		ux_log( UXL_INFO, "3. Forwarded dbif msg. from gw to eipms (len:%d)", msg_size);
+		// ux_log( UXL_INFO, "3. Forwarded msg. from gw to eipms (len:%d)", msg_size);
+		ux_log( UXL_INFO, "3. Forwarded msg. from gw to eipms (len:%d)", tcpmsg_size);
 		return UX_SUCCESS;
 	}
 
