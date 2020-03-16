@@ -9,7 +9,7 @@
 ///////////////////////////////////////////////////////////////////////////////////
 
 typedef struct tcp_clicktocall_start_req_s tcp_clicktocall_start_req_t; 
-#pragma pack(push, 1)
+// #pragma pack(push, 1)
 struct tcp_clicktocall_start_req_s {
 	tcp_msg_t base[1];
 	char subscriberName[32];
@@ -35,7 +35,7 @@ struct tcp_clicktocall_start_req_s {
 	int16_t fillerInt16;
 	char filler[32];
 };
-#pragma pack(pop)
+// #pragma pack(pop)
 
 typedef struct tcp_clicktocall_stop_req_s tcp_clicktocall_stop_req_t; 
 struct tcp_clicktocall_stop_req_s {

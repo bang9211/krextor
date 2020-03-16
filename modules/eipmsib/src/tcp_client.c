@@ -182,8 +182,8 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 			ux_log(UXL_INFO, "serviceCode : %d", clicktocall_start_req.serviceCode);
 			ux_log(UXL_INFO, "serviceCode : %d", clicktocall_start_req.serviceCode);
 
-			tcpmsg = (unsigned char*)&clicktocall_start_req;
-			tcpmsg_size = sizeof(tcpmsg);
+			// tcpmsg = (unsigned char*)&clicktocall_start_req;
+			tcpmsg_size = sizeof(clicktocall_start_req);
 			break;
 		case 1:
 		
@@ -206,7 +206,7 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 	}
 
 	// rv = upa_tcp_send2(_g_client->patcp, &peerkey, msg, msg_size, 1);
-	rv = upa_tcp_send2(_g_client->patcp, &peerkey, tcpmsg, tcpmsg_size, 1);
+	rv = upa_tcp_send2(_g_client->patcp, &peerkey, &clicktocall_start_req, tcpmsg_size, 1);
 	if( rv < UX_SUCCESS) {
 		ux_log( UXL_CRT, "can't send data.");
 		return -1;
