@@ -181,8 +181,8 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 			ux_log(UXL_INFO, "subscriberName : %s", clicktocall_start_req.subscriberName);
 			ux_log(UXL_INFO, "serviceCode : %d", clicktocall_start_req.serviceCode);
 			ux_log(UXL_INFO, "serviceCode : %d", clicktocall_start_req.serviceCode);
-			tcpmsg = (unsigned char*)clicktocall_start_req;
-			tcpmsg_size = sizeof(tcpmsg)
+			tcpmsg = (unsigned char*)&clicktocall_start_req;
+			tcpmsg_size = sizeof(tcpmsg);
 			break;
 		case 1:
 		
