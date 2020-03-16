@@ -1,6 +1,7 @@
 #ifndef __TCP_CLICKTOCALL_REQ_H__
 #define __TCP_CLICKTOCALL_REQ_H__
 
+#include <string.h>
 #include "tcp_msg.h"
 
 ///////////////////////////////////////////////////////////////////////////////////

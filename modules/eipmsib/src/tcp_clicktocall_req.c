@@ -23,15 +23,15 @@ int tcp_clicktocall_start_req_decode_msg( tcp_clicktocall_start_req_t *clicktoca
 	dbif = (uxc_dbif_t*)msg->data;
 	ux_log(UXL_INFO, "= clicktocall_start_req_decode_msg =");
 
-	clicktocall_start_req->subscriberName = uxc_dbif_get_str( dbif, 0, &rv);
+	strcpy(clicktocall_start_req->subscriberName, uxc_dbif_get_str( dbif, 0, &rv));
 	if( rv < eUXC_SUCCESS ) goto final;
 	clicktocall_start_req->recordingType = uxc_dbif_get_int( dbif, 1, &rv);
 	if( rv < eUXC_SUCCESS ) goto final;
-	clicktocall_start_req->callingNumber = uxc_dbif_get_str( dbif, 2, &rv);
+	strcpy(clicktocall_start_req->callingNumber, uxc_dbif_get_str( dbif, 2, &rv));
 	if( rv < eUXC_SUCCESS ) goto final;
-	clicktocall_start_req->calledNumber = uxc_dbif_get_str( dbif, 3, &rv);
+	strcpy(clicktocall_start_req->calledNumber, uxc_dbif_get_str( dbif, 3, &rv));
 	if( rv < eUXC_SUCCESS ) goto final;
-	clicktocall_start_req->chargingNumber = uxc_dbif_get_str( dbif, 4, &rv);
+	strcpy(clicktocall_start_req->chargingNumber, uxc_dbif_get_str( dbif, 4, &rv));
 	if( rv < eUXC_SUCCESS ) goto final;
 	clicktocall_start_req->serviceCode = uxc_dbif_get_int( dbif, 5, &rv);
 	if( rv < eUXC_SUCCESS ) goto final;
@@ -45,11 +45,11 @@ int tcp_clicktocall_start_req_decode_msg( tcp_clicktocall_start_req_t *clicktoca
 	if( rv < eUXC_SUCCESS ) goto final;
 	clicktocall_start_req->callMentID = uxc_dbif_get_int( dbif, 10, &rv);
 	if( rv < eUXC_SUCCESS ) goto final;
-	clicktocall_start_req->callingCID = uxc_dbif_get_str( dbif, 11, &rv);
+	strcpy(clicktocall_start_req->callingCID, uxc_dbif_get_str( dbif, 11, &rv));
 	if( rv < eUXC_SUCCESS ) goto final;
-	clicktocall_start_req->calledCID = uxc_dbif_get_str( dbif, 12, &rv);
+	strcpy(clicktocall_start_req->calledCID, uxc_dbif_get_str( dbif, 12, &rv));
 	if( rv < eUXC_SUCCESS ) goto final;
-	clicktocall_start_req->recordingFileName = uxc_dbif_get_str( dbif, 13, &rv);
+	strcpy(clicktocall_start_req->recordingFileName, uxc_dbif_get_str( dbif, 13, &rv));
 	if( rv < eUXC_SUCCESS ) goto final;
 	clicktocall_start_req->isAllRecording = uxc_dbif_get_int( dbif, 14, &rv);
 	if( rv < eUXC_SUCCESS ) goto final;
@@ -65,7 +65,7 @@ int tcp_clicktocall_start_req_decode_msg( tcp_clicktocall_start_req_t *clicktoca
 	if( rv < eUXC_SUCCESS ) goto final;
 	clicktocall_start_req->fillerInt16 = uxc_dbif_get_int( dbif, 20, &rv);
 	if( rv < eUXC_SUCCESS ) goto final;
-	clicktocall_start_req->filler = uxc_dbif_get_str( dbif, 21, &rv);
+	strcpy(clicktocall_start_req->filler, uxc_dbif_get_str( dbif, 21, &rv));
 	if( rv < eUXC_SUCCESS ) goto final;
 
 	return eUXC_SUCCESS;
