@@ -100,22 +100,97 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 	upa_peerkey_t peerkey;
 	tcp_msg_t *msg;
 
+	char *sessionID;
+	char *gwSessionID;
+	tcp_clicktocall_start_req_t clicktocall_start_req;
+
 	msg = (tcp_msg_t *)&ipcmsg->header;
 	msg_size = sizeof(uxc_ixpc_t) + msg->header.length;
 	msgId = msg->header.msgId;
 
-	rv = tcp_msg_cvt_order_hton(msg);
-	if( rv< UX_SUCCESS) {
-		ux_log(UXL_INFO, "msg data error");
-		return rv;
-	}
+	// rv = tcp_msg_cvt_order_hton(msg);
+	// if( rv< UX_SUCCESS) {
+	// 	ux_log(UXL_INFO, "msg data error");
+	// 	return rv;
+	// }
 
 	ux_log( UXL_INFO, "2. CALL tcp_client_forward_gwreq (len:%d, msgId:%d) ", msg_size, msgId);
+
+	uxc_ipcmsg_t smsg;
 
 	if( msgId / 100 == 1) {
 		ux_log(UXL_INFO, "2.1. Set Channel clicktocall");
 		peerkey.chnl_idx = 0; // configuration 첫번째 채널
 		peerkey.peer_key = 0; // 채널의 첫번째 PEER 
+
+		switch(msgId % 100) {
+		case 0:
+			//TODO 1 : DBIF에서 받은 msg에서 sessionID, gwSessionID 제외하여 저장하고 있기
+			//TODO 2 : DBIF에서 받은 msg에서 안쓰는값(chargingNumber, filler 등) 채워주기
+			// DBIF 메시지를 읽는다.
+			// DBIF 메시지를 분해하여 새로 만들어 TCP 메시지로 변환하거나
+			// DBIF 메시지를 분해하여 TCP 메시지를 만들거나
+			rcv = uxc_ipcmsg_get_dbif(ipcmsg);
+			sessionID = uxc_dbif_get_str(rcv, 0, &rv);
+			if( rv < eUXC_SUCCESS) goto errst;
+			gwSessionID = uxc_dbif_get_str(rcv, 1, &rv);
+			if( rv < eUXC_SUCCESS) goto errst;
+			strcpy(clicktocall_start_req.subscriberName, uxc_dbif_get_str(rcv, 2, &rv));
+			if( rv < eUXC_SUCCESS) goto errst;
+			clicktocall_start_req.recordingType = uxc_dbif_get_int(rcv, 3, &rv);
+			if( rv < eUXC_SUCCESS) goto errst;
+			strcpy(clicktocall_start_req.callingNumber, uxc_dbif_get_str(rcv, 4, &rv));
+			if( rv < eUXC_SUCCESS) goto errst;
+			strcpy(clicktocall_start_req.calledNumber, uxc_dbif_get_str(rcv, 5, &rv));
+			if( rv < eUXC_SUCCESS) goto errst;
+			clicktocall_start_req.serviceCode = uxc_dbif_get_int(rcv, 6, &rv);
+			if( rv < eUXC_SUCCESS) goto errst;
+			clicktocall_start_req.ringBackToneType = uxc_dbif_get_int(rcv, 7, &rv);
+			if( rv < eUXC_SUCCESS) goto errst;
+			clicktocall_start_req.waitingMentID = uxc_dbif_get_int(rcv, 8, &rv);
+			if( rv < eUXC_SUCCESS) goto errst;
+			clicktocall_start_req.scenarioType = uxc_dbif_get_int(rcv, 9, &rv);
+			if( rv < eUXC_SUCCESS) goto errst;
+			clicktocall_start_req.callMentID = uxc_dbif_get_int(rcv, 10, &rv);
+			if( rv < eUXC_SUCCESS) goto errst;
+			strcpy(clicktocall_start_req.callingCID, uxc_dbif_get_str(rcv, 11, &rv));
+			if( rv < eUXC_SUCCESS) goto errst;
+			strcpy(clicktocall_start_req.calledCID, uxc_dbif_get_str(rcv, 12, &rv));
+			if( rv < eUXC_SUCCESS) goto errst;
+			strcpy(clicktocall_start_req.recordingFileName, uxc_dbif_get_str(rcv, 13, &rv));
+			if( rv < eUXC_SUCCESS) goto errst;
+			clicktocall_start_req.isAllRecording = uxc_dbif_get_int(rcv, 14, &rv);
+			if( rv < eUXC_SUCCESS) goto errst;
+			clicktocall_start_req.endIfRecordingFailed = uxc_dbif_get_int(rcv, 15, &rv);
+			if( rv < eUXC_SUCCESS) goto errst;
+			clicktocall_start_req.endIfRecordingEnded = uxc_dbif_get_int(rcv, 16, &rv);
+			if( rv < eUXC_SUCCESS) goto errst;
+			clicktocall_start_req.hostingCode = uxc_dbif_get_int(rcv, 17, &rv);
+			if( rv < eUXC_SUCCESS) goto errst;
+			clicktocall_start_req.wirelessTimeout = uxc_dbif_get_int(rcv, 18, &rv);
+			if( rv < eUXC_SUCCESS) goto errst;
+			clicktocall_start_req.wiredTimeout = uxc_dbif_get_int(rcv, 19, &rv);
+			if( rv < eUXC_SUCCESS) goto errst;
+			clicktocall_start_req.chargingNumber = "";
+			clicktocall_start_req.fillerInt8 = 0;
+			clicktocall_start_req.fillerInt16 = 0;
+			clicktocall_start_req.filler = "";
+			ux_log(UXL_INFO, "sessionID : %s", sessionID);
+			ux_log(UXL_INFO, "gwSessionID : %s", gwSessionID);
+			ux_log(UXL_INFO, "subscriberName : %s", clicktocall_start_req.subscriberName);
+			ux_log(UXL_INFO, "serviceCode : %d", serviceCode);
+			break;
+		case 1:
+		
+			break;
+		case 2:
+		
+			break;
+		case 3:
+		
+			break;
+		default:
+		}
 	} else if( msgId / 100 == 2) {
 		ux_log(UXL_INFO, "2.2. Set Channel clicktocallrecording");
 		peerkey.chnl_idx = 1; //  채널
@@ -150,6 +225,9 @@ int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpms
 		ux_log(UXL_INFO, "msg data error");
 		return rv;
 	}	
+
+	//TODO 3 : TCP Server에서 받은 응답에 저장했던 sessionID, gwSessionID 추가하기
+	//TODO 4 : Filler 2개 제거하기
 
 	rv = tcp_client_send_ipcmsg(client, msg, 0); 
 	if( rv< UX_SUCCESS) {

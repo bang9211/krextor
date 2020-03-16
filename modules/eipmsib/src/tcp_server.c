@@ -124,7 +124,7 @@ static int tcp_server_handle_clicktocall_req( tcp_server_t *server, uxc_worker_t
 	rv = tcp_clicktocall_start_req_decode_msg(clicktocall_req, msg);
 	if (rv <eUXC_SUCCESS) return rv;
 
-	/* To do.. */	
+	//TODO 5 : 받은 Notification 처리
 	ux_log(UXL_CRT, "  [sessionID] %s", clicktocall_req->sessionID);
 	ux_log(UXL_CRT, "  [gwSessionID] %s", clicktocall_req->gwSessionID);
 	ux_log(UXL_CRT, "  [subscriberName] %s", clicktocall_req->subscriberName);
