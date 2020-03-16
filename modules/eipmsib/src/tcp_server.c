@@ -7,8 +7,6 @@
 static tcp_server_t *_g_server = NULL;
 
 static void _tcp_server_destroy( uxc_plugin_t *pi);
-static int tcp_server_handle_idpreq( tcp_server_t *server, uxc_worker_t *worker,
-					upa_tcpmsg_t *tcpmsg, tcp_msg_t *msg );
 static int tcp_server_handle_clicktocall_req( tcp_server_t *server, uxc_worker_t *worker,
 					upa_tcpmsg_t *tcpmsg, tcp_msg_t *msg );
 static int _tcp_server_get_thrid( uxc_paif_t *paif, uxc_msg_t *msg);

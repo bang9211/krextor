@@ -180,6 +180,7 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 			ux_log(UXL_INFO, "gwSessionID : %s", gwSessionID);
 			ux_log(UXL_INFO, "subscriberName : %s", clicktocall_start_req.subscriberName);
 			ux_log(UXL_INFO, "serviceCode : %d", clicktocall_start_req.serviceCode);
+			ux_log(UXL_INFO, "serviceCode : %d", clicktocall_start_req.serviceCode);
 			break;
 		case 1:
 		

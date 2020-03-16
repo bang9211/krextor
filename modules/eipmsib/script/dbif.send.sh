@@ -25,12 +25,12 @@ dbifsim eipmsib 100 "c,s,s,s,i,s,s,i,i,i,i,i,s,s,s,i,i,i,i,i,i" -1 "S0001" "G000
 
 # --clicktocall CallStop req--
 # serviceID
-dbifsim eipmsib 101 "c,s" -1 "service0001"
+# dbifsim eipmsib 101 "c,s" -1 "service0001"
 
 # --clicktocall CallStartRecording req--
 # serviceID
-dbifsim eipmsib 102 "c,s,s" -1 "service0001" "testFileName"
+# dbifsim eipmsib 102 "c,s,s" -1 "service0001" "testFileName"
 
 # --clicktocall CallStopRecording req--
 # serviceID
-dbifsim eipmsib 103 "c,s" -1 "service0001"
+# dbifsim eipmsib 103 "c,s" -1 "service0001"
