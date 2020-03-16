@@ -99,6 +99,7 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 	int rv, msg_size, msgId;
 	upa_peerkey_t peerkey;
 	tcp_msg_t *msg;
+	uxc_dbif_t *rcv;
 
 	char *sessionID;
 	char *gwSessionID;
@@ -171,10 +172,10 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 			if( rv < eUXC_SUCCESS) goto errst;
 			clicktocall_start_req.wiredTimeout = uxc_dbif_get_int(rcv, 19, &rv);
 			if( rv < eUXC_SUCCESS) goto errst;
-			clicktocall_start_req.chargingNumber = "";
+			strcpy(clicktocall_start_req.chargingNumber, "");
 			clicktocall_start_req.fillerInt8 = 0;
 			clicktocall_start_req.fillerInt16 = 0;
-			clicktocall_start_req.filler = "";
+			strcpy(clicktocall_start_req.filler, "");
 			ux_log(UXL_INFO, "sessionID : %s", sessionID);
 			ux_log(UXL_INFO, "gwSessionID : %s", gwSessionID);
 			ux_log(UXL_INFO, "subscriberName : %s", clicktocall_start_req.subscriberName);
