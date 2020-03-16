@@ -120,8 +120,8 @@ static int tcp_server_handle_clicktocall_start_req( tcp_server_t *server, uxc_wo
 	if (rv <eUXC_SUCCESS) return rv;
 
 	/* To do.. */	
-	ux_log(UXL_CRT, "  [sessionID] %s", clicktocall_start_req->sessionID);
-	ux_log(UXL_CRT, "  [gwSessionID] %s", clicktocall_start_req->gwSessionID);
+	// ux_log(UXL_CRT, "  [sessionID] %s", clicktocall_start_req->sessionID);
+	// ux_log(UXL_CRT, "  [gwSessionID] %s", clicktocall_start_req->gwSessionID);
 	ux_log(UXL_CRT, "  [subscriberName] %s", clicktocall_start_req->subscriberName);
 	ux_log(UXL_CRT, "  [recordingType] %d", clicktocall_start_req->recordingType);
 	ux_log(UXL_CRT, "  [callingNumber] %s", clicktocall_start_req->callingNumber);
@@ -142,12 +142,12 @@ static int tcp_server_handle_clicktocall_start_req( tcp_server_t *server, uxc_wo
 	ux_log(UXL_CRT, "  [wiredTimeout] %d", clicktocall_start_req->wiredTimeout);
 
 	clicktocall_start_rsp->resultCode = 0;
-	clicktocall_start_rsp->serviceID = "service0001";
+	strcpy(clicktocall_start_rsp->serviceID, "service0001");
 	clicktocall_start_rsp->isRecording = 0;
 	clicktocall_start_rsp->filler1 = 0;
 	clicktocall_start_rsp->filler2= 0;
-	clicktocall_start_rsp->recordingFileURL= "/test/test";
-	clicktocall_start_rsp->recordingFileName= "testFileName";
+	strcpy(clicktocall_start_rsp->recordingFileURL, "/test/test");
+	strcpy(clicktocall_start_rsp->recordingFileName, "testFileName");
 
 	rv = tcp_clicktocall_start_rsp_encode_ipcmsg(clicktocall_start_rsp, msg);
 	if (rv <eUXC_SUCCESS) return rv;
