@@ -226,7 +226,7 @@ errst:
 
 int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpmsg_t *tcpmsg)
 {
-	int rv;
+	int rv, msgID;
 	skb_msg_t *msg;
 
 	msg = (skb_msg_t *) tcpmsg->netmsg->buffer;
