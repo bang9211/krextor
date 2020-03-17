@@ -77,33 +77,33 @@ static int _tcp_server_get_thrid( uxc_paif_t *paif, uxc_msg_t *msg)
 
 int tcp_server_handle_svrreq( tcp_server_t *server, uxc_worker_t* worker, upa_tcpmsg_t *tcpmsg)
 {
-	tcp_msg_t *msg;
+	skb_msg_t *skbmsg;
 	int msgID,rv;
 	tcp_clicktocall_start_req_t *tcp_clicktocall_start_req;
 
 	// 1. receive msg 
-	msg = (tcp_msg_t *)tcpmsg->netmsg->buffer;
-	tcp_clicktocall_start_req = (tcp_clicktocall_start_req_t *)msg->data;
+	// msg = (tcp_msg_t *)tcpmsg->netmsg->buffer;
+	skbmsg = (skb_msg_t *)tcpmsg->netmsg->buffer;
+	tcp_clicktocall_start_req = (tcp_clicktocall_start_req_t *)skbmsg->body;
 	
-	ux_log(UXL_INFO, "received : %s", tcp_clicktocall_start_req->subscriberName);
-	
-	rv = tcp_msg_cvt_order_ntoh(msg);
+	rv = skb_msg_cvt_order_ntoh(msg);
 	if( rv < UX_SUCCESS) {
 		ux_log(UXL_INFO, "msg data error");
 		return rv;
 	}
 
-	msgID = msg->header.msgId;
+	msgID = skbmsg->header.messageID;
 	ux_log(UXL_INFO, "received : %d", msgID);
+	ux_log(UXL_INFO, "received : %s", tcp_clicktocall_start_req->subscriberName);
 
 	// 2. display msg
-	rv = tcp_msg_display(msg);
+	// rv = tcp_msg_display(msg);
 
 	// 3. response to uxcutor
 	switch(msgID)
 	{
-		case TCP_MSGID_CLICKTOCALL_START:
-			return tcp_server_handle_clicktocall_start_req(server, worker, tcpmsg, msg);
+		case START_REQUEST:
+			return tcp_server_handle_clicktocall_start_req(server, worker, tcpmsg, skbmsg);
 		default:
 			break;	
 	}			
@@ -111,29 +111,32 @@ int tcp_server_handle_svrreq( tcp_server_t *server, uxc_worker_t* worker, upa_tc
 }
 
 static int tcp_server_handle_clicktocall_start_req( tcp_server_t *server, uxc_worker_t *worker,
-					upa_tcpmsg_t *tcpmsg, tcp_msg_t *msg )
+					upa_tcpmsg_t *tcpmsg, skb_msg_t *msg )
 {
 	int rv;
 	tcp_clicktocall_start_rsp_t clicktocall_start_rsp[1];
 	tcp_clicktocall_start_req_t clicktocall_start_req[1];
+	skb_msg_t rspMsg;
 
 	ux_log(UXL_INFO, "* tcp_server_handle_clicktocall_start_req ");
-	tcp_clicktocall_start_req_init(clicktocall_start_req);
+	// tcp_clicktocall_start_req_init(clicktocall_start_req);
 	tcp_clicktocall_start_rsp_init(clicktocall_start_rsp);
 
-	rv = tcp_clicktocall_start_req_decode_msg(clicktocall_start_req, msg);
-	if (rv <eUXC_SUCCESS) return rv;
+	// rv = tcp_clicktocall_start_req_decode_msg(clicktocall_start_req, msg);
+	// if (rv <eUXC_SUCCESS) return rv;
+
+	clicktocall_start_req = msg->body;
 
 	/* To do.. */	
-	// ux_log(UXL_CRT, "  [sessionID] %s", clicktocall_start_req->sessionID);
-	// ux_log(UXL_CRT, "  [gwSessionID] %s", clicktocall_start_req->gwSessionID);
 	ux_log(UXL_CRT, "  [subscriberName] %s", clicktocall_start_req->subscriberName);
 	ux_log(UXL_CRT, "  [recordingType] %d", clicktocall_start_req->recordingType);
 	ux_log(UXL_CRT, "  [callingNumber] %s", clicktocall_start_req->callingNumber);
 	ux_log(UXL_CRT, "  [calledNumber] %s", clicktocall_start_req->calledNumber);
+	ux_log(UXL_CRT, "  [chargningNumber] %s", clicktocall_start_req->chargingNumber);
 	ux_log(UXL_CRT, "  [serviceCode] %d", clicktocall_start_req->serviceCode);
 	ux_log(UXL_CRT, "  [ringBackToneType] %d", clicktocall_start_req->ringBackToneType);
 	ux_log(UXL_CRT, "  [waitingMentID] %d", clicktocall_start_req->waitingMentID);
+	ux_log(UXL_CRT, "  [fillerInt8] %d", clicktocall_start_req->fillerInt8);
 	ux_log(UXL_CRT, "  [scenarioType] %d", clicktocall_start_req->scenarioType);
 	ux_log(UXL_CRT, "  [callMentID] %d", clicktocall_start_req->callMentID);
 	ux_log(UXL_CRT, "  [callingCID] %s", clicktocall_start_req->callingCID);
@@ -145,6 +148,8 @@ static int tcp_server_handle_clicktocall_start_req( tcp_server_t *server, uxc_wo
 	ux_log(UXL_CRT, "  [hostingCode] %d", clicktocall_start_req->hostingCode);
 	ux_log(UXL_CRT, "  [wirelessTimeout] %d", clicktocall_start_req->wirelessTimeout);
 	ux_log(UXL_CRT, "  [wiredTimeout] %d", clicktocall_start_req->wiredTimeout);
+	ux_log(UXL_CRT, "  [fillerInt16] %d", clicktocall_start_req->fillerInt16);
+	ux_log(UXL_CRT, "  [filler] %d", clicktocall_start_req->filler);
 
 	clicktocall_start_rsp->resultCode = 0;
 	strcpy(clicktocall_start_rsp->serviceID, "service0001");
@@ -154,9 +159,10 @@ static int tcp_server_handle_clicktocall_start_req( tcp_server_t *server, uxc_wo
 	strcpy(clicktocall_start_rsp->recordingFileURL, "/test/test");
 	strcpy(clicktocall_start_rsp->recordingFileName, "testFileName");
 
-	rv = tcp_clicktocall_start_rsp_encode_ipcmsg(clicktocall_start_rsp, msg);
-	if (rv <eUXC_SUCCESS) return rv;
-	rv = tcp_msg_send(msg, server->patcp, &tcpmsg->peerkey);	
+	rspMsg.header = *skb_msg_make_header(START_RESPONSE, sizeof(clicktocall_start_rsp), msg->header.requestID)
+	rspMsg.body = clicktocall_start_rsp;
+
+	rv = skb_msg_send(rspMsg, server->patcp, &tcpmsg->peerkey);	
 	if (rv <eUXC_SUCCESS) return rv;
 
 	return 0;

@@ -11,7 +11,7 @@
 typedef struct tcp_clicktocall_start_req_s tcp_clicktocall_start_req_t; 
 // #pragma pack(push, 1)
 struct tcp_clicktocall_start_req_s {
-	tcp_msg_t base[1];
+	// tcp_msg_t base[1];
 	char subscriberName[32];
 	int8_t recordingType;
 	char callingNumber[24];

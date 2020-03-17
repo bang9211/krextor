@@ -11,18 +11,9 @@
 // TCP Common Message Structure & Macro 
 ///////////////////////////////////////////////////////////////////////////////////
 
-#define TCP_MSGID_CLICKTOCALL_CALL_SERVICE_STATUS_REPORT 					200
-#define TCP_MSGID_CLICKTOCALL_CALL_END_REPORT			 					201
-#define TCP_MSGID_CLICKTOCALLRECORDING_CALL_SERVICE_STATUS_REPORT 			400
-#define TCP_MSGID_CLICKTOCALLRECORDING_CALL_END_REPORT			 			401
-#define TCP_MSGID_CLICKTOCONFERENCE_ADD_PARTY_REPORT 						600
-#define TCP_MSGID_CLICKTOCONFERENCE_REMOVE_PARTY_REPORT			 			601
-#define TCP_MSGID_CLICKTOCONFERENCE_CHANGE_PARTY_MEDIA_REPORT			 	602
-#define TCP_MSGID_CLICKTOCONFERENCE_CLOSE_CONF_REPORT			 			603
-
-// #define TCP_MSGID_IDP 						701 
-// #define TCP_MSGID_AC 						702 
-// #define TCP_MSGID_CIR	 					703 
+#define TCP_MSGID_IDP 						701 
+#define TCP_MSGID_AC 						702 
+#define TCP_MSGID_CIR	 					703 
 
 ////////////////////////////////////////////////////////////////////////////////////
 // functions for tcp_msg_t

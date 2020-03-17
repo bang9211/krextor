@@ -98,39 +98,37 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 {
 	int rv, msg_size, msgId;
 	upa_peerkey_t peerkey;
+
+	skb_msg_t skbmsg;
 	tcp_msg_t *msg;
+
 	uxc_dbif_t *rcv;
-	int tcpmsg_size;
-	unsigned char *tcpmsg;
 
 	char *sessionID;
 	char *gwSessionID;
+
 	tcp_clicktocall_start_req_t clicktocall_start_req;
 
 	msg = (tcp_msg_t *)&ipcmsg->header;
-	msg_size = sizeof(uxc_ixpc_t) + msg->header.length;
+	msg_size = sizeof(uxc_ixpc_t) + msg->header.length;	//header + body
 	msgId = msg->header.msgId;
-
-	rv = tcp_msg_cvt_order_hton(msg);
-	if( rv< UX_SUCCESS) {
-		ux_log(UXL_INFO, "msg data error");
-		return rv;
-	}
 
 	ux_log( UXL_INFO, "2. CALL tcp_client_forward_gwreq (len:%d, msgId:%d) ", msg_size, msgId);
 
+	//수신한 DBIF 메시지를 msgID에 따라 TCP로 보낼 eIPMS의 메시지로 변경
 	if( msgId / 100 == 1) {
 		ux_log(UXL_INFO, "2.1. Set Channel clicktocall");
 		peerkey.chnl_idx = 0; // configuration 첫번째 채널
 		peerkey.peer_key = 0; // 채널의 첫번째 PEER 
 
-		switch(msgId % 100) {
-		case 0:
-			//TODO 1 : DBIF에서 받은 msg에서 sessionID, gwSessionID 제외하여 저장하고 있기
-			//TODO 2 : DBIF에서 받은 msg에서 안쓰는값(chargingNumber, filler 등) 채워주기
-			// DBIF 메시지를 읽는다.
-			// DBIF 메시지를 분해하여 새로 만들어 TCP 메시지로 변환하거나
-			// DBIF 메시지를 분해하여 TCP 메시지를 만들거나
+		switch(msgId) {
+		case CALL_START_REQUEST:
+			// TODO 1 : DBIF에서 받은 msg에서 sessionID, gwSessionID 제외하여 저장하고 있다가 response에 사용
+			// TODO 2 : DBIF에서 받은 msg에서 header의 dstqid, srcqid 저장하고 있다가 response에 사용
+			// TODO 3 : requestID Generator 만들어야함
+			// TODO 4 : messageID Generator 만들어야함
+
+			// DBIF 메시지를 분해하여 body 설정
 			rcv = uxc_ipcmsg_get_dbif(ipcmsg);
 			sessionID = uxc_dbif_get_str(rcv, 0, &rv);
 			if( rv < eUXC_SUCCESS) goto errst;
@@ -176,23 +174,30 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 			clicktocall_start_req.fillerInt8 = 0;
 			clicktocall_start_req.fillerInt16 = 0;
 			strcpy(clicktocall_start_req.filler, "");
-			ux_log(UXL_INFO, "sessionID : %s", sessionID);
-			ux_log(UXL_INFO, "gwSessionID : %s", gwSessionID);
-			ux_log(UXL_INFO, "subscriberName : %s", clicktocall_start_req.subscriberName);
-			ux_log(UXL_INFO, "serviceCode : %d", clicktocall_start_req.serviceCode);
-			ux_log(UXL_INFO, "serviceCode : %d", clicktocall_start_req.serviceCode);
 
-			// tcpmsg = (unsigned char*)&clicktocall_start_req;
-			tcpmsg_size = sizeof(clicktocall_start_req);
+			// ux_log(UXL_INFO, "sessionID : %s", sessionID);
+			// ux_log(UXL_INFO, "gwSessionID : %s", gwSessionID);
+			// ux_log(UXL_INFO, "subscriberName : %s", clicktocall_start_req.subscriberName);
+			// ux_log(UXL_INFO, "serviceCode : %d", clicktocall_start_req.serviceCode);
+			// ux_log(UXL_INFO, "serviceCode : %d", clicktocall_start_req.serviceCode);
+
+			//header 설정
+			skbmsg.header = *skb_msg_make_header(START_REQUEST, sizeof(clicktocall_start_req), NULL)
+			skbmsg.body = &clicktocall_start_req;
+
+			//메시지를 Network byte ordering으로 변경
+			rv = skb_msg_cvt_order_hton(skbmsg, msgId);
+			if( rv< UX_SUCCESS) {
+				ux_log(UXL_INFO, "msg data error");
+				return rv;
+			}
+
 			break;
-		case 1:
-		
+		case CALL_STOP_REQUEST:
 			break;
-		case 2:
-		
+		case CALL_START_RECORDING_REQUEST:
 			break;
-		case 3:
-		
+		case CALL_STOP_RECORDING_REQUEST:
 			break;
 		}
 	} else if( msgId / 100 == 2) {
@@ -205,14 +210,12 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 		peerkey.peer_key = 0; // 채널의 첫번째 PEER 
 	}
 
-	// rv = upa_tcp_send2(_g_client->patcp, &peerkey, msg, msg_size, 1);
-	rv = upa_tcp_send2(_g_client->patcp, &peerkey, &clicktocall_start_req, tcpmsg_size, 1);
+	rv = upa_tcp_send2(_g_client->patcp, &peerkey, &skbmsg, skbmsg.header.length, 1);
 	if( rv < UX_SUCCESS) {
 		ux_log( UXL_CRT, "can't send data.");
 		return -1;
 	} else {
-		// ux_log( UXL_INFO, "3. Forwarded msg. from gw to eipms (len:%d)", msg_size);
-		ux_log( UXL_INFO, "3. Forwarded msg. from gw to eipms (len:%d)", tcpmsg_size);
+		ux_log( UXL_INFO, "3. Forwarded msg. from gw to eipms (len:%d)", skbmsg.header.length);
 		return UX_SUCCESS;
 	}
 
@@ -224,25 +227,36 @@ errst:
 int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpmsg_t *tcpmsg)
 {
 	int rv;
-	tcp_msg_t *msg;
+	skb_msg_t *msg;
 
-	msg = (tcp_msg_t *) tcpmsg->netmsg->buffer;
+	msg = (skb_msg_t *) tcpmsg->netmsg->buffer;
 
 	ux_log( UXL_INFO, "5. CALL dbif_forward_eipmsrsp =");
 
-	rv = tcp_msg_cvt_order_ntoh(msg);
+	rv = skb_msg_cvt_order_ntoh(msg);
 	if( rv < UX_SUCCESS) {
 		ux_log(UXL_INFO, "msg data error");
 		return rv;
 	}	
 
-	//TODO 3 : TCP Server에서 받은 응답에 저장했던 sessionID, gwSessionID 추가하기
-	//TODO 4 : Filler 2개 제거하기
+	msgID = msg->header.messageID;
+	ux_log(UXL_INFO, "received : %d", msgID);
 
-	rv = tcp_client_send_ipcmsg(client, msg, 0); 
-	if( rv< UX_SUCCESS) {
-		ux_log( UXL_INFO, "can't send msg");
-	}
+	switch(msgID)
+	{
+		case START_RESPONSE:
+			//TODO 1 : 아래에서 tcp response를 dbif 형식의 메시지로 변경시키기
+			rv = tcp_clicktocall_start_rsp_encode_ipcmsg(clicktocall_start_rsp, msg);
+			if (rv <eUXC_SUCCESS) return rv;
+
+			rv = tcp_client_send_ipcmsg(client, msg, 0); 
+			if( rv< UX_SUCCESS) {
+				ux_log( UXL_INFO, "can't send msg");
+			}
+		default:
+			break;	
+	}			
+
 
 	return rv;
 }	
@@ -254,6 +268,13 @@ int tcp_client_send_ipcmsg( tcp_client_t *client,  tcp_msg_t* msg, int rv)
 
 	ux_log(UXL_CRT, "	[length] %d ",msg->header.length);
 	ux_log(UXL_CRT, "	[msgId] %d ", msg->header.msgId);
+
+
+	//TODO 3 : DBIF 헤더 설정
+	//TODO 4 : TCP Client에서 받은 DBIF 요청에 저장했던 dstQid, srcQid 헤더에 추가하기
+	//TODO 5 : TCP Client에서 받은 DBIF 요청에 저장했던 sessionID, gwSessionID 추가하기
+	//TODO 6 : Filler 2개 제거하기
+	//TODO 7 : serviceID 같은지 확인하기
 
 	ipcmsg.header = msg->header;
 	memcpy(ipcmsg.data, msg->data, ipcmsg.header.length);

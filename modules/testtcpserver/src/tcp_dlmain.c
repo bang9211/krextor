@@ -12,7 +12,6 @@
 int tcp_handle_svrreq( uxc_action_t *action, uxc_worker_t* worker, uxc_msg_t *uxcmsg)
 {
 	upa_tcpmsg_t *tcpmsg;
-	ux_log(UXL_INFO, "Received : %d", uxcmsg->size);
 	tcpmsg = (upa_tcpmsg_t *) uxcmsg->data;
 
 	if ( tcpmsg->evtype == UPA_TCP_EVENT_RECV) {
