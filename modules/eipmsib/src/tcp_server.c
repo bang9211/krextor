@@ -98,9 +98,9 @@ int tcp_server_handle_eipmsreq( tcp_server_t *server, uxc_worker_t* worker, upa_
 	// 3. process and response to uxcutor
 	switch(msgID)
 	{
-		case TCP_MSGID_CLICKTOCALL_CALL_SERVICE_STATUS_REPORT:
+		case CALL_SERVICE_STATUS_REPORT:
 			return tcp_server_handle_clicktocall_req(server, worker, tcpmsg, msg);
-		case TCP_MSGID_CLICKTOCALL_CALL_END_REPORT:
+		case CALL_END_REPORT:
 			return tcp_server_handle_clicktocall_req(server, worker, tcpmsg, msg);
 		default:
 			break;	
@@ -144,16 +144,16 @@ static int tcp_server_handle_clicktocall_req( tcp_server_t *server, uxc_worker_t
 	ux_log(UXL_CRT, "  [wirelessTimeout] %d", clicktocall_req->wirelessTimeout);
 	ux_log(UXL_CRT, "  [wiredTimeout] %d", clicktocall_req->wiredTimeout);
 
-	clicktocall_rsp->result = 0;
-	clicktocall_rsp->callTime = 0;
-	clicktocall_rsp->finalUnitAction = 100;
-	clicktocall_rsp->brandId = 0;
-	clicktocall_rsp->lang= 0;
+	// clicktocall_rsp->result = 0;
+	// clicktocall_rsp->callTime = 0;
+	// clicktocall_rsp->finalUnitAction = 100;
+	// clicktocall_rsp->brandId = 0;
+	// clicktocall_rsp->lang= 0;
 
-	rv = tcp_clicktocall_start_rsp_encode_ipcmsg(clicktocall_rsp, msg);
-	if (rv <eUXC_SUCCESS) return rv;
-	rv = tcp_msg_send(msg, server->patcp, &tcpmsg->peerkey);	
-	if (rv <eUXC_SUCCESS) return rv;
+	// rv = tcp_clicktocall_start_rsp_encode_ipcmsg(clicktocall_rsp, msg);
+	// if (rv <eUXC_SUCCESS) return rv;
+	// rv = tcp_msg_send(msg, server->patcp, &tcpmsg->peerkey);	
+	// if (rv <eUXC_SUCCESS) return rv;
 
 	return 0;
 }

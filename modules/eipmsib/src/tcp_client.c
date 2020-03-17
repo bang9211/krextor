@@ -186,7 +186,7 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 			skbmsg.body = &clicktocall_start_req;
 
 			//메시지를 Network byte ordering으로 변경
-			rv = skb_msg_cvt_order_hton(skbmsg, msgId);
+			rv = skb_msg_cvt_order_hton(&skbmsg, msgId);
 			if( rv< UX_SUCCESS) {
 				ux_log(UXL_INFO, "msg data error");
 				return rv;
@@ -233,11 +233,12 @@ int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpms
 
 	ux_log( UXL_INFO, "5. CALL dbif_forward_eipmsrsp =");
 
-	rv = skb_msg_cvt_order_ntoh(msg);
-	if( rv < UX_SUCCESS) {
-		ux_log(UXL_INFO, "msg data error");
-		return rv;
-	}	
+	//TODO 0  : 어떻게 할지
+	// rv = skb_msg_cvt_order_ntoh(msg, );
+	// if( rv < UX_SUCCESS) {
+	// 	ux_log(UXL_INFO, "msg data error");
+	// 	return rv;
+	// }	
 
 	msgID = msg->header.messageID;
 	ux_log(UXL_INFO, "received : %d", msgID);
@@ -246,13 +247,13 @@ int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpms
 	{
 		case START_RESPONSE:
 			//TODO 1 : 아래에서 tcp response를 dbif 형식의 메시지로 변경시키기
-			rv = tcp_clicktocall_start_rsp_encode_ipcmsg(clicktocall_start_rsp, msg);
-			if (rv <eUXC_SUCCESS) return rv;
+			// rv = tcp_clicktocall_start_rsp_encode_ipcmsg(clicktocall_start_rsp, msg);
+			// if (rv <eUXC_SUCCESS) return rv;
 
-			rv = tcp_client_send_ipcmsg(client, msg, 0); 
-			if( rv< UX_SUCCESS) {
-				ux_log( UXL_INFO, "can't send msg");
-			}
+			// rv = tcp_client_send_ipcmsg(client, msg, 0); 
+			// if( rv< UX_SUCCESS) {
+			// 	ux_log( UXL_INFO, "can't send msg");
+			// }
 		default:
 			break;	
 	}			
