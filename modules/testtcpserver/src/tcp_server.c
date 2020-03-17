@@ -149,7 +149,7 @@ static int tcp_server_handle_clicktocall_start_req( tcp_server_t *server, uxc_wo
 	ux_log(UXL_CRT, "  [wirelessTimeout] %d", clicktocall_start_req->wirelessTimeout);
 	ux_log(UXL_CRT, "  [wiredTimeout] %d", clicktocall_start_req->wiredTimeout);
 	ux_log(UXL_CRT, "  [fillerInt16] %d", clicktocall_start_req->fillerInt16);
-	ux_log(UXL_CRT, "  [filler] %d", clicktocall_start_req->filler);
+	ux_log(UXL_CRT, "  [filler] %s", clicktocall_start_req->filler);
 
 	clicktocall_start_rsp->resultCode = 0;
 	strcpy(clicktocall_start_rsp->serviceID, "service0001");

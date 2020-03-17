@@ -20,6 +20,7 @@ SRCS =
     tcp_clicktocall_req
     tcp_server
     tcp_msg
+    skb_msg
 	;
 
 IHDRS =

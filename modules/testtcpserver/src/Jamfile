@@ -24,6 +24,7 @@ SRCS =
     tcp_acreq
     tcp_server
     tcp_msg
+    skb_msg
 	;
 
 IHDRS =
