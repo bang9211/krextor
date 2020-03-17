@@ -52,7 +52,7 @@ int skb_msg_cvt_order_hton(skb_msg_t *msg, int msgId)
  * @param msg network eIPMS message
  * @return 실행 결과
  */
-int skb_msg_cvt_order_ntoh(skb_msg_t *msg)
+int skb_msg_cvt_order_ntoh(skb_msg_t *msg, int msgId)
 {
 #if !UX_BIGENDIAN
     skb_header_t *header;
@@ -120,18 +120,19 @@ int skb_msg_send( skb_msg_t *msg, upa_tcp_t *tcp, upa_peerkey_t *peerkey)
 }
 
 skb_header_t* skb_msg_make_header(int32_t messageID, int16_t bodySize, int32_t *requestID) {
-	skbmsg.header.frameStart0 = 0Xfe;
-	skbmsg.header.frameStart1 = 0Xfe;
-	skbmsg.header.length = sizeof(skb_header_t) + bodySize;
-	skbmsg.header.messageID = messageID;
+	skb_header_t header;
+	header.frameStart0 = 0Xfe;
+	header.frameStart1 = 0Xfe;
+	header.length = sizeof(skb_header_t) + bodySize;
+	header.messageID = messageID;
 	if (requestID == NULL) {
 		requestID = &skb_msg_generate_requestID();
 	}
-	skbmsg.header.requestID = requestID;
-	skbmsg.header.version0 = 0x00;
-	skbmsg.header.version1 = 0x01;
-	skbmsg.header.userID = 1;
-	skbmsg.header.filler = 0;
+	header.requestID = requestID;
+	header.version0 = 0x00;
+	header.version1 = 0x01;
+	header.userID = 1;
+	header.filler = 0;
 }
 
 int32_t skb_msg_generate_requestID() {

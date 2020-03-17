@@ -59,12 +59,6 @@
 #define SERVICE_STATUS_RESPONSE								0x10000030
 #define SERVICE_STATUS_REPORT								0x20000030
 
-typedef struct skb_msg_s skb_msg_t;
-struct skb_msg_s {
-	skb_header_t header;
-	char body[];
-}
-
 typedef struct skb_header_s skb_header_t; 
 struct skb_header_s {
 	int8_t frameStart0;		//프레임 시작 (고정) : 0xfe
@@ -78,8 +72,14 @@ struct skb_header_s {
 	int8_t filler;
 };
 
-int skb_msg_cvt_order_hton(skb_msg_t *msg);
-int skb_msg_cvt_order_ntoh(skb_msg_t *msg);
+typedef struct skb_msg_s skb_msg_t;
+struct skb_msg_s {
+	skb_header_t header;
+	char body[];
+};
+
+int skb_msg_cvt_order_hton(skb_msg_t *msg, int msgId);
+int skb_msg_cvt_order_ntoh(skb_msg_t *msg, int msgId);
 int skb_msg_send( skb_msg_t *msg, upa_tcp_t *tcp, upa_peerkey_t *peerkey);
 
 int32_t skb_msg_generate_messasgeID();

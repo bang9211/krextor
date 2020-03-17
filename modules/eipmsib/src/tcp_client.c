@@ -182,7 +182,7 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 			// ux_log(UXL_INFO, "serviceCode : %d", clicktocall_start_req.serviceCode);
 
 			//header 설정
-			skbmsg.header = *skb_msg_make_header(START_REQUEST, sizeof(clicktocall_start_req), NULL)
+			skbmsg.header = *skb_msg_make_header(START_REQUEST, sizeof(clicktocall_start_req), NULL);
 			skbmsg.body = &clicktocall_start_req;
 
 			//메시지를 Network byte ordering으로 변경
