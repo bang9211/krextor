@@ -8,7 +8,7 @@ static tcp_server_t *_g_server = NULL;
 
 static void _tcp_server_destroy( uxc_plugin_t *pi);
 static int tcp_server_handle_clicktocall_start_req( tcp_server_t *server, uxc_worker_t *worker,
-					upa_tcpmsg_t *tcpmsg, tcp_msg_t *msg );
+					upa_tcpmsg_t *tcpmsg, skb_msg_t *msg );
 static int _tcp_server_get_thrid( uxc_paif_t *paif, uxc_msg_t *msg);
 static int _tcp_server_on_accept(upa_tcp_t *tcp, ux_channel_t *channel, ux_accptor_t *accptor,
 				ux_cnector_t *cnector, upa_peerkey_t *peerkey);
@@ -86,7 +86,7 @@ int tcp_server_handle_svrreq( tcp_server_t *server, uxc_worker_t* worker, upa_tc
 	skbmsg = (skb_msg_t *)tcpmsg->netmsg->buffer;
 	tcp_clicktocall_start_req = (tcp_clicktocall_start_req_t *)skbmsg->body;
 	
-	rv = skb_msg_cvt_order_ntoh(msg);
+	rv = skb_msg_cvt_order_ntoh(skbmsg, CALL_START_REQUEST);
 	if( rv < UX_SUCCESS) {
 		ux_log(UXL_INFO, "msg data error");
 		return rv;
@@ -159,10 +159,10 @@ static int tcp_server_handle_clicktocall_start_req( tcp_server_t *server, uxc_wo
 	strcpy(clicktocall_start_rsp->recordingFileURL, "/test/test");
 	strcpy(clicktocall_start_rsp->recordingFileName, "testFileName");
 
-	rspMsg.header = *skb_msg_make_header(START_RESPONSE, sizeof(clicktocall_start_rsp), msg->header.requestID)
+	rspMsg.header = *skb_msg_make_header(START_RESPONSE, sizeof(clicktocall_start_rsp), msg->header.requestID);
 	rspMsg.body = clicktocall_start_rsp;
 
-	rv = skb_msg_send(rspMsg, server->patcp, &tcpmsg->peerkey);	
+	rv = skb_msg_send(&rspMsg, server->patcp, &tcpmsg->peerkey);	
 	if (rv <eUXC_SUCCESS) return rv;
 
 	return 0;
