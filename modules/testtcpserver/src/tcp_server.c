@@ -115,7 +115,7 @@ static int tcp_server_handle_clicktocall_start_req( tcp_server_t *server, uxc_wo
 {
 	int rv;
 	tcp_clicktocall_start_rsp_t clicktocall_start_rsp[1];
-	tcp_clicktocall_start_req_t clicktocall_start_req[1];
+	tcp_clicktocall_start_req_t *clicktocall_start_req;
 	skb_msg_t rspMsg;
 
 	ux_log(UXL_INFO, "* tcp_server_handle_clicktocall_start_req ");
