@@ -103,7 +103,8 @@ int skb_msg_send( skb_msg_t *msg, upa_tcp_t *tcp, upa_peerkey_t *peerkey)
 		
 	msg_size = msg->header.length; 
 
-	rv = skb_msg_cvt_order_hton(msg);
+	//TODO
+	rv = skb_msg_cvt_order_hton(msg, CALL_START_REQUEST);
 	if( rv < UX_SUCCESS) {
 		ux_log(UXL_INFO, "msg data error");
 		return rv;
@@ -120,13 +121,16 @@ int skb_msg_send( skb_msg_t *msg, upa_tcp_t *tcp, upa_peerkey_t *peerkey)
 }
 
 skb_header_t* skb_msg_make_header(int32_t messageID, int16_t bodySize, int32_t *requestID) {
+	int32_t temp;
+
 	skb_header_t header;
 	header.frameStart0 = 0Xfe;
 	header.frameStart1 = 0Xfe;
 	header.length = sizeof(skb_header_t) + bodySize;
 	header.messageID = messageID;
 	if (requestID == NULL) {
-		requestID = &skb_msg_generate_requestID();
+		temp = skb_msg_generate_requestID();
+		requestID = &temp;
 	}
 	header.requestID = requestID;
 	header.version0 = 0x00;
