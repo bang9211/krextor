@@ -214,13 +214,12 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 
 	ux_log(UXL_INFO, "header size : %d", sizeof(skbmsg.header));
 	ux_log(UXL_INFO, "body size : %d", sizeof(clicktocall_start_req));
-	ux_log(UXL_INFO, "total size : %d", sizeof(skbmsg));
 	rv = upa_tcp_send2(_g_client->patcp, &peerkey, &skbmsg, msg_size, 1);
 	if( rv < UX_SUCCESS) {
 		ux_log( UXL_CRT, "can't send data.");
 		return -1;
 	} else {
-		ux_log( UXL_INFO, "3. Forwarded msg. from gw to eipms (len:%d)", skbmsg.header.length);
+		ux_log( UXL_INFO, "3. Forwarded msg. from gw to eipms (len:%d)", msg_size);
 		return UX_SUCCESS;
 	}
 
