@@ -183,7 +183,7 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 
 			//header ¼³Á¤
 			skb_msg_make_header(&skbmsg.header, START_REQUEST, sizeof(clicktocall_start_req), NULL);
-			skbmsg.body = &clicktocall_start_req;
+			memcpy(skbmsg.body, &clicktocall_start_req, sizeof(clicktocall_start_req));
 			ux_log(UXL_INFO, "header length : %d", skbmsg.header.length);
 			msg_size = skbmsg.header.length;
 
