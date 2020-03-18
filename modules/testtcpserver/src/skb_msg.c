@@ -123,19 +123,19 @@ int skb_msg_send( skb_msg_t *msg, upa_tcp_t *tcp, upa_peerkey_t *peerkey)
 void skb_msg_make_header(skb_header_t* header, int32_t messageID, int16_t bodySize, int32_t *requestID) {
 	int32_t temp;
 
-	header.frameStart0 = 0Xfe;
-	header.frameStart1 = 0Xfe;
-	header.length = sizeof(skb_header_t) + bodySize;
-	header.messageID = messageID;
+	header->frameStart0 = 0Xfe;
+	header->frameStart1 = 0Xfe;
+	header->length = sizeof(skb_header_t) + bodySize;
+	header->messageID = messageID;
 	if (requestID == NULL) {
 		temp = skb_msg_generate_requestID();
 		requestID = &temp;
 	}
-	header.requestID = requestID;
-	header.version0 = 0x00;
-	header.version1 = 0x01;
-	header.userID = 1;
-	header.filler = 0;
+	header->requestID = requestID;
+	header->version0 = 0x00;
+	header->version1 = 0x01;
+	header->userID = 1;
+	header->filler = 0;
 }
 
 int32_t skb_msg_generate_requestID() {
