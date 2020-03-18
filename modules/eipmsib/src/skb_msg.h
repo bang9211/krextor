@@ -59,6 +59,9 @@
 #define SERVICE_STATUS_RESPONSE								0x10000030
 #define SERVICE_STATUS_REPORT								0x20000030
 
+/** @brief SKB MAX Message Length */
+#define SKB_MSG_MAX_LEN		64*1024
+
 typedef struct skb_header_s skb_header_t; 
 struct skb_header_s {
 	int8_t frameStart0;		//프레임 시작 (고정) : 0xfe
@@ -75,7 +78,7 @@ struct skb_header_s {
 typedef struct skb_msg_s skb_msg_t;
 struct skb_msg_s {
 	skb_header_t header;
-	void* body;
+	char body[SKB_MSG_MAX_LEN];
 };
 
 int skb_msg_cvt_order_hton(skb_msg_t *msg, int msgId);

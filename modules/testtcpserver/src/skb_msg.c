@@ -15,13 +15,13 @@ int skb_msg_cvt_order_hton(skb_msg_t *msg, int msgId)
 
 #if !UX_BIGENDIAN
     skb_header_t *header;
-    tcp_clicktocall_start_req_t *clicktocall_start_req;
+    tcp_clicktocall_start_req_t clicktocall_start_req[1];
 
     header = &msg->header;
 	
     switch(msgId) {
     case CALL_START_REQUEST:
-        clicktocall_start_req = (tcp_clicktocall_start_req_t *) msg->body;
+		memcpy(clicktocall_start_Req, msg->body, sizeof(tcp_clicktocall_start_req_t));
         clicktocall_start_req->waitingMentID = htons(clicktocall_start_req->waitingMentID);
         clicktocall_start_req->callMentID = htons(clicktocall_start_req->callMentID);
         clicktocall_start_req->fillerInt16 = htons(clicktocall_start_req->fillerInt16);
