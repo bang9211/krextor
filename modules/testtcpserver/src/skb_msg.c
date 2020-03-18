@@ -54,6 +54,7 @@ int skb_msg_cvt_order_hton(skb_msg_t *msg, int msgId)
  */
 int skb_msg_cvt_order_ntoh(skb_msg_t *msg, int msgId)
 {
+	ux_log(UXL_INFO, "test6");
 #if !UX_BIGENDIAN
     skb_header_t *header;
     tcp_clicktocall_start_req_t *clicktocall_start_req;
@@ -61,6 +62,7 @@ int skb_msg_cvt_order_ntoh(skb_msg_t *msg, int msgId)
 	if (msg == NULL) return -1;
 
     header = &msg->header;
+	ux_log(UXL_INFO, "test5");
 	
     switch(msgId) {
     case CALL_START_REQUEST:
@@ -68,6 +70,7 @@ int skb_msg_cvt_order_ntoh(skb_msg_t *msg, int msgId)
         clicktocall_start_req->waitingMentID = ntohs(clicktocall_start_req->waitingMentID);
         clicktocall_start_req->callMentID = ntohs(clicktocall_start_req->callMentID);
         clicktocall_start_req->fillerInt16 = ntohs(clicktocall_start_req->fillerInt16);
+	ux_log(UXL_INFO, "test4");
         break;
     case CALL_STOP_REQUEST:
         break;
@@ -84,7 +87,9 @@ int skb_msg_cvt_order_ntoh(skb_msg_t *msg, int msgId)
 	header->length = ntohs(header->length);
 	header->messageID = ntohl(header->messageID);
 	header->requestID = ntohl(header->requestID);
+	ux_log(UXL_INFO, "test3");
 #endif
+	ux_log(UXL_INFO, "test2-1");
 
 	return UX_SUCCESS;
 }
