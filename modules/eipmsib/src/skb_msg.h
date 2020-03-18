@@ -75,7 +75,8 @@ struct skb_header_s {
 typedef struct skb_msg_s skb_msg_t;
 struct skb_msg_s {
 	skb_header_t header;
-	void* body;
+	// void* body;
+	char body[250];
 };
 
 int skb_msg_cvt_order_hton(skb_msg_t *msg, int msgId);
