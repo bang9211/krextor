@@ -159,7 +159,7 @@ static int tcp_server_handle_clicktocall_start_req( tcp_server_t *server, uxc_wo
 	strcpy(clicktocall_start_rsp->recordingFileURL, "/test/test");
 	strcpy(clicktocall_start_rsp->recordingFileName, "testFileName");
 
-	rspMsg.header = *skb_msg_make_header(START_RESPONSE, sizeof(clicktocall_start_rsp), msg->header.requestID);
+	skb_msg_make_header(&rspMsg.header, START_RESPONSE, sizeof(clicktocall_start_rsp), msg->header.requestID);
 	rspMsg.body = clicktocall_start_rsp;
 
 	rv = skb_msg_send(&rspMsg, server->patcp, &tcpmsg->peerkey);	

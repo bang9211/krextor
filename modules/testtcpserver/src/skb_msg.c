@@ -120,7 +120,7 @@ int skb_msg_send( skb_msg_t *msg, upa_tcp_t *tcp, upa_peerkey_t *peerkey)
 	}
 }
 
-skb_header_t* skb_msg_make_header(int32_t messageID, int16_t bodySize, int32_t *requestID) {
+void skb_msg_make_header(skb_header_t* header, int32_t messageID, int16_t bodySize, int32_t *requestID) {
 	int32_t temp;
 
 	skb_header_t header;

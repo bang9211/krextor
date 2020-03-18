@@ -184,7 +184,7 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 
 	ux_log( UXL_CRT, "test3.");
 			//header ¼³Á¤
-			skbmsg.header = *skb_msg_make_header(START_REQUEST, sizeof(clicktocall_start_req), NULL);
+			skb_msg_make_header(&skbmsg.header, START_REQUEST, sizeof(clicktocall_start_req), NULL);
 			skbmsg.body = &clicktocall_start_req;
 
 	ux_log( UXL_CRT, "test2.");
