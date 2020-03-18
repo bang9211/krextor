@@ -134,7 +134,7 @@ static int tcp_server_handle_clicktocall_start_req( tcp_server_t *server, uxc_wo
 	// if (rv <eUXC_SUCCESS) return rv;
 
 	// clicktocall_start_req = msg->body;
-	memcpy(clicktocall_start_req, skbmsg->body, sizeof(tcp_clicktocall_start_req_t));
+	memcpy(clicktocall_start_req, msg->body, sizeof(tcp_clicktocall_start_req_t));
 
 	/* To do.. */	
 	ux_log(UXL_CRT, "  [subscriberName] %s", clicktocall_start_req->subscriberName);
@@ -169,7 +169,8 @@ static int tcp_server_handle_clicktocall_start_req( tcp_server_t *server, uxc_wo
 	strcpy(clicktocall_start_rsp->recordingFileName, "testFileName");
 
 	skb_msg_make_header(&rspMsg.header, START_RESPONSE, sizeof(clicktocall_start_rsp), &msg->header.requestID);
-	rspMsg.body = clicktocall_start_rsp;
+	// rspMsg.body = clicktocall_start_rsp;
+	memcpy(rspMsg.body, clicktocall_start_rsp, sizeof(tcp_clicktocall_start_rsp_t));
 
 	rv = skb_msg_send(&rspMsg, server->patcp, &tcpmsg->peerkey);	
 	if (rv <eUXC_SUCCESS) return rv;
