@@ -184,6 +184,8 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 			//header 설정
 			skb_msg_make_header(&skbmsg.header, START_REQUEST, sizeof(clicktocall_start_req), NULL);
 			skbmsg.body = &clicktocall_start_req;
+			ux_log(UXL_INFO, "header length : %d", skbmsg.header.length);
+			msg_size = skbmsg.header.length;
 
 			//메시지를 Network byte ordering으로 변경
 			rv = skb_msg_cvt_order_hton(&skbmsg, msgId);
@@ -210,11 +212,10 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 		peerkey.peer_key = 0; // 채널의 첫번째 PEER 
 	}
 
-	ux_log(UXL_INFO, "header length : %d", skbmsg.header.length);
 	ux_log(UXL_INFO, "header size : %d", sizeof(skbmsg.header));
 	ux_log(UXL_INFO, "body size : %d", sizeof(clicktocall_start_req));
 	ux_log(UXL_INFO, "total size : %d", sizeof(skbmsg));
-	rv = upa_tcp_send2(_g_client->patcp, &peerkey, &skbmsg, skbmsg.header.length, 1);
+	rv = upa_tcp_send2(_g_client->patcp, &peerkey, &skbmsg, msg_size, 1);
 	if( rv < UX_SUCCESS) {
 		ux_log( UXL_CRT, "can't send data.");
 		return -1;
