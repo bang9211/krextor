@@ -34,8 +34,8 @@ struct clicktocall_dlgsess_s {
 	char *subscribername;
 	char *chargingnumber;
 	uint8_t ringbacktonetype;
-	char *watitngmentid;
-	char *callmentid;
+	uint32_t watitngmentid;
+	uint32_t callmentid;
 	char *callingcid;
 	char *calledcid;
 	uint8_t hostcode;
@@ -58,6 +58,8 @@ struct clicktocall_dlgsess_s {
 	usip_nameaddr_t *msfrom; /**< ms From header */
 	usip_nameaddr_t *msto; /**< ms To header */
 	
+	/* dbif */
+	char *serviceid; /* eIPMS session id */
 	void *data; /**< session 데이터 */
 	void *user_data; /**< 해당 session에 연결할 사용자 데이터 정보 */
 };

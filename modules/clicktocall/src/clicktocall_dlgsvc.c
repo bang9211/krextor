@@ -5,6 +5,7 @@
 #include <upa/upa_httppa.h>
 #include <uxcutor/uxc_dbif.h>
 
+
 #include "uims/uims_sipmsg.h"
 #include "local/clicktocall_dlgsess_l.h"
 #include "clicktocall/clicktocall_error.h"
@@ -1215,7 +1216,7 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_send_dbif_start_req( uxc_sfcall_t *sfcall,
 		return UX_EINVAL;
 	}
 	ipcmsg = (uxc_ipcmsg_t*)sndmsg->data;
-	dbif = ipcmsg->data;
+	dbif = (uxc_dbif_t *)ipcmsg->data;
 
 	sess = uxc_sess_get_user_data( uxcsess);
 	dlgsess = (sess) ? uims_sess_get_data( sess) : NULL;

@@ -76,8 +76,6 @@ ux_status_t clicktocall_dlgsess_final( clicktocall_dlgsess_t *dlgsess)
 	if( dlgsess->callingnumber) ux_free( allocator, dlgsess->callingnumber);
 	if( dlgsess->callednumber) ux_free( allocator, dlgsess->callednumber);
 	if( dlgsess->chargingnumber) ux_free( allocator, dlgsess->chargingnumber);
-	if( dlgsess->watitngmentid) ux_free( allocator, dlgsess->watitngmentid);
-	if( dlgsess->callmentid) ux_free( allocator, dlgsess->callmentid);
 	if( dlgsess->callingcid) ux_free( allocator, dlgsess->callingcid);
 	if( dlgsess->calledcid) ux_free( allocator, dlgsess->calledcid);
 	if( dlgsess->sessionid) ux_free( allocator, dlgsess->sessionid);
@@ -94,6 +92,7 @@ ux_status_t clicktocall_dlgsess_final( clicktocall_dlgsess_t *dlgsess)
 	if( dlgsess->mscall_id) ux_free( allocator, dlgsess->mscall_id);
 	if( dlgsess->msfrom) ux_free( allocator, dlgsess->msfrom);
 	if( dlgsess->msto) ux_free( allocator, dlgsess->msto);
+	if( dlgsess->serviceid) ux_free( allocator, dlgsess->serviceid);
 
 	return UX_SUCCESS;
 }
@@ -196,13 +195,13 @@ UX_DECLARE(ux_status_t) clicktocall_dlgsess_handle_http_start_req( clicktocall_d
 	}
 		
 	watitngmentid = cJSON_GetObjectItemCaseSensitive(json, "waitingMentID");
-    if (cJSON_IsString(watitngmentid) && (watitngmentid->valuestring != NULL)) {
-		dlgsess->watitngmentid = ux_str_dup( watitngmentid->valuestring, uims_sess_get_allocator(dlgsess->sess)); 
+    if (cJSON_IsNumber(watitngmentid)) {
+		dlgsess->watitngmentid = watitngmentid->valueint;
     } 
 
 	callmentid = cJSON_GetObjectItemCaseSensitive(json, "callMentID");
-    if (cJSON_IsString(callmentid) && (callmentid->valuestring != NULL)) {
-		dlgsess->callmentid = ux_str_dup( callmentid->valuestring, uims_sess_get_allocator(dlgsess->sess)); 
+     if (cJSON_IsNumber(callmentid)) {
+		dlgsess->callmentid = callmentid->valueint;
     } 
 	
 	callingcid = cJSON_GetObjectItemCaseSensitive(json, "callingCID");
@@ -706,9 +705,9 @@ UX_DECLARE(ux_status_t) clicktocall_dlgsess_handle_sip_invite_res( clicktocall_d
 }
 
 /**
- * @brief ÇØ´ç ¼¼¼Ç originator call_id Á¤º¸¸¦ ¹ÝÈ¯ÇÑ´Ù.
+ * @brief ï¿½Ø´ï¿½ ï¿½ï¿½ï¿½ï¿½ originator call_id ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ñ´ï¿½.
  * @param dlgsess dlg session
- * @return ¹ß½ÅÀÚ call_id Á¤º¸
+ * @return ï¿½ß½ï¿½ï¿½ï¿½ call_id ï¿½ï¿½ï¿½ï¿½
  */
 UX_DECLARE(char*) clicktocall_dlgsess_get_ocall_id( clicktocall_dlgsess_t *dlgsess)
 {
@@ -716,10 +715,10 @@ UX_DECLARE(char*) clicktocall_dlgsess_get_ocall_id( clicktocall_dlgsess_t *dlgse
 }
 
 /**
- * @brief clicktocall sessionÀÇ originator call id °ªÀ» ¼³Á¤ÇÑ´Ù. 
+ * @brief clicktocall sessionï¿½ï¿½ originator call id ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½. 
  * @param dlgsess dlg session
- * @param call_id ¼³Á¤ÇÒ call_id 
- * @return ½ÇÇà °á°ú
+ * @param call_id ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ call_id 
+ * @return ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
  */
 UX_DECLARE(ux_status_t) clicktocall_dlgsess_set_ocall_id( clicktocall_dlgsess_t *dlgsess, const char *call_id)
 {
@@ -740,9 +739,9 @@ UX_DECLARE(ux_status_t) clicktocall_dlgsess_set_ocall_id( clicktocall_dlgsess_t 
 }
 
 /**
- * @brief ÇØ´ç ¼¼¼Ç terminator call_id Á¤º¸¸¦ ¹ÝÈ¯ÇÑ´Ù.
+ * @brief ï¿½Ø´ï¿½ ï¿½ï¿½ï¿½ï¿½ terminator call_id ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ñ´ï¿½.
  * @param dlgsess dlg session
- * @return ¹ß½ÅÀÚ call_id Á¤º¸
+ * @return ï¿½ß½ï¿½ï¿½ï¿½ call_id ï¿½ï¿½ï¿½ï¿½
  */
 UX_DECLARE(char*) clicktocall_dlgsess_get_tcall_id( clicktocall_dlgsess_t *dlgsess)
 {
@@ -750,10 +749,10 @@ UX_DECLARE(char*) clicktocall_dlgsess_get_tcall_id( clicktocall_dlgsess_t *dlgse
 }
 
 /**
- * @brief clicktocall sessionÀÇ terminator call id °ªÀ» ¼³Á¤ÇÑ´Ù. 
+ * @brief clicktocall sessionï¿½ï¿½ terminator call id ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½. 
  * @param dlgsess dlg session
- * @param call_id ¼³Á¤ÇÒ call_id 
- * @return ½ÇÇà °á°ú
+ * @param call_id ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ call_id 
+ * @return ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
  */
 UX_DECLARE(ux_status_t) clicktocall_dlgsess_set_tcall_id( clicktocall_dlgsess_t *dlgsess, const char *call_id)
 {
@@ -774,9 +773,9 @@ UX_DECLARE(ux_status_t) clicktocall_dlgsess_set_tcall_id( clicktocall_dlgsess_t 
 }
 
 /**
- * @brief ÇØ´ç ¼¼¼Ç ms call_id Á¤º¸¸¦ ¹ÝÈ¯ÇÑ´Ù.
+ * @brief ï¿½Ø´ï¿½ ï¿½ï¿½ï¿½ï¿½ ms call_id ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ñ´ï¿½.
  * @param dlgsess dlg session
- * @return ¹ß½ÅÀÚ call_id Á¤º¸
+ * @return ï¿½ß½ï¿½ï¿½ï¿½ call_id ï¿½ï¿½ï¿½ï¿½
  */
 UX_DECLARE(char*) clicktocall_dlgsess_get_mscall_id( clicktocall_dlgsess_t *dlgsess)
 {
@@ -784,10 +783,10 @@ UX_DECLARE(char*) clicktocall_dlgsess_get_mscall_id( clicktocall_dlgsess_t *dlgs
 }
 
 /**
- * @brief clicktocall sessionÀÇ ms call id °ªÀ» ¼³Á¤ÇÑ´Ù. 
+ * @brief clicktocall sessionï¿½ï¿½ ms call id ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½. 
  * @param dlgsess dlg session
- * @param call_id ¼³Á¤ÇÒ call_id 
- * @return ½ÇÇà °á°ú
+ * @param call_id ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ call_id 
+ * @return ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
  */
 UX_DECLARE(ux_status_t) clicktocall_dlgsess_set_mscall_id( clicktocall_dlgsess_t *dlgsess, const char *call_id)
 {
@@ -808,9 +807,9 @@ UX_DECLARE(ux_status_t) clicktocall_dlgsess_set_mscall_id( clicktocall_dlgsess_t
 }
 
 /**
- * @brief ÇØ´ç ¼¼¼Ç originator From header Á¤º¸¸¦ ¹ÝÈ¯ÇÑ´Ù.
+ * @brief ï¿½Ø´ï¿½ ï¿½ï¿½ï¿½ï¿½ originator From header ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ñ´ï¿½.
  * @param dlgsess dlg session
- * @return ¹ß½ÅÀÚ from Á¤º¸
+ * @return ï¿½ß½ï¿½ï¿½ï¿½ from ï¿½ï¿½ï¿½ï¿½
  */
 UX_DECLARE(usip_nameaddr_t*) clicktocall_dlgsess_get_ofrom( clicktocall_dlgsess_t *dlgsess)
 {
@@ -818,10 +817,10 @@ UX_DECLARE(usip_nameaddr_t*) clicktocall_dlgsess_get_ofrom( clicktocall_dlgsess_
 }
 
 /**
- * @brief clicktocall sessionÀÇ originator From header °ªÀ» ¼³Á¤ÇÑ´Ù. 
+ * @brief clicktocall sessionï¿½ï¿½ originator From header ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½. 
  * @param dlgsess dlg session
- * @param value È£ ¹ß½Å from
- * @return ½ÇÇà °á°ú
+ * @param value È£ ï¿½ß½ï¿½ from
+ * @return ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
  */
 UX_DECLARE(ux_status_t) clicktocall_dlgsess_set_ofrom( clicktocall_dlgsess_t *dlgsess, usip_nameaddr_t *value)
 {
@@ -840,9 +839,9 @@ UX_DECLARE(ux_status_t) clicktocall_dlgsess_set_ofrom( clicktocall_dlgsess_t *dl
 }
 
 /**
- * @brief ÇØ´ç ¼¼¼Ç terminator From header Á¤º¸¸¦ ¹ÝÈ¯ÇÑ´Ù.
+ * @brief ï¿½Ø´ï¿½ ï¿½ï¿½ï¿½ï¿½ terminator From header ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ñ´ï¿½.
  * @param dlgsess dlg session
- * @return ¹ß½ÅÀÚ from Á¤º¸
+ * @return ï¿½ß½ï¿½ï¿½ï¿½ from ï¿½ï¿½ï¿½ï¿½
  */
 UX_DECLARE(usip_nameaddr_t*) clicktocall_dlgsess_get_tfrom( clicktocall_dlgsess_t *dlgsess)
 {
@@ -850,10 +849,10 @@ UX_DECLARE(usip_nameaddr_t*) clicktocall_dlgsess_get_tfrom( clicktocall_dlgsess_
 }
 
 /**
- * @brief clicktocall sessionÀÇ terminator From header °ªÀ» ¼³Á¤ÇÑ´Ù. 
+ * @brief clicktocall sessionï¿½ï¿½ terminator From header ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½. 
  * @param dlgsess dlg session
- * @param value È£ ¹ß½Å from
- * @return ½ÇÇà °á°ú
+ * @param value È£ ï¿½ß½ï¿½ from
+ * @return ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
  */
 UX_DECLARE(ux_status_t) clicktocall_dlgsess_set_tfrom( clicktocall_dlgsess_t *dlgsess, usip_nameaddr_t *value)
 {
@@ -872,9 +871,9 @@ UX_DECLARE(ux_status_t) clicktocall_dlgsess_set_tfrom( clicktocall_dlgsess_t *dl
 }
 
 /**
- * @brief ÇØ´ç ¼¼¼Ç ms From header Á¤º¸¸¦ ¹ÝÈ¯ÇÑ´Ù.
+ * @brief ï¿½Ø´ï¿½ ï¿½ï¿½ï¿½ï¿½ ms From header ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ñ´ï¿½.
  * @param dlgsess dlg session
- * @return ¹ß½ÅÀÚ from Á¤º¸
+ * @return ï¿½ß½ï¿½ï¿½ï¿½ from ï¿½ï¿½ï¿½ï¿½
  */
 UX_DECLARE(usip_nameaddr_t*) clicktocall_dlgsess_get_msfrom( clicktocall_dlgsess_t *dlgsess)
 {
@@ -882,10 +881,10 @@ UX_DECLARE(usip_nameaddr_t*) clicktocall_dlgsess_get_msfrom( clicktocall_dlgsess
 }
 
 /**
- * @brief clicktocall sessionÀÇ ms From header °ªÀ» ¼³Á¤ÇÑ´Ù. 
+ * @brief clicktocall sessionï¿½ï¿½ ms From header ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½. 
  * @param dlgsess dlg session
- * @param value È£ ¹ß½Å from
- * @return ½ÇÇà °á°ú
+ * @param value È£ ï¿½ß½ï¿½ from
+ * @return ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
  */
 UX_DECLARE(ux_status_t) clicktocall_dlgsess_set_msfrom( clicktocall_dlgsess_t *dlgsess, usip_nameaddr_t *value)
 {
@@ -904,9 +903,9 @@ UX_DECLARE(ux_status_t) clicktocall_dlgsess_set_msfrom( clicktocall_dlgsess_t *d
 }
 
 /**
- * @brief ÇØ´ç ¼¼¼Ç originator To header Á¤º¸¸¦ ¹ÝÈ¯ÇÑ´Ù.
+ * @brief ï¿½Ø´ï¿½ ï¿½ï¿½ï¿½ï¿½ originator To header ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ñ´ï¿½.
  * @param dlgsess dlg session
- * @return ¹ß½ÅÀÚ to Á¤º¸
+ * @return ï¿½ß½ï¿½ï¿½ï¿½ to ï¿½ï¿½ï¿½ï¿½
  */
 UX_DECLARE(usip_nameaddr_t*) clicktocall_dlgsess_get_oto( clicktocall_dlgsess_t *dlgsess)
 {
@@ -914,10 +913,10 @@ UX_DECLARE(usip_nameaddr_t*) clicktocall_dlgsess_get_oto( clicktocall_dlgsess_t 
 }
 
 /**
- * @brief clicktocall sessionÀÇ originator To header °ªÀ» ¼³Á¤ÇÑ´Ù. 
+ * @brief clicktocall sessionï¿½ï¿½ originator To header ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½. 
  * @param dlgsess dlg session
- * @param value È£ ¹ß½Å to
- * @return ½ÇÇà °á°ú
+ * @param value È£ ï¿½ß½ï¿½ to
+ * @return ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
  */
 UX_DECLARE(ux_status_t) clicktocall_dlgsess_set_oto( clicktocall_dlgsess_t *dlgsess, usip_nameaddr_t *value)
 {
@@ -936,9 +935,9 @@ UX_DECLARE(ux_status_t) clicktocall_dlgsess_set_oto( clicktocall_dlgsess_t *dlgs
 }
 
 /**
- * @brief ÇØ´ç ¼¼¼Ç terminator To header Á¤º¸¸¦ ¹ÝÈ¯ÇÑ´Ù.
+ * @brief ï¿½Ø´ï¿½ ï¿½ï¿½ï¿½ï¿½ terminator To header ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ñ´ï¿½.
  * @param dlgsess dlg session
- * @return ¹ß½ÅÀÚ to Á¤º¸
+ * @return ï¿½ß½ï¿½ï¿½ï¿½ to ï¿½ï¿½ï¿½ï¿½
  */
 UX_DECLARE(usip_nameaddr_t*) clicktocall_dlgsess_get_tto( clicktocall_dlgsess_t *dlgsess)
 {
@@ -946,10 +945,10 @@ UX_DECLARE(usip_nameaddr_t*) clicktocall_dlgsess_get_tto( clicktocall_dlgsess_t 
 }
 
 /**
- * @brief clicktocall sessionÀÇ terminator To header °ªÀ» ¼³Á¤ÇÑ´Ù. 
+ * @brief clicktocall sessionï¿½ï¿½ terminator To header ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½. 
  * @param dlgsess dlg session
- * @param value È£ ¹ß½Å to
- * @return ½ÇÇà °á°ú
+ * @param value È£ ï¿½ß½ï¿½ to
+ * @return ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
  */
 UX_DECLARE(ux_status_t) clicktocall_dlgsess_set_tto( clicktocall_dlgsess_t *dlgsess, usip_nameaddr_t *value)
 {
@@ -968,9 +967,9 @@ UX_DECLARE(ux_status_t) clicktocall_dlgsess_set_tto( clicktocall_dlgsess_t *dlgs
 }
 
 /**
- * @brief ÇØ´ç ¼¼¼Ç ms To header Á¤º¸¸¦ ¹ÝÈ¯ÇÑ´Ù.
+ * @brief ï¿½Ø´ï¿½ ï¿½ï¿½ï¿½ï¿½ ms To header ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ñ´ï¿½.
  * @param dlgsess dlg session
- * @return ms to Á¤º¸
+ * @return ms to ï¿½ï¿½ï¿½ï¿½
  */
 UX_DECLARE(usip_nameaddr_t*) clicktocall_dlgsess_get_msto( clicktocall_dlgsess_t *dlgsess)
 {
@@ -978,10 +977,10 @@ UX_DECLARE(usip_nameaddr_t*) clicktocall_dlgsess_get_msto( clicktocall_dlgsess_t
 }
 
 /**
- * @brief clicktocall sessionÀÇ ms To header °ªÀ» ¼³Á¤ÇÑ´Ù. 
+ * @brief clicktocall sessionï¿½ï¿½ ms To header ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½. 
  * @param dlgsess dlg session
  * @param value È£ ms to
- * @return ½ÇÇà °á°ú
+ * @return ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
  */
 UX_DECLARE(ux_status_t) clicktocall_dlgsess_set_msto( clicktocall_dlgsess_t *dlgsess, usip_nameaddr_t *value)
 {
@@ -1022,8 +1021,8 @@ UX_DECLARE(int) clicktocall_dlgsess_sprint( clicktocall_dlgsess_t *dlgsess, char
 	len += uims_util_sprint_str( buffer+len, buflen-len, "   + SUBSCRIBER = %s\n", dlgsess->subscribername, 20);
 	len += uims_util_sprint_str( buffer+len, buflen-len, "   + CHARGING   = %s\n", dlgsess->chargingnumber, 20);
 	len += uims_util_sprint_int( buffer+len, buflen-len, "   + RINGTONE   = %d\n", dlgsess->ringbacktonetype, 20);
-	len += uims_util_sprint_str( buffer+len, buflen-len, "   + WTMENTID   = %s\n", dlgsess->watitngmentid, 20);
-	len += uims_util_sprint_str( buffer+len, buflen-len, "   + CALLMENTID = %s\n", dlgsess->callmentid, 20);
+	len += uims_util_sprint_str( buffer+len, buflen-len, "   + WAITMENTID = %d\n", dlgsess->watitngmentid, 20);
+	len += uims_util_sprint_str( buffer+len, buflen-len, "   + CALLMENTID = %d\n", dlgsess->callmentid, 20);
 	len += uims_util_sprint_str( buffer+len, buflen-len, "   + CALLINGCID = %s\n", dlgsess->callingcid, 20);
 	len += uims_util_sprint_str( buffer+len, buflen-len, "   + CALLEDCID  = %s\n", dlgsess->calledcid, 20);
 	len += uims_util_sprint_str( buffer+len, buflen-len, "   + RECORDINGFILE = %s\n", dlgsess->recordingfile, 20);
@@ -1065,10 +1064,10 @@ UX_DECLARE(ux_mem_t*) clicktocall_dlgsess_get_allocator( clicktocall_dlgsess_t *
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
- * @internal CLICKTOCALL dialog DAO¸¦ ÃÊ±âÈ­ÇÑ´Ù.
+ * @internal CLICKTOCALL dialog DAOï¿½ï¿½ ï¿½Ê±ï¿½È­ï¿½Ñ´ï¿½.
  * @param dao CLICKTOCALL dialog DAO
  * @param routermgr router manager
- * @return ½ÇÇà °á°ú
+ * @return ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
  */
 ux_status_t clicktocall_dlgdao_init( clicktocall_dlgdao_t *dao, uims_dbmgr_t *dbmgr, clicktocall_conf_t *conf)
 {
@@ -1095,11 +1094,11 @@ clicktocall_dlgsess_t* clicktocall_dlgdao_find( clicktocall_dlgdao_t *dao,
 	static const char* query = "SELECT * FROM 1 WHERE 0=?";
 
 	int rv;
-	uint8_t dlgstate, method, network_type, recording, ringbacktone_type, hostcode;
+	uint8_t dlgstate, method, network_type, recording, ringbacktone_type, hostcode, waitingment_id, callment_id;
 	uint16_t state;
 	uint32_t ocseq, tcseq, mscseq;
 	uint64_t rsessid, extime;
-	char *http_session_id, *calling_number, *called_number, *subscriber_name, *charging_number, *waitingment_id, *callment_id, *calling_cid, *called_cid;
+	char *http_session_id, *calling_number, *called_number, *subscriber_name, *charging_number, *calling_cid, *called_cid;
 	char *ostag, *ocall_id, *ofrom, *oto, *tstag, *tcall_id, *tfrom, *tto, *msstag, *mscall_id, *msfrom, *msto;
 	ux_mem_t *allocator;
 	uxc_sesshdr_t *sesshdr;
@@ -1181,8 +1180,8 @@ clicktocall_dlgsess_t* clicktocall_dlgdao_find( clicktocall_dlgdao_t *dao,
 			"subscriber_name", UIMS_DBTYPE_STR, &subscriber_name,
 			"charging_number", UIMS_DBTYPE_STR, &charging_number,
 			"ringbacktone_type", UIMS_DBTYPE_UINT8, &ringbacktone_type, 
-			"waitingment_id", UIMS_DBTYPE_STR, &waitingment_id,
-			"callment_id", UIMS_DBTYPE_STR, &callment_id,
+			"waitingment_id", UIMS_DBTYPE_UINT32, &waitingment_id,
+			"callment_id", UIMS_DBTYPE_UINT32, &callment_id,
 			"calling_cid", UIMS_DBTYPE_STR, &calling_cid,
 			"called_cid", UIMS_DBTYPE_STR, &called_cid,
 			"hostcode", UIMS_DBTYPE_UINT8, &hostcode, 
@@ -1208,15 +1207,15 @@ clicktocall_dlgsess_t* clicktocall_dlgdao_find( clicktocall_dlgdao_t *dao,
 
 	ux_log(UXL_INFO, "[CLICKTOCALL:FIND] (sess_id=%llu, state=%d, extime=%llu, dlgstate=%d, method=%u, "
 			"network_type=%u, http_session_id=%s, calling_number=%s, called_number=%s, recording=%u, "
-			"subscriber_name=%s, charging_number=%s, ringbacktone_type=%u, waitingment_id=%s, "
-			"callment_id=%s, calling_cid=%s, called_cid=%s, hostcode=%u, "
+			"subscriber_name=%s, charging_number=%s, ringbacktone_type=%u, waitingment_id=%d, "
+			"callment_id=%d, calling_cid=%s, called_cid=%s, hostcode=%u, "
 			"ocseq=%d, ostag=%s, ocall_id=%s, ofrom=%s, oto=%s, "
 			"tcseq=%d, tstag=%s, tcall_id=%s, tfrom=%s, tto=%s, "
 			"mscseq=%d, msstag=%s, mscall_id=%s, msfrom=%s, msto=%s)",
 			(unsigned long long)rsessid, state, (unsigned long long)extime, dlgstate, method, 
 			network_type, http_session_id ? http_session_id : "NULL", calling_number ? calling_number : "NULL", called_number ? called_number : "NULL", recording, 
-			subscriber_name ? subscriber_name : "NULL", charging_number ? charging_number : "NULL", ringbacktone_type, waitingment_id ? waitingment_id : "NULL",
-			callment_id ? callment_id : "NULL", calling_cid ? calling_cid : "NULL", called_cid ? called_cid : "NULL", hostcode,
+			subscriber_name ? subscriber_name : "NULL", charging_number ? charging_number : "NULL", ringbacktone_type, waitingment_id,
+			callment_id, calling_cid ? calling_cid : "NULL", called_cid ? called_cid : "NULL", hostcode,
 			ocseq, ostag ? ostag : "NULL", ocall_id ? ocall_id : "NULL", ofrom ? ofrom : "NULL", oto ? oto : "NULL",
 			tcseq, tstag ? tstag : "NULL", tcall_id ? tcall_id : "NULL", tfrom ? tfrom : "NULL", tto ? tto : "NULL",
 			mscseq, msstag ? msstag : "NULL", mscall_id ? mscall_id : "NULL", msfrom ? msfrom : "NULL", msto ? msto : "NULL");
@@ -1253,8 +1252,8 @@ clicktocall_dlgsess_t* clicktocall_dlgdao_find( clicktocall_dlgdao_t *dao,
 	dlgsess->subscribername =  ux_str_dup( subscriber_name,  allocator);
 	dlgsess->chargingnumber =  ux_str_dup( charging_number,  allocator);
 	dlgsess->ringbacktonetype = ringbacktone_type;
-	dlgsess->watitngmentid =  ux_str_dup( waitingment_id,  allocator);
-	dlgsess->callmentid =  ux_str_dup( callment_id,  allocator);
+	dlgsess->watitngmentid =  waitingment_id;
+	dlgsess->callmentid =  callment_id;
 	dlgsess->callingcid =  ux_str_dup( calling_cid,  allocator);
 	dlgsess->calledcid =  ux_str_dup( called_cid,  allocator);
 	dlgsess->hostcode = hostcode;
@@ -1451,8 +1450,8 @@ ux_status_t clicktocall_dlgdao_insert( clicktocall_dlgdao_t *dao, clicktocall_dl
 			"subscriber_name", UIMS_DBTYPE_STR, dlgsess->subscribername ? dlgsess->subscribername : "",
 			"charging_number", UIMS_DBTYPE_STR, dlgsess->chargingnumber ? dlgsess->chargingnumber : "",
 			"ringbacktone_type", UIMS_DBTYPE_UINT8, dlgsess->ringbacktonetype, 
-			"waitingment_id", UIMS_DBTYPE_STR, dlgsess->watitngmentid ? dlgsess->watitngmentid : "",
-			"callment_id", UIMS_DBTYPE_STR, dlgsess->callmentid ? dlgsess->callmentid : "",
+			"waitingment_id", UIMS_DBTYPE_UINT32, dlgsess->watitngmentid,
+			"callment_id", UIMS_DBTYPE_UINT32, dlgsess->callmentid,
 			"calling_cid", UIMS_DBTYPE_STR, dlgsess->callingcid ? dlgsess->callingcid : "",
 			"called_cid", UIMS_DBTYPE_STR, dlgsess->calledcid ? dlgsess->calledcid : "",
 			"hostcode", UIMS_DBTYPE_UINT8, dlgsess->hostcode, 
@@ -1585,7 +1584,7 @@ ux_status_t clicktocall_dlgdao_update( clicktocall_dlgdao_t *dao, clicktocall_dl
 }
 
 /**
- * @internal calling proceeding »óÅÂ¿¡¼­ sessionÀ» update ÇÑ´Ù.
+ * @internal calling proceeding ï¿½ï¿½ï¿½Â¿ï¿½ï¿½ï¿½ sessionï¿½ï¿½ update ï¿½Ñ´ï¿½.
  * @param dao DAO
  * @param dlgsess dialog session
  */
@@ -1706,7 +1705,7 @@ ux_status_t clicktocall_dlgdao_update_calling_p( clicktocall_dlgdao_t *dao, clic
 }
 
 /**
- * @internal called proceeding »óÅÂ¿¡¼­ sessionÀ» update ÇÑ´Ù.
+ * @internal called proceeding ï¿½ï¿½ï¿½Â¿ï¿½ï¿½ï¿½ sessionï¿½ï¿½ update ï¿½Ñ´ï¿½.
  * @param dao DAO
  * @param dlgsess dialog session
  */
@@ -1826,7 +1825,7 @@ ux_status_t clicktocall_dlgdao_update_called_p( clicktocall_dlgdao_t *dao, click
 }
 
 /**
- * @internal ms proceeding »óÅÂ¿¡¼­ sessionÀ» update ÇÑ´Ù.
+ * @internal ms proceeding ï¿½ï¿½ï¿½Â¿ï¿½ï¿½ï¿½ sessionï¿½ï¿½ update ï¿½Ñ´ï¿½.
  * @param dao DAO
  * @param dlgsess dialog session
  */
@@ -1946,7 +1945,7 @@ ux_status_t clicktocall_dlgdao_update_ms_p( clicktocall_dlgdao_t *dao, clicktoca
 }
 
 /**
- * @internal calling established »óÅÂ¿¡¼­ sessionÀ» update ÇÑ´Ù.
+ * @internal calling established ï¿½ï¿½ï¿½Â¿ï¿½ï¿½ï¿½ sessionï¿½ï¿½ update ï¿½Ñ´ï¿½.
  * @param dao DAO
  * @param dlgsess dialog session
  */
@@ -2013,7 +2012,7 @@ ux_status_t clicktocall_dlgdao_update_calling_e( clicktocall_dlgdao_t *dao, clic
 }
 
 /**
- * @internal called established »óÅÂ¿¡¼­ sessionÀ» update ÇÑ´Ù.
+ * @internal called established ï¿½ï¿½ï¿½Â¿ï¿½ï¿½ï¿½ sessionï¿½ï¿½ update ï¿½Ñ´ï¿½.
  * @param dao DAO
  * @param dlgsess dialog session
  */
@@ -2080,7 +2079,7 @@ ux_status_t clicktocall_dlgdao_update_called_e( clicktocall_dlgdao_t *dao, click
 }
 
 /**
- * @internal ms established »óÅÂ¿¡¼­ sessionÀ» update ÇÑ´Ù.
+ * @internal ms established ï¿½ï¿½ï¿½Â¿ï¿½ï¿½ï¿½ sessionï¿½ï¿½ update ï¿½Ñ´ï¿½.
  * @param dao DAO
  * @param dlgsess dialog session
  */

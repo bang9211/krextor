@@ -68,7 +68,7 @@
 
 			<invoke name="number_normalizing" protocol="DBIF_SLEE" operation="100" procname="EIPMSIB" timeout="5000">
 				<onsend >
-					<call type="SYS" function="upa_dbifcall_write_hdr(,,,,,)"/>
+					<call type="SYS" function="clicktocall_dlgsvc_on_send_dbif_start_req()"/>
 				</onsend>
 				<onrecv/>
 				<onsuccess>
