@@ -79,14 +79,17 @@ int tcp_server_handle_svrreq( tcp_server_t *server, uxc_worker_t* worker, upa_tc
 {
 	skb_msg_t *skbmsg;
 	int msgID,rv;
-	tcp_clicktocall_start_req_t *clicktocall_start_req;
+	tcp_clicktocall_start_req_t clicktocall_start_req[1];
 
 	// 1. receive msg 
 	// msg = (tcp_msg_t *)tcpmsg->netmsg->buffer;
 	skbmsg = (skb_msg_t *)tcpmsg->netmsg->buffer;
+
 	ux_log(UXL_INFO, "received tcp size : %d", sizeof(*tcpmsg));
 	ux_log(UXL_INFO, "received size : %d", sizeof(*skbmsg));
 	ux_log(UXL_INFO, "header size : %d", sizeof(skbmsg->header));
+
+	// clicktocall_start_req = (tcp_clicktocall_start_req_t *)skbmsg->body;
 	memcpy(clicktocall_start_req, skbmsg->body, sizeof(tcp_clicktocall_start_req_t));
 	
 	rv = skb_msg_cvt_order_ntoh(skbmsg, CALL_START_REQUEST);
@@ -120,7 +123,7 @@ static int tcp_server_handle_clicktocall_start_req( tcp_server_t *server, uxc_wo
 {
 	int rv;
 	tcp_clicktocall_start_rsp_t clicktocall_start_rsp[1];
-	tcp_clicktocall_start_req_t *clicktocall_start_req;
+	tcp_clicktocall_start_req_t clicktocall_start_req[1];
 	skb_msg_t rspMsg;
 
 	ux_log(UXL_INFO, "* tcp_server_handle_clicktocall_start_req ");
@@ -130,7 +133,8 @@ static int tcp_server_handle_clicktocall_start_req( tcp_server_t *server, uxc_wo
 	// rv = tcp_clicktocall_start_req_decode_msg(clicktocall_start_req, msg);
 	// if (rv <eUXC_SUCCESS) return rv;
 
-	clicktocall_start_req = msg->body;
+	// clicktocall_start_req = msg->body;
+	memcpy(clicktocall_start_req, skbmsg->body, sizeof(tcp_clicktocall_start_req_t));
 
 	/* To do.. */	
 	ux_log(UXL_CRT, "  [subscriberName] %s", clicktocall_start_req->subscriberName);
