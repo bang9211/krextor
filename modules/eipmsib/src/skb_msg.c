@@ -56,7 +56,7 @@ int skb_msg_cvt_order_ntoh(skb_msg_t *msg, int msgId)
 {
 #if !UX_BIGENDIAN
     skb_header_t *header;
-    tcp_clicktocall_start_req_t *clicktocall_start_req[1];
+    tcp_clicktocall_start_req_t clicktocall_start_req[1];
 
 	if (msg == NULL) return -1;
 
