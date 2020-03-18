@@ -136,7 +136,7 @@ void skb_msg_make_header(skb_header_t* header, int32_t messageID, int16_t bodySi
 		temp = skb_msg_generate_requestID();
 		requestID = &temp;
 	}
-	header->requestID = requestID;
+	header->requestID = *requestID;
 	header->version0 = 0x00;
 	header->version1 = 0x01;
 	header->userID = 1;
