@@ -77,7 +77,7 @@ struct skb_msg_s {
 	skb_header_t header;
 	// void* body;
 	// char body[250];
-	clicktocall_start_req body;
+	tcp_clicktocall_start_req_t body;
 };
 
 int skb_msg_cvt_order_hton(skb_msg_t *msg, int msgId);
