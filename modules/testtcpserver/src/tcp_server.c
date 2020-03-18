@@ -81,17 +81,21 @@ int tcp_server_handle_svrreq( tcp_server_t *server, uxc_worker_t* worker, upa_tc
 	int msgID,rv;
 	tcp_clicktocall_start_req_t *tcp_clicktocall_start_req;
 
+	ux_log(UXL_INFO, "test5");
 	// 1. receive msg 
 	// msg = (tcp_msg_t *)tcpmsg->netmsg->buffer;
 	skbmsg = (skb_msg_t *)tcpmsg->netmsg->buffer;
+	ux_log(UXL_INFO, "test4");
 	tcp_clicktocall_start_req = (tcp_clicktocall_start_req_t *)skbmsg->body;
 	
+	ux_log(UXL_INFO, "test3");
 	rv = skb_msg_cvt_order_ntoh(skbmsg, CALL_START_REQUEST);
 	if( rv < UX_SUCCESS) {
 		ux_log(UXL_INFO, "msg data error");
 		return rv;
 	}
 
+	ux_log(UXL_INFO, "test2");
 	msgID = skbmsg->header.messageID;
 	ux_log(UXL_INFO, "received : %d", msgID);
 	ux_log(UXL_INFO, "received : %s", tcp_clicktocall_start_req->subscriberName);
@@ -100,6 +104,7 @@ int tcp_server_handle_svrreq( tcp_server_t *server, uxc_worker_t* worker, upa_tc
 	// rv = tcp_msg_display(msg);
 
 	// 3. response to uxcutor
+	ux_log(UXL_INFO, "test1");
 	switch(msgID)
 	{
 		case START_REQUEST:

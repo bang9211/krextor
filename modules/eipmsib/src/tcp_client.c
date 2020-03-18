@@ -128,7 +128,6 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 			// TODO 3 : requestID Generator 만들어야함
 			// TODO 4 : messageID Generator 만들어야함
 
-	ux_log( UXL_CRT, "test4.");
 			// DBIF 메시지를 분해하여 body 설정
 			rcv = uxc_ipcmsg_get_dbif(ipcmsg);
 			sessionID = uxc_dbif_get_str(rcv, 0, &rv);
@@ -182,12 +181,10 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 			// ux_log(UXL_INFO, "serviceCode : %d", clicktocall_start_req.serviceCode);
 			// ux_log(UXL_INFO, "serviceCode : %d", clicktocall_start_req.serviceCode);
 
-	ux_log( UXL_CRT, "test3.");
 			//header 설정
 			skb_msg_make_header(&skbmsg.header, START_REQUEST, sizeof(clicktocall_start_req), NULL);
 			skbmsg.body = &clicktocall_start_req;
 
-	ux_log( UXL_CRT, "test2.");
 			//메시지를 Network byte ordering으로 변경
 			rv = skb_msg_cvt_order_hton(&skbmsg, msgId);
 			if( rv< UX_SUCCESS) {
@@ -213,7 +210,6 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 		peerkey.peer_key = 0; // 채널의 첫번째 PEER 
 	}
 
-	ux_log( UXL_CRT, "test1.");
 	rv = upa_tcp_send2(_g_client->patcp, &peerkey, &skbmsg, skbmsg.header.length, 1);
 	if( rv < UX_SUCCESS) {
 		ux_log( UXL_CRT, "can't send data.");
