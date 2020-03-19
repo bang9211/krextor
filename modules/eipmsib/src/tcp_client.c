@@ -48,6 +48,9 @@ uxc_plugin_t *tcp_client_create( void *xcutor, const char* cfile)
 
 	_g_client = client;
 
+	srand(time(NULL));
+	create_skb_map();
+
 	return (uxc_plugin_t*)client;
 }
 
@@ -58,6 +61,8 @@ static void _tcp_client_destroy( uxc_plugin_t *plugin)
 	uxc_plugin_final( client->base);
 	tcp_client_final( client);
 	ux_free( ux_mem_default(), client);
+
+	destroy_skb_map();
 }
 
 tcp_client_t* tcp_client_instance()
@@ -110,8 +115,9 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 	tcp_clicktocall_start_req_t clicktocall_start_req;
 
 	msg = (tcp_msg_t *)&ipcmsg->header;
-	msg_size = sizeof(uxc_ixpc_t) + msg->header.length;	//header + body
+	msg_size = sizeof(uxc_ixpc_t) + msg->header.length;	//dbif header + body
 	msgId = msg->header.msgId;
+
 
 	ux_log( UXL_INFO, "2. CALL tcp_client_forward_gwreq (len:%d, msgId:%d) ", msg_size, msgId);
 
@@ -126,7 +132,6 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 			// TODO 1 : DBIF에서 받은 msg에서 sessionID, gwSessionID 제외하여 저장하고 있다가 response에 사용
 			// TODO 2 : DBIF에서 받은 msg에서 header의 dstqid, srcqid 저장하고 있다가 response에 사용
 			// TODO 3 : requestID Generator 만들어야함
-			// TODO 4 : messageID Generator 만들어야함
 
 			// DBIF 메시지를 분해하여 body 설정
 			rcv = uxc_ipcmsg_get_dbif(ipcmsg);
@@ -175,17 +180,21 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 			clicktocall_start_req.fillerInt16 = 0;
 			strcpy(clicktocall_start_req.filler, "");
 
-			// ux_log(UXL_INFO, "sessionID : %s", sessionID);
-			// ux_log(UXL_INFO, "gwSessionID : %s", gwSessionID);
-			// ux_log(UXL_INFO, "subscriberName : %s", clicktocall_start_req.subscriberName);
-			// ux_log(UXL_INFO, "serviceCode : %d", clicktocall_start_req.serviceCode);
-			// ux_log(UXL_INFO, "serviceCode : %d", clicktocall_start_req.serviceCode);
+			ux_log(UXL_INFO, "sessionID : %s", sessionID);
+			ux_log(UXL_INFO, "gwSessionID : %s", gwSessionID);
 
 			//header 설정
 			skb_msg_make_header(&skbmsg.header, START_REQUEST, sizeof(clicktocall_start_req), NULL);
 			memcpy(skbmsg.body, &clicktocall_start_req, sizeof(clicktocall_start_req));
 			ux_log(UXL_INFO, "header length : %d", skbmsg.header.length);
 			msg_size = skbmsg.header.length;
+
+			if(!uh_int_put(reqIDSIDMap, skbmsg.header.requestID, sessionID)) {
+				ux_log(UXL_CRT, "failed to put to reqIDSIDMap : (%d - %s)", skbmsg.header.requestID, sessionID);
+			}
+			if(!uh_int_put(reqIDGWSIDMap, skbmsg.header.requestID, gwSessionID)) {
+				ux_log(UXL_CRT, "failed to put to reqIDGWSIDMap : (%d - %s)", skbmsg.header.requestID, gwSessionID);
+			}
 
 			//메시지를 Network byte ordering으로 변경
 			rv = skb_msg_cvt_order_hton(&skbmsg, msgId);

@@ -2,8 +2,11 @@
 #define __SKB_MSG_H__
 
 #include "tcp_conf.h"
+#include "uhash.h"
 #include "tcp_clicktocall_req.h"
 #include "tcp_clicktocall_rsp.h"
+#include <time.h>
+#include <stdlib.h>
 #include <upa/upa_tcp.h>
 #include <uxlib/ux_errno.h>
 #include <uxlib/ux_log.h>
@@ -62,6 +65,13 @@
 /** @brief SKB MAX Message Length */
 #define SKB_MSG_MAX_LEN		64*1024
 
+// #define UNSIGNED_INT32_MAX 4294967295	//2147483647 - (-2147483648), min: 0 max: 4294967295
+// typedef enum {false, true} bool;
+
+/** @brief SKB Request ID Pool */
+uhash_int_t *reqIDSIDMap;
+uhash_int_t *reqIDGWSIDMap;
+
 typedef struct skb_header_s skb_header_t; 
 struct skb_header_s {
 	int8_t frameStart0;		//프레임 시작 (고정) : 0xfe
@@ -80,6 +90,9 @@ struct skb_msg_s {
 	skb_header_t header;
 	char body[SKB_MSG_MAX_LEN];
 };
+
+void create_skb_map();
+void destroy_skb_map();
 
 int skb_msg_cvt_order_hton(skb_msg_t *msg, int msgId);
 int skb_msg_cvt_order_ntoh(skb_msg_t *msg, int msgId);

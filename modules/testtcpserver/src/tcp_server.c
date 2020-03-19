@@ -82,14 +82,9 @@ int tcp_server_handle_svrreq( tcp_server_t *server, uxc_worker_t* worker, upa_tc
 	tcp_clicktocall_start_req_t clicktocall_start_req[1];
 
 	// 1. receive msg 
-	// msg = (tcp_msg_t *)tcpmsg->netmsg->buffer;
 	skbmsg = (skb_msg_t *)tcpmsg->netmsg->buffer;
-
-	ux_log(UXL_INFO, "received tcp size : %d", sizeof(*tcpmsg));
-	ux_log(UXL_INFO, "received size : %d", sizeof(*skbmsg));
 	ux_log(UXL_INFO, "header size : %d", sizeof(skbmsg->header));
 
-	// clicktocall_start_req = (tcp_clicktocall_start_req_t *)skbmsg->body;
 	memcpy(clicktocall_start_req, skbmsg->body, sizeof(tcp_clicktocall_start_req_t));
 	
 	rv = skb_msg_cvt_order_ntoh(skbmsg, CALL_START_REQUEST);
@@ -98,16 +93,13 @@ int tcp_server_handle_svrreq( tcp_server_t *server, uxc_worker_t* worker, upa_tc
 		return rv;
 	}
 
-	ux_log(UXL_INFO, "test2");
 	msgID = skbmsg->header.messageID;
 	ux_log(UXL_INFO, "received : %d", msgID);
-	ux_log(UXL_INFO, "received : %s", clicktocall_start_req->subscriberName);
 
 	// 2. display msg
 	// rv = tcp_msg_display(msg);
 
 	// 3. response to uxcutor
-	ux_log(UXL_INFO, "test1");
 	switch(msgID)
 	{
 		case START_REQUEST:

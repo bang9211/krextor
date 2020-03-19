@@ -7,6 +7,7 @@
 #include "tcp_msg.h"
 #include "tcp_idprsp.h"
 #include "skb_msg.h"
+#include "uhash.h"
 
 ///////////////////////////////////////////////////////////////////////////////////
 // TCP Client Service Manager(plugin) Structure & Macro 

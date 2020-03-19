@@ -138,6 +138,26 @@ void skb_msg_make_header(skb_header_t* header, int32_t messageID, int16_t bodySi
 	header->filler = 0;
 }
 
+//TODO : requestID 수명이 다하면 초기화해줘야함(고갈 가능성)
 int32_t skb_msg_generate_requestID() {
-	return 0;
+	return getRandomInt32();
+}
+
+int32_t getRandomInt32() {
+	int32_t x;
+	x = rand() & 0xff;
+	x |= (rand() & 0xff) << 8;
+	x |= (rand() & 0xff) << 16;
+	x |= (rand() & 0xff) << 24;
+	return x;
+}
+
+void create_skb_map() {
+	reqIDSIDMap = uh_int_init();
+	reqIDGWSIDMap = uh_int_init();
+}
+
+void destroy_skb_map() {
+	uh_int_destroy(reqIDSIDMap);
+	uh_int_destroy(reqIDGWSIDMap);
 }
