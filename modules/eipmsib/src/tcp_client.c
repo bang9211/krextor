@@ -221,8 +221,8 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 		peerkey.peer_key = 0; // 채널의 첫번째 PEER 
 	}
 
-	ux_log(UXL_INFO, "header size : %d", sizeof(skbmsg.header));
-	ux_log(UXL_INFO, "body size : %d", sizeof(clicktocall_start_req));
+	ux_log(UXL_INFO, "header size : %u", sizeof(skbmsg.header));
+	ux_log(UXL_INFO, "body size : %u", sizeof(clicktocall_start_req));
 	rv = upa_tcp_send2(_g_client->patcp, &peerkey, &skbmsg, msg_size, 1);
 	if( rv < UX_SUCCESS) {
 		ux_log( UXL_CRT, "can't send data.");
