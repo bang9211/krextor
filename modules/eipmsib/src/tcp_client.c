@@ -107,7 +107,7 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 	skb_msg_t skbmsg;
 	tcp_msg_t *msg;
 
-	uxc_dbif_t *rcv;
+	uxc_dbif_t *dbif;
 
 	char *sessionID;
 	char *gwSessionID;
@@ -131,64 +131,20 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 		case CALL_START_REQUEST:
 			// TODO 1 : DBIF에서 받은 msg에서 sessionID, gwSessionID 제외하여 저장하고 있다가 response에 사용
 			// TODO 2 : DBIF에서 받은 msg에서 header의 dstqid, srcqid 저장하고 있다가 response에 사용
-			// TODO 3 : requestID Generator 만들어야함
 
-			// DBIF 메시지를 분해하여 body 설정
-			rcv = uxc_ipcmsg_get_dbif(ipcmsg);
-			sessionID = uxc_dbif_get_str(rcv, 0, &rv);
-			if( rv < eUXC_SUCCESS) goto errst;
-			gwSessionID = uxc_dbif_get_str(rcv, 1, &rv);
-			if( rv < eUXC_SUCCESS) goto errst;
-			strcpy(clicktocall_start_req.subscriberName, uxc_dbif_get_str(rcv, 2, &rv));
-			if( rv < eUXC_SUCCESS) goto errst;
-			clicktocall_start_req.recordingType = uxc_dbif_get_int(rcv, 3, &rv);
-			if( rv < eUXC_SUCCESS) goto errst;
-			strcpy(clicktocall_start_req.callingNumber, uxc_dbif_get_str(rcv, 4, &rv));
-			if( rv < eUXC_SUCCESS) goto errst;
-			strcpy(clicktocall_start_req.calledNumber, uxc_dbif_get_str(rcv, 5, &rv));
-			if( rv < eUXC_SUCCESS) goto errst;
-			clicktocall_start_req.serviceCode = uxc_dbif_get_int(rcv, 6, &rv);
-			if( rv < eUXC_SUCCESS) goto errst;
-			clicktocall_start_req.ringBackToneType = uxc_dbif_get_int(rcv, 7, &rv);
-			if( rv < eUXC_SUCCESS) goto errst;
-			clicktocall_start_req.waitingMentID = uxc_dbif_get_int(rcv, 8, &rv);
-			if( rv < eUXC_SUCCESS) goto errst;
-			clicktocall_start_req.scenarioType = uxc_dbif_get_int(rcv, 9, &rv);
-			if( rv < eUXC_SUCCESS) goto errst;
-			clicktocall_start_req.callMentID = uxc_dbif_get_int(rcv, 10, &rv);
-			if( rv < eUXC_SUCCESS) goto errst;
-			strcpy(clicktocall_start_req.callingCID, uxc_dbif_get_str(rcv, 11, &rv));
-			if( rv < eUXC_SUCCESS) goto errst;
-			strcpy(clicktocall_start_req.calledCID, uxc_dbif_get_str(rcv, 12, &rv));
-			if( rv < eUXC_SUCCESS) goto errst;
-			strcpy(clicktocall_start_req.recordingFileName, uxc_dbif_get_str(rcv, 13, &rv));
-			if( rv < eUXC_SUCCESS) goto errst;
-			clicktocall_start_req.isAllRecording = uxc_dbif_get_int(rcv, 14, &rv);
-			if( rv < eUXC_SUCCESS) goto errst;
-			clicktocall_start_req.endIfRecordingFailed = uxc_dbif_get_int(rcv, 15, &rv);
-			if( rv < eUXC_SUCCESS) goto errst;
-			clicktocall_start_req.endIfRecordingEnded = uxc_dbif_get_int(rcv, 16, &rv);
-			if( rv < eUXC_SUCCESS) goto errst;
-			clicktocall_start_req.hostingCode = uxc_dbif_get_int(rcv, 17, &rv);
-			if( rv < eUXC_SUCCESS) goto errst;
-			clicktocall_start_req.wirelessTimeout = uxc_dbif_get_int(rcv, 18, &rv);
-			if( rv < eUXC_SUCCESS) goto errst;
-			clicktocall_start_req.wiredTimeout = uxc_dbif_get_int(rcv, 19, &rv);
-			if( rv < eUXC_SUCCESS) goto errst;
-			strcpy(clicktocall_start_req.chargingNumber, "");
-			clicktocall_start_req.fillerInt8 = 0;
-			clicktocall_start_req.fillerInt16 = 0;
-			strcpy(clicktocall_start_req.filler, "");
+			// DBIF 메시지를 분해하여 body로 변환
+			dbif = uxc_ipcmsg_get_dbif(ipcmsg);
+			clicktocall_start_req_dbif_display(dbif);
+			clicktocall_start_req_decode_dbif_msg(&clicktocall_start_req, sessionID, gwSessionID, dbif);
 
-			ux_log(UXL_INFO, "sessionID : %s", sessionID);
-			ux_log(UXL_INFO, "gwSessionID : %s", gwSessionID);
-
-			//header 설정
+			// TCP Header 설정
 			skb_msg_make_header(&skbmsg.header, START_REQUEST, sizeof(clicktocall_start_req), NULL);
-			memcpy(skbmsg.body, &clicktocall_start_req, sizeof(clicktocall_start_req));
 			ux_log(UXL_INFO, "header length : %d", skbmsg.header.length);
-			msg_size = skbmsg.header.length;
 			skb_msg_display_header(&skbmsg.header);
+			// TCP Body 설정
+			memcpy(skbmsg.body, &clicktocall_start_req, sizeof(clicktocall_start_req));
+			clicktocall_start_req_tcp_display(&clicktocall_start_req);
+			msg_size = skbmsg.header.length;
 
 			if(!uh_int_put(reqIDSIDMap, skbmsg.header.requestID, sessionID)) {
 				ux_log(UXL_CRT, "failed to put to reqIDSIDMap : (%d - %s)", skbmsg.header.requestID, sessionID);

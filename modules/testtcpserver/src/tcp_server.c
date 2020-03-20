@@ -130,29 +130,7 @@ static int tcp_server_handle_clicktocall_start_req( tcp_server_t *server, uxc_wo
 
 	//header
 	skb_msg_display_header(&skbmsg->header);
-	/* To do.. */	
-	ux_log(UXL_CRT, "  [subscriberName] %s", clicktocall_start_req->subscriberName);
-	ux_log(UXL_CRT, "  [recordingType] %d", clicktocall_start_req->recordingType);
-	ux_log(UXL_CRT, "  [callingNumber] %s", clicktocall_start_req->callingNumber);
-	ux_log(UXL_CRT, "  [calledNumber] %s", clicktocall_start_req->calledNumber);
-	ux_log(UXL_CRT, "  [chargningNumber] %s", clicktocall_start_req->chargingNumber);
-	ux_log(UXL_CRT, "  [serviceCode] %d", clicktocall_start_req->serviceCode);
-	ux_log(UXL_CRT, "  [ringBackToneType] %d", clicktocall_start_req->ringBackToneType);
-	ux_log(UXL_CRT, "  [waitingMentID] %d", clicktocall_start_req->waitingMentID);
-	ux_log(UXL_CRT, "  [fillerInt8] %d", clicktocall_start_req->fillerInt8);
-	ux_log(UXL_CRT, "  [scenarioType] %d", clicktocall_start_req->scenarioType);
-	ux_log(UXL_CRT, "  [callMentID] %d", clicktocall_start_req->callMentID);
-	ux_log(UXL_CRT, "  [callingCID] %s", clicktocall_start_req->callingCID);
-	ux_log(UXL_CRT, "  [calledCID] %s", clicktocall_start_req->calledCID);
-	ux_log(UXL_CRT, "  [recordingFileName] %s", clicktocall_start_req->recordingFileName);
-	ux_log(UXL_CRT, "  [isAllRecording] %d", clicktocall_start_req->isAllRecording);
-	ux_log(UXL_CRT, "  [endIfRecordingFailed] %d", clicktocall_start_req->endIfRecordingFailed);
-	ux_log(UXL_CRT, "  [endIfRecordingEnded] %d", clicktocall_start_req->endIfRecordingEnded);
-	ux_log(UXL_CRT, "  [hostingCode] %d", clicktocall_start_req->hostingCode);
-	ux_log(UXL_CRT, "  [wirelessTimeout] %d", clicktocall_start_req->wirelessTimeout);
-	ux_log(UXL_CRT, "  [wiredTimeout] %d", clicktocall_start_req->wiredTimeout);
-	ux_log(UXL_CRT, "  [fillerInt16] %d", clicktocall_start_req->fillerInt16);
-	ux_log(UXL_CRT, "  [filler] %s", clicktocall_start_req->filler);
+	clicktocall_start_req_tcp_display(clicktocall_start_req);
 
 	clicktocall_start_rsp->resultCode = 0;
 	strcpy(clicktocall_start_rsp->serviceID, "service0001");

@@ -69,8 +69,9 @@ struct tcp_clicktocall_stoprecording_req_s {
 
 int clicktocall_start_req_tcp_init( clicktocall_start_req_tcp_t *clicktocall_start_req);
 void clicktocall_start_req_tcp_final( clicktocall_start_req_tcp_t *clicktocall_start_req);
-int clicktocall_start_req_decode_dbif_msg( clicktocall_start_req_tcp_t *clicktocall_start_req, tcp_msg_t *msg);
-// void tcp_clicktocall_start_req_display_tcpmsg(tcp_msg_t *msg);
+int clicktocall_start_req_decode_dbif_msg( clicktocall_start_req_tcp_t *clicktocall_start_req, char* sessionID, char* gwSessionID, uxc_dbif_t *dbif);
+void clicktocall_start_req_tcp_display(clicktocall_start_req_tcp_t *clicktocall_start_req);
+void clicktocall_start_req_dbif_display(uxc_dbif_t *dbif);
 
 
 int clicktocall_stop_req_tcp_init( clicktocall_stop_req_tcp_t *clicktocall_stop_req);
