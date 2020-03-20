@@ -3,7 +3,7 @@
 
 #include "tcp_conf.h"
 #include "uhash.h"
-#include "tcp_clicktocall_req.h"
+#include "clicktocall_req.h"
 #include "tcp_clicktocall_rsp.h"
 #include <time.h>
 #include <stdlib.h>

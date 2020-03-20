@@ -112,7 +112,7 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 	char *sessionID;
 	char *gwSessionID;
 
-	tcp_clicktocall_start_req_t clicktocall_start_req;
+	clicktocall_start_req_tcp_t clicktocall_start_req;
 
 	msg = (tcp_msg_t *)&ipcmsg->header;
 	msg_size = sizeof(uxc_ixpc_t) + msg->header.length;	//dbif header + body
