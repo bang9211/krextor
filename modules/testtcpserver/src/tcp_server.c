@@ -83,7 +83,7 @@ int tcp_server_handle_svrreq( tcp_server_t *server, uxc_worker_t* worker, upa_tc
 
 	// 1. receive msg 
 	skbmsg = (skb_msg_t *)tcpmsg->netmsg->buffer;
-	ux_log(UXL_INFO, "header size : %u", sizeof(skbmsg->header));
+	ux_log(UXL_INFO, "header size : %lu", sizeof(skbmsg->header));
 
 	memcpy(clicktocall_start_req, skbmsg->body, sizeof(tcp_clicktocall_start_req_t));
 	

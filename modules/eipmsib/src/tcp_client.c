@@ -231,8 +231,8 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 		peerkey.peer_key = 0; // 채널의 첫번째 PEER 
 	}
 
-	ux_log(UXL_INFO, "header size : %u", sizeof(skbmsg.header));
-	ux_log(UXL_INFO, "body size : %u", sizeof(clicktocall_start_req));
+	ux_log(UXL_INFO, "header size : %lu", sizeof(skbmsg.header));
+	ux_log(UXL_INFO, "body size : %lu", sizeof(clicktocall_start_req));
 	rv = upa_tcp_send2(_g_client->patcp, &peerkey, &skbmsg, msg_size, 1);
 	if( rv < UX_SUCCESS) {
 		ux_log( UXL_CRT, "can't send data.");
@@ -309,12 +309,12 @@ int tcp_client_send_ipcmsg( tcp_client_t *client,  tcp_msg_t* msg, int rv)
 	ipcmsg.header.srcQid = client->conf->mqid;
 	ipcmsg.header.result = rv;
 	
-	ux_log(UXL_INFO, "6. Send ipcmsg to %d from %d, size=%d, header=%d + dbif=%d\n",ipcmsg.header.dstQid,
+	ux_log(UXL_INFO, "6. Send ipcmsg to %d from %d, size=%d, header=%lu + dbif=%d\n",ipcmsg.header.dstQid,
 					client->conf->mqid, msg_size, sizeof(uxc_ixpc_t),ipcmsg.header.length); 
 
 	rv = msgsnd(ipcmsg.header.dstQid, &ipcmsg, msg_size, IPC_NOWAIT);
 	if( rv < 0) {
-		ux_log( UXL_MAJ, "msgsnd: E=%d, q=%d, len=%d", errno, ipcmsg.header.dstQid,
+		ux_log( UXL_MAJ, "msgsnd: E=%d, q=%lu, len=%d", errno, ipcmsg.header.dstQid,
 					sizeof(uxc_ixpc_t) + ipcmsg.header.length);
 		return rv;
 	}
