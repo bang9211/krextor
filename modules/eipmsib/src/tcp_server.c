@@ -112,6 +112,7 @@ static int tcp_server_handle_clicktocall_req( tcp_server_t *server, uxc_worker_t
 					upa_tcpmsg_t *tcpmsg, tcp_msg_t *msg )
 {
 	int rv;
+	uxc_dbif_t *dbif;
 	tcp_clicktocall_start_rsp_t clicktocall_rsp[1];
 	clicktocall_start_req_tcp_t clicktocall_req[1];
 
@@ -119,30 +120,31 @@ static int tcp_server_handle_clicktocall_req( tcp_server_t *server, uxc_worker_t
 	clicktocall_start_req_tcp_init(clicktocall_req);
 	tcp_clicktocall_start_rsp_init(clicktocall_rsp);
 
-	rv = clicktocall_start_req_decode_dbif_msg(clicktocall_req, msg);
-	if (rv <eUXC_SUCCESS) return rv;
+	dbif = (uxc_dbif_t*)msg->data;
+	// rv = clicktocall_start_req_decode_dbif_msg(clicktocall_req, NULL, NULL, dbif);
+	// if (rv <eUXC_SUCCESS) return rv;
 
-	//TODO 5 : 받은 Notification 처리
-	// ux_log(UXL_CRT, "  [sessionID] %s", clicktocall_req->sessionID);
-	// ux_log(UXL_CRT, "  [gwSessionID] %s", clicktocall_req->gwSessionID);
-	ux_log(UXL_CRT, "  [subscriberName] %s", clicktocall_req->subscriberName);
-	ux_log(UXL_CRT, "  [recordingType] %d", clicktocall_req->recordingType);
-	ux_log(UXL_CRT, "  [callingNumber] %s", clicktocall_req->callingNumber);
-	ux_log(UXL_CRT, "  [calledNumber] %s", clicktocall_req->calledNumber);
-	ux_log(UXL_CRT, "  [serviceCode] %d", clicktocall_req->serviceCode);
-	ux_log(UXL_CRT, "  [ringBackToneType] %d", clicktocall_req->ringBackToneType);
-	ux_log(UXL_CRT, "  [waitingMentID] %d", clicktocall_req->waitingMentID);
-	ux_log(UXL_CRT, "  [scenarioType] %d", clicktocall_req->scenarioType);
-	ux_log(UXL_CRT, "  [callMentID] %d", clicktocall_req->callMentID);
-	ux_log(UXL_CRT, "  [callingCID] %s", clicktocall_req->callingCID);
-	ux_log(UXL_CRT, "  [calledCID] %s", clicktocall_req->calledCID);
-	ux_log(UXL_CRT, "  [recordingFileName] %s", clicktocall_req->recordingFileName);
-	ux_log(UXL_CRT, "  [isAllRecording] %d", clicktocall_req->isAllRecording);
-	ux_log(UXL_CRT, "  [endIfRecordingFailed] %d", clicktocall_req->endIfRecordingFailed);
-	ux_log(UXL_CRT, "  [endIfRecordingEnded] %d", clicktocall_req->endIfRecordingEnded);
-	ux_log(UXL_CRT, "  [hostingCode] %d", clicktocall_req->hostingCode);
-	ux_log(UXL_CRT, "  [wirelessTimeout] %d", clicktocall_req->wirelessTimeout);
-	ux_log(UXL_CRT, "  [wiredTimeout] %d", clicktocall_req->wiredTimeout);
+	// //TODO 5 : 받은 Notification 처리
+	// // ux_log(UXL_CRT, "  [sessionID] %s", clicktocall_req->sessionID);
+	// // ux_log(UXL_CRT, "  [gwSessionID] %s", clicktocall_req->gwSessionID);
+	// ux_log(UXL_CRT, "  [subscriberName] %s", clicktocall_req->subscriberName);
+	// ux_log(UXL_CRT, "  [recordingType] %d", clicktocall_req->recordingType);
+	// ux_log(UXL_CRT, "  [callingNumber] %s", clicktocall_req->callingNumber);
+	// ux_log(UXL_CRT, "  [calledNumber] %s", clicktocall_req->calledNumber);
+	// ux_log(UXL_CRT, "  [serviceCode] %d", clicktocall_req->serviceCode);
+	// ux_log(UXL_CRT, "  [ringBackToneType] %d", clicktocall_req->ringBackToneType);
+	// ux_log(UXL_CRT, "  [waitingMentID] %d", clicktocall_req->waitingMentID);
+	// ux_log(UXL_CRT, "  [scenarioType] %d", clicktocall_req->scenarioType);
+	// ux_log(UXL_CRT, "  [callMentID] %d", clicktocall_req->callMentID);
+	// ux_log(UXL_CRT, "  [callingCID] %s", clicktocall_req->callingCID);
+	// ux_log(UXL_CRT, "  [calledCID] %s", clicktocall_req->calledCID);
+	// ux_log(UXL_CRT, "  [recordingFileName] %s", clicktocall_req->recordingFileName);
+	// ux_log(UXL_CRT, "  [isAllRecording] %d", clicktocall_req->isAllRecording);
+	// ux_log(UXL_CRT, "  [endIfRecordingFailed] %d", clicktocall_req->endIfRecordingFailed);
+	// ux_log(UXL_CRT, "  [endIfRecordingEnded] %d", clicktocall_req->endIfRecordingEnded);
+	// ux_log(UXL_CRT, "  [hostingCode] %d", clicktocall_req->hostingCode);
+	// ux_log(UXL_CRT, "  [wirelessTimeout] %d", clicktocall_req->wirelessTimeout);
+	// ux_log(UXL_CRT, "  [wiredTimeout] %d", clicktocall_req->wiredTimeout);
 
 	// clicktocall_rsp->result = 0;
 	// clicktocall_rsp->callTime = 0;
