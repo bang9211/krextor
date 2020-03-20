@@ -1,21 +1,21 @@
 #include "clicktocall_req.h"
 
 ///////////////////////////////////////////////////////////////////////////////////
-// functions for tcp_clicktocall_start_req_t 
+// functions for clicktocall_start_req_tcp_t 
 ///////////////////////////////////////////////////////////////////////////////////
 
-int clicktocall_start_req_tcp_init( tcp_clicktocall_start_req_t *clicktocall_start_req)
+int clicktocall_start_req_tcp_init( clicktocall_start_req_tcp_t *clicktocall_start_req)
 {
-	memset(clicktocall_start_req, 0, sizeof(tcp_clicktocall_start_req_t));
+	memset(clicktocall_start_req, 0, sizeof(clicktocall_start_req_tcp_t));
 	return eUXC_SUCCESS;
 }
 
-void clicktocall_start_req_tcp_final( tcp_clicktocall_start_req_t *clicktocall_start_req)
+void clicktocall_start_req_tcp_final( clicktocall_start_req_tcp_t *clicktocall_start_req)
 {
 	return;
 }
 
-int clicktocall_start_req_decode_dbif_msg( tcp_clicktocall_start_req_t *clicktocall_start_req, tcp_msg_t *msg)
+int clicktocall_start_req_decode_dbif_msg( clicktocall_start_req_tcp_t *clicktocall_start_req, tcp_msg_t *msg)
 {
 	int rv;
 	uxc_dbif_t *dbif;

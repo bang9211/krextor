@@ -8,7 +8,7 @@
 // ClickToCall Request Message Structure & Macro 
 ///////////////////////////////////////////////////////////////////////////////////
 
-typedef struct clicktocall_start_req_tcp_s tcp_clicktocall_start_req_t; 
+typedef struct clicktocall_start_req_tcp_s clicktocall_start_req_tcp_t; 
 // #pragma pack(push, 1)
 struct clicktocall_start_req_tcp_s {
 	// tcp_msg_t base[1];
@@ -67,10 +67,10 @@ struct tcp_clicktocall_stoprecording_req_s {
 // ClickToCall Request Message Functions 
 ///////////////////////////////////////////////////////////////////////////////////
 
-int clicktocall_start_req_tcp_init( tcp_clicktocall_start_req_t *clicktocall_start_req);
-void clicktocall_start_req_tcp_final( tcp_clicktocall_start_req_t *clicktocall_start_req);
+int clicktocall_start_req_tcp_init( clicktocall_start_req_tcp_t *clicktocall_start_req);
+void clicktocall_start_req_tcp_final( clicktocall_start_req_tcp_t *clicktocall_start_req);
 
-int clicktocall_start_req_decode_dbif_msg( tcp_clicktocall_start_req_t *clicktocall_start_req, tcp_msg_t *msg);
+int clicktocall_start_req_decode_dbif_msg( clicktocall_start_req_tcp_t *clicktocall_start_req, tcp_msg_t *msg);
 
 
 int tcp_clicktocall_stop_req_init( tcp_clicktocall_stop_req_t *clicktocall_stop_req);
