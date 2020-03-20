@@ -175,7 +175,7 @@ void clicktocall_startrecording_req_tcp_final( clicktocall_startrecording_req_tc
 	return;
 }
 
-int clicktocall_startrecording_req_decode_dbif_msg( clicktocall_startrecording_req_tcp_t *clicktocall_startrecording_req, tcp_msg_t *msg)
+int clicktocall_startrecording_req_decode_dbif_msg( clicktocall_startrecording_req_tcp_t *clicktocall_startrecording_req, uxc_dbif_t *dbif)
 {
 	int rv;
 	strcpy(clicktocall_startrecording_req->serviceID, uxc_dbif_get_str(dbif, 0, &rv));
@@ -217,7 +217,7 @@ void clicktocall_stoprecording_req_tcp_final( clicktocall_stoprecording_req_tcp_
 	return;
 }
 
-int clicktocall_stoprecording_req_decode_dbif_msg( clicktocall_stoprecording_req_tcp_t *clicktocall_stoprecording_req, tcp_msg_t *msg)
+int clicktocall_stoprecording_req_decode_dbif_msg( clicktocall_stoprecording_req_tcp_t *clicktocall_stoprecording_req, uxc_dbif_t *dbif)
 {
 	int rv;
 	strcpy(clicktocall_stoprecording_req->serviceID, uxc_dbif_get_str(dbif, 0, &rv));

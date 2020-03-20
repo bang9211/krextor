@@ -108,8 +108,8 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 	tcp_msg_t *msg;
 	uxc_dbif_t *dbif;
 
-	char *sessionID;
-	char *gwSessionID;
+	char *sessionID = NULL;
+	char *gwSessionID = NULL;
 	clicktocall_start_req_tcp_t clicktocall_start_req;
 	clicktocall_stop_req_tcp_t clicktocall_stop_req;
 	clicktocall_startrecording_req_tcp_t clicktocall_startrecording_req;
