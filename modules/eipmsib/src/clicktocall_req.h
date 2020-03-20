@@ -8,9 +8,9 @@
 // ClickToCall Request Message Structure & Macro 
 ///////////////////////////////////////////////////////////////////////////////////
 
-typedef struct tcp_clicktocall_start_req_s clicktocall_start_req_tcp_t; 
+typedef struct clicktocall_start_req_tcp_s clicktocall_start_req_tcp_t; 
 // #pragma pack(push, 1)
-struct tcp_clicktocall_start_req_s {
+struct clicktocall_start_req_tcp_s {
 	// tcp_msg_t base[1];
 	char subscriberName[32];
 	int8_t recordingType;
