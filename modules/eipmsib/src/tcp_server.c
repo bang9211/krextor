@@ -111,8 +111,8 @@ int tcp_server_handle_eipmsreq( tcp_server_t *server, uxc_worker_t* worker, upa_
 static int tcp_server_handle_clicktocall_req( tcp_server_t *server, uxc_worker_t *worker,
 					upa_tcpmsg_t *tcpmsg, tcp_msg_t *msg )
 {
-	int rv;
-	uxc_dbif_t *dbif;
+	// int rv;
+	// uxc_dbif_t *dbif;
 	tcp_clicktocall_start_rsp_t clicktocall_rsp[1];
 	clicktocall_start_req_tcp_t clicktocall_req[1];
 
@@ -120,7 +120,7 @@ static int tcp_server_handle_clicktocall_req( tcp_server_t *server, uxc_worker_t
 	clicktocall_start_req_tcp_init(clicktocall_req);
 	tcp_clicktocall_start_rsp_init(clicktocall_rsp);
 
-	dbif = (uxc_dbif_t*)msg->data;
+	// dbif = (uxc_dbif_t*)msg->data;
 	// rv = clicktocall_start_req_decode_dbif_msg(clicktocall_req, NULL, NULL, dbif);
 	// if (rv <eUXC_SUCCESS) return rv;
 

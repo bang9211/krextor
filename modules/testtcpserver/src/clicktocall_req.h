@@ -37,8 +37,8 @@ struct clicktocall_start_req_tcp_s {
 };
 // #pragma pack(pop)
 
-typedef struct tcp_clicktocall_stop_req_s clicktocall_stop_req_tcp_t; 
-struct tcp_clicktocall_stop_req_s {
+typedef struct clicktocall_stop_req_tcp_s clicktocall_stop_req_tcp_t; 
+struct clicktocall_stop_req_tcp_s {
 	tcp_msg_t base[1];
 	int networkType;
 	char *sessionID;
@@ -46,8 +46,8 @@ struct tcp_clicktocall_stop_req_s {
 	char *recordingFileName;
 };
 
-typedef struct tcp_clicktocall_startrecording_req_s clicktocall_startrecording_req_tcp_t; 
-struct tcp_clicktocall_startrecording_req_s {
+typedef struct clicktocall_startrecording_req_tcp_s clicktocall_startrecording_req_tcp_t; 
+struct clicktocall_startrecording_req_tcp_s {
 	tcp_msg_t base[1];
 	int networkType;
 	char *sessionID;
@@ -55,8 +55,8 @@ struct tcp_clicktocall_startrecording_req_s {
 	char *recordingFileName;
 };
 
-typedef struct tcp_clicktocall_stoprecording_req_s clicktocall_stoprecording_req_tcp_t; 
-struct tcp_clicktocall_stoprecording_req_s {
+typedef struct clicktocall_stoprecording_req_tcp_s clicktocall_stoprecording_req_tcp_t; 
+struct clicktocall_stoprecording_req_tcp_s {
 	tcp_msg_t base[1];
 	int networkType;
 	char *sessionID;

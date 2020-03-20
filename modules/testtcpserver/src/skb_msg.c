@@ -139,7 +139,7 @@ void skb_msg_make_header(skb_header_t* header, int32_t messageID, int16_t bodySi
 }
 
 void skb_msg_display_header(skb_header_t* header) {
-	ux_log(UXL_INFO, "  [frameStart0] 0x%hhX", header->frameStart0);
+	ux_log(UXL_INFO, "TCP Header");
 	ux_log(UXL_INFO, "  [frameStart1] 0x%hhX", header->frameStart1);
 	ux_log(UXL_INFO, "  [length] %d", header->length);
 	ux_log(UXL_INFO, "  [messageID] %#010x", header->messageID);

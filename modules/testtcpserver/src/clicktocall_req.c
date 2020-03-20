@@ -66,7 +66,7 @@ int clicktocall_start_req_decode_dbif_msg( clicktocall_start_req_tcp_t *clicktoc
 	return eUXC_SUCCESS;
 
 final:
-	ux_log( UXL_CRT, "uxc_dbif_clicktocall_start is failed (rv=%d)", rv);
+	ux_log( UXL_CRT, "clicktocall_start_req_decode_dbif_msg is failed (rv=%d)", rv);
 	return rv;
 }
 
@@ -136,28 +136,28 @@ void clicktocall_stop_req_tcp_final( clicktocall_stop_req_tcp_t *clicktocall_sto
 	return;
 }
 
-int clicktocall_stop_req_decode_dbif_msg( clicktocall_stop_req_tcp_t *clicktocall_stop_req, tcp_msg_t *msg)
+int clicktocall_stop_req_decode_dbif_msg( clicktocall_stop_req_tcp_t *clicktocall_stop_req, uxc_dbif_t *dbif)
 {
 	int rv;
-	uxc_dbif_t *dbif;
-
-	dbif = (uxc_dbif_t*)msg->data;
-	ux_log(UXL_INFO, "= clicktocall_stop_req_decode_msg =");
-
-	clicktocall_stop_req->networkType = uxc_dbif_get_int( dbif, 0, &rv);
-	if( rv < eUXC_SUCCESS ) goto final;
-	clicktocall_stop_req->sessionID = uxc_dbif_get_str( dbif, 1, &rv);
-	if( rv < eUXC_SUCCESS ) goto final;
-	clicktocall_stop_req->gwSessionID = uxc_dbif_get_str( dbif, 2, &rv);
-	if( rv < eUXC_SUCCESS ) goto final;
-	clicktocall_stop_req->recordingFileName = uxc_dbif_get_str( dbif, 15, &rv);
-	if( rv < eUXC_SUCCESS ) goto final;
+	strcpy(clicktocall_stop_req->serviceID, uxc_dbif_get_str(dbif, 0, &rv));
+	if( rv < eUXC_SUCCESS) goto final;
 
 	return eUXC_SUCCESS;
 
 final:
-	ux_log( UXL_CRT, "uxc_dbif_clicktocall_stop is failed (rv=%d)", rv);
+	ux_log( UXL_CRT, "clicktocall_stop_req_decode_dbif_msg is failed (rv=%d)", rv);
 	return rv;
+}
+
+void clicktocall_stop_req_tcp_display(clicktocall_stop_req_tcp_t *clicktocall_stop_req) {
+	ux_log(UXL_INFO, "TCP [clicktocall_stop_req]");
+	ux_log(UXL_INFO, "  [serviceID] %s", clicktocall_stop_req->serviceID);
+}
+
+void clicktocall_stop_req_dbif_display(uxc_dbif_t *dbif) {
+	int rv;
+	ux_log(UXL_INFO, "DBIF [clicktocall_stop_req]");
+	ux_log(UXL_INFO, "  [serviceID] %s",uxc_dbif_get_str(dbif, 0, &rv));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -178,25 +178,28 @@ void clicktocall_startrecording_req_tcp_final( clicktocall_startrecording_req_tc
 int clicktocall_startrecording_req_decode_dbif_msg( clicktocall_startrecording_req_tcp_t *clicktocall_startrecording_req, tcp_msg_t *msg)
 {
 	int rv;
-	uxc_dbif_t *dbif;
-
-	dbif = (uxc_dbif_t*)msg->data;
-	ux_log(UXL_INFO, "= clicktocall_startrecording_req_decode_msg =");
-
-	clicktocall_startrecording_req->networkType = uxc_dbif_get_int( dbif, 0, &rv);
-	if( rv < eUXC_SUCCESS ) goto final;
-	clicktocall_startrecording_req->sessionID = uxc_dbif_get_str( dbif, 1, &rv);
-	if( rv < eUXC_SUCCESS ) goto final;
-	clicktocall_startrecording_req->gwSessionID = uxc_dbif_get_str( dbif, 2, &rv);
-	if( rv < eUXC_SUCCESS ) goto final;
-	clicktocall_startrecording_req->recordingFileName = uxc_dbif_get_str( dbif, 15, &rv);
-	if( rv < eUXC_SUCCESS ) goto final;
+	strcpy(clicktocall_startrecording_req->serviceID, uxc_dbif_get_str(dbif, 0, &rv));
+	if( rv < eUXC_SUCCESS) goto final;
+	strcpy(clicktocall_startrecording_req->recordingFileName, uxc_dbif_get_str(dbif, 1, &rv));
+	if( rv < eUXC_SUCCESS) goto final;
 
 	return eUXC_SUCCESS;
 
 final:
-	ux_log( UXL_CRT, "uxc_dbif_clicktocall_startrecording is failed (rv=%d)", rv);
+	ux_log( UXL_CRT, "clicktocall_startrecording_req_decode_dbif_msg is failed (rv=%d)", rv);
 	return rv;
+}
+
+void clicktocall_startrecording_req_tcp_display(clicktocall_startrecording_req_tcp_t *clicktocall_startrecording_req) {
+	ux_log(UXL_INFO, "TCP [clicktocall_startrecording_req]");
+	ux_log(UXL_INFO, "  [serviceID] %s", clicktocall_startrecording_req_tcp_t->serviceID);
+	ux_log(UXL_INFO, "  [recordingFileName] %s", clicktocall_startrecording_req_tcp_t->recordingFileName);
+}
+
+void clicktocall_startrecording_req_dbif_display(uxc_dbif_t *dbif) {
+	int rv;
+	ux_log(UXL_INFO, "DBIF [clicktocall_startrecording_req]");
+	ux_log(UXL_INFO, "  [serviceID] %s",uxc_dbif_get_str(dbif, 0, &rv));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -217,21 +220,22 @@ void clicktocall_stoprecording_req_tcp_final( clicktocall_stoprecording_req_tcp_
 int clicktocall_stoprecording_req_decode_dbif_msg( clicktocall_stoprecording_req_tcp_t *clicktocall_stoprecording_req, tcp_msg_t *msg)
 {
 	int rv;
-	uxc_dbif_t *dbif;
-
-	dbif = (uxc_dbif_t*)msg->data;
-	ux_log(UXL_INFO, "= clicktocall_stoprecording_req_decode_msg =");
-
-	clicktocall_stoprecording_req->networkType = uxc_dbif_get_int( dbif, 0, &rv);
-	if( rv < eUXC_SUCCESS ) goto final;
-	clicktocall_stoprecording_req->sessionID = uxc_dbif_get_str( dbif, 1, &rv);
-	if( rv < eUXC_SUCCESS ) goto final;
-	clicktocall_stoprecording_req->gwSessionID = uxc_dbif_get_str( dbif, 2, &rv);
-	if( rv < eUXC_SUCCESS ) goto final;
+	strcpy(clicktocall_stoprecording_req->serviceID, uxc_dbif_get_str(dbif, 0, &rv));
+	if( rv < eUXC_SUCCESS) goto final;
 
 	return eUXC_SUCCESS;
 
 final:
-	ux_log( UXL_CRT, "uxc_dbif_clicktocall_stoprecording is failed (rv=%d)", rv);
+	ux_log( UXL_CRT, "clicktocall_stoprecording_req_decode_dbif_msg is failed (rv=%d)", rv);
 	return rv;
+}
+void clicktocall_stoprecording_req_tcp_display(clicktocall_stoprecording_req_tcp_t *clicktocall_stoprecording_req) {
+	ux_log(UXL_INFO, "TCP [clicktocall_stoprecording_req]");
+	ux_log(UXL_INFO, "  [serviceID] %s", clicktocall_stoprecording_req->serviceID);
+}
+
+void clicktocall_stoprecording_req_dbif_display(uxc_dbif_t *dbif) {
+	int rv;
+	ux_log(UXL_INFO, "DBIF [clicktocall_stoprecording_req]");
+	ux_log(UXL_INFO, "  [serviceID] %s",uxc_dbif_get_str(dbif, 0, &rv));
 }
