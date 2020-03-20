@@ -13,10 +13,10 @@
 #include <stdio.h>
 
 /**
- * @brief CLICKTOCALL START REQUEST(HTTP) outgoing ¸Þ½ÃÁö¸¦ Àü´ÞÇÏ±â À§ÇØ È£ÃâµÇ´Â ÇÔ¼ö
+ * @brief CLICKTOCALL START REQUEST(HTTP) outgoing ï¿½Þ½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï±ï¿½ ï¿½ï¿½ï¿½ï¿½ È£ï¿½ï¿½Ç´ï¿½ ï¿½Ô¼ï¿½
  * @param sfcall call fsm node
  * @param params sdm value parameter
- * @return ½ÇÇà °á°ú
+ * @return ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
  */
 UX_DECLARE(int) clicktocall_dlgsvc_on_recv_http_start_req( uxc_sfcall_t *sfcall, uxc_sdmvars_t *params)
 {
@@ -78,10 +78,10 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_recv_http_start_req( uxc_sfcall_t *sfcall,
 }
 
 /**
- * @brief CLICKTOCALL START REQUEST(HTTP) outgoing ¸Þ½ÃÁö¸¦ Àü´ÞÇÏ±â À§ÇØ È£ÃâµÇ´Â ÇÔ¼ö
+ * @brief CLICKTOCALL START REQUEST(HTTP) outgoing ï¿½Þ½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï±ï¿½ ï¿½ï¿½ï¿½ï¿½ È£ï¿½ï¿½Ç´ï¿½ ï¿½Ô¼ï¿½
  * @param sfcall call fsm node
  * @param params sdm value parameter
- * @return ½ÇÇà °á°ú
+ * @return ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
  */
 UX_DECLARE(int) clicktocall_dlgsvc_on_send_http_res( uxc_sfcall_t *sfcall, uxc_sdmvars_t *params)
 {
@@ -126,10 +126,10 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_send_http_res( uxc_sfcall_t *sfcall, uxc_s
 }
 
 /**
- * @brief CLICKTOCALL STOP REQUEST(HTTP) outgoing ¸Þ½ÃÁö¸¦ Àü´ÞÇÏ±â À§ÇØ È£ÃâµÇ´Â ÇÔ¼ö
+ * @brief CLICKTOCALL STOP REQUEST(HTTP) outgoing ï¿½Þ½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï±ï¿½ ï¿½ï¿½ï¿½ï¿½ È£ï¿½ï¿½Ç´ï¿½ ï¿½Ô¼ï¿½
  * @param sfcall call fsm node
  * @param params sdm value parameter
- * @return ½ÇÇà °á°ú
+ * @return ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
  */
 UX_DECLARE(int) clicktocall_dlgsvc_on_recv_http_stop_req( uxc_sfcall_t *sfcall, uxc_sdmvars_t *params)
 {
@@ -170,10 +170,10 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_recv_http_stop_req( uxc_sfcall_t *sfcall, 
 }
 
 /**
- * @brief CLICKTOCALL NOTI REQUEST(HTTP) outgoing ¸Þ½ÃÁö¸¦ Àü´ÞÇÏ±â À§ÇØ È£ÃâµÇ´Â ÇÔ¼ö
+ * @brief CLICKTOCALL NOTI REQUEST(HTTP) outgoing ï¿½Þ½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï±ï¿½ ï¿½ï¿½ï¿½ï¿½ È£ï¿½ï¿½Ç´ï¿½ ï¿½Ô¼ï¿½
  * @param sfcall call fsm node
  * @param params sdm value parameter
- * @return ½ÇÇà °á°ú
+ * @return ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
  */
 UX_DECLARE(int) clicktocall_dlgsvc_on_send_http_notify( uxc_sfcall_t *sfcall, uxc_sdmvars_t *params)
 {
@@ -245,10 +245,10 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_send_http_notify( uxc_sfcall_t *sfcall, ux
 }
 
 /**
- * @brief CLICKTOCALL RESPOND REQUEST(HTTP) outgoing ¸Þ½ÃÁö¸¦ Àü´ÞÇÏ±â À§ÇØ È£ÃâµÇ´Â ÇÔ¼ö
+ * @brief CLICKTOCALL RESPOND REQUEST(HTTP) outgoing ï¿½Þ½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï±ï¿½ ï¿½ï¿½ï¿½ï¿½ È£ï¿½ï¿½Ç´ï¿½ ï¿½Ô¼ï¿½
  * @param sfcall call fsm node
  * @param params sdm value parameter
- * @return ½ÇÇà °á°ú
+ * @return ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
  */
 UX_DECLARE(int) clicktocall_dlgsvc_on_send_http_respond( uxc_sfcall_t *sfcall, uxc_sdmvars_t *params)
 {
@@ -314,10 +314,10 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_send_http_respond( uxc_sfcall_t *sfcall, u
 }
 
 /**
- * @brief DIALOG INITIAL REQUEST(INVITE) »õ·Î¿î outgoing ¸Þ½ÃÁö¸¦ Àü´ÞÇÏ±â À§ÇØ È£ÃâµÇ´Â ÇÔ¼ö
+ * @brief DIALOG INITIAL REQUEST(INVITE) ï¿½ï¿½ï¿½Î¿ï¿½ outgoing ï¿½Þ½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï±ï¿½ ï¿½ï¿½ï¿½ï¿½ È£ï¿½ï¿½Ç´ï¿½ ï¿½Ô¼ï¿½
  * @param sfcall call fsm node
  * @param params sdm value parameter
- * @return ½ÇÇà °á°ú
+ * @return ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
  */
 UX_DECLARE(int) clicktocall_dlgsvc_on_send_sip_invite_req( uxc_sfcall_t *sfcall, uxc_sdmvars_t *params)
 {
@@ -491,10 +491,10 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_send_sip_invite_req( uxc_sfcall_t *sfcall,
 }
 
 /**
- * @brief DIALOG INITIAL REQUEST(INVITE) »õ·Î¿î outgoing ¸Þ½ÃÁö¸¦ Àü´ÞÇÏ±â À§ÇØ È£ÃâµÇ´Â ÇÔ¼ö
+ * @brief DIALOG INITIAL REQUEST(INVITE) ï¿½ï¿½ï¿½Î¿ï¿½ outgoing ï¿½Þ½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï±ï¿½ ï¿½ï¿½ï¿½ï¿½ È£ï¿½ï¿½Ç´ï¿½ ï¿½Ô¼ï¿½
  * @param sfcall call fsm node
  * @param params sdm value parameter
- * @return ½ÇÇà °á°ú
+ * @return ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
  */
 UX_DECLARE(int) clicktocall_dlgsvc_on_send_sip_reinvite_req( uxc_sfcall_t *sfcall, uxc_sdmvars_t *params)
 {
@@ -662,10 +662,10 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_send_sip_reinvite_req( uxc_sfcall_t *sfcal
 
 
 /**
- * @brief DIALOG INITIAL REQUEST(INVITE) »õ·Î¿î outgoing ¸Þ½ÃÁö¸¦ Àü´ÞÇÏ±â À§ÇØ È£ÃâµÇ´Â ÇÔ¼ö
+ * @brief DIALOG INITIAL REQUEST(INVITE) ï¿½ï¿½ï¿½Î¿ï¿½ outgoing ï¿½Þ½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï±ï¿½ ï¿½ï¿½ï¿½ï¿½ È£ï¿½ï¿½Ç´ï¿½ ï¿½Ô¼ï¿½
  * @param sfcall call fsm node
  * @param params sdm value parameter
- * @return ½ÇÇà °á°ú
+ * @return ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
  */
 UX_DECLARE(int) clicktocall_dlgsvc_on_send_sip_ack( uxc_sfcall_t *sfcall, uxc_sdmvars_t *params)
 {
@@ -826,10 +826,10 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_send_sip_ack( uxc_sfcall_t *sfcall, uxc_sd
 }
 
 /**
- * @brief DIALOG INITIAL REQUEST(INVITE) »õ·Î¿î outgoing ¸Þ½ÃÁö¸¦ Àü´ÞÇÏ±â À§ÇØ È£ÃâµÇ´Â ÇÔ¼ö
+ * @brief DIALOG INITIAL REQUEST(INVITE) ï¿½ï¿½ï¿½Î¿ï¿½ outgoing ï¿½Þ½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï±ï¿½ ï¿½ï¿½ï¿½ï¿½ È£ï¿½ï¿½Ç´ï¿½ ï¿½Ô¼ï¿½
  * @param sfcall call fsm node
  * @param params sdm value parameter
- * @return ½ÇÇà °á°ú
+ * @return ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
  */
 UX_DECLARE(int) clicktocall_dlgsvc_on_send_sip_dlgtransc_req( uxc_sfcall_t *sfcall, uxc_sdmvars_t *params)
 {
@@ -1082,10 +1082,10 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_recv_sip_invite_res( uxc_sfcall_t *sfcall,
 }
 
 /**
- * @brief DIALOG INITIAL REQUEST(INVITE) »õ·Î¿î outgoing ¸Þ½ÃÁö¸¦ Àü´ÞÇÏ±â À§ÇØ È£ÃâµÇ´Â ÇÔ¼ö
+ * @brief DIALOG INITIAL REQUEST(INVITE) ï¿½ï¿½ï¿½Î¿ï¿½ outgoing ï¿½Þ½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï±ï¿½ ï¿½ï¿½ï¿½ï¿½ È£ï¿½ï¿½Ç´ï¿½ ï¿½Ô¼ï¿½
  * @param sfcall call fsm node
  * @param params sdm value parameter
- * @return ½ÇÇà °á°ú
+ * @return ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
  */
 UX_DECLARE(int) clicktocall_dlgsvc_on_recv_sip_dlgtransc_res( uxc_sfcall_t *sfcall, uxc_sdmvars_t *params)
 {
@@ -1142,10 +1142,10 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_recv_sip_dlgtransc_res( uxc_sfcall_t *sfca
 }
 
 /**
- * @brief DIALOG INITIAL REQUEST(INVITE, SUBSCRIBE) ¸Þ½ÃÁö¸¦ Àü´ÞÇÏ±â À§ÇØ È£ÃâµÇ´Â ÇÔ¼ö
+ * @brief DIALOG INITIAL REQUEST(INVITE, SUBSCRIBE) ï¿½Þ½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï±ï¿½ ï¿½ï¿½ï¿½ï¿½ È£ï¿½ï¿½Ç´ï¿½ ï¿½Ô¼ï¿½
  * @param sfcall call fsm node
  * @param params sdm value parameter
- * @return ½ÇÇà °á°ú
+ * @return ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
  */
 UX_DECLARE(int) clicktocall_dlgsvc_on_send_rsp( uxc_sfcall_t *sfcall, uxc_sdmvars_t *params)
 {
@@ -1194,10 +1194,10 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_send_rsp( uxc_sfcall_t *sfcall, uxc_sdmvar
 }
 
 /**
- * @brief CLICKTOCALL START REQUEST(DBIF) ¼³Á¤ ÇÔ¼ö
+ * @brief CLICKTOCALL START REQUEST(DBIF) ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½
  * @param sfcall call fsm node
  * @param params sdm value parameter
- * @return ½ÇÇà °á°ú
+ * @return ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
  */
 UX_DECLARE(int) clicktocall_dlgsvc_on_send_dbif_start_req( uxc_sfcall_t *sfcall, uxc_sdmvars_t *params)
 {
@@ -1260,10 +1260,10 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_send_dbif_start_req( uxc_sfcall_t *sfcall,
 }
 
 /**
- * @brief CLICKTOCALL START RESPONSE(DBIF) ¼³Á¤ ÇÔ¼ö
+ * @brief CLICKTOCALL START RESPONSE(DBIF) ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½
  * @param sfcall call fsm node
  * @param params sdm value parameter
- * @return ½ÇÇà °á°ú
+ * @return ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
  */
 UX_DECLARE(int) clicktocall_dlgsvc_on_recv_dbif_start_res( uxc_sfcall_t *sfcall, uxc_sdmvars_t *params)
 {
@@ -1331,10 +1331,10 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_recv_dbif_start_res( uxc_sfcall_t *sfcall,
 }
 
 /**
- * @brief CLICKTOCALL START RECORDING REQUEST(DBIF) ¼³Á¤ ÇÔ¼ö
+ * @brief CLICKTOCALL START RECORDING REQUEST(DBIF) ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½
  * @param sfcall call fsm node
  * @param params sdm value parameter
- * @return ½ÇÇà °á°ú
+ * @return ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
  */
 UX_DECLARE(int) clicktocall_dlgsvc_on_send_dbif_start_recording_req( uxc_sfcall_t *sfcall, uxc_sdmvars_t *params)
 {
@@ -1397,10 +1397,10 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_send_dbif_start_recording_req( uxc_sfcall_
 }
 
 /**
- * @brief CLICKTOCALL START RECORDING RESPONSE(DBIF) ¼³Á¤ ÇÔ¼ö
+ * @brief CLICKTOCALL START RECORDING RESPONSE(DBIF) ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½
  * @param sfcall call fsm node
  * @param params sdm value parameter
- * @return ½ÇÇà °á°ú
+ * @return ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
  */
 UX_DECLARE(int) clicktocall_dlgsvc_on_recv_dbif_start_recording_res( uxc_sfcall_t *sfcall, uxc_sdmvars_t *params)
 {
@@ -1428,7 +1428,7 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_recv_dbif_start_recording_res( uxc_sfcall_
 	sess = uxc_sess_get_user_data( uxcsess);
 	dlgsess = (sess) ? uims_sess_get_data( sess) : NULL;
 	if( dlgsess == NULL ) {
-		uxc_trace(UXCTL(1,MAJ), "%s: dialog session doesn' exist.", func);
+		uxc_trace(UXCTL(1,MAJ), "%s: dialog session doesn't exist.", func);
 		return UX_EINVAL;
 	}
 
@@ -1457,12 +1457,12 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_recv_dbif_start_recording_res( uxc_sfcall_
 	dlgsess->recordingfile = ux_str_dup( sval, uims_sess_get_allocator(sess)); 
 
 	ux_log(UXL_DBG1, "%s: ipcmsg cmdId=%d", func, ipcmsg->header.cmdId);
-	ux_log(UXL_DBG1, "%s: ipcmsg userData=%d", func, ipcmsg->header.userData);	
-	ux_log(UXL_DBG1, "%s: ipcmsg srcSubSysId=%d", func, ipcmsg->header.srcSubSysId);	
-	ux_log(UXL_DBG1, "%s: ipcmsg srcProcId=%d", func, ipcmsg->header.srcProcId);	
-	ux_log(UXL_DBG1, "%s: ipcmsg srcQid=%d", func, ipcmsg->header.srcQid);	
-	ux_log(UXL_DBG1, "%s: ipcmsg result=%d", func, ipcmsg->header.result);	
+	ux_log(UXL_DBG1, "%s: ipcmsg userData=%d", func, ipcmsg->header.userData);
+	ux_log(UXL_DBG1, "%s: ipcmsg srcSubSysId=%d", func, ipcmsg->header.srcSubSysId);
+	ux_log(UXL_DBG1, "%s: ipcmsg srcProcId=%d", func, ipcmsg->header.srcProcId);
+	ux_log(UXL_DBG1, "%s: ipcmsg srcQid=%d", func, ipcmsg->header.srcQid);
+	ux_log(UXL_DBG1, "%s: ipcmsg result=%d", func, ipcmsg->header.result);
 
-	ux_log(UXL_DBG1, "%s completed", func);	
+	ux_log(UXL_DBG1, "%s completed", func);
 	return UX_SUCCESS;
 }

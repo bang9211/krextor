@@ -28,7 +28,7 @@
 
 		<session>
 			<member name="sdp_calling" type="char[1024]"/>
-			<member name="sdp_called" type="char[1024]"/>
+			<member name="sdp_called" type="char[1024]"/> 
 			<member name="sdp_ms" type="char[1024]"/>
 			<member name="subscriber_name" type="char[16]"/>
 			<member name="calling_number" type="char[16]"/>
@@ -81,9 +81,9 @@
 				</ontimeout>
 			</invoke>
 
-			<invoke name="SEND_CALLING_CLICKTOCALL_NOTI" protocol="HTTP" operation="POST" url="http://localhost:8070/clicktocall/notify" version="1.0" timeout="5000" is_req="yes">
+			<invoke name="SEND_CALLING_CLICKTOCALL_NOTI" protocol="HTTP" operation="POST" url="http://localhost:8070/clicktocallrecording/notify" version="1.0" timeout="5000" is_req="yes">
 				<onsend>
-					<call type="SYS" function="clicktocall_dlgsvc_on_send_http_notify(CALL_TO_CALLED, 0)"/>
+					<call type="SYS" function="clicktocall_dlgsvc_on_send_http_notify(CALL_TO_CALLING, 0)"/>
 				</onsend>
 				<onsuccess>
 					<call function="log_msg('HTTP NOTIFY SUCCESS')"/>
@@ -98,7 +98,7 @@
 
 			<invoke name="SEND_CALLED_CLICKTOCALL_NOTI" protocol="HTTP" operation="POST" url="http://localhost:8070/clicktocallrecording/notify" version="1.0" timeout="5000" is_req="yes">
 				<onsend>
-					<call type="SYS" function="clicktocall_dlgsvc_on_send_http_notify(CALL_TO_CALLING, 0)"/>
+					<call type="SYS" function="clicktocall_dlgsvc_on_send_http_notify(CALL_TO_CALLED, 0)"/>
 				</onsend>
 				<onsuccess>
 					<call function="log_msg('HTTP NOTIFY SUCCESS')"/>
