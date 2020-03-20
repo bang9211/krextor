@@ -129,15 +129,7 @@ static int tcp_server_handle_clicktocall_start_req( tcp_server_t *server, uxc_wo
 	memcpy(clicktocall_start_req, msg->body, sizeof(tcp_clicktocall_start_req_t));
 
 	//header
-	ux_log(UXL_CRT, "  [frameStart0] 0x%hhX", msg->header.frameStart0);
-	ux_log(UXL_CRT, "  [frameStart1] 0x%hhX", msg->header.frameStart1);
-	ux_log(UXL_CRT, "  [length] %d", msg->header.length);
-	ux_log(UXL_CRT, "  [messageID] %#010x", msg->header.messageID);
-	ux_log(UXL_CRT, "  [requestID] %d", msg->header.requestID);
-	ux_log(UXL_CRT, "  [version0] 0x%hhX", msg->header.version0);
-	ux_log(UXL_CRT, "  [version1] 0x%hhX", msg->header.version1);
-	ux_log(UXL_CRT, "  [userID] %d", msg->header.userID);
-	ux_log(UXL_CRT, "  [filler] %d", msg->header.filler);
+	skb_msg_display_header(&skbmsg.header);
 	/* To do.. */	
 	ux_log(UXL_CRT, "  [subscriberName] %s", clicktocall_start_req->subscriberName);
 	ux_log(UXL_CRT, "  [recordingType] %d", clicktocall_start_req->recordingType);

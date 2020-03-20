@@ -138,6 +138,38 @@ void skb_msg_make_header(skb_header_t* header, int32_t messageID, int16_t bodySi
 	header->filler = 0;
 }
 
+void skb_msg_display_header(skb_header_t* header) {
+	ux_log(UXL_INFO, "  [frameStart0] 0x%hhX", header->frameStart0);
+	ux_log(UXL_INFO, "  [frameStart1] 0x%hhX", header->frameStart1);
+	ux_log(UXL_INFO, "  [length] %d", header->length);
+	ux_log(UXL_INFO, "  [messageID] %#010x", header->messageID);
+	ux_log(UXL_INFO, "  [requestID] %d", header->requestID);
+	ux_log(UXL_INFO, "  [version0] 0x%hhX", header->version0);
+	ux_log(UXL_INFO, "  [version1] 0x%hhX", header->version1);
+	ux_log(UXL_INFO, "  [userID] %d", header->userID);
+	ux_log(UXL_INFO, "  [filler] %d", header->filler);
+}
+
+//TODO : requestID 수명이 다하면 초기화해줘야함(고갈 가능성)
 int32_t skb_msg_generate_requestID() {
-	return 0;
+	return getRandomInt32();
+}
+
+int32_t getRandomInt32() {
+	int32_t x;
+	x = rand() & 0xff;
+	x |= (rand() & 0xff) << 8;
+	x |= (rand() & 0xff) << 16;
+	x |= (rand() & 0xff) << 24;
+	return x;
+}
+
+void create_skb_map() {
+	reqIDSIDMap = uh_int_init();
+	reqIDGWSIDMap = uh_int_init();
+}
+
+void destroy_skb_map() {
+	uh_int_destroy(reqIDSIDMap);
+	uh_int_destroy(reqIDGWSIDMap);
 }

@@ -4,8 +4,6 @@
 #include <uxcutor/uxcutor.h>
 #include <upa/upa_tcp.h>
 #include "tcp_msg.h"
-#include "tcp_idprsp.h"
-#include "tcp_idpreq.h"
 #include "skb_msg.h"
 #include <string.h>
 

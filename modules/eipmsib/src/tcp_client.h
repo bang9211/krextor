@@ -5,7 +5,6 @@
 #include <upa/upa_tcp.h>
 #include <upa/upa_dbif.h>
 #include "tcp_msg.h"
-#include "tcp_idprsp.h"
 #include "skb_msg.h"
 #include "uhash.h"
 

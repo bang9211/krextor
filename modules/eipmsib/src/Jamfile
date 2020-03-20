@@ -14,9 +14,7 @@ SRCS =
     tcp_client
     tcp_conf
     eipmsib_main
-    tcp_idprsp
     tcp_clicktocall_rsp
-    tcp_idpreq
     tcp_clicktocall_req
     tcp_server
     tcp_msg

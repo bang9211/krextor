@@ -99,8 +99,9 @@ int skb_msg_cvt_order_ntoh(skb_msg_t *msg, int msgId);
 int skb_msg_send( skb_msg_t *msg, upa_tcp_t *tcp, upa_peerkey_t *peerkey);
 
 int32_t getRandomInt32();
-int32_t skb_msg_generate_messasgeID();
 void skb_msg_make_header(skb_header_t* header, int32_t messageID, int16_t bodySize, int32_t *requestID);
+void skb_msg_display_header(skb_header_t* header);
+int32_t skb_msg_generate_messasgeID();
 int32_t skb_msg_generate_requestID();
 
 

@@ -188,16 +188,7 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 			memcpy(skbmsg.body, &clicktocall_start_req, sizeof(clicktocall_start_req));
 			ux_log(UXL_INFO, "header length : %d", skbmsg.header.length);
 			msg_size = skbmsg.header.length;
-
-			ux_log(UXL_INFO, "  [frameStart0] 0x%hhX", skbmsg.header.frameStart0);
-			ux_log(UXL_INFO, "  [frameStart1] 0x%hhX", skbmsg.header.frameStart1);
-			ux_log(UXL_INFO, "  [length] %d", skbmsg.header.length);
-			ux_log(UXL_INFO, "  [messageID] %#010x", skbmsg.header.messageID);
-			ux_log(UXL_INFO, "  [requestID] %d", skbmsg.header.requestID);
-			ux_log(UXL_INFO, "  [version0] 0x%hhX", skbmsg.header.version0);
-			ux_log(UXL_INFO, "  [version1] 0x%hhX", skbmsg.header.version1);
-			ux_log(UXL_INFO, "  [userID] %d", skbmsg.header.userID);
-			ux_log(UXL_INFO, "  [filler] %d", skbmsg.header.filler);
+			skb_msg_display_header(&skbmsg.header);
 
 			if(!uh_int_put(reqIDSIDMap, skbmsg.header.requestID, sessionID)) {
 				ux_log(UXL_CRT, "failed to put to reqIDSIDMap : (%d - %s)", skbmsg.header.requestID, sessionID);
