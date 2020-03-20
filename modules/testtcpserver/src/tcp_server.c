@@ -114,13 +114,13 @@ static int tcp_server_handle_clicktocall_start_req( tcp_server_t *server, uxc_wo
 					upa_tcpmsg_t *tcpmsg, skb_msg_t *skbmsg )
 {
 	int rv;
-	tcp_clicktocall_start_rsp_t clicktocall_start_rsp[1];
+	clicktocall_start_rsp_tcp_t clicktocall_start_rsp[1];
 	clicktocall_start_req_tcp_t clicktocall_start_req[1];
 	skb_msg_t rspMsg;
 
 	ux_log(UXL_INFO, "* tcp_server_handle_clicktocall_start_req ");
 	// clicktocall_start_req_tcp_init(clicktocall_start_req);
-	tcp_clicktocall_start_rsp_init(clicktocall_start_rsp);
+	clicktocall_start_rsp_tcp_init(clicktocall_start_rsp);
 
 	// rv = clicktocall_start_req_decode_dbif_msg(clicktocall_start_req, skbmsg);
 	// if (rv <eUXC_SUCCESS) return rv;
@@ -142,7 +142,7 @@ static int tcp_server_handle_clicktocall_start_req( tcp_server_t *server, uxc_wo
 
 	skb_msg_make_header(&rspMsg.header, START_RESPONSE, sizeof(clicktocall_start_rsp), &skbmsg->header.requestID);
 	// rspMsg.body = clicktocall_start_rsp;
-	memcpy(rspMsg.body, clicktocall_start_rsp, sizeof(tcp_clicktocall_start_rsp_t));
+	memcpy(rspMsg.body, clicktocall_start_rsp, sizeof(clicktocall_start_rsp_tcp_t));
 
 	rv = skb_msg_send(&rspMsg, server->patcp, &tcpmsg->peerkey);	
 	if (rv <eUXC_SUCCESS) return rv;

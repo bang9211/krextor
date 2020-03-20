@@ -113,12 +113,12 @@ static int tcp_server_handle_clicktocall_req( tcp_server_t *server, uxc_worker_t
 {
 	// int rv;
 	// uxc_dbif_t *dbif;
-	tcp_clicktocall_start_rsp_t clicktocall_rsp[1];
+	clicktocall_start_rsp_tcp_t clicktocall_rsp[1];
 	clicktocall_start_req_tcp_t clicktocall_req[1];
 
 	ux_log(UXL_INFO, "* tcp_server_handle_clicktocall_req ");
 	clicktocall_start_req_tcp_init(clicktocall_req);
-	tcp_clicktocall_start_rsp_init(clicktocall_rsp);
+	clicktocall_start_rsp_tcp_init(clicktocall_rsp);
 
 	// dbif = (uxc_dbif_t*)msg->data;
 	// rv = clicktocall_start_req_decode_dbif_msg(clicktocall_req, NULL, NULL, dbif);
@@ -152,7 +152,7 @@ static int tcp_server_handle_clicktocall_req( tcp_server_t *server, uxc_worker_t
 	// clicktocall_rsp->brandId = 0;
 	// clicktocall_rsp->lang= 0;
 
-	// rv = tcp_clicktocall_start_rsp_encode_ipcmsg(clicktocall_rsp, msg);
+	// rv = clicktocall_start_rsp_encode_to_dbif_msg(clicktocall_rsp, msg);
 	// if (rv <eUXC_SUCCESS) return rv;
 	// rv = tcp_msg_send(msg, server->patcp, &tcpmsg->peerkey);	
 	// if (rv <eUXC_SUCCESS) return rv;

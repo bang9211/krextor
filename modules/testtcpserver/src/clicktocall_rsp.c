@@ -1,22 +1,22 @@
-#include "tcp_clicktocall_rsp.h"
+#include "clicktocall_rsp.h"
 
 ///////////////////////////////////////////////////////////////////////////////////
-// functions for tcp_clicktocall_start_rsp_t 
+// functions for clicktocall_start_rsp_tcp_t 
 ///////////////////////////////////////////////////////////////////////////////////
 
-int tcp_clicktocall_start_rsp_init( tcp_clicktocall_start_rsp_t *clicktocall_start_rsp)
+int clicktocall_start_rsp_tcp_init( clicktocall_start_rsp_tcp_t *clicktocall_start_rsp)
 {
-	memset(clicktocall_start_rsp, 0, sizeof(tcp_clicktocall_start_rsp_t));
+	memset(clicktocall_start_rsp, 0, sizeof(clicktocall_start_rsp_tcp_t));
 
 	return eUXC_SUCCESS;
 }
 
-void tcp_clicktocall_start_rsp_final( tcp_clicktocall_start_rsp_t *clicktocall_start_rsp)
+void clicktocall_start_rsp_tcp_final( clicktocall_start_rsp_tcp_t *clicktocall_start_rsp)
 {
 	//
 }
 
-int tcp_clicktocall_start_rsp_encode_ipcmsg( tcp_clicktocall_start_rsp_t *clicktocall_start_rsp, tcp_msg_t *msg)
+int clicktocall_start_rsp_encode_to_dbif_msg( clicktocall_start_rsp_tcp_t *clicktocall_start_rsp, tcp_msg_t *msg)
 {
 	int rv;
 	uxc_dbif_t *dbif;

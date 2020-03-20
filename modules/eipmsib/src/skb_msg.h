@@ -4,7 +4,7 @@
 #include "tcp_conf.h"
 #include "uhash.h"
 #include "clicktocall_req.h"
-#include "tcp_clicktocall_rsp.h"
+#include "clicktocall_rsp.h"
 #include <time.h>
 #include <stdlib.h>
 #include <upa/upa_tcp.h>

@@ -15,7 +15,7 @@ SRCS =
     tcp_conf
     tcp_dlmain
     clicktocall_req
-    tcp_clicktocall_rsp
+    clicktocall_rsp
     tcp_server
     tcp_msg
     skb_msg

@@ -255,7 +255,7 @@ int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpms
 	{
 		case START_RESPONSE:
 			//TODO 1 : 아래에서 tcp response를 dbif 형식의 메시지로 변경시키기
-			// rv = tcp_clicktocall_start_rsp_encode_ipcmsg(clicktocall_start_rsp, msg);
+			// rv = clicktocall_start_rsp_encode_to_dbif_msg(clicktocall_start_rsp, msg);
 			// if (rv <eUXC_SUCCESS) return rv;
 
 			// rv = tcp_client_send_ipcmsg(client, msg, 0); 
