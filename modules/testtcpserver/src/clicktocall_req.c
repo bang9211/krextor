@@ -192,8 +192,8 @@ final:
 
 void clicktocall_startrecording_req_tcp_display(clicktocall_startrecording_req_tcp_t *clicktocall_startrecording_req) {
 	ux_log(UXL_INFO, "TCP [clicktocall_startrecording_req]");
-	ux_log(UXL_INFO, "  [serviceID] %s", clicktocall_startrecording_req_tcp_t->serviceID);
-	ux_log(UXL_INFO, "  [recordingFileName] %s", clicktocall_startrecording_req_tcp_t->recordingFileName);
+	ux_log(UXL_INFO, "  [serviceID] %s", clicktocall_startrecording_req->serviceID);
+	ux_log(UXL_INFO, "  [recordingFileName] %s", clicktocall_startrecording_req->recordingFileName);
 }
 
 void clicktocall_startrecording_req_dbif_display(uxc_dbif_t *dbif) {
