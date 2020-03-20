@@ -64,7 +64,7 @@ void clicktocall_stop_rsp_tcp_final( clicktocall_stop_rsp_tcp_t *clicktocall_sto
 	//
 }
 
-int clicktocall_start_rsp_encode_to_dbif_msg( clicktocall_start_rsp_tcp_t *clicktocall_start_rsp, uxc_dbif_t *dbif) {
+int clicktocall_stop_rsp_encode_to_dbif_msg( clicktocall_stop_rsp_tcp_t *clicktocall_stop_rsp, uxc_dbif_t *dbif) {
 	int rv;
 
 	rv = uxc_dbif_init( dbif);
@@ -73,9 +73,9 @@ int clicktocall_start_rsp_encode_to_dbif_msg( clicktocall_start_rsp_tcp_t *click
 		return rv;
 	}
 
-	rv = uxc_dbif_set_int( dbif, 0, clicktocall_start_rsp->resultCode);
+	rv = uxc_dbif_set_int( dbif, 0, clicktocall_stop_rsp->resultCode);
 	if( rv < eUXC_SUCCESS ) goto final; 
-	rv = uxc_dbif_set_str( dbif, 1, clicktocall_start_rsp->serviceID);
+	rv = uxc_dbif_set_str( dbif, 1, clicktocall_stop_rsp->serviceID);
 	if( rv < eUXC_SUCCESS ) goto final; 
 
 	return rv;
@@ -136,7 +136,7 @@ void clicktocall_stoprecording_rsp_tcp_final( tcp_clicktocall_stoprecording_rsp_
 
 int clicktocall_stoprecording_rsp_encode_to_dbif_msg( tcp_clicktocall_stoprecording_rsp_t *clicktocall_stoprecording_rsp, uxc_dbif_t *dbif) {
 	int rv;
-	
+
 	rv = uxc_dbif_init( dbif);
 	if( rv < eUXC_SUCCESS ) {
 		ux_log( UXL_CRT, "uxc_dbif_init failed(rv=%d)", rv);
