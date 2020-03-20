@@ -97,27 +97,28 @@ void clicktocall_start_req_tcp_display(clicktocall_start_req_tcp_t *clicktocall_
 }
 
 void clicktocall_start_req_dbif_display(uxc_dbif_t *dbif) {
+	int rv;
 	ux_log(UXL_INFO, "DBIF [clicktocall_start_req]");
-	ux_log(UXL_INFO, "  [sessionID] %s",uxc_dbif_get_str(dbif, 0, dbif));
-	ux_log(UXL_INFO, "  [gwSessionID] %s",uxc_dbif_get_str(dbif, 1, dbif));
-	ux_log(UXL_INFO, "  [subscriberName] %s",uxc_dbif_get_str(dbif, 2, dbif));
-	ux_log(UXL_INFO, "  [recordingType] %d",uxc_dbif_get_int(dbif, 3, dbif));
-	ux_log(UXL_INFO, "  [callingNumber] %s",uxc_dbif_get_str(dbif, 4, dbif));
-	ux_log(UXL_INFO, "  [calledNumber] %s",uxc_dbif_get_str(dbif, 5, dbif));
-	ux_log(UXL_INFO, "  [serviceCode] %d",uxc_dbif_get_int(dbif, 6, dbif));
-	ux_log(UXL_INFO, "  [ringBackToneType] %d",uxc_dbif_get_int(dbif, 7, dbif));
-	ux_log(UXL_INFO, "  [waitingMentID] %d",uxc_dbif_get_int(dbif, 8, dbif));
-	ux_log(UXL_INFO, "  [scenarioType] %d",uxc_dbif_get_int(dbif, 9, dbif));
-	ux_log(UXL_INFO, "  [callMentID] %d",uxc_dbif_get_int(dbif, 10, dbif));
-	ux_log(UXL_INFO, "  [callingCID] %s",uxc_dbif_get_str(dbif, 11, &dbif));
-	ux_log(UXL_INFO, "  [calledCID] %s",uxc_dbif_get_str(dbif, 12, dbif));
-	ux_log(UXL_INFO, "  [recordingFileName] %s",uxc_dbif_get_str(dbif, 13, dbif));
-	ux_log(UXL_INFO, "  [isAllRecording] %d",uxc_dbif_get_int(dbif, 14, dbif));
-	ux_log(UXL_INFO, "  [endIfRecordingFailed] %d",uxc_dbif_get_int(dbif, 15, dbif));
-	ux_log(UXL_INFO, "  [endIfRecordingEnded] %d",uxc_dbif_get_int(dbif, 16, dbif));
-	ux_log(UXL_INFO, "  [hostingCode] %d",uxc_dbif_get_int(dbif, 17, dbif));
-	ux_log(UXL_INFO, "  [wirelessTimeout] %d",uxc_dbif_get_int(dbif, 18, dbif));
-	ux_log(UXL_INFO, "  [wiredTimeout] %d",uxc_dbif_get_int(dbif, 19, dbif));
+	ux_log(UXL_INFO, "  [sessionID] %s",uxc_dbif_get_str(dbif, 0, &rv));
+	ux_log(UXL_INFO, "  [gwSessionID] %s",uxc_dbif_get_str(dbif, 1, &rv));
+	ux_log(UXL_INFO, "  [subscriberName] %s",uxc_dbif_get_str(dbif, 2, &rv));
+	ux_log(UXL_INFO, "  [recordingType] %d",uxc_dbif_get_int(dbif, 3, &rv));
+	ux_log(UXL_INFO, "  [callingNumber] %s",uxc_dbif_get_str(dbif, 4, &rv));
+	ux_log(UXL_INFO, "  [calledNumber] %s",uxc_dbif_get_str(dbif, 5, &rv));
+	ux_log(UXL_INFO, "  [serviceCode] %d",uxc_dbif_get_int(dbif, 6, &rv));
+	ux_log(UXL_INFO, "  [ringBackToneType] %d",uxc_dbif_get_int(dbif, 7, &rv));
+	ux_log(UXL_INFO, "  [waitingMentID] %d",uxc_dbif_get_int(dbif, 8, &rv));
+	ux_log(UXL_INFO, "  [scenarioType] %d",uxc_dbif_get_int(dbif, 9, &rv));
+	ux_log(UXL_INFO, "  [callMentID] %d",uxc_dbif_get_int(dbif, 10, &rv));
+	ux_log(UXL_INFO, "  [callingCID] %s",uxc_dbif_get_str(dbif, 11, &rv));
+	ux_log(UXL_INFO, "  [calledCID] %s",uxc_dbif_get_str(dbif, 12, &rv));
+	ux_log(UXL_INFO, "  [recordingFileName] %s",uxc_dbif_get_str(dbif, 13, &rv));
+	ux_log(UXL_INFO, "  [isAllRecording] %d",uxc_dbif_get_int(dbif, 14, &rv));
+	ux_log(UXL_INFO, "  [endIfRecordingFailed] %d",uxc_dbif_get_int(dbif, 15, &rv));
+	ux_log(UXL_INFO, "  [endIfRecordingEnded] %d",uxc_dbif_get_int(dbif, 16, &rv));
+	ux_log(UXL_INFO, "  [hostingCode] %d",uxc_dbif_get_int(dbif, 17, &rv));
+	ux_log(UXL_INFO, "  [wirelessTimeout] %d",uxc_dbif_get_int(dbif, 18, &rv));
+	ux_log(UXL_INFO, "  [wiredTimeout] %d",uxc_dbif_get_int(dbif, 19, &rv));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
