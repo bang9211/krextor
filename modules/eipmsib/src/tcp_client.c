@@ -314,7 +314,7 @@ int tcp_client_send_ipcmsg( tcp_client_t *client,  tcp_msg_t* msg, int rv)
 
 	rv = msgsnd(ipcmsg.header.dstQid, &ipcmsg, msg_size, IPC_NOWAIT);
 	if( rv < 0) {
-		ux_log( UXL_MAJ, "msgsnd: E=%d, q=%lu, len=%d", errno, ipcmsg.header.dstQid,
+		ux_log( UXL_MAJ, "msgsnd: E=%d, q=%d, len=%lu", errno, ipcmsg.header.dstQid,
 					sizeof(uxc_ixpc_t) + ipcmsg.header.length);
 		return rv;
 	}
