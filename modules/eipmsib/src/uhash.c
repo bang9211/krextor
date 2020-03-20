@@ -5,6 +5,7 @@
 uhash_int_t* uh_int_init() {
     uhash_int_t *hash = (uhash_int_t*)malloc(sizeof(uhash_int_t));
     hash->h = kh_init(m32);
+    hash->available = 0;
     return hash;
 }
 
@@ -66,6 +67,7 @@ void uh_int_destroy(uhash_int_t* hash) {
 uhash_str_t* uh_str_init() {
     uhash_str_t *hash = (uhash_str_t*)malloc(sizeof(uhash_str_t));
     hash->h = kh_init(str);
+    hash->available = 0;
     return hash;
 }
 
