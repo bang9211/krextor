@@ -129,7 +129,7 @@ static int tcp_server_handle_clicktocall_start_req( tcp_server_t *server, uxc_wo
 	memcpy(clicktocall_start_req, skbmsg->body, sizeof(tcp_clicktocall_start_req_t));
 
 	//header
-	skb_msg_display_header(&skbmsg.header);
+	skb_msg_display_header(skbmsg->header);
 	/* To do.. */	
 	ux_log(UXL_CRT, "  [subscriberName] %s", clicktocall_start_req->subscriberName);
 	ux_log(UXL_CRT, "  [recordingType] %d", clicktocall_start_req->recordingType);

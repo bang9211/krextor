@@ -11,7 +11,7 @@ uhash_int_t* uh_int_init() {
 
 int uh_int_put(uhash_int_t* hash, khint_t key, char* value) {
 //    int absent;
-    int ret;
+    int r;
     khint_t k;
     
 //    k = kh_get(m32, hash->h, key);
@@ -28,9 +28,9 @@ int uh_int_put(uhash_int_t* hash, khint_t key, char* value) {
 //    }
 //    kh_value(hash->h, k) = value;
     
-    ret = kh_set(m32, hash->h, key, value);
+    r = kh_set(m32, hash->h, key, value);
     hash->available--;
-    if (ret < 0) {
+    if (r < 0) {
         return 0;
     }
     return 1;
@@ -70,7 +70,7 @@ uhash_str_t* uh_str_init() {
 
 int uh_str_put(uhash_str_t* hash, char* key, char* value) {
 //    int absent;
-    int ret;
+    int r;
     khint_t k;
     
 //    k = kh_get(khStrStr, hash->h, key);
@@ -87,9 +87,9 @@ int uh_str_put(uhash_str_t* hash, char* key, char* value) {
 //    }
 //    kh_value(hash->h, k) = value;
     
-    ret = kh_set(str, hash->h, key, value);
+    r = kh_set(str, hash->h, key, value);
     hash->available--;
-    if (ret < 0) {
+    if (r < 0) {
         return 0;
     }
     return 1;
