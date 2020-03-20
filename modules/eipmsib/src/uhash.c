@@ -1,4 +1,5 @@
 #include "uhash.h"
+#include <stdio.h>
 
 
 uhash_int_t* uh_int_init() {
@@ -13,7 +14,9 @@ int uh_int_put(uhash_int_t* hash, khint_t key, char* value) {
     khint_t k;
     
 //    k = kh_get(m32, hash->h, key);
+    printf("test1 : %d\n", hash->available);
     while (hash->available > 0);
+    printf("test2 : %d\n", hash->available);
     hash->available++;
     
 //    if (k == kh_end(hash->h)) {
@@ -27,6 +30,7 @@ int uh_int_put(uhash_int_t* hash, khint_t key, char* value) {
 //    kh_value(hash->h, k) = value;
     
     ret = kh_set(m32, hash->h, key, value);
+    printf("test3 : %d\n", hash->available);
     hash->available--;
     if (ret < 0) {
         return 0;
