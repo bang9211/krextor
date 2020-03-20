@@ -190,7 +190,7 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 			msg_size = skbmsg.header.length;
 
 			ux_log(UXL_CRT, "  [frameStart0] 0x%hhX", skbmsg.header.frameStart0);
-			ux_log(UXL_CRT, "  [frameStart1] 0x%hhX", skbmsg->header.frameStart1);
+			ux_log(UXL_CRT, "  [frameStart1] 0x%hhX", skbmsg.header.frameStart1);
 			ux_log(UXL_CRT, "  [length] %d", skbmsg.header.length);
 			ux_log(UXL_CRT, "  [messageID] %#010x", skbmsg.header.messageID);
 			ux_log(UXL_CRT, "  [requestID] %d", skbmsg.header.requestID);
