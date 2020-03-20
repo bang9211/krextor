@@ -77,21 +77,21 @@ final:
 
 
 ///////////////////////////////////////////////////////////////////////////////////
-// functions for tcp_clicktocall_stop_req_t 
+// functions for clicktocall_stop_req_tcp_t 
 ///////////////////////////////////////////////////////////////////////////////////
 
-int tcp_clicktocall_stop_req_init( tcp_clicktocall_stop_req_t *clicktocall_stop_req)
+int clicktocall_stop_req_tcp_init( clicktocall_stop_req_tcp_t *clicktocall_stop_req)
 {
-	memset(clicktocall_stop_req, 0, sizeof(tcp_clicktocall_stop_req_t));
+	memset(clicktocall_stop_req, 0, sizeof(clicktocall_stop_req_tcp_t));
 	return eUXC_SUCCESS;
 }
 
-void tcp_clicktocall_stop_req_final( tcp_clicktocall_stop_req_t *clicktocall_stop_req)
+void clicktocall_stop_req_tcp_final( clicktocall_stop_req_tcp_t *clicktocall_stop_req)
 {
 	return;
 }
 
-int tcp_clicktocall_stop_req_decode_msg( tcp_clicktocall_stop_req_t *clicktocall_stop_req, tcp_msg_t *msg)
+int clicktocall_stop_req_decode_dbif_msg( clicktocall_stop_req_tcp_t *clicktocall_stop_req, tcp_msg_t *msg)
 {
 	int rv;
 	uxc_dbif_t *dbif;
@@ -116,21 +116,21 @@ final:
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
-// functions for tcp_clicktocall_startrecording_req_t 
+// functions for clicktocall_startrecording_req_tcp_t 
 ///////////////////////////////////////////////////////////////////////////////////
 
-int tcp_clicktocall_startrecording_req_init( tcp_clicktocall_startrecording_req_t *clicktocall_startrecording_req)
+int clicktocall_startrecording_req_tcp_init( clicktocall_startrecording_req_tcp_t *clicktocall_startrecording_req)
 {
-	memset(clicktocall_startrecording_req, 0, sizeof(tcp_clicktocall_startrecording_req_t));
+	memset(clicktocall_startrecording_req, 0, sizeof(clicktocall_startrecording_req_tcp_t));
 	return eUXC_SUCCESS;
 }
 
-void tcp_clicktocall_startrecording_req_final( tcp_clicktocall_startrecording_req_t *clicktocall_startrecording_req)
+void clicktocall_startrecording_req_tcp_final( clicktocall_startrecording_req_tcp_t *clicktocall_startrecording_req)
 {
 	return;
 }
 
-int tcp_clicktocall_startrecording_req_decode_msg( tcp_clicktocall_startrecording_req_t *clicktocall_startrecording_req, tcp_msg_t *msg)
+int clicktocall_startrecording_req_decode_dbif_msg( clicktocall_startrecording_req_tcp_t *clicktocall_startrecording_req, tcp_msg_t *msg)
 {
 	int rv;
 	uxc_dbif_t *dbif;
@@ -155,21 +155,21 @@ final:
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
-// functions for tcp_clicktocall_stoprecording_req_t 
+// functions for clicktocall_stoprecording_req_tcp_t 
 ///////////////////////////////////////////////////////////////////////////////////
 
-int tcp_clicktocall_stoprecording_req_init( tcp_clicktocall_stoprecording_req_t *clicktocall_stoprecording_req)
+int clicktocall_stoprecording_req_tcp_init( clicktocall_stoprecording_req_tcp_t *clicktocall_stoprecording_req)
 {
-	memset(clicktocall_stoprecording_req, 0, sizeof(tcp_clicktocall_stoprecording_req_t));
+	memset(clicktocall_stoprecording_req, 0, sizeof(clicktocall_stoprecording_req_tcp_t));
 	return eUXC_SUCCESS;
 }
 
-void tcp_clicktocall_stoprecording_req_final( tcp_clicktocall_stoprecording_req_t *clicktocall_stoprecording_req)
+void clicktocall_stoprecording_req_tcp_final( clicktocall_stoprecording_req_tcp_t *clicktocall_stoprecording_req)
 {
 	return;
 }
 
-int tcp_clicktocall_stoprecording_req_decode_msg( tcp_clicktocall_stoprecording_req_t *clicktocall_stoprecording_req, tcp_msg_t *msg)
+int clicktocall_stoprecording_req_decode_dbif_msg( clicktocall_stoprecording_req_tcp_t *clicktocall_stoprecording_req, tcp_msg_t *msg)
 {
 	int rv;
 	uxc_dbif_t *dbif;
