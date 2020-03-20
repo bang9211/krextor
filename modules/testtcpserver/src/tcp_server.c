@@ -111,7 +111,7 @@ int tcp_server_handle_svrreq( tcp_server_t *server, uxc_worker_t* worker, upa_tc
 }
 
 static int tcp_server_handle_clicktocall_start_req( tcp_server_t *server, uxc_worker_t *worker,
-					upa_tcpmsg_t *tcpmsg, skb_msg_t *msg )
+					upa_tcpmsg_t *tcpmsg, skb_msg_t *skbmsg )
 {
 	int rv;
 	tcp_clicktocall_start_rsp_t clicktocall_start_rsp[1];
@@ -122,11 +122,11 @@ static int tcp_server_handle_clicktocall_start_req( tcp_server_t *server, uxc_wo
 	// tcp_clicktocall_start_req_init(clicktocall_start_req);
 	tcp_clicktocall_start_rsp_init(clicktocall_start_rsp);
 
-	// rv = tcp_clicktocall_start_req_decode_msg(clicktocall_start_req, msg);
+	// rv = tcp_clicktocall_start_req_decode_msg(clicktocall_start_req, skbmsg);
 	// if (rv <eUXC_SUCCESS) return rv;
 
-	// clicktocall_start_req = msg->body;
-	memcpy(clicktocall_start_req, msg->body, sizeof(tcp_clicktocall_start_req_t));
+	// clicktocall_start_req = skbmsg->body;
+	memcpy(clicktocall_start_req, skbmsg->body, sizeof(tcp_clicktocall_start_req_t));
 
 	//header
 	skb_msg_display_header(&skbmsg.header);
@@ -162,7 +162,7 @@ static int tcp_server_handle_clicktocall_start_req( tcp_server_t *server, uxc_wo
 	strcpy(clicktocall_start_rsp->recordingFileURL, "/test/test");
 	strcpy(clicktocall_start_rsp->recordingFileName, "testFileName");
 
-	skb_msg_make_header(&rspMsg.header, START_RESPONSE, sizeof(clicktocall_start_rsp), &msg->header.requestID);
+	skb_msg_make_header(&rspMsg.header, START_RESPONSE, sizeof(clicktocall_start_rsp), &skbmsg->header.requestID);
 	// rspMsg.body = clicktocall_start_rsp;
 	memcpy(rspMsg.body, clicktocall_start_rsp, sizeof(tcp_clicktocall_start_rsp_t));
 
