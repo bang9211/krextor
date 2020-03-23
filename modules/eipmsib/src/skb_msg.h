@@ -100,7 +100,7 @@ void create_skb_map();
 void destroy_skb_map();
 
 int skb_msg_cvt_order_hton(skb_msg_t *msg, int msgId);
-int skb_msg_cvt_order_ntoh(skb_msg_t *msg, int chnIdx int *msgId);
+int skb_msg_cvt_order_ntoh(skb_msg_t *msg, int chnIdx, int *msgId);
 int skb_msg_send( skb_msg_t *msg, upa_tcp_t *tcp, upa_peerkey_t *peerkey);
 
 int32_t getRandomInt32();

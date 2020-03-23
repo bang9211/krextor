@@ -48,11 +48,11 @@ int skb_msg_cvt_order_hton(skb_msg_t *msg, int msgId)
 
 
 /**
- * @brief network eIPMS 메시지의 값들을 host byte ordering으로 바꾼다.
+ * @brief network eIPMS 메시지의 값들을 host byte ordering으로 바꾸고, 실행 결과와 DBIF msgId를 반환한다.
  * @param msg network eIPMS message
- * @return 실행 결과
+ * @return 실행 결과, msgId(response의 경우 NULL)
  */
-int skb_msg_cvt_order_ntoh(skb_msg_t *msg, int msgId)
+int skb_msg_cvt_order_ntoh(skb_msg_t *msg, int chnIdx int *msgId) {
 {
 #if !UX_BIGENDIAN
     skb_header_t *header;
@@ -61,30 +61,77 @@ int skb_msg_cvt_order_ntoh(skb_msg_t *msg, int msgId)
 	if (msg == NULL) return -1;
 
     header = &msg->header;
-	
-    switch(msgId) {
-    case CALL_START_REQUEST:
-		memcpy(clicktocall_start_req, msg->body, sizeof(clicktocall_start_req_tcp_t));
-        clicktocall_start_req->waitingMentID = ntohs(clicktocall_start_req->waitingMentID);
-        clicktocall_start_req->callMentID = ntohs(clicktocall_start_req->callMentID);
-        clicktocall_start_req->fillerInt16 = ntohs(clicktocall_start_req->fillerInt16);
-        break;
-    case CALL_STOP_REQUEST:
-        break;
-    case CALL_START_RECORDING_REQUEST:
-        break;
-    case CALL_STOP_RECORDING_REQUEST:
-        break;
-	default :
-		ux_log( UXL_INFO, "Unknown Msg Id : [%d]\n", msgId);
-		break;
-    }
 
 	/* skb header convert */
 	header->length = ntohs(header->length);
 	header->messageID = ntohl(header->messageID);
 	header->requestID = ntohl(header->requestID);
+
+	//body 복구
+	switch(chnIdx) {
+		case TCP_CHANNEL_CALL:
+			switch(skbmsg->header.messageID)
+			{
+				//받은 메시지가 요청인 경우(simulator case)
+				case START_REQUEST:
+					memcpy(clicktocall_start_req, msg->body, sizeof(clicktocall_start_req_tcp_t));
+					clicktocall_start_req->waitingMentID = ntohs(clicktocall_start_req->waitingMentID);
+					clicktocall_start_req->callMentID = ntohs(clicktocall_start_req->callMentID);
+					clicktocall_start_req->fillerInt16 = ntohs(clicktocall_start_req->fillerInt16);
+					break;
+				case STOP_REQUEST:
+					break;
+				case START_RECORDING_REQUEST:
+					break;
+				case STOP_RECORDING_REQUEST:
+					break;
+				//받은 메시지가 응답, 보고의 경우(normal case)
+				case START_RESPONSE:
+				case STOP_RESPONSE:
+				case STOP_REPORT:
+				case START_RECORDING_RESPONSE:
+				case START_RECORDING_REPORT:
+				case STOP_RECORDING_RESPONSE:
+				case STOP_RECORDING_REPORT:
+				case SERVICE_STATUS_RESPONSE:
+				case SERVICE_STATUS_REPORT:
+				default:
+					ux_log(UXL_CRT, "Unsupported messageID : %#010x", skbmsg->header.messageID)
+					return -1;
+			}
+			break;		
+		case TCP_CHANNEL_RECORDING:
+			break;
+		case TCP_CHANNEL_CONFERENCE:
+			break;
+		default:
+			ux_log(UXL_CRT, "Unsupported Channel Index : %d", chnIdx)
+			return -1;
+	}
 #endif
+//DBIF로 보내져야 하는 메시지인 경우, DBIF msgId 설정
+switch(chnIdx) {
+		case TCP_CHANNEL_CALL:
+			switch(skbmsg->header.messageID)
+			{
+				//받은 메시지가 보고의 경우(normal case)
+				case STOP_REPORT:				//CallEndReport
+					*msgId = 201;
+				case SERVICE_STATUS_REPORT:		//CallServiceStatusReport
+					*msgId = 200;
+				default:
+					*msgId = NULL;
+					break;
+			}
+			break;		
+		case TCP_CHANNEL_RECORDING:
+			break;
+		case TCP_CHANNEL_CONFERENCE:
+			break;
+		default:
+			ux_log(UXL_CRT, "Unsupported Channel Index : %d", chnIdx)
+			return -1;
+	}
 
 	return UX_SUCCESS;
 }
