@@ -120,7 +120,7 @@ switch(chnIdx) {
 				case SERVICE_STATUS_REPORT:		//CallServiceStatusReport
 					*msgId = 200;
 				default:
-					*msgId = NULL;
+					msgId = NULL;
 					break;
 			}
 			break;		
