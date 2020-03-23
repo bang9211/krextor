@@ -149,7 +149,7 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 			clicktocall_stop_req_dbif_display(dbif);
 			clicktocall_stop_req_decode_dbif_msg(&clicktocall_stop_req, dbif);
 			// TCP Header 설정
-			skb_msg_make_header(&skbmsg.header, START_REQUEST, sizeof(clicktocall_stop_req), NULL);
+			skb_msg_make_header(&skbmsg.header, STOP_REQUEST, sizeof(clicktocall_stop_req), NULL);
 			skb_msg_display_header(&skbmsg.header);
 			// TCP Body 설정
 			memcpy(skbmsg.body, &clicktocall_stop_req, sizeof(clicktocall_stop_req));
@@ -161,7 +161,7 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 			clicktocall_startrecording_req_dbif_display(dbif);
 			clicktocall_startrecording_req_decode_dbif_msg(&clicktocall_startrecording_req, dbif);
 			// TCP Header 설정
-			skb_msg_make_header(&skbmsg.header, START_REQUEST, sizeof(clicktocall_startrecording_req), NULL);
+			skb_msg_make_header(&skbmsg.header, START_RECORDING_REQUEST, sizeof(clicktocall_startrecording_req), NULL);
 			skb_msg_display_header(&skbmsg.header);
 			// TCP Body 설정
 			memcpy(skbmsg.body, &clicktocall_startrecording_req, sizeof(clicktocall_startrecording_req));
@@ -173,7 +173,7 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 			clicktocall_stoprecording_req_dbif_display(dbif);
 			clicktocall_stoprecording_req_decode_dbif_msg(&clicktocall_stoprecording_req, dbif);
 			// TCP Header 설정
-			skb_msg_make_header(&skbmsg.header, START_REQUEST, sizeof(clicktocall_stoprecording_req), NULL);
+			skb_msg_make_header(&skbmsg.header, STOP_RECORDING_REQUEST, sizeof(clicktocall_stoprecording_req), NULL);
 			skb_msg_display_header(&skbmsg.header);
 			// TCP Body 설정
 			memcpy(skbmsg.body, &clicktocall_stoprecording_req, sizeof(clicktocall_stoprecording_req));

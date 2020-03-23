@@ -78,33 +78,66 @@ static int _tcp_server_get_thrid( uxc_paif_t *paif, uxc_msg_t *msg)
 
 int tcp_server_handle_eipmsreq( tcp_server_t *server, uxc_worker_t* worker, upa_tcpmsg_t *tcpmsg)
 {
+	skb_msg_t *skbmsg;
 	tcp_msg_t *msg;
 	int msgID,rv;
 
+	//response : 받기는 하지만 gw에 전달해줄 필요는 없음. 향후 처리가 필요할 수 있으므로 데이터 파싱까지는 수행
+	clicktocall_start_rsp_tcp_t clicktocall_start_rsp[1];
+	clicktocall_stop_rsp_tcp_t clicktocall_stop_rsp[1];
+	clicktocall_startrecording_rsp_tcp_t clicktocall_startrecording_rsp[1];
+	clicktocall_stoprecording_rsp_tcp_t clicktocall_stoprecording_rsp[1];
+
+	//TODO : request(report) 처리
+	//CallServiceStatusReport
+	//CallEndReport
+
 	// 1. receive msg 
-	msg = (tcp_msg_t *)tcpmsg->netmsg->buffer;
+	msg = (skb_msg_t *)tcpmsg->netmsg->buffer;
+	ux_log(UXL_INFO, "received header size : %lu", sizeof(skbmsg->header));
 	
-	rv = tcp_msg_cvt_order_ntoh(msg);
+
+	//Header만 endian 복구 
+	// => TODO : header endian 복구하고, messageID와 채널 인덱스를 조합하여 msgId를 생성하고 
+	// 그걸 받아서 전체 endian 복구하게 하자
+	rv = skb_header_cvt_order_ntoh(&skbmsg->header);
 	if( rv < UX_SUCCESS) {
 		ux_log(UXL_INFO, "msg data error");
 		return rv;
 	}
 
-	msgID = msg->header.msgId;
-
-	// 2. display msg
-	rv = tcp_msg_display(msg);
-
-	// 3. process and response to uxcutor
-	switch(msgID)
-	{
-		case CALL_SERVICE_STATUS_REPORT:
-			return tcp_server_handle_clicktocall_req(server, worker, tcpmsg, msg);
-		case CALL_END_REPORT:
-			return tcp_server_handle_clicktocall_req(server, worker, tcpmsg, msg);
+	// 2. process and response to uxcutor
+	//채널 index를 먼저 구분하여 clicktocall, clicktocallrecording, clicktoconference 구분
+	switch(tcpmsg->peerkey.chnl_idx) {
+		case TCP_CHANNEL_CALL:
+			switch(skbmsg->header.messageID)
+			{
+				case START_RESPONSE:
+					//TODO : body도 endian 복구하여 clicktocall_start_rsp 만들기
+					//TODO : requestID에 따라 기존에 저장한 sessionID, gwSessionID 추가하여 dbif 만들기
+					//TODO : 기존에 저장한 qid 파악해 dbif 보내기
+					return tcp_server_handle_clicktocall_req(server, worker, tcpmsg, msg);
+				case STOP_RESPONSE:
+				case STOP_REPORT:
+				case START_RECORDING_RESPONSE:
+				case START_RECORDING_REPORT:
+				case STOP_RECORDING_RESPONSE:
+				case STOP_RECORDING_REPORT:
+				case SERVICE_STATUS_RESPONSE:
+				case SERVICE_STATUS_REPORT:
+				default:
+					ux_log(UXL_CRT, "Unsupported messageID : %#010x", skbmsg->header.messageID)
+					break;	
+			}
+			break;		
+		case TCP_CHANNEL_RECORDING:
+			break;
+		case TCP_CHANNEL_CONFERENCE:
+			break;
 		default:
-			break;	
-	}			
+			ux_log(UXL_CRT, "Unsupported Channel Index : %d", tcpmsg->peerkey.chnl_idx)
+			break;
+	}
 	return -1;
 }
 
@@ -144,7 +177,7 @@ static int tcp_server_handle_clicktocall_req( tcp_server_t *server, uxc_worker_t
 	// ux_log(UXL_CRT, "  [endIfRecordingEnded] %d", clicktocall_req->endIfRecordingEnded);
 	// ux_log(UXL_CRT, "  [hostingCode] %d", clicktocall_req->hostingCode);
 	// ux_log(UXL_CRT, "  [wirelessTimeout] %d", clicktocall_req->wirelessTimeout);
-	// ux_log(UXL_CRT, "  [wiredTimeout] %d", clicktocall_req->wiredTimeout);
+	// ux_log(UXL_CRT, "  [wiredTimeout] %d", clicktocall_req->wi₩redTimeout);
 
 	// clicktocall_rsp->result = 0;
 	// clicktocall_rsp->callTime = 0;

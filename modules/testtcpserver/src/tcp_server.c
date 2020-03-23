@@ -87,26 +87,37 @@ int tcp_server_handle_svrreq( tcp_server_t *server, uxc_worker_t* worker, upa_tc
 
 	memcpy(clicktocall_start_req, skbmsg->body, sizeof(clicktocall_start_req_tcp_t));
 	
-	rv = skb_msg_cvt_order_ntoh(skbmsg, CALL_START_REQUEST);
+	rv = skb_msg_cvt_order_ntoh(skbmsg, tcpmsg->peerkey.chnl_idx, &msgID);
 	if( rv < UX_SUCCESS) {
 		ux_log(UXL_INFO, "msg data error");
 		return rv;
 	}
 
 	msgID = skbmsg->header.messageID;
-	ux_log(UXL_INFO, "received : %d", msgID);
 
 	// 2. display msg
 	// rv = tcp_msg_display(msg);
 
 	// 3. response to uxcutor
-	switch(msgID)
-	{
-		case START_REQUEST:
-			return tcp_server_handle_clicktocall_start_req(server, worker, tcpmsg, skbmsg);
+	switch(tcpmsg->peerkey.chnl_idx) {
+		case TCP_CHANNEL_CALL:
+			switch(msgID)
+			{
+				case START_REQUEST:
+					ux_log(UXL_INFO, "received : chn(%d) - msgID(%d)", tcpmsg->peerkey.chnl_idx, msgID);
+					return tcp_server_handle_clicktocall_start_req(server, worker, tcpmsg, skbmsg);
+				default:
+					break;	
+			}			
+			break;
+		case TCP_CHANNEL_RECORDING:
+			break;
+		case TCP_CHANNEL_CONFERENCE:
+			break;
 		default:
-			break;	
-	}			
+			ux_log(UXL_CRT, "Unsupported Channel Index : %d", tcpmsg->peerkey.chnl_idx)
+			break;
+	}
 	return -1;
 }
 

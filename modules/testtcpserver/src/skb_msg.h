@@ -16,6 +16,11 @@
 // SKB Common Message Structure & Macro 
 ///////////////////////////////////////////////////////////////////////////////////
 
+/** @brief define TCP channel info */
+#define TCP_CHANNEL_CALL 									0
+#define TCP_CHANNEL_RECORDING 								1
+#define TCP_CHANNEL_CONFERENCE 								2
+
 /** @brief define DBIF(GW) message ID */
 #define CALL_START_REQUEST									100
 #define CALL_STOP_REQUEST									101
@@ -88,7 +93,7 @@ struct skb_header_s {
 typedef struct skb_msg_s skb_msg_t;
 struct skb_msg_s {
 	skb_header_t header;
-	char body[SKB_MSG_MAX_LEN];
+	char body[SKB_MSG_MAX_LEN];	//TODO : header크기는 제외하고 만들자
 };
 
 void create_skb_map();
