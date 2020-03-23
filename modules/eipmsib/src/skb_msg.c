@@ -96,7 +96,7 @@ int skb_msg_cvt_order_ntoh(skb_msg_t *msg, int chnIdx, int *msgId) {
 				case SERVICE_STATUS_RESPONSE:
 				case SERVICE_STATUS_REPORT:
 				default:
-					ux_log(UXL_CRT, "Unsupported messageID : %#010x", skbmsg->header.messageID)
+					ux_log(UXL_CRT, "Unsupported messageID : %#010x", msg->header.messageID)
 					return -1;
 			}
 			break;		
