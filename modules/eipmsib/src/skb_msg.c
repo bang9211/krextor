@@ -70,7 +70,7 @@ int skb_msg_cvt_order_ntoh(skb_msg_t *msg, int chnIdx, int *msgId) {
 	//body 복구
 	switch(chnIdx) {
 		case TCP_CHANNEL_CALL:
-			switch(skbmsg->header.messageID)
+			switch(msg->header.messageID)
 			{
 				//받은 메시지가 요청인 경우(simulator case)
 				case START_REQUEST:
@@ -112,7 +112,7 @@ int skb_msg_cvt_order_ntoh(skb_msg_t *msg, int chnIdx, int *msgId) {
 //DBIF로 보내져야 하는 메시지인 경우, DBIF msgId 설정
 switch(chnIdx) {
 		case TCP_CHANNEL_CALL:
-			switch(skbmsg->header.messageID)
+			switch(msg->header.messageID)
 			{
 				//받은 메시지가 보고의 경우(normal case)
 				case STOP_REPORT:				//CallEndReport
