@@ -124,17 +124,17 @@ final:
 
 
 
-int clicktocall_stoprecording_rsp_tcp_init( tcp_clicktocall_stoprecording_rsp_t *clicktocall_stoprecording_rsp) {
-	memset(clicktocall_stoprecording_rsp, 0, sizeof(tcp_clicktocall_stoprecording_rsp_t));
+int clicktocall_stoprecording_rsp_tcp_init( clicktocall_stoprecording_rsp_tcp_t *clicktocall_stoprecording_rsp) {
+	memset(clicktocall_stoprecording_rsp, 0, sizeof(clicktocall_stoprecording_rsp_tcp_t));
 
 	return eUXC_SUCCESS;
 }
 
-void clicktocall_stoprecording_rsp_tcp_final( tcp_clicktocall_stoprecording_rsp_t *clicktocall_stoprecording_rsp) {
+void clicktocall_stoprecording_rsp_tcp_final( clicktocall_stoprecording_rsp_tcp_t *clicktocall_stoprecording_rsp) {
 	//
 }
 
-int clicktocall_stoprecording_rsp_encode_to_dbif_msg( tcp_clicktocall_stoprecording_rsp_t *clicktocall_stoprecording_rsp, uxc_dbif_t *dbif) {
+int clicktocall_stoprecording_rsp_encode_to_dbif_msg( clicktocall_stoprecording_rsp_tcp_t *clicktocall_stoprecording_rsp, uxc_dbif_t *dbif) {
 	int rv;
 
 	rv = uxc_dbif_init( dbif);

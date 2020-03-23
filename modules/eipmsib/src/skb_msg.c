@@ -52,7 +52,7 @@ int skb_msg_cvt_order_hton(skb_msg_t *msg, int msgId)
  * @param msg network eIPMS message
  * @return 실행 결과, msgId(response의 경우 NULL)
  */
-int skb_msg_cvt_order_ntoh(skb_msg_t *msg, int chnIdx int *msgId) {
+int skb_msg_cvt_order_ntoh(skb_msg_t *msg, int chnIdx, int *msgId) {
 {
 #if !UX_BIGENDIAN
     skb_header_t *header;

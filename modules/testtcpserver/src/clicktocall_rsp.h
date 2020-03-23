@@ -32,8 +32,8 @@ struct clicktocall_startrecording_rsp_tcp_s {
 	char recordingFileName[64];
 };
 
-typedef struct tcp_clicktocall_stoprecording_rsp_s tcp_clicktocall_stoprecording_rsp_t; 
-struct tcp_clicktocall_stoprecording_rsp_s {
+typedef struct clicktocall_stoprecording_rsp_tcp_s clicktocall_stoprecording_rsp_tcp_t; 
+struct clicktocall_stoprecording_rsp_tcp_s {
 	int32_t resultCode;
 	char serviceID[32];
 };
@@ -55,8 +55,8 @@ int clicktocall_startrecording_rsp_tcp_init( clicktocall_startrecording_rsp_tcp_
 void clicktocall_startrecording_rsp_tcp_final( clicktocall_startrecording_rsp_tcp_t *clicktocall_startrecording_rsp);
 int clicktocall_startrecording_rsp_encode_to_dbif_msg( clicktocall_startrecording_rsp_tcp_t *clicktocall_startrecording_rsp, uxc_dbif_t *dbif);
 
-int clicktocall_stoprecording_rsp_tcp_init( tcp_clicktocall_stoprecording_rsp_t *clicktocall_stoprecording_rsp);
-void clicktocall_stoprecording_rsp_tcp_final( tcp_clicktocall_stoprecording_rsp_t *clicktocall_stoprecording_rsp);
-int clicktocall_stoprecording_rsp_encode_to_dbif_msg( tcp_clicktocall_stoprecording_rsp_t *clicktocall_stoprecording_rsp, uxc_dbif_t *dbif);
+int clicktocall_stoprecording_rsp_tcp_init( clicktocall_stoprecording_rsp_tcp_t *clicktocall_stoprecording_rsp);
+void clicktocall_stoprecording_rsp_tcp_final( clicktocall_stoprecording_rsp_tcp_t *clicktocall_stoprecording_rsp);
+int clicktocall_stoprecording_rsp_encode_to_dbif_msg( clicktocall_stoprecording_rsp_tcp_t *clicktocall_stoprecording_rsp, uxc_dbif_t *dbif);
 
 #endif // #ifndef __CLICKTOCALL_RSP_TCP_H__
