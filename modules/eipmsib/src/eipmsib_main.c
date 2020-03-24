@@ -9,11 +9,16 @@ int dbif_handle_gwreq(uxc_action_t *action, uxc_worker_t* worker, uxc_msg_t *msg
 {
 	uxc_ipcmsg_t *ipcmsg;
 	tcp_client_t *client;
+	int msg_size;
 
 	client = tcp_client_instance();
 	ipcmsg = (uxc_ipcmsg_t*)msg->data;
+	msg_size = sizeof(uxc_ixpc_t) + ipcmsg->header.length + sizeof(long) ;
 
-	ux_log( UXL_INFO, "1. Received DBIF request "); 
+	// ux_log( UXL_INFO, "1. Received DBIF request "); 
+	ux_log(UXL_INFO, "1. Received ipcmsg from %d to %d, size=%d, header=%lu + dbif=%d\n",
+		ipcmsg->header.srcQid, ipcmsg->header.dstQid, msg_size, sizeof(uxc_ixpc_t),ipcmsg->header.length); 
+
 	return tcp_client_forward_gwreq( client, worker,ipcmsg);
 }
 

@@ -117,3 +117,48 @@ int uh_str_is_exist(uhash_str_t* hash, kh_cstr_t key) {
 void uh_str_destroy(uhash_str_t* hash) {
     kh_destroy(str, hash->h);
 }
+
+uhash_ipc_t* uh_ipc_init() {
+    uhash_ipc_t *hash = (uhash_ipc_t*)malloc(sizeof(uhash_ipc_t));
+    hash->h = kh_init(ipc);
+    hash->available = 0;
+    return hash;
+}
+
+int uh_ipc_put(uhash_ipc_t* hash, khint_t key, uxc_ixpc_t* value) {
+    int r;
+    khint_t k;
+    
+    while (hash->available > 0);
+    hash->available++;
+
+    r = kh_set(ipc, hash->h, key, value);
+    hash->available--;
+    if (r < 0) {
+        return 0;
+    }
+    return 1;
+}
+
+uxc_ixpc_t* uh_ipc_get(uhash_ipc_t* hash, khint_t key) {
+    khint_t k;
+    
+    k = kh_get(ipc, hash->h, key);
+    if (k == kh_end(hash->h)) {
+        return NULL;
+    }
+    return kh_value(hash->h, k);
+}
+
+int uh_ipc_is_exist(uhash_ipc_t* hash, khint_t key) {
+    
+    khint_t k = kh_get(ipc, hash->h, key);
+    if (k == kh_end(hash->h)) {
+        return 0;
+    }
+    return 1;
+}
+
+void uh_ipc_destroy(uhash_ipc_t* hash) {
+    kh_destroy(ipc, hash->h);
+}

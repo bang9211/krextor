@@ -108,7 +108,7 @@ int tcp_server_handle_svrreq( tcp_server_t *server, uxc_worker_t* worker, upa_tc
 					return tcp_server_handle_clicktocall_start_req(server, worker, tcpmsg, skbmsg);
 				default:
 					break;	
-			}			
+			}
 			break;
 		case TCP_CHANNEL_RECORDING:
 			break;

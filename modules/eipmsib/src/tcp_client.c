@@ -107,6 +107,7 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 	skb_msg_t skbmsg;
 	tcp_msg_t *msg;
 	uxc_dbif_t *dbif;
+	uxc_ixpc_t *ipc_header;
 
 	char *sessionID = NULL;
 	char *gwSessionID = NULL;
@@ -121,61 +122,77 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 
 	ux_log( UXL_INFO, "2. CALL tcp_client_forward_gwreq (len:%d, msgId:%d) ", msg_size, msgId);
 
-	// IPCø°º≠ DBIF √ﬂ√‚
+	// IPCÏóêÏÑú DBIF Ï∂îÏ∂ú
 	dbif = uxc_ipcmsg_get_dbif(ipcmsg);
 
-	//ºˆΩ≈«— DBIF ∏ﬁΩ√¡ˆ∏¶ msgIDø° µ˚∂Û TCP∑Œ ∫∏≥æ eIPMS¿« ∏ﬁΩ√¡ˆ∑Œ ∫Ø∞Ê
+	/* ipc header */
+	// struct uxc_ixpc_s {
+	//     short	srcSubSysId;	/**< source subsystem ID */
+	//     short	srcProcId;		/**< srouce process ID */
+	//     short	dstSubSysId;	/**< destination subsystem ID*/
+	//     short	dstProcId;		/**< destination process ID*/
+	//     int      srcQid;			/**< source Q id */
+	//     int      dstQid;			/**< destination Q id */
+	//     int      msgId;			/**< message ID */
+	//     int      cmdId;			/**< command ID */
+	//     int		userData;		/**< user data */
+	//     int		fdIdx;			/**< fd index */
+	//     short    length;			/**< length */
+	//     short 	result;			/**< result */
+	// };
+
+	//ÏàòÏã†Ìïú DBIF Î©îÏãúÏßÄÎ•º msgIDÏóê Îî∞Îùº TCPÎ°ú Î≥¥ÎÇº eIPMSÏùò Î©îÏãúÏßÄÎ°ú Î≥ÄÍ≤Ω
 	switch( msgId / 100) {
 	case 1:
 		ux_log(UXL_INFO, "2.1. Set Channel clicktocall");
-		peerkey.chnl_idx = 0; // configuration √ππ¯¬∞ √§≥Œ
-		peerkey.peer_key = 0; // √§≥Œ¿« √ππ¯¬∞ PEER 
+		peerkey.chnl_idx = 0; // configuration Ï≤´Î≤àÏß∏ Ï±ÑÎÑê
+		peerkey.peer_key = 0; // Ï±ÑÎÑêÏùò Ï≤´Î≤àÏß∏ PEER 
 
 		switch(msgId) {
-		case CALL_START_REQUEST:
-			// DBIF∏¶ body∑Œ ∫Ø»Ø
+		case DBIF_CALL_START_REQUEST:
+			// DBIFÎ•º bodyÎ°ú Î≥ÄÌôò
 			clicktocall_start_req_dbif_display(dbif);
-			clicktocall_start_req_decode_dbif_msg(&clicktocall_start_req, sessionID, gwSessionID, dbif);
-			// TCP Header º≥¡§
+			clicktocall_start_req_decode_dbif_msg(&clicktocall_start_req, &sessionID, &gwSessionID, dbif);
+			// TCP Header ÏÑ§Ï†ï
 			skb_msg_make_header(&skbmsg.header, START_REQUEST, sizeof(clicktocall_start_req), NULL);
 			skb_msg_display_header(&skbmsg.header);
-			// TCP Body º≥¡§
+			// TCP Body ÏÑ§Ï†ï
 			memcpy(skbmsg.body, &clicktocall_start_req, sizeof(clicktocall_start_req));
 			clicktocall_start_req_tcp_display(&clicktocall_start_req);
 			msg_size = skbmsg.header.length;
 			break;
-		case CALL_STOP_REQUEST:
-			// DBIF∏¶ body∑Œ ∫Ø»Ø
+		case DBIF_CALL_STOP_REQUEST:
+			// DBIFÎ•º bodyÎ°ú Î≥ÄÌôò
 			clicktocall_stop_req_dbif_display(dbif);
 			clicktocall_stop_req_decode_dbif_msg(&clicktocall_stop_req, dbif);
-			// TCP Header º≥¡§
+			// TCP Header ÏÑ§Ï†ï
 			skb_msg_make_header(&skbmsg.header, STOP_REQUEST, sizeof(clicktocall_stop_req), NULL);
 			skb_msg_display_header(&skbmsg.header);
-			// TCP Body º≥¡§
+			// TCP Body ÏÑ§Ï†ï
 			memcpy(skbmsg.body, &clicktocall_stop_req, sizeof(clicktocall_stop_req));
 			clicktocall_stop_req_tcp_display(&clicktocall_stop_req);
 			msg_size = skbmsg.header.length;
 			break;
-		case CALL_START_RECORDING_REQUEST:
-			// DBIF∏¶ body∑Œ ∫Ø»Ø
+		case DBIF_CALL_START_RECORDING_REQUEST:
+			// DBIFÎ•º bodyÎ°ú Î≥ÄÌôò
 			clicktocall_startrecording_req_dbif_display(dbif);
 			clicktocall_startrecording_req_decode_dbif_msg(&clicktocall_startrecording_req, dbif);
-			// TCP Header º≥¡§
+			// TCP Header ÏÑ§Ï†ï
 			skb_msg_make_header(&skbmsg.header, START_RECORDING_REQUEST, sizeof(clicktocall_startrecording_req), NULL);
 			skb_msg_display_header(&skbmsg.header);
-			// TCP Body º≥¡§
+			// TCP Body ÏÑ§Ï†ï
 			memcpy(skbmsg.body, &clicktocall_startrecording_req, sizeof(clicktocall_startrecording_req));
 			clicktocall_startrecording_req_tcp_display(&clicktocall_startrecording_req);
 			msg_size = skbmsg.header.length;
 			break;
-		case CALL_STOP_RECORDING_REQUEST:
-			// DBIF∏¶ body∑Œ ∫Ø»Ø
+		case DBIF_CALL_STOP_RECORDING_REQUEST:
+			// DBIFÎ•º bodyÎ°ú Î≥ÄÌôò
 			clicktocall_stoprecording_req_dbif_display(dbif);
 			clicktocall_stoprecording_req_decode_dbif_msg(&clicktocall_stoprecording_req, dbif);
-			// TCP Header º≥¡§
+			// TCP Header ÏÑ§Ï†ï
 			skb_msg_make_header(&skbmsg.header, STOP_RECORDING_REQUEST, sizeof(clicktocall_stoprecording_req), NULL);
 			skb_msg_display_header(&skbmsg.header);
-			// TCP Body º≥¡§
+			// TCP Body ÏÑ§Ï†ï
 			memcpy(skbmsg.body, &clicktocall_stoprecording_req, sizeof(clicktocall_stoprecording_req));
 			clicktocall_stoprecording_req_tcp_display(&clicktocall_stoprecording_req);
 			msg_size = skbmsg.header.length;
@@ -188,13 +205,13 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 		break;
 	case 2:
 		ux_log(UXL_INFO, "2.2. Set Channel clicktocallrecording");
-		peerkey.chnl_idx = 1; //  √§≥Œ
-		peerkey.peer_key = 0; // √§≥Œ¿« √ππ¯¬∞ PEER 
+		peerkey.chnl_idx = 1; //  Ï±ÑÎÑê
+		peerkey.peer_key = 0; // Ï±ÑÎÑêÏùò Ï≤´Î≤àÏß∏ PEER 
 		break;
 	case 3:
 		ux_log(UXL_INFO, "2.3. Set Channel clicktoconference");
-		peerkey.chnl_idx = 2; //  √§≥Œ
-		peerkey.peer_key = 0; // √§≥Œ¿« √ππ¯¬∞ PEER 
+		peerkey.chnl_idx = 2; //  Ï±ÑÎÑê
+		peerkey.peer_key = 0; // Ï±ÑÎÑêÏùò Ï≤´Î≤àÏß∏ PEER 
 		break;
 	default:
 		ux_log(UXL_CRT, "Unsupported msgId : %d", msgId);
@@ -204,18 +221,24 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 	ux_log(UXL_INFO, "seding tcp header size : %lu", sizeof(skbmsg.header));
 	ux_log(UXL_INFO, "seding tcp body size : %lu", sizeof(clicktocall_start_req));
 
-	// TODO 1 : DBIFø°º≠ πﬁ¿∫ msgø°º≠ sessionID, gwSessionID ¡¶ø‹«œø© ¿˙¿Â«œ∞Ì ¿÷¥Ÿ∞° responseø° ªÁøÎ
-	// TODO 2 : DBIFø°º≠ πﬁ¿∫ msgø°º≠ header¿« dstqid, srcqid ¿˙¿Â«œ∞Ì ¿÷¥Ÿ∞° responseø° ªÁøÎ
-	//requestIDøÕ sessionID Bind
-	if(!uh_int_put(reqIDSIDMap, skbmsg.header.requestID, sessionID)) {
-		ux_log(UXL_CRT, "failed to put to reqIDSIDMap : (%d - %s)", skbmsg.header.requestID, sessionID);
+	// TODO 1 : DBIFÏóêÏÑú Î∞õÏùÄ msgÏóêÏÑú sessionID, gwSessionID Ï†úÏô∏ÌïòÏó¨ Ï†ÄÏû•ÌïòÍ≥† ÏûàÎã§Í∞Ä responseÏóê ÏÇ¨Ïö©
+	// TODO 2 : DBIFÏóêÏÑú Î∞õÏùÄ msgÏóêÏÑú headerÏùò dstqid, srcqid Ï†ÄÏû•ÌïòÍ≥† ÏûàÎã§Í∞Ä responseÏóê ÏÇ¨Ïö©
+	//requestIDÏôÄ sessionID Bind
+	if(!uh_int_put(reqID_SID_Map, skbmsg.header.requestID, sessionID)) {
+		ux_log(UXL_CRT, "failed to put to reqID_SID_Map : (%d - %s)", skbmsg.header.requestID, sessionID);
 	}
-	//requestIDøÕ gwSessionID Bind
-	if(!uh_int_put(reqIDGWSIDMap, skbmsg.header.requestID, gwSessionID)) {
-		ux_log(UXL_CRT, "failed to put to reqIDGWSIDMap : (%d - %s)", skbmsg.header.requestID, gwSessionID);
+	//requestIDÏôÄ gwSessionID Bind
+	if(!uh_int_put(reqID_GWSID_Map, skbmsg.header.requestID, gwSessionID)) {
+		ux_log(UXL_CRT, "failed to put to reqID_GWSID_Map : (%d - %s)", skbmsg.header.requestID, gwSessionID);
+	}
+	//requestIDÏôÄ ipc header Bind
+    ipc_header = malloc(sizeof(uxc_ixpc_t));
+	memcpy(ipc_header, &ipcmsg->header, sizeof(uxc_ixpc_t));
+	if(!uh_ipc_put(reqID_IPC_Map, skbmsg.header.requestID, ipc_header)) {
+		ux_log(UXL_CRT, "failed to put to reqID_IPC_Map : (%d)", skbmsg.header.requestID);
 	}
 
-	//∏ﬁΩ√¡ˆ∏¶ Network byte ordering¿∏∑Œ ∫Ø∞Ê
+	//Î©îÏãúÏßÄÎ•º Network byte orderingÏúºÎ°ú Î≥ÄÍ≤Ω
 	rv = skb_msg_cvt_order_hton(&skbmsg, msgId);
 	if( rv< UX_SUCCESS) {
 		ux_log(UXL_INFO, "msg data error");
@@ -236,55 +259,121 @@ int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpms
 {
 	int rv, msgID;
 	skb_msg_t *msg;
+	uxc_dbif_t dbif;
+	char *sessionID;
+	char *gwSessionID;
+	uxc_ixpc_t *dbif_header;
+	tcp_msg_t dbif_msg;
+	
+	clicktocall_start_rsp_tcp_t clicktocall_start_rsp[1];
+	clicktocall_stop_rsp_tcp_t clicktocall_stop_rsp[1];
+	clicktocall_startrecording_rsp_tcp_t clicktocall_startrecording_rsp[1];
+	clicktocall_stoprecording_rsp_tcp_t clicktocall_stoprecording_rsp[1];
 
+	// ux_log( UXL_INFO, "5. Recieved TCP response =");
+
+	// 1. receive msg 
 	msg = (skb_msg_t *) tcpmsg->netmsg->buffer;
 
-	ux_log( UXL_INFO, "5. CALL dbif_forward_eipmsrsp =");
+	//endian Î≥µÍµ¨
+	rv = skb_msg_cvt_order_ntoh(msg, tcpmsg->peerkey.chnl_idx, &msgID);
+	if( rv < UX_SUCCESS) {
+		ux_log(UXL_INFO, "msg data error");
+		return rv;
+	}
 
-	//TODO 0  : æÓ∂ª∞‘ «“¡ˆ
-	// rv = skb_msg_cvt_order_ntoh(msg, );
-	// if( rv < UX_SUCCESS) {
-	// 	ux_log(UXL_INFO, "msg data error");
-	// 	return rv;
-	// }	
-
-	msgID = msg->header.messageID;
-	ux_log(UXL_INFO, "received : %d", msgID);
-
-	switch(msgID)
-	{
+	skb_msg_display_header(&msg->header);
+	// 2. process and response to uxcutor
+	//Ï±ÑÎÑê indexÎ•º Î®ºÏ†Ä Íµ¨Î∂ÑÌïòÏó¨ clicktocall, clicktocallrecording, clicktoconference Íµ¨Î∂Ñ
+	switch(tcpmsg->peerkey.chnl_idx) {
+	case TCP_CHANNEL_CALL:
+		switch(msg->header.messageID) {
 		case START_RESPONSE:
-			//TODO 1 : æ∆∑°ø°º≠ tcp response∏¶ dbif «¸Ωƒ¿« ∏ﬁΩ√¡ˆ∑Œ ∫Ø∞ÊΩ√≈∞±‚
-			// rv = clicktocall_start_rsp_encode_to_dbif_msg(clicktocall_start_rsp, msg);
-			// if (rv <eUXC_SUCCESS) return rv;
-
-			// rv = tcp_client_send_ipcmsg(client, msg, 0); 
-			// if( rv< UX_SUCCESS) {
-			// 	ux_log( UXL_INFO, "can't send msg");
-			// }
+			clicktocall_start_rsp_tcp_display(clicktocall_start_rsp);
+			memcpy(clicktocall_start_rsp, msg->body, sizeof(clicktocall_start_rsp_tcp_t));
+			//requestIDÏóê Îî∞Îùº Í∏∞Ï°¥Ïóê Ï†ÄÏû•Ìïú sessionID, gwSessionID Ï∂îÍ∞ÄÌïòÏó¨ dbif Î©îÏãúÏßÄ ÏÉùÏÑ±
+			sessionID = uh_int_get(reqID_SID_Map, msg->header.requestID);
+			if (sessionID == NULL) {
+				ux_log(UXL_CRT, "There is no sessionID of reqID(%d)", msg->header.requestID);
+				return -1;
+			}
+			gwSessionID = uh_int_get(reqID_GWSID_Map, msg->header.requestID);
+			if (gwSessionID == NULL) {
+				ux_log(UXL_CRT, "There is no gwSessionID of reqID(%d)", msg->header.requestID);
+				return -1;
+			}
+			dbif_header = uh_ipc_get(reqID_IPC_Map, msg->header.requestID);
+			if (dbif_header == NULL) {
+				ux_log(UXL_CRT, "There is no ipc_header of reqID(%d)", msg->header.requestID);
+				return -1;
+			}
+			rv = clicktocall_start_rsp_encode_to_dbif_msg(clicktocall_start_rsp, sessionID, gwSessionID, &dbif);
+			if (rv <eUXC_SUCCESS) return rv;
+			memcpy(dbif_msg.data, &dbif, sizeof(dbif));
+			dbif_msg.header = *dbif_header;
+			dbif_msg.header.msgId = msgID;
+			dbif_msg.header.length = sizeof(uxc_dbif_t) - UXC_DBIF_MAX_DATA + dbif.dataLen;
+			clicktocall_start_rsp_dbif_display(&dbif);
+			break;
+		case STOP_RESPONSE:
+			clicktocall_stop_rsp_tcp_display(clicktocall_stop_rsp);
+			memcpy(clicktocall_stop_rsp, msg->body, sizeof(clicktocall_stop_rsp_tcp_t));
+			break;
+		case STOP_REPORT:
+			break;
+		case START_RECORDING_RESPONSE:
+			clicktocall_startrecording_rsp_tcp_display(clicktocall_startrecording_rsp);
+			memcpy(clicktocall_startrecording_rsp, msg->body, sizeof(clicktocall_startrecording_rsp_tcp_t));
+			break;
+		case START_RECORDING_REPORT:
+			break;
+		case STOP_RECORDING_RESPONSE:
+			clicktocall_stoprecording_rsp_tcp_display(clicktocall_stoprecording_rsp);
+			memcpy(clicktocall_stoprecording_rsp, msg->body, sizeof(clicktocall_stoprecording_rsp_tcp_t));
+			break;
+		case STOP_RECORDING_REPORT:
+			break;
+		case SERVICE_STATUS_RESPONSE:
+			break;
+		case SERVICE_STATUS_REPORT:
+			break;
 		default:
+			ux_log(UXL_CRT, "Unsupported messageID : %#010x", msg->header.messageID)
 			break;	
-	}			
+		}
+		break;		
+	case TCP_CHANNEL_RECORDING:
+		break;
+	case TCP_CHANNEL_CONFERENCE:
+		break;
+	default:
+		ux_log(UXL_CRT, "Unsupported Channel Index : %d", tcpmsg->peerkey.chnl_idx)
+		break;
+	}		
 
-
-	return rv;
+	if (dbif_msg.header.msgId != 0) {
+		rv = tcp_client_send_ipcmsg(client, &dbif_msg, 0); 
+		if( rv< UX_SUCCESS) {
+			ux_log( UXL_INFO, "can't send msg");
+		}
+		return rv;
+	}
+	
+	return -1;
 }	
 
-int tcp_client_send_ipcmsg( tcp_client_t *client,  tcp_msg_t* msg, int rv)
+
+int tcp_client_send_ipcmsg( tcp_client_t *client, tcp_msg_t* msg, int rv)
 {
 	int msg_size;
 	uxc_ipcmsg_t ipcmsg;
 
+	//DBIF Ìó§Îçî ÏÑ§Ï†ï
+	//TODO 4 : TCP ClientÏóêÏÑú Î∞õÏùÄ DBIF ÏöîÏ≤≠Ïóê Ï†ÄÏû•ÌñàÎçò dstQid, srcQid Ìó§ÎçîÏóê Ï∂îÍ∞ÄÌïòÍ∏∞
+	//TODO 7 : serviceID Í∞ôÏùÄÏßÄ ÌôïÏù∏ÌïòÍ∏∞
 	ux_log(UXL_CRT, "	[length] %d ",msg->header.length);
 	ux_log(UXL_CRT, "	[msgId] %d ", msg->header.msgId);
-
-
-	//TODO 3 : DBIF «Ï¥ı º≥¡§
-	//TODO 4 : TCP Clientø°º≠ πﬁ¿∫ DBIF ø‰√ªø° ¿˙¿Â«ﬂ¥¯ dstQid, srcQid «Ï¥ıø° √ﬂ∞°«œ±‚
-	//TODO 5 : TCP Clientø°º≠ πﬁ¿∫ DBIF ø‰√ªø° ¿˙¿Â«ﬂ¥¯ sessionID, gwSessionID √ﬂ∞°«œ±‚
-	//TODO 6 : Filler 2∞≥ ¡¶∞≈«œ±‚
-	//TODO 7 : serviceID ∞∞¿∫¡ˆ »Æ¿Œ«œ±‚
-
+	
 	ipcmsg.header = msg->header;
 	memcpy(ipcmsg.data, msg->data, ipcmsg.header.length);
 	msg_size = sizeof(uxc_ixpc_t) + ipcmsg.header.length + sizeof(long) ;
@@ -294,8 +383,8 @@ int tcp_client_send_ipcmsg( tcp_client_t *client,  tcp_msg_t* msg, int rv)
 	ipcmsg.header.srcQid = client->conf->mqid;
 	ipcmsg.header.result = rv;
 	
-	ux_log(UXL_INFO, "6. Send ipcmsg to %d from %d, size=%d, header=%lu + dbif=%d\n",ipcmsg.header.dstQid,
-					client->conf->mqid, msg_size, sizeof(uxc_ixpc_t),ipcmsg.header.length); 
+	ux_log(UXL_INFO, "5. Send ipcmsg to %d from %d, size=%d, header=%lu + dbif=%d\n",
+		ipcmsg.header.dstQid, ipcmsg.header.srcQid, msg_size, sizeof(uxc_ixpc_t),ipcmsg.header.length); 
 
 	rv = msgsnd(ipcmsg.header.dstQid, &ipcmsg, msg_size, IPC_NOWAIT);
 	if( rv < 0) {

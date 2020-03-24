@@ -17,34 +17,54 @@
 ///////////////////////////////////////////////////////////////////////////////////
 
 /** @brief define TCP channel info */
-#define TCP_CHANNEL_CALL 									0
-#define TCP_CHANNEL_RECORDING 								1
-#define TCP_CHANNEL_CONFERENCE 								2
+#define TCP_CHANNEL_CALL 										0
+#define TCP_CHANNEL_RECORDING 									1
+#define TCP_CHANNEL_CONFERENCE 									2
 
 /** @brief define DBIF(GW) message ID */
-#define CALL_START_REQUEST									100
-#define CALL_STOP_REQUEST									101
-#define CALL_START_RECORDING_REQUEST						102
-#define CALL_STOP_RECORDING_REQUEST							103
-#define CALL_SERVICE_STATUS_REPORT							200
-#define CALL_END_REPORT										201
-#define CALL_RECORDING_START_REQUEST						300
-#define CALL_RECORDING_STOP_REQUEST							301
-#define RECORDING_CALL_SERVICE_STATUS_REPORT				400
-#define RECORDING_CALL_END_REPORT							401
-#define CONFERENCE_START_REQUEST							500
-#define CONFERENCE_STOP_REQUEST								501
-#define ADD_PARTY_REQUEST									502
-#define REMOVE_PARTY_REQUEST								503
-#define CANCEL_PARTY_REQUEST								504
-#define CHANGE_PARTY_MEDIA_REQUEST							505
-#define PLAY_MENT_REQUEST									506
-#define GET_NUMBER_OF_PARTY_REQUEST							507
-#define GET_PARTY_STATUS_REQUEST							508
-#define ADD_PARTY_REPORT									600
-#define REMOVE_PARTY_REPORT									601
-#define CHANGE_PARTY_MEDIA_REPORT							602
-#define CLOSE_CONF_REPORT									603
+#define DBIF_CALL_START_REQUEST									100
+#define DBIF_CALL_STOP_REQUEST									101
+#define DBIF_CALL_START_RECORDING_REQUEST						102
+#define DBIF_CALL_STOP_RECORDING_REQUEST						103
+
+#define DBIF_CALL_START_RESPONSE								200
+#define DBIF_CALL_STOP_RESPONSE									201
+#define DBIF_CALL_START_RECORDING_RESPONSE						202
+#define DBIF_CALL_STOP_RECORDING_RESPONSE						203
+#define DBIF_CALL_SERVICE_STATUS_REPORT							204
+#define DBIF_CALL_END_REPORT									205
+
+#define DBIF_CALL_RECORDING_START_REQUEST						300
+#define DBIF_CALL_RECORDING_STOP_REQUEST						301
+
+#define DBIF_CALL_RECORDING_START_RESPONSE						400
+#define DBIF_CALL_RECORDING_STOP_RESPONSE						401
+#define DBIF_RECORDING_CALL_SERVICE_STATUS_REPORT				402
+#define DBIF_RECORDING_CALL_END_REPORT							403
+
+#define DBIF_CONFERENCE_START_REQUEST							500
+#define DBIF_CONFERENCE_STOP_REQUEST							501
+#define DBIF_ADD_PARTY_REQUEST									502
+#define DBIF_REMOVE_PARTY_REQUEST								503
+#define DBIF_CANCEL_PARTY_REQUEST								504
+#define DBIF_CHANGE_PARTY_MEDIA_REQUEST							505
+#define DBIF_PLAY_MENT_REQUEST									506
+#define DBIF_GET_NUMBER_OF_PARTY_REQUEST						507
+#define DBIF_GET_PARTY_STATUS_REQUEST							508
+
+#define DBIF_CONFERENCE_START_RESEPONSE							600
+#define DBIF_CONFERENCE_STOP_RESEPONSE							601
+#define DBIF_ADD_PARTY_RESEPONSE								602
+#define DBIF_REMOVE_PARTY_RESEPONSE								603
+#define DBIF_CANCEL_PARTY_RESEPONSE								604
+#define DBIF_CHANGE_PARTY_MEDIA_RESEPONSE						605
+#define DBIF_PLAY_MENT_RESEPONSE								606
+#define DBIF_GET_NUMBER_OF_PARTY_RESEPONSE						607
+#define DBIF_GET_PARTY_STATUS_RESEPONSE							608
+#define DBIF_ADD_PARTY_REPORT									609
+#define DBIF_REMOVE_PARTY_REPORT								610
+#define DBIF_CHANGE_PARTY_MEDIA_REPORT							611
+#define DBIF_CLOSE_CONF_REPORT									612
 
 
 /** @brief define TCP(eIPMS) message ID */
@@ -74,8 +94,9 @@
 // typedef enum {false, true} bool;
 
 /** @brief SKB Request ID Pool */
-uhash_int_t *reqIDSIDMap;
-uhash_int_t *reqIDGWSIDMap;
+uhash_int_t *reqID_SID_Map;
+uhash_int_t *reqID_GWSID_Map;
+uhash_ipc_t *reqID_IPC_Map;
 
 typedef struct skb_header_s skb_header_t; 
 struct skb_header_s {
@@ -93,7 +114,7 @@ struct skb_header_s {
 typedef struct skb_msg_s skb_msg_t;
 struct skb_msg_s {
 	skb_header_t header;
-	char body[SKB_MSG_MAX_LEN];	//TODO : header크기는 제외하고 만들자
+	char body[SKB_MSG_MAX_LEN - sizeof(skb_header_t)];
 };
 
 void create_skb_map();

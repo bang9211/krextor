@@ -20,17 +20,17 @@ int skb_msg_cvt_order_hton(skb_msg_t *msg, int msgId)
     header = &msg->header;
 	
     switch(msgId) {
-    case CALL_START_REQUEST:
+    case DBIF_CALL_START_REQUEST:
 		memcpy(clicktocall_start_req, msg->body, sizeof(clicktocall_start_req_tcp_t));
         clicktocall_start_req->waitingMentID = htons(clicktocall_start_req->waitingMentID);
         clicktocall_start_req->callMentID = htons(clicktocall_start_req->callMentID);
         clicktocall_start_req->fillerInt16 = htons(clicktocall_start_req->fillerInt16);
         break;
-    case CALL_STOP_REQUEST:
+    case DBIF_CALL_STOP_REQUEST:
         break;
-    case CALL_START_RECORDING_REQUEST:
+    case DBIF_CALL_START_RECORDING_REQUEST:
         break;
-    case CALL_STOP_RECORDING_REQUEST:
+    case DBIF_CALL_STOP_RECORDING_REQUEST:
         break;
 	default :
 		ux_log( UXL_INFO, "Unknown Msg Id : [%d]\n", msgId);
@@ -57,6 +57,14 @@ int skb_msg_cvt_order_ntoh(skb_msg_t *msg, int chnIdx, int *msgId)
 #if !UX_BIGENDIAN
     skb_header_t *header;
     clicktocall_start_req_tcp_t clicktocall_start_req[1];
+	clicktocall_stop_req_tcp_t clicktocall_stop_req[1];
+	clicktocall_startrecording_req_tcp_t clicktocall_startrecording_req[1];
+	clicktocall_stoprecording_req_tcp_t clicktocall_stoprecording_req[1];
+
+    clicktocall_start_rsp_tcp_t clicktocall_start_rsp[1];
+	clicktocall_stop_rsp_tcp_t clicktocall_stop_rsp[1];
+	clicktocall_startrecording_rsp_tcp_t clicktocall_startrecording_rsp[1];
+	clicktocall_stoprecording_rsp_tcp_t clicktocall_stoprecording_rsp[1];
 
 	if (msg == NULL) return -1;
 
@@ -80,21 +88,42 @@ int skb_msg_cvt_order_ntoh(skb_msg_t *msg, int chnIdx, int *msgId)
 					clicktocall_start_req->fillerInt16 = ntohs(clicktocall_start_req->fillerInt16);
 					break;
 				case STOP_REQUEST:
+					memcpy(clicktocall_stop_req, msg->body, sizeof(clicktocall_stop_req_tcp_t));
 					break;
 				case START_RECORDING_REQUEST:
+					memcpy(clicktocall_startrecording_req, msg->body, sizeof(clicktocall_startrecording_req_tcp_t));
 					break;
 				case STOP_RECORDING_REQUEST:
+					memcpy(clicktocall_stoprecording_req, msg->body, sizeof(clicktocall_stoprecording_req_tcp_t));
 					break;
 				//받은 메시지가 응답, 보고의 경우(normal case)
 				case START_RESPONSE:
+					memcpy(clicktocall_start_rsp, msg->body, sizeof(clicktocall_start_rsp_tcp_t));
+					clicktocall_start_rsp->resultCode = ntohl(clicktocall_start_rsp->resultCode);
+					clicktocall_start_rsp->filler2 = ntohs(clicktocall_start_rsp->filler2);
+					break;
 				case STOP_RESPONSE:
+					memcpy(clicktocall_stop_rsp, msg->body, sizeof(clicktocall_stop_rsp_tcp_t));
+					clicktocall_stop_rsp->resultCode = ntohl(clicktocall_stop_rsp->resultCode);
+					break;
 				case STOP_REPORT:
+					break;
 				case START_RECORDING_RESPONSE:
+					memcpy(clicktocall_startrecording_rsp, msg->body, sizeof(clicktocall_startrecording_rsp_tcp_t));
+					clicktocall_startrecording_rsp->resultCode = ntohl(clicktocall_startrecording_rsp->resultCode);
+					break;
 				case START_RECORDING_REPORT:
+					break;
 				case STOP_RECORDING_RESPONSE:
+					memcpy(clicktocall_stoprecording_rsp, msg->body, sizeof(clicktocall_stoprecording_rsp_tcp_t));
+					clicktocall_stoprecording_rsp->resultCode = ntohl(clicktocall_stoprecording_rsp->resultCode);
+					break;
 				case STOP_RECORDING_REPORT:
+					break;
 				case SERVICE_STATUS_RESPONSE:
+					break;
 				case SERVICE_STATUS_REPORT:
+					break;
 				default:
 					ux_log(UXL_CRT, "Unsupported messageID : %#010x", msg->header.messageID)
 					return -1;
@@ -114,11 +143,25 @@ switch(chnIdx) {
 		case TCP_CHANNEL_CALL:
 			switch(msg->header.messageID)
 			{
-				//받은 메시지가 보고의 경우(normal case)
+				//받은 메시지가 응답, 보고의 경우(normal case)
+				case START_RESPONSE:
+					*msgId = DBIF_CALL_START_RESPONSE;
+					break;
+				case STOP_RESPONSE:
+					*msgId = DBIF_CALL_STOP_RESPONSE;
+					break;
+				case START_RECORDING_RESPONSE:
+					*msgId = DBIF_CALL_START_RECORDING_RESPONSE;
+					break;
+				case STOP_RECORDING_RESPONSE:
+					*msgId = DBIF_CALL_STOP_RECORDING_RESPONSE;
+					break;
 				case STOP_REPORT:				//CallEndReport
-					*msgId = 201;
+					*msgId = DBIF_CALL_END_REPORT;
+					break;
 				case SERVICE_STATUS_REPORT:		//CallServiceStatusReport
-					*msgId = 200;
+					*msgId = DBIF_CALL_SERVICE_STATUS_REPORT;
+					break;
 				default:
 					msgId = NULL;
 					break;
@@ -151,7 +194,7 @@ int skb_msg_send( skb_msg_t *msg, upa_tcp_t *tcp, upa_peerkey_t *peerkey)
 	msg_size = msg->header.length; 
 
 	//TODO
-	rv = skb_msg_cvt_order_hton(msg, CALL_START_REQUEST);
+	rv = skb_msg_cvt_order_hton(msg, DBIF_CALL_START_REQUEST);
 	if( rv < UX_SUCCESS) {
 		ux_log(UXL_INFO, "msg data error");
 		return rv;
@@ -212,11 +255,23 @@ int32_t getRandomInt32() {
 }
 
 void create_skb_map() {
-	reqIDSIDMap = uh_int_init();
-	reqIDGWSIDMap = uh_int_init();
+	reqID_SID_Map = uh_int_init();
+	reqID_GWSID_Map = uh_int_init();
+	reqID_IPC_Map = uh_ipc_init();
 }
 
 void destroy_skb_map() {
-	uh_int_destroy(reqIDSIDMap);
-	uh_int_destroy(reqIDGWSIDMap);
+//    uxc_ixpc_t* tval = 0;
+//    khiter_t k;
+//    for (k = kh_begin(reqID_IPC_Map->h); k != kh_end(reqID_IPC_Map->h); ++k) {
+//       if (kh_exist(reqID_IPC_Map->h, k)) {
+//          const char *key = kh_key(reqID_IPC_Map->h, k);
+//          tval = kh_value(reqID_IPC_Map->h, k);
+// 		 free(tval);
+//       }
+//    }
+
+	uh_int_destroy(reqID_SID_Map);
+	uh_int_destroy(reqID_GWSID_Map);
+	uh_ipc_destroy(reqID_IPC_Map);
 }
