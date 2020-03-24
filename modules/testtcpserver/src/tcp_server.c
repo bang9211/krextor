@@ -9,6 +9,12 @@ static tcp_server_t *_g_server = NULL;
 static void _tcp_server_destroy( uxc_plugin_t *pi);
 static int tcp_server_handle_clicktocall_start_req( tcp_server_t *server, uxc_worker_t *worker,
 					upa_tcpmsg_t *tcpmsg, skb_msg_t *msg );
+static int tcp_server_handle_clicktocall_stop_req( tcp_server_t *server, uxc_worker_t *worker,
+					upa_tcpmsg_t *tcpmsg, skb_msg_t *skbmsg );
+static int tcp_server_handle_clicktocall_startrecording_req( tcp_server_t *server, uxc_worker_t *worker,
+					upa_tcpmsg_t *tcpmsg, skb_msg_t *skbmsg );
+static int tcp_server_handle_clicktocall_stoprecording_req( tcp_server_t *server, uxc_worker_t *worker,
+					upa_tcpmsg_t *tcpmsg, skb_msg_t *skbmsg );
 static int _tcp_server_get_thrid( uxc_paif_t *paif, uxc_msg_t *msg);
 static int _tcp_server_on_accept(upa_tcp_t *tcp, ux_channel_t *channel, ux_accptor_t *accptor,
 				ux_cnector_t *cnector, upa_peerkey_t *peerkey);
@@ -80,13 +86,14 @@ int tcp_server_handle_svrreq( tcp_server_t *server, uxc_worker_t* worker, upa_tc
 	skb_msg_t *skbmsg;
 	int msgID,rv;
 	clicktocall_start_req_tcp_t clicktocall_start_req[1];
+	clicktocall_stop_req_tcp_t clicktocall_stop_req[1];
+	clicktocall_startrecording_req_tcp_t clicktocall_startrecording_req[1];
+	clicktocall_stoprecording_req_tcp_t clicktocall_stoprecording_req[1];
 
 	// 1. receive msg 
 	skbmsg = (skb_msg_t *)tcpmsg->netmsg->buffer;
 	ux_log(UXL_INFO, "header size : %lu", sizeof(skbmsg->header));
 
-	memcpy(clicktocall_start_req, skbmsg->body, sizeof(clicktocall_start_req_tcp_t));
-	
 	rv = skb_msg_cvt_order_ntoh(skbmsg, tcpmsg->peerkey.chnl_idx, &msgID);
 	if( rv < UX_SUCCESS) {
 		ux_log(UXL_INFO, "msg data error");
@@ -97,6 +104,7 @@ int tcp_server_handle_svrreq( tcp_server_t *server, uxc_worker_t* worker, upa_tc
 
 	// 2. display msg
 	// rv = tcp_msg_display(msg);
+	ux_log(UXL_INFO, "received : chn(%d) - msgID(%d)", tcpmsg->peerkey.chnl_idx, msgID);
 
 	// 3. response to uxcutor
 	switch(tcpmsg->peerkey.chnl_idx) {
@@ -104,8 +112,17 @@ int tcp_server_handle_svrreq( tcp_server_t *server, uxc_worker_t* worker, upa_tc
 			switch(msgID)
 			{
 				case START_REQUEST:
-					ux_log(UXL_INFO, "received : chn(%d) - msgID(%d)", tcpmsg->peerkey.chnl_idx, msgID);
+					memcpy(clicktocall_start_req, skbmsg->body, sizeof(clicktocall_start_req_tcp_t));
 					return tcp_server_handle_clicktocall_start_req(server, worker, tcpmsg, skbmsg);
+				case STOP_REQUEST:
+					memcpy(clicktocall_stop_req, skbmsg->body, sizeof(clicktocall_stop_req_tcp_t));
+					return tcp_server_handle_clicktocall_stop_req(server, worker, tcpmsg, skbmsg);
+				case START_RECORDING_REQUEST:
+					memcpy(clicktocall_startrecording_req, skbmsg->body, sizeof(clicktocall_startrecording_req_tcp_t));
+					return tcp_server_handle_clicktocall_startrecording_req(server, worker, tcpmsg, skbmsg);
+				case STOP_RECORDING_REQUEST:
+					memcpy(clicktocall_stoprecording_req, skbmsg->body, sizeof(clicktocall_stoprecording_req_tcp_t));
+					return tcp_server_handle_clicktocall_stoprecording_req(server, worker, tcpmsg, skbmsg);
 				default:
 					break;	
 			}
@@ -129,20 +146,14 @@ static int tcp_server_handle_clicktocall_start_req( tcp_server_t *server, uxc_wo
 	clicktocall_start_req_tcp_t clicktocall_start_req[1];
 	skb_msg_t rspMsg;
 
+	//request display
 	ux_log(UXL_INFO, "* tcp_server_handle_clicktocall_start_req ");
-	// clicktocall_start_req_tcp_init(clicktocall_start_req);
-	clicktocall_start_rsp_tcp_init(clicktocall_start_rsp);
-
-	// rv = clicktocall_start_req_decode_dbif_msg(clicktocall_start_req, skbmsg);
-	// if (rv <eUXC_SUCCESS) return rv;
-
-	// clicktocall_start_req = skbmsg->body;
 	memcpy(clicktocall_start_req, skbmsg->body, sizeof(clicktocall_start_req_tcp_t));
-
-	//header
 	skb_msg_display_header(&skbmsg->header);
 	clicktocall_start_req_tcp_display(clicktocall_start_req);
 
+	//make response
+	clicktocall_start_rsp_tcp_init(clicktocall_start_rsp);
 	clicktocall_start_rsp->resultCode = 0;
 	strcpy(clicktocall_start_rsp->serviceID, "service0001");
 	clicktocall_start_rsp->isRecording = 0;
@@ -152,8 +163,100 @@ static int tcp_server_handle_clicktocall_start_req( tcp_server_t *server, uxc_wo
 	strcpy(clicktocall_start_rsp->recordingFileName, "testFileName");
 
 	skb_msg_make_header(&rspMsg.header, START_RESPONSE, sizeof(clicktocall_start_rsp), &skbmsg->header.requestID);
-	// rspMsg.body = clicktocall_start_rsp;
+	skb_msg_display_header(&rspMsg.header);
+	clicktocall_start_rsp_tcp_display(clicktocall_start_rsp);
 	memcpy(rspMsg.body, clicktocall_start_rsp, sizeof(clicktocall_start_rsp_tcp_t));
+
+	rv = skb_msg_send(&rspMsg, server->patcp, &tcpmsg->peerkey);	
+	if (rv <eUXC_SUCCESS) return rv;
+
+	return 0;
+}
+
+
+static int tcp_server_handle_clicktocall_stop_req( tcp_server_t *server, uxc_worker_t *worker,
+					upa_tcpmsg_t *tcpmsg, skb_msg_t *skbmsg )
+{
+	int rv;
+	clicktocall_stop_rsp_tcp_t clicktocall_stop_rsp[1];
+	clicktocall_stop_req_tcp_t clicktocall_stop_req[1];
+	skb_msg_t rspMsg;
+
+	//request display
+	ux_log(UXL_INFO, "* tcp_server_handle_clicktocall_stop_req ");
+	memcpy(clicktocall_stop_req, skbmsg->body, sizeof(clicktocall_stop_req_tcp_t));
+	skb_msg_display_header(&skbmsg->header);
+	clicktocall_stop_req_tcp_display(clicktocall_stop_req);
+
+	//make response
+	clicktocall_stop_rsp_tcp_init(clicktocall_stop_rsp);
+	clicktocall_stop_rsp->resultCode = 0;
+	strcpy(clicktocall_stop_rsp->serviceID, "service0001");
+
+	skb_msg_make_header(&rspMsg.header, STOP_RESPONSE, sizeof(clicktocall_stop_rsp), &skbmsg->header.requestID);
+	skb_msg_display_header(&rspMsg.header);
+	clicktocall_stop_rsp_tcp_display(clicktocall_stop_rsp);
+	memcpy(rspMsg.body, clicktocall_stop_rsp, sizeof(clicktocall_stop_rsp_tcp_t));
+
+	rv = skb_msg_send(&rspMsg, server->patcp, &tcpmsg->peerkey);	
+	if (rv <eUXC_SUCCESS) return rv;
+
+	return 0;
+}
+
+static int tcp_server_handle_clicktocall_startrecording_req( tcp_server_t *server, uxc_worker_t *worker,
+					upa_tcpmsg_t *tcpmsg, skb_msg_t *skbmsg ) {
+	int rv;
+	clicktocall_startrecording_rsp_tcp_t clicktocall_startrecording_rsp[1];
+	clicktocall_startrecording_req_tcp_t clicktocall_startrecording_req[1];
+	skb_msg_t rspMsg;
+
+	//request display
+	ux_log(UXL_INFO, "* tcp_server_handle_clicktocall_startrecording_req ");
+	memcpy(clicktocall_startrecording_req, skbmsg->body, sizeof(clicktocall_startrecording_req_tcp_t));
+	skb_msg_display_header(&skbmsg->header);
+	clicktocall_startrecording_req_tcp_display(clicktocall_startrecording_req);
+
+	//make response
+	clicktocall_startrecording_rsp_tcp_init(clicktocall_startrecording_rsp);
+	clicktocall_startrecording_rsp->resultCode = 0;
+	strcpy(clicktocall_startrecording_rsp->serviceID, "service0001");
+	strcpy(clicktocall_startrecording_rsp->recordingFileURL, "/test/test");
+	strcpy(clicktocall_startrecording_rsp->recordingFileName, "testFileName");
+
+	skb_msg_make_header(&rspMsg.header, START_RECORDING_RESPONSE, sizeof(clicktocall_startrecording_rsp), &skbmsg->header.requestID);
+	skb_msg_display_header(&rspMsg.header);
+	clicktocall_startrecording_rsp_tcp_display(clicktocall_startrecording_rsp);
+	memcpy(rspMsg.body, clicktocall_startrecording_rsp, sizeof(clicktocall_startrecording_rsp_tcp_t));
+
+	rv = skb_msg_send(&rspMsg, server->patcp, &tcpmsg->peerkey);	
+	if (rv <eUXC_SUCCESS) return rv;
+
+	return 0;
+}
+
+static int tcp_server_handle_clicktocall_stoprecording_req( tcp_server_t *server, uxc_worker_t *worker,
+					upa_tcpmsg_t *tcpmsg, skb_msg_t *skbmsg ) {
+	int rv;
+	clicktocall_stoprecording_rsp_tcp_t clicktocall_stoprecording_rsp[1];
+	clicktocall_stoprecording_req_tcp_t clicktocall_stoprecording_req[1];
+	skb_msg_t rspMsg;
+
+	//request display
+	ux_log(UXL_INFO, "* tcp_server_handle_clicktocall_clicktocall_stoprecording_req ");
+	memcpy(clicktocall_stoprecording_req, skbmsg->body, sizeof(clicktocall_stoprecording_req_tcp_t));
+	skb_msg_display_header(&skbmsg->header);
+	clicktocall_stoprecording_req_tcp_display(clicktocall_stoprecording_req);
+
+	//make response
+	clicktocall_stoprecording_rsp_tcp_init(clicktocall_stoprecording_rsp);
+	clicktocall_stoprecording_rsp->resultCode = 0;
+	strcpy(clicktocall_stoprecording_rsp->serviceID, "service0001");
+
+	skb_msg_make_header(&rspMsg.header, STOP_RECORDING_RESPONSE, sizeof(clicktocall_stoprecording_rsp), &skbmsg->header.requestID);
+	skb_msg_display_header(&rspMsg.header);
+	clicktocall_stoprecording_rsp_tcp_display(clicktocall_stoprecording_rsp);
+	memcpy(rspMsg.body, clicktocall_stoprecording_rsp, sizeof(clicktocall_stoprecording_rsp_tcp_t));
 
 	rv = skb_msg_send(&rspMsg, server->patcp, &tcpmsg->peerkey);	
 	if (rv <eUXC_SUCCESS) return rv;
