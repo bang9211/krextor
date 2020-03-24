@@ -220,8 +220,6 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 	ux_log(UXL_CRT, "seding tcp header size : %lu", sizeof(skbmsg.header));
 	ux_log(UXL_CRT, "seding tcp body size : %lu", sizeof(clicktocall_start_req));
 
-	// TODO 1 : DBIF에서 받은 msg에서 sessionID, gwSessionID 제외하여 저장하고 있다가 response에 사용
-	// TODO 2 : DBIF에서 받은 msg에서 header의 dstqid, srcqid 저장하고 있다가 response에 사용
 	//requestID와 sessionID Bind
 	if(!uh_int_put(reqID_SID_Map, skbmsg.header.requestID, sessionID)) {
 		ux_log(UXL_CRT, "failed to put to reqID_SID_Map : (%d - %s)", skbmsg.header.requestID, sessionID);
@@ -404,8 +402,7 @@ int tcp_client_send_ipcmsg( tcp_client_t *client, tcp_msg_t* msg, int rv)
 	uxc_ipcmsg_t ipcmsg;
 
 	//DBIF 헤더 설정
-	//TODO 4 : TCP Client에서 받은 DBIF 요청에 저장했던 dstQid, srcQid 헤더에 추가하기
-	//TODO 7 : serviceID 같은지 확인하기
+	//TODO : serviceID 같은지 확인하기
 	ux_log(UXL_CRT, "sending dbif size : %d ",msg->header.length);
 	ux_log(UXL_CRT, "sending dbif msgId : %d ", msg->header.msgId);
 	
