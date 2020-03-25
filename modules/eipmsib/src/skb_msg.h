@@ -130,5 +130,10 @@ void skb_msg_display_header(skb_header_t* header);
 int32_t skb_msg_generate_messasgeID();
 int32_t skb_msg_generate_requestID();
 
+int skb_msg_process_clicktocall_start_req( skb_msg_t *skbmsg, uxc_dbif_t *dbif, char *sessionID[], char *gwSessionID[]);
+int skb_msg_process_clicktocall_stop_req( skb_msg_t *skbmsg, uxc_dbif_t *dbif);
+int skb_msg_process_clicktocall_startrecording_req( skb_msg_t *skbmsg, uxc_dbif_t *dbif);
+int skb_msg_process_clicktocall_stoprecording_req( skb_msg_t *skbmsg, uxc_dbif_t *dbif);
+
 
 #endif // #ifndef __SKB_MSG_H__

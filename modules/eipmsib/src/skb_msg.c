@@ -275,3 +275,76 @@ void destroy_skb_map() {
 	uh_int_destroy(reqID_GWSID_Map);
 	uh_ipc_destroy(reqID_IPC_Map);
 }
+
+
+int skb_msg_process_clicktocall_start_req( skb_msg_t *skbmsg, uxc_dbif_t *dbif, char *sessionID[], char *gwSessionID[]) {
+	int rv;
+	clicktocall_start_req_tcp_t clicktocall_start_req;
+
+	// DBIF를 body로 변환
+	clicktocall_start_req_dbif_display(dbif);
+	rv = clicktocall_start_req_decode_dbif_msg(&clicktocall_start_req, sessionID, gwSessionID, dbif);
+	if (rv < eUXC_SUCCESS) return rv;
+	// TCP Header 설정
+	skb_msg_make_header(&skbmsg->header, START_REQUEST, sizeof(clicktocall_start_req), NULL);
+	skb_msg_display_header(&skbmsg->header);
+	// TCP Body 설정
+	memcpy(skbmsg->body, &clicktocall_start_req, sizeof(clicktocall_start_req));
+	clicktocall_start_req_tcp_display(&clicktocall_start_req);
+
+	return rv;
+}
+
+int skb_msg_process_clicktocall_stop_req( skb_msg_t *skbmsg, uxc_dbif_t *dbif) {
+	int rv;
+	clicktocall_stop_req_tcp_t clicktocall_stop_req;
+
+	// DBIF를 body로 변환
+	clicktocall_stop_req_dbif_display(dbif);
+	rv = clicktocall_stop_req_decode_dbif_msg(&clicktocall_stop_req, dbif);
+	if (rv < 0) return rv;
+	// TCP Header 설정
+	skb_msg_make_header(&skbmsg->header, STOP_REQUEST, sizeof(clicktocall_stop_req), NULL);
+	skb_msg_display_header(&skbmsg->header);
+	// TCP Body 설정
+	memcpy(skbmsg->body, &clicktocall_stop_req, sizeof(clicktocall_stop_req));
+	clicktocall_stop_req_tcp_display(&clicktocall_stop_req);
+
+	return rv;
+}
+
+int skb_msg_process_clicktocall_startrecording_req( skb_msg_t *skbmsg, uxc_dbif_t *dbif) {
+	int rv;
+	clicktocall_startrecording_req_tcp_t clicktocall_startrecording_req;
+
+	// DBIF를 body로 변환
+	clicktocall_startrecording_req_dbif_display(dbif);
+	rv = clicktocall_startrecording_req_decode_dbif_msg(&clicktocall_startrecording_req, dbif);
+	if (rv < 0) return rv;
+	// TCP Header 설정
+	skb_msg_make_header(&skbmsg->header, START_RECORDING_REQUEST, sizeof(clicktocall_startrecording_req), NULL);
+	skb_msg_display_header(&skbmsg->header);
+	// TCP Body 설정
+	memcpy(skbmsg->body, &clicktocall_startrecording_req, sizeof(clicktocall_startrecording_req));
+	clicktocall_startrecording_req_tcp_display(&clicktocall_startrecording_req);
+	
+	return rv;
+}
+
+int skb_msg_process_clicktocall_stoprecording_req( skb_msg_t *skbmsg, uxc_dbif_t *dbif) {
+	int rv;
+	clicktocall_stoprecording_req_tcp_t clicktocall_stoprecording_req;
+
+	// DBIF를 body로 변환
+	clicktocall_stoprecording_req_dbif_display(dbif);
+	rv = clicktocall_stoprecording_req_decode_dbif_msg(&clicktocall_stoprecording_req, dbif);
+	if (rv < 0) return rv;
+	// TCP Header 설정
+	skb_msg_make_header(&skbmsg->header, STOP_RECORDING_REQUEST, sizeof(clicktocall_stoprecording_req), NULL);
+	skb_msg_display_header(&skbmsg->header);
+	// TCP Body 설정
+	memcpy(skbmsg->body, &clicktocall_stoprecording_req, sizeof(clicktocall_stoprecording_req));
+	clicktocall_stoprecording_req_tcp_display(&clicktocall_stoprecording_req);
+
+	return rv;
+}

@@ -111,10 +111,6 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 
 	char *sessionID = NULL;
 	char *gwSessionID = NULL;
-	clicktocall_start_req_tcp_t clicktocall_start_req;
-	clicktocall_stop_req_tcp_t clicktocall_stop_req;
-	clicktocall_startrecording_req_tcp_t clicktocall_startrecording_req;
-	clicktocall_stoprecording_req_tcp_t clicktocall_stoprecording_req;
 
 	msg = (tcp_msg_t *)&ipcmsg->header;
 	msg_size = sizeof(uxc_ixpc_t) + msg->header.length;	//dbif header + body
@@ -125,22 +121,6 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 	// IPC에서 DBIF 추출
 	dbif = uxc_ipcmsg_get_dbif(ipcmsg);
 
-	/* ipc header */
-	// struct uxc_ixpc_s {
-	//     short	srcSubSysId;	/**< source subsystem ID */
-	//     short	srcProcId;		/**< srouce process ID */
-	//     short	dstSubSysId;	/**< destination subsystem ID*/
-	//     short	dstProcId;		/**< destination process ID*/
-	//     int      srcQid;			/**< source Q id */
-	//     int      dstQid;			/**< destination Q id */
-	//     int      msgId;			/**< message ID */
-	//     int      cmdId;			/**< command ID */
-	//     int		userData;		/**< user data */
-	//     int		fdIdx;			/**< fd index */
-	//     short    length;			/**< length */
-	//     short 	result;			/**< result */
-	// };
-
 	//수신한 DBIF 메시지를 msgID에 따라 TCP로 보낼 eIPMS의 메시지로 변경
 	switch( msgId / 100) {
 	case 1:
@@ -150,52 +130,16 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 
 		switch(msgId) {
 		case DBIF_CALL_START_REQUEST:
-			// DBIF를 body로 변환
-			clicktocall_start_req_dbif_display(dbif);
-			clicktocall_start_req_decode_dbif_msg(&clicktocall_start_req, &sessionID, &gwSessionID, dbif);
-			// TCP Header 설정
-			skb_msg_make_header(&skbmsg.header, START_REQUEST, sizeof(clicktocall_start_req), NULL);
-			skb_msg_display_header(&skbmsg.header);
-			// TCP Body 설정
-			memcpy(skbmsg.body, &clicktocall_start_req, sizeof(clicktocall_start_req));
-			clicktocall_start_req_tcp_display(&clicktocall_start_req);
-			msg_size = skbmsg.header.length;
+			rv = skb_msg_process_clicktocall_start_req(&skbmsg, dbif, &sessionID, &gwSessionID);
 			break;
 		case DBIF_CALL_STOP_REQUEST:
-			// DBIF를 body로 변환
-			clicktocall_stop_req_dbif_display(dbif);
-			clicktocall_stop_req_decode_dbif_msg(&clicktocall_stop_req, dbif);
-			// TCP Header 설정
-			skb_msg_make_header(&skbmsg.header, STOP_REQUEST, sizeof(clicktocall_stop_req), NULL);
-			skb_msg_display_header(&skbmsg.header);
-			// TCP Body 설정
-			memcpy(skbmsg.body, &clicktocall_stop_req, sizeof(clicktocall_stop_req));
-			clicktocall_stop_req_tcp_display(&clicktocall_stop_req);
-			msg_size = skbmsg.header.length;
+			rv = skb_msg_process_clicktocall_stop_req(&skbmsg, dbif);
 			break;
 		case DBIF_CALL_START_RECORDING_REQUEST:
-			// DBIF를 body로 변환
-			clicktocall_startrecording_req_dbif_display(dbif);
-			clicktocall_startrecording_req_decode_dbif_msg(&clicktocall_startrecording_req, dbif);
-			// TCP Header 설정
-			skb_msg_make_header(&skbmsg.header, START_RECORDING_REQUEST, sizeof(clicktocall_startrecording_req), NULL);
-			skb_msg_display_header(&skbmsg.header);
-			// TCP Body 설정
-			memcpy(skbmsg.body, &clicktocall_startrecording_req, sizeof(clicktocall_startrecording_req));
-			clicktocall_startrecording_req_tcp_display(&clicktocall_startrecording_req);
-			msg_size = skbmsg.header.length;
+			rv = skb_msg_process_clicktocall_startrecording_req(&skbmsg, dbif);
 			break;
 		case DBIF_CALL_STOP_RECORDING_REQUEST:
-			// DBIF를 body로 변환
-			clicktocall_stoprecording_req_dbif_display(dbif);
-			clicktocall_stoprecording_req_decode_dbif_msg(&clicktocall_stoprecording_req, dbif);
-			// TCP Header 설정
-			skb_msg_make_header(&skbmsg.header, STOP_RECORDING_REQUEST, sizeof(clicktocall_stoprecording_req), NULL);
-			skb_msg_display_header(&skbmsg.header);
-			// TCP Body 설정
-			memcpy(skbmsg.body, &clicktocall_stoprecording_req, sizeof(clicktocall_stoprecording_req));
-			clicktocall_stoprecording_req_tcp_display(&clicktocall_stoprecording_req);
-			msg_size = skbmsg.header.length;
+			rv = skb_msg_process_clicktocall_stoprecording_req(&skbmsg, dbif);
 			break;
 		default:
 			ux_log(UXL_CRT, "Unsupported msgId : %d", msgId);
@@ -216,9 +160,14 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 		ux_log(UXL_CRT, "Unsupported msgId : %d", msgId);
 		return -1;
 	}
+	if( rv < UX_SUCCESS) {
+		ux_log( UXL_CRT, "can't send data in process req.");
+		return -1;
+	}
 
+	msg_size = skbmsg.header.length;
 	ux_log(UXL_CRT, "seding tcp header size : %lu", sizeof(skbmsg.header));
-	ux_log(UXL_CRT, "seding tcp body size : %lu", sizeof(clicktocall_start_req));
+	ux_log(UXL_CRT, "seding tcp body size : %lu", msg_size - sizeof(skbmsg.header));
 
 	//requestID와 sessionID Bind
 	if(!uh_int_put(reqID_SID_Map, skbmsg.header.requestID, sessionID)) {
@@ -234,6 +183,21 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 	if(!uh_ipc_put(reqID_IPC_Map, skbmsg.header.requestID, ipc_header)) {
 		ux_log(UXL_CRT, "failed to put to reqID_IPC_Map : (%d)", skbmsg.header.requestID);
 	}
+	/* ipc header */
+	// struct uxc_ixpc_s {
+	//     short	srcSubSysId;	/**< source subsystem ID */
+	//     short	srcProcId;		/**< srouce process ID */
+	//     short	dstSubSysId;	/**< destination subsystem ID*/
+	//     short	dstProcId;		/**< destination process ID*/
+	//     int      srcQid;			/**< source Q id */
+	//     int      dstQid;			/**< destination Q id */
+	//     int      msgId;			/**< message ID */
+	//     int      cmdId;			/**< command ID */
+	//     int		userData;		/**< user data */
+	//     int		fdIdx;			/**< fd index */
+	//     short    length;			/**< length */
+	//     short 	result;			/**< result */
+	// };
 
 	//메시지를 Network byte ordering으로 변경
 	rv = skb_msg_cvt_order_hton(&skbmsg, msgId);
