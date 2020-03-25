@@ -1,7 +1,12 @@
 #ifndef __CLICKTOCALL_RSP_TCP_H__
 #define __CLICKTOCALL_RSP_TCP_H__
 
-#include "tcp_msg.h"
+#include <uxcutor/uxc_dbif.h>
+#include <uxlib/ux_errno.h>
+#include <uxlib/ux_log.h>
+#include <uxcutor/uxcutor.h>
+#include <upa/upa_tcp.h>
+#include "skb_msg.h"
 
 ///////////////////////////////////////////////////////////////////////////////////
 // tcp_clicktocall Response Message Structure & Macro 

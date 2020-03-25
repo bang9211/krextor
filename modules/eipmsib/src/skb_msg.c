@@ -255,7 +255,7 @@ int32_t getRandomInt32() {
 }
 
 void create_skb_map() {
-	reqID_SID_Map = uh_int_init();
+	reqID_SID_Map = uh_int_init();    
 	reqID_GWSID_Map = uh_int_init();
 	reqID_IPC_Map = uh_ipc_init();
 }
@@ -277,7 +277,7 @@ void destroy_skb_map() {
 }
 
 
-int skb_msg_process_clicktocall_start_req( skb_msg_t *skbmsg, uxc_dbif_t *dbif, char *sessionID[], char *gwSessionID[]) {
+int skb_msg_process_clicktocall_start_req( skb_msg_t *skbmsg, uxc_dbif_t *dbif, char *sessionID, char *gwSessionID) {
 	int rv;
 	clicktocall_start_req_tcp_t clicktocall_start_req;
 

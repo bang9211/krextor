@@ -15,12 +15,13 @@ void clicktocall_start_req_tcp_final( clicktocall_start_req_tcp_t *clicktocall_s
 	return;
 }
 
-int clicktocall_start_req_decode_dbif_msg( clicktocall_start_req_tcp_t *clicktocall_start_req, char* sessionID[], char* gwSessionID[], uxc_dbif_t *dbif)
+int clicktocall_start_req_decode_dbif_msg( clicktocall_start_req_tcp_t *clicktocall_start_req, char *sessionID, char *gwSessionID, uxc_dbif_t *dbif)
 {
 	int rv;
-	*sessionID = uxc_dbif_get_str(dbif, 0, &rv);
+	
+	strncpy(sessionID, uxc_dbif_get_str(dbif, 0, &rv), SESSION_ID_LEN);
 	if( rv < eUXC_SUCCESS) goto final;
-	*gwSessionID = uxc_dbif_get_str(dbif, 1, &rv);
+	strncpy(gwSessionID, uxc_dbif_get_str(dbif, 1, &rv), GW_SESSION_ID_LEN);
 	if( rv < eUXC_SUCCESS) goto final;
 	strcpy(clicktocall_start_req->subscriberName, uxc_dbif_get_str(dbif, 2, &rv));
 	if( rv < eUXC_SUCCESS) goto final;

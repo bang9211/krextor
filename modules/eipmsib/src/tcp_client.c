@@ -105,16 +105,14 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 	upa_peerkey_t peerkey;
 
 	skb_msg_t skbmsg;
-	tcp_msg_t *msg;
 	uxc_dbif_t *dbif;
 	uxc_ixpc_t *ipc_header;
 
-	char *sessionID = NULL;
-	char *gwSessionID = NULL;
+	char sessionID[SESSION_ID_LEN];
+	char gwSessionID[GW_SESSION_ID_LEN];
 
-	msg = (tcp_msg_t *)&ipcmsg->header;
-	msg_size = sizeof(uxc_ixpc_t) + msg->header.length;	//dbif header + body
-	msgId = msg->header.msgId;
+	msg_size = sizeof(uxc_ixpc_t) + ipcmsg->header.length;	//dbif header + body
+	msgId = ipcmsg->header.msgId;
 
 	ux_log( UXL_INFO, "2. CALL tcp_client_forward_gwreq (len:%d, msgId:%d) ", msg_size, msgId);
 
@@ -130,7 +128,7 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 
 		switch(msgId) {
 		case DBIF_CALL_START_REQUEST:
-			rv = skb_msg_process_clicktocall_start_req(&skbmsg, dbif, &sessionID, &gwSessionID);
+			rv = skb_msg_process_clicktocall_start_req(&skbmsg, dbif, sessionID, gwSessionID);
 			break;
 		case DBIF_CALL_STOP_REQUEST:
 			rv = skb_msg_process_clicktocall_stop_req(&skbmsg, dbif);
@@ -219,12 +217,12 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpmsg_t *tcpmsg)
 {
 	int rv, msgID;
-	skb_msg_t *msg;
+	skb_msg_t *skbmsg;
 	uxc_dbif_t dbif;
-	char *sessionID;
-	char *gwSessionID;
+	char sessionID[SESSION_ID_LEN];
+	char gwSessionID[GW_SESSION_ID_LEN];
 	uxc_ixpc_t *dbif_header;
-	tcp_msg_t dbif_msg;
+	uxc_ipcmsg_t ipcmsg;
 	
 	clicktocall_start_rsp_tcp_t clicktocall_start_rsp[1];
 	clicktocall_stop_rsp_tcp_t clicktocall_stop_rsp[1];
@@ -233,99 +231,63 @@ int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpms
 
 	// ux_log( UXL_INFO, "5. Recieved TCP response =");
 
-	// 1. receive msg 
-	msg = (skb_msg_t *) tcpmsg->netmsg->buffer;
+	// 1. receive skbmsg 
+	skbmsg = (skb_msg_t *) tcpmsg->netmsg->buffer;
 
 	//endian 복구
-	rv = skb_msg_cvt_order_ntoh(msg, tcpmsg->peerkey.chnl_idx, &msgID);
+	rv = skb_msg_cvt_order_ntoh(skbmsg, tcpmsg->peerkey.chnl_idx, &msgID);
 	if( rv < UX_SUCCESS) {
-		ux_log(UXL_INFO, "msg data error");
+		ux_log(UXL_INFO, "skbmsg data error");
 		return rv;
 	}
 
-	skb_msg_display_header(&msg->header);
+	skb_msg_display_header(&skbmsg->header);
 	// 2. process and response to uxcutor
 	//채널 index를 먼저 구분하여 clicktocall, clicktocallrecording, clicktoconference 구분
 	switch(tcpmsg->peerkey.chnl_idx) {
 	case TCP_CHANNEL_CALL:
-		switch(msg->header.messageID) {
+		switch(skbmsg->header.messageID) {
 		case START_RESPONSE:
-			memcpy(clicktocall_start_rsp, msg->body, sizeof(clicktocall_start_rsp_tcp_t));
+			memcpy(clicktocall_start_rsp, skbmsg->body, sizeof(clicktocall_start_rsp_tcp_t));
 			clicktocall_start_rsp_tcp_display(clicktocall_start_rsp);
 			//requestID에 따라 기존에 저장한 sessionID, gwSessionID 추가하여 dbif 메시지 생성
-			sessionID = uh_int_get(reqID_SID_Map, msg->header.requestID);
-			if (sessionID == NULL) {
-				ux_log(UXL_CRT, "There is no sessionID of reqID(%d)", msg->header.requestID);
+			strncpy(sessionID, uh_int_get(reqID_SID_Map, skbmsg->header.requestID), SESSION_ID_LEN);
+			if (sessionID == NULL || strcmp(sessionID, "") == 0) {
+				ux_log(UXL_CRT, "There is no sessionID of reqID(%d)", skbmsg->header.requestID);
 				return -1;
 			}
-			gwSessionID = uh_int_get(reqID_GWSID_Map, msg->header.requestID);
-			if (gwSessionID == NULL) {
-				ux_log(UXL_CRT, "There is no gwSessionID of reqID(%d)", msg->header.requestID);
-				return -1;
-			}
-			dbif_header = uh_ipc_get(reqID_IPC_Map, msg->header.requestID);
-			if (dbif_header == NULL) {
-				ux_log(UXL_CRT, "There is no ipc_header of reqID(%d)", msg->header.requestID);
+			strncpy(gwSessionID, uh_int_get(reqID_GWSID_Map, skbmsg->header.requestID), GW_SESSION_ID_LEN);
+			if (gwSessionID == NULL || strcmp(sessionID, "") == 0) {
+				ux_log(UXL_CRT, "There is no gwSessionID of reqID(%d)", skbmsg->header.requestID);
 				return -1;
 			}
 			rv = clicktocall_start_rsp_encode_to_dbif_msg(clicktocall_start_rsp, sessionID, gwSessionID, &dbif);
 			if (rv <eUXC_SUCCESS) return rv;
-			memcpy(dbif_msg.data, &dbif, sizeof(dbif));
-			dbif_msg.header = *dbif_header;
-			dbif_msg.header.msgId = msgID;
-			dbif_msg.header.length = sizeof(uxc_dbif_t) - UXC_DBIF_MAX_DATA + dbif.dataLen;
 			clicktocall_start_rsp_dbif_display(&dbif);
 			break;
 		case STOP_RESPONSE:
-			memcpy(clicktocall_stop_rsp, msg->body, sizeof(clicktocall_stop_rsp_tcp_t));
+			memcpy(clicktocall_stop_rsp, skbmsg->body, sizeof(clicktocall_stop_rsp_tcp_t));
 			clicktocall_stop_rsp_tcp_display(clicktocall_stop_rsp);
-			dbif_header = uh_ipc_get(reqID_IPC_Map, msg->header.requestID);
-			if (dbif_header == NULL) {
-				ux_log(UXL_CRT, "There is no ipc_header of reqID(%d)", msg->header.requestID);
-				return -1;
-			}
 			rv = clicktocall_stop_rsp_encode_to_dbif_msg(clicktocall_stop_rsp, &dbif);
 			if (rv <eUXC_SUCCESS) return rv;
-			memcpy(dbif_msg.data, &dbif, sizeof(dbif));
-			dbif_msg.header = *dbif_header;
-			dbif_msg.header.msgId = msgID;
-			dbif_msg.header.length = sizeof(uxc_dbif_t) - UXC_DBIF_MAX_DATA + dbif.dataLen;
 			clicktocall_stop_rsp_dbif_display(&dbif);
 			break;
 		case STOP_REPORT:
 			break;
 		case START_RECORDING_RESPONSE:
-			memcpy(clicktocall_startrecording_rsp, msg->body, sizeof(clicktocall_startrecording_rsp_tcp_t));
+			memcpy(clicktocall_startrecording_rsp, skbmsg->body, sizeof(clicktocall_startrecording_rsp_tcp_t));
 			clicktocall_startrecording_rsp_tcp_display(clicktocall_startrecording_rsp);
-			dbif_header = uh_ipc_get(reqID_IPC_Map, msg->header.requestID);
-			if (dbif_header == NULL) {
-				ux_log(UXL_CRT, "There is no ipc_header of reqID(%d)", msg->header.requestID);
-				return -1;
-			}
 			rv = clicktocall_startrecording_rsp_encode_to_dbif_msg(clicktocall_startrecording_rsp, &dbif);
 			if (rv <eUXC_SUCCESS) return rv;
-			memcpy(dbif_msg.data, &dbif, sizeof(dbif));
-			dbif_msg.header = *dbif_header;
-			dbif_msg.header.msgId = msgID;
-			dbif_msg.header.length = sizeof(uxc_dbif_t) - UXC_DBIF_MAX_DATA + dbif.dataLen;
 			clicktocall_startrecording_rsp_dbif_display(&dbif);
 			break;
 		case START_RECORDING_REPORT:
 			break;
 		case STOP_RECORDING_RESPONSE:
-			memcpy(clicktocall_stoprecording_rsp, msg->body, sizeof(clicktocall_stoprecording_rsp_tcp_t));
+			memcpy(clicktocall_stoprecording_rsp, skbmsg->body, sizeof(clicktocall_stoprecording_rsp_tcp_t));
 			clicktocall_stoprecording_rsp_tcp_display(clicktocall_stoprecording_rsp);
-			dbif_header = uh_ipc_get(reqID_IPC_Map, msg->header.requestID);
-			if (dbif_header == NULL) {
-				ux_log(UXL_CRT, "There is no ipc_header of reqID(%d)", msg->header.requestID);
-				return -1;
-			}
 			rv = clicktocall_stoprecording_rsp_encode_to_dbif_msg(clicktocall_stoprecording_rsp, &dbif);
 			if (rv <eUXC_SUCCESS) return rv;
-			memcpy(dbif_msg.data, &dbif, sizeof(dbif));
-			dbif_msg.header = *dbif_header;
-			dbif_msg.header.msgId = msgID;
-			dbif_msg.header.length = sizeof(uxc_dbif_t) - UXC_DBIF_MAX_DATA + dbif.dataLen;
 			clicktocall_stoprecording_rsp_dbif_display(&dbif);
 			break;
 		case STOP_RECORDING_REPORT:
@@ -335,7 +297,7 @@ int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpms
 		case SERVICE_STATUS_REPORT:
 			break;
 		default:
-			ux_log(UXL_CRT, "Unsupported messageID : %#010x", msg->header.messageID)
+			ux_log(UXL_CRT, "Unsupported messageID : %#010x", skbmsg->header.messageID)
 			break;	
 		}
 		break;		
@@ -348,10 +310,20 @@ int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpms
 		break;
 	}		
 
-	if (dbif_msg.header.msgId != 0) {
-		rv = tcp_client_send_ipcmsg(client, &dbif_msg, 0); 
+	if (msgID != 0) {
+		dbif_header = uh_ipc_get(reqID_IPC_Map, skbmsg->header.requestID);
+		if (dbif_header == NULL) {
+			ux_log(UXL_CRT, "There is no ipc_header of reqID(%d)", skbmsg->header.requestID);
+			return -1;
+		}
+		ipcmsg.header = *dbif_header;
+		ipcmsg.header.msgId = msgID;
+		ipcmsg.header.length = sizeof(uxc_dbif_t) - UXC_DBIF_MAX_DATA + dbif.dataLen;
+		memcpy(ipcmsg.data, &dbif, sizeof(dbif));
+
+		rv = tcp_client_send_ipcmsg(client, &ipcmsg, 0); 
 		if( rv< UX_SUCCESS) {
-			ux_log( UXL_INFO, "can't send msg");
+			ux_log( UXL_INFO, "can't send skbmsg");
 		}
 		return rv;
 	}
@@ -360,32 +332,29 @@ int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpms
 }	
 
 
-int tcp_client_send_ipcmsg( tcp_client_t *client, tcp_msg_t* msg, int rv)
+int tcp_client_send_ipcmsg( tcp_client_t *client, uxc_ipcmsg_t* ipcmsg, int rv)
 {
 	int msg_size;
-	uxc_ipcmsg_t ipcmsg;
 
 	//DBIF 헤더 설정
 	//TODO : serviceID 같은지 확인하기
-	ux_log(UXL_CRT, "sending dbif size : %d ",msg->header.length);
-	ux_log(UXL_CRT, "sending dbif msgId : %d ", msg->header.msgId);
+	ux_log(UXL_CRT, "sending dbif size : %d ",ipcmsg->header.length);
+	ux_log(UXL_CRT, "sending dbif msgId : %d ", ipcmsg->header.msgId);
 	
-	ipcmsg.header = msg->header;
-	memcpy(ipcmsg.data, msg->data, ipcmsg.header.length);
-	msg_size = sizeof(uxc_ixpc_t) + ipcmsg.header.length + sizeof(long) ;
+	msg_size = sizeof(uxc_ixpc_t) + ipcmsg->header.length + sizeof(long) ;
 
-	ipcmsg.mtype = UXC_MTYPE_DB;
-	ipcmsg.header.dstQid = ipcmsg.header.srcQid;
-	ipcmsg.header.srcQid = client->conf->mqid;
-	ipcmsg.header.result = rv;
+	ipcmsg->mtype = UXC_MTYPE_DB;
+	ipcmsg->header.dstQid = ipcmsg->header.srcQid;
+	ipcmsg->header.srcQid = client->conf->mqid;
+	ipcmsg->header.result = rv;
 	
 	ux_log(UXL_INFO, "5. Send ipcmsg to %d from %d, size=%d, header=%lu + dbif=%d\n",
-		ipcmsg.header.dstQid, ipcmsg.header.srcQid, msg_size, sizeof(uxc_ixpc_t),ipcmsg.header.length); 
+		ipcmsg->header.dstQid, ipcmsg->header.srcQid, msg_size, sizeof(uxc_ixpc_t),ipcmsg->header.length); 
 
-	rv = msgsnd(ipcmsg.header.dstQid, &ipcmsg, msg_size, IPC_NOWAIT);
+	rv = msgsnd(ipcmsg->header.dstQid, &ipcmsg, msg_size, IPC_NOWAIT);
 	if( rv < 0) {
-		ux_log( UXL_MAJ, "msgsnd: E=%d, q=%d, len=%lu", errno, ipcmsg.header.dstQid,
-					sizeof(uxc_ixpc_t) + ipcmsg.header.length);
+		ux_log( UXL_MAJ, "msgsnd: E=%d, q=%d, len=%lu", errno, ipcmsg->header.dstQid,
+					sizeof(uxc_ixpc_t) + ipcmsg->header.length);
 		return rv;
 	}
 

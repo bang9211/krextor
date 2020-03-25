@@ -88,7 +88,9 @@
 #define SERVICE_STATUS_REPORT								0x20000030
 
 /** @brief SKB MAX Message Length */
-#define SKB_MSG_MAX_LEN		64*1024
+#define SKB_MSG_MAX_LEN			64*1024
+#define SESSION_ID_LEN 			32
+#define GW_SESSION_ID_LEN 		32
 
 // #define UNSIGNED_INT32_MAX 4294967295	//2147483647 - (-2147483648), min: 0 max: 4294967295
 // typedef enum {false, true} bool;
@@ -130,10 +132,11 @@ void skb_msg_display_header(skb_header_t* header);
 int32_t skb_msg_generate_messasgeID();
 int32_t skb_msg_generate_requestID();
 
-int skb_msg_process_clicktocall_start_req( skb_msg_t *skbmsg, uxc_dbif_t *dbif, char *sessionID[], char *gwSessionID[]);
+int skb_msg_process_clicktocall_start_req( skb_msg_t *skbmsg, uxc_dbif_t *dbif, char *sessionID, char *gwSessionID);
 int skb_msg_process_clicktocall_stop_req( skb_msg_t *skbmsg, uxc_dbif_t *dbif);
 int skb_msg_process_clicktocall_startrecording_req( skb_msg_t *skbmsg, uxc_dbif_t *dbif);
 int skb_msg_process_clicktocall_stoprecording_req( skb_msg_t *skbmsg, uxc_dbif_t *dbif);
 
+// int skb_msg_process_clicktocall_start_rsp( skb_msg_t *skbmsg, );
 
 #endif // #ifndef __SKB_MSG_H__

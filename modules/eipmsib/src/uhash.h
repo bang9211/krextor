@@ -2,6 +2,7 @@
 #define UHASH_H
 
 #include <uxcutor/uxc_ipcmsg.h>
+#include<pthread.h>
 #include "khash.h"
 
 // shorthand way to get the key from hashtable or defVal if not found
@@ -19,18 +20,21 @@ typedef struct uhash_int_s uhash_int_t;
 struct uhash_int_s {
     kh_m32_t* h;
     int available;
+    pthread_mutex_t mutex_lock;
 };
 
 typedef struct uhash_str_s uhash_str_t;
 struct uhash_str_s {
     kh_str_t* h;
     int available;
+    pthread_mutex_t mutex_lock;
 };
 
 typedef struct uhash_ipc_s uhash_ipc_t;
 struct uhash_ipc_s {
     kh_m32_t* h;
     int available;
+    pthread_mutex_t mutex_lock;
 };
 
 uhash_int_t* uh_int_init();

@@ -4,7 +4,6 @@
 #include <uxcutor/uxcutor.h>
 #include <upa/upa_tcp.h>
 #include <upa/upa_dbif.h>
-#include "tcp_msg.h"
 #include "skb_msg.h"
 #include "uhash.h"
 
@@ -34,6 +33,6 @@ void tcp_client_final( tcp_client_t *client);
 
 int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ipcmsg_t *ipcmsg);
 int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpmsg_t *tcpmsg);
-int tcp_client_send_ipcmsg( tcp_client_t *client,  tcp_msg_t* msg, int rv);
+int tcp_client_send_ipcmsg( tcp_client_t *client, uxc_ipcmsg_t* ipcmsg, int rv);
 
 #endif // #ifndef __TCP_CLIENT_H__
