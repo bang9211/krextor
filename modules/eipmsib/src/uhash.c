@@ -70,6 +70,7 @@ int uh_int_is_exist(uhash_int_t* hash, khint_t key) {
 void uh_int_destroy(uhash_int_t* hash) {
     pthread_mutex_destroy(&hash->mutex_lock);
     kh_destroy(m32, hash->h);
+    free(hash);
 }
 
 
@@ -135,6 +136,7 @@ int uh_str_is_exist(uhash_str_t* hash, kh_cstr_t key) {
 void uh_str_destroy(uhash_str_t* hash) {
     pthread_mutex_destroy(&hash->mutex_lock);
     kh_destroy(str, hash->h);
+    free(hash);
 }
 
 uhash_ipc_t* uh_ipc_init() {
@@ -186,4 +188,5 @@ int uh_ipc_is_exist(uhash_ipc_t* hash, khint_t key) {
 void uh_ipc_destroy(uhash_ipc_t* hash) {
     pthread_mutex_destroy(&hash->mutex_lock);
     kh_destroy(ipc, hash->h);
+    free(hash);
 }

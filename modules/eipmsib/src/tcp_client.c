@@ -107,7 +107,7 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 
 	skb_msg_t skbmsg;
 	uxc_dbif_t *dbif;
-	uxc_ixpc_t *ipc_header;
+	uxc_ixpc_t ipc_header;
 
 	char sessionID[SESSION_ID_LEN];
 	char gwSessionID[GW_SESSION_ID_LEN];
@@ -161,7 +161,7 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 	}
 	if( rv < UX_SUCCESS) {
 		ux_log( UXL_CRT, "can't send data in process req.");
-		return -1;
+		return rv;
 	}
 
 	msg_size = skbmsg.header.length;
@@ -177,9 +177,8 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 		ux_log(UXL_CRT, "failed to put to reqID_GWSID_Map : (%d - %s)", skbmsg.header.requestID, gwSessionID);
 	}
 	//requestID와 ipc header Bind
-    ipc_header = malloc(sizeof(uxc_ixpc_t));
-	memcpy(ipc_header, &ipcmsg->header, sizeof(uxc_ixpc_t));
-	if(!uh_ipc_put(reqID_IPC_Map, skbmsg.header.requestID, ipc_header)) {
+	memcpy(&ipc_header, &ipcmsg->header, sizeof(uxc_ixpc_t));
+	if(!uh_ipc_put(reqID_IPC_Map, skbmsg.header.requestID, &ipc_header)) {
 		ux_log(UXL_CRT, "failed to put to reqID_IPC_Map : (%d)", skbmsg.header.requestID);
 	}
 	/* ipc header */
@@ -220,17 +219,8 @@ int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpms
 	int rv, msgID;
 	skb_msg_t *skbmsg;
 	uxc_dbif_t dbif;
-	char sessionID[SESSION_ID_LEN];
-	char gwSessionID[GW_SESSION_ID_LEN];
 	uxc_ixpc_t *dbif_header;
 	uxc_ipcmsg_t ipcmsg;
-	
-	clicktocall_start_rsp_tcp_t clicktocall_start_rsp[1];
-	clicktocall_stop_rsp_tcp_t clicktocall_stop_rsp[1];
-	clicktocall_startrecording_rsp_tcp_t clicktocall_startrecording_rsp[1];
-	clicktocall_stoprecording_rsp_tcp_t clicktocall_stoprecording_rsp[1];
-
-	// ux_log( UXL_INFO, "5. Recieved TCP response =");
 
 	// 1. receive skbmsg 
 	skbmsg = (skb_msg_t *) tcpmsg->netmsg->buffer;
@@ -249,47 +239,20 @@ int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpms
 	case TCP_CHANNEL_CALL:
 		switch(skbmsg->header.messageID) {
 		case START_RESPONSE:
-			memcpy(clicktocall_start_rsp, skbmsg->body, sizeof(clicktocall_start_rsp_tcp_t));
-			clicktocall_start_rsp_tcp_display(clicktocall_start_rsp);
-			//requestID에 따라 기존에 저장한 sessionID, gwSessionID 추가하여 dbif 메시지 생성
-			strncpy(sessionID, uh_int_get(reqID_SID_Map, skbmsg->header.requestID), SESSION_ID_LEN);
-			if (sessionID == NULL || strcmp(sessionID, "") == 0) {
-				ux_log(UXL_CRT, "There is no sessionID of reqID(%d)", skbmsg->header.requestID);
-				return -1;
-			}
-			strncpy(gwSessionID, uh_int_get(reqID_GWSID_Map, skbmsg->header.requestID), GW_SESSION_ID_LEN);
-			if (gwSessionID == NULL || strcmp(sessionID, "") == 0) {
-				ux_log(UXL_CRT, "There is no gwSessionID of reqID(%d)", skbmsg->header.requestID);
-				return -1;
-			}
-			rv = clicktocall_start_rsp_encode_to_dbif_msg(clicktocall_start_rsp, sessionID, gwSessionID, &dbif);
-			if (rv <eUXC_SUCCESS) return rv;
-			clicktocall_start_rsp_dbif_display(&dbif);
+			rv = skb_msg_process_clicktocall_start_rsp(skbmsg, &dbif);
 			break;
 		case STOP_RESPONSE:
-			memcpy(clicktocall_stop_rsp, skbmsg->body, sizeof(clicktocall_stop_rsp_tcp_t));
-			clicktocall_stop_rsp_tcp_display(clicktocall_stop_rsp);
-			rv = clicktocall_stop_rsp_encode_to_dbif_msg(clicktocall_stop_rsp, &dbif);
-			if (rv <eUXC_SUCCESS) return rv;
-			clicktocall_stop_rsp_dbif_display(&dbif);
+			rv = skb_msg_process_clicktocall_stop_rsp(skbmsg, &dbif);
 			break;
 		case STOP_REPORT:
 			break;
 		case START_RECORDING_RESPONSE:
-			memcpy(clicktocall_startrecording_rsp, skbmsg->body, sizeof(clicktocall_startrecording_rsp_tcp_t));
-			clicktocall_startrecording_rsp_tcp_display(clicktocall_startrecording_rsp);
-			rv = clicktocall_startrecording_rsp_encode_to_dbif_msg(clicktocall_startrecording_rsp, &dbif);
-			if (rv <eUXC_SUCCESS) return rv;
-			clicktocall_startrecording_rsp_dbif_display(&dbif);
+			rv = skb_msg_process_clicktocall_startrecording_rsp(skbmsg, &dbif);
 			break;
 		case START_RECORDING_REPORT:
 			break;
 		case STOP_RECORDING_RESPONSE:
-			memcpy(clicktocall_stoprecording_rsp, skbmsg->body, sizeof(clicktocall_stoprecording_rsp_tcp_t));
-			clicktocall_stoprecording_rsp_tcp_display(clicktocall_stoprecording_rsp);
-			rv = clicktocall_stoprecording_rsp_encode_to_dbif_msg(clicktocall_stoprecording_rsp, &dbif);
-			if (rv <eUXC_SUCCESS) return rv;
-			clicktocall_stoprecording_rsp_dbif_display(&dbif);
+			rv = skb_msg_process_clicktocall_stoprecording_rsp(skbmsg, &dbif);
 			break;
 		case STOP_RECORDING_REPORT:
 			break;
@@ -310,6 +273,10 @@ int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpms
 		ux_log(UXL_CRT, "Unsupported Channel Index : %d", tcpmsg->peerkey.chnl_idx)
 		break;
 	}		
+	if( rv < UX_SUCCESS) {
+		ux_log( UXL_CRT, "can't send data in process rsp.");
+		return rv;
+	}
 
 	if (msgID != 0) {
 		dbif_header = uh_ipc_get(reqID_IPC_Map, skbmsg->header.requestID);

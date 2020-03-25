@@ -2,3 +2,5 @@
 *.so
 *.a
 
+*.log
+report
