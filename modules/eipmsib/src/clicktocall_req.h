@@ -58,6 +58,13 @@ struct clicktocall_stoprecording_req_tcp_s {
 	char serviceID[SERVICE_ID_LEN];
 };
 
+typedef struct clicktocall_service_status_req_tcp_s clicktocall_service_status_req_tcp_t; 
+struct clicktocall_service_status_req_tcp_s {
+	char serviceID[SERVICE_ID_LEN];
+};
+
+
+
 ///////////////////////////////////////////////////////////////////////////////////
 // ClickToCall Request Message Functions 
 ///////////////////////////////////////////////////////////////////////////////////

@@ -43,6 +43,13 @@ struct clicktocall_stoprecording_rsp_tcp_s {
 	char serviceID[SERVICE_ID_LEN];
 };
 
+typedef struct clicktocall_service_status_rsp_tcp_s clicktocall_service_status_rsp_tcp_t; 
+struct clicktocall_service_status_rsp_tcp_s {
+	int32_t resultCode;
+	char serviceID[SERVICE_ID_LEN];
+	int32_t status;
+};
+
 
 ///////////////////////////////////////////////////////////////////////////////////
 // tcp_clicktocall Response Message Functions 
