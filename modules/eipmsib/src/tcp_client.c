@@ -101,7 +101,8 @@ void tcp_client_final( tcp_client_t *client)
 
 int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ipcmsg_t *ipcmsg )
 {
-	int rv, msg_size, msgId;
+	int rv = 0;
+	int msg_size, msgId;
 	upa_peerkey_t peerkey;
 
 	skb_msg_t skbmsg;

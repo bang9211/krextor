@@ -14,12 +14,12 @@ SRCS =
     tcp_client
     tcp_conf
     tcp_dlmain
-    clicktocall_req
-    clicktocall_rsp
+    $(SKBGW_SRC_HOME)/modules/eipmsib/src/clicktocall_req
+    $(SKBGW_SRC_HOME)/modules/eipmsib/src/clicktocall_rsp
     tcp_server
     tcp_msg
-    skb_msg
-    uhash
+    $(SKBGW_SRC_HOME)/modules/eipmsib/src/skb_msg
+    $(SKBGW_SRC_HOME)/modules/eipmsib/src/uhash
 	;
 
 IHDRS =
