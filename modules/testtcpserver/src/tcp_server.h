@@ -4,7 +4,7 @@
 #include <uxcutor/uxcutor.h>
 #include <upa/upa_tcp.h>
 #include "tcp_msg.h"
-#include "skb_msg.h"
+#include "../../eipmsib/src/skb_msg.h"
 #include <string.h>
 
 ///////////////////////////////////////////////////////////////////////////////////

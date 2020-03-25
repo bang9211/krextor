@@ -26,11 +26,11 @@ int skb_msg_cvt_order_hton(skb_msg_t *msg, int msgId)
         clicktocall_start_req->callMentID = htons(clicktocall_start_req->callMentID);
         clicktocall_start_req->fillerInt16 = htons(clicktocall_start_req->fillerInt16);
         break;
-    case DBIF_CALL_STOP_REQUEST:
+    case DBIF_CALL_STOP_REQUEST:				//없음
         break;
-    case DBIF_CALL_START_RECORDING_REQUEST:
+    case DBIF_CALL_START_RECORDING_REQUEST:		//없음
         break;
-    case DBIF_CALL_STOP_RECORDING_REQUEST:
+    case DBIF_CALL_STOP_RECORDING_REQUEST:		//없음
         break;
 	default :
 		ux_log( UXL_INFO, "Unknown Msg Id : [%d]\n", msgId);
@@ -193,7 +193,6 @@ int skb_msg_send( skb_msg_t *msg, upa_tcp_t *tcp, upa_peerkey_t *peerkey)
 		
 	msg_size = msg->header.length; 
 
-	//TODO
 	rv = skb_msg_cvt_order_hton(msg, DBIF_CALL_START_REQUEST);
 	if( rv < UX_SUCCESS) {
 		ux_log(UXL_INFO, "msg data error");

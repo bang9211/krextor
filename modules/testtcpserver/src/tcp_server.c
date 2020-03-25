@@ -155,12 +155,12 @@ static int tcp_server_handle_clicktocall_start_req( tcp_server_t *server, uxc_wo
 	//make response
 	clicktocall_start_rsp_tcp_init(clicktocall_start_rsp);
 	clicktocall_start_rsp->resultCode = 0;
-	strcpy(clicktocall_start_rsp->serviceID, "service0001");
+	strncpy(clicktocall_start_rsp->serviceID, "service0001", SERVICE_ID_LEN);
 	clicktocall_start_rsp->isRecording = 0;
 	clicktocall_start_rsp->filler1 = 0;
 	clicktocall_start_rsp->filler2= 0;
-	strcpy(clicktocall_start_rsp->recordingFileURL, "/test/test");
-	strcpy(clicktocall_start_rsp->recordingFileName, "testFileName");
+	strncpy(clicktocall_start_rsp->recordingFileURL, "/test/test", RECORDING_FILE_URL_LEN);
+	strncpy(clicktocall_start_rsp->recordingFileName, "testFileName", RECORDING_FILE_NAME_LEN);
 
 	skb_msg_make_header(&rspMsg.header, START_RESPONSE, sizeof(clicktocall_start_rsp), &skbmsg->header.requestID);
 	skb_msg_display_header(&rspMsg.header);
@@ -191,7 +191,7 @@ static int tcp_server_handle_clicktocall_stop_req( tcp_server_t *server, uxc_wor
 	//make response
 	clicktocall_stop_rsp_tcp_init(clicktocall_stop_rsp);
 	clicktocall_stop_rsp->resultCode = 0;
-	strcpy(clicktocall_stop_rsp->serviceID, "service0001");
+	strncpy(clicktocall_stop_rsp->serviceID, "service0001", SERVICE_ID_LEN);
 
 	skb_msg_make_header(&rspMsg.header, STOP_RESPONSE, sizeof(clicktocall_stop_rsp), &skbmsg->header.requestID);
 	skb_msg_display_header(&rspMsg.header);
@@ -220,9 +220,9 @@ static int tcp_server_handle_clicktocall_startrecording_req( tcp_server_t *serve
 	//make response
 	clicktocall_startrecording_rsp_tcp_init(clicktocall_startrecording_rsp);
 	clicktocall_startrecording_rsp->resultCode = 0;
-	strcpy(clicktocall_startrecording_rsp->serviceID, "service0001");
-	strcpy(clicktocall_startrecording_rsp->recordingFileURL, "/test/test");
-	strcpy(clicktocall_startrecording_rsp->recordingFileName, "testFileName");
+	strncpy(clicktocall_startrecording_rsp->serviceID, "service0001", SERVICE_ID_LEN);
+	strncpy(clicktocall_startrecording_rsp->recordingFileURL, "/test/test", RECORDING_FILE_URL_LEN);
+	strncpy(clicktocall_startrecording_rsp->recordingFileName, "testFileName", RECORDING_FILE_NAME_LEN);
 
 	skb_msg_make_header(&rspMsg.header, START_RECORDING_RESPONSE, sizeof(clicktocall_startrecording_rsp), &skbmsg->header.requestID);
 	skb_msg_display_header(&rspMsg.header);
@@ -251,7 +251,7 @@ static int tcp_server_handle_clicktocall_stoprecording_req( tcp_server_t *server
 	//make response
 	clicktocall_stoprecording_rsp_tcp_init(clicktocall_stoprecording_rsp);
 	clicktocall_stoprecording_rsp->resultCode = 0;
-	strcpy(clicktocall_stoprecording_rsp->serviceID, "service0001");
+	strncpy(clicktocall_stoprecording_rsp->serviceID, "service0001", SERVICE_ID_LEN);
 
 	skb_msg_make_header(&rspMsg.header, STOP_RECORDING_RESPONSE, sizeof(clicktocall_stoprecording_rsp), &skbmsg->header.requestID);
 	skb_msg_display_header(&rspMsg.header);

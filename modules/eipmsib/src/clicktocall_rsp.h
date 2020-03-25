@@ -6,7 +6,7 @@
 #include <uxlib/ux_log.h>
 #include <uxcutor/uxcutor.h>
 #include <upa/upa_tcp.h>
-#include "skb_msg.h"
+#include "skb_msg_info.h"
 
 ///////////////////////////////////////////////////////////////////////////////////
 // tcp_clicktocall Response Message Structure & Macro 
@@ -15,32 +15,32 @@
 typedef struct clicktocall_start_rsp_tcp_s clicktocall_start_rsp_tcp_t; 
 struct clicktocall_start_rsp_tcp_s {
 	int32_t resultCode;
-	char serviceID[32];
+	char serviceID[SERVICE_ID_LEN];
 	int8_t isRecording;
 	int8_t filler1;
 	int16_t filler2;
-	char recordingFileURL[64];
-	char recordingFileName[64];
+	char recordingFileURL[RECORDING_FILE_URL_LEN];
+	char recordingFileName[RECORDING_FILE_NAME_LEN];
 };
 
 typedef struct clicktocall_stop_rsp_tcp_s clicktocall_stop_rsp_tcp_t; 
 struct clicktocall_stop_rsp_tcp_s {
 	int32_t resultCode;
-	char serviceID[32];
+	char serviceID[SERVICE_ID_LEN];
 };
 
 typedef struct clicktocall_startrecording_rsp_tcp_s clicktocall_startrecording_rsp_tcp_t; 
 struct clicktocall_startrecording_rsp_tcp_s {
 	int32_t resultCode;
-	char serviceID[32];
-	char recordingFileURL[64];
-	char recordingFileName[64];
+	char serviceID[SERVICE_ID_LEN];
+	char recordingFileURL[RECORDING_FILE_URL_LEN];
+	char recordingFileName[RECORDING_FILE_NAME_LEN];
 };
 
 typedef struct clicktocall_stoprecording_rsp_tcp_s clicktocall_stoprecording_rsp_tcp_t; 
 struct clicktocall_stoprecording_rsp_tcp_s {
 	int32_t resultCode;
-	char serviceID[32];
+	char serviceID[SERVICE_ID_LEN];
 };
 
 

@@ -16,6 +16,13 @@ SRCS =
     tcp_dlmain
     $(SKBGW_SRC_HOME)/modules/eipmsib/src/clicktocall_req
     $(SKBGW_SRC_HOME)/modules/eipmsib/src/clicktocall_rsp
+    $(SKBGW_SRC_HOME)/modules/eipmsib/src/clicktocall_rpt
+    $(SKBGW_SRC_HOME)/modules/eipmsib/src/clicktocallrecording_req
+    $(SKBGW_SRC_HOME)/modules/eipmsib/src/clicktocallrecording_rsp
+    $(SKBGW_SRC_HOME)/modules/eipmsib/src/clicktocallrecording_rpt
+    $(SKBGW_SRC_HOME)/modules/eipmsib/src/clicktoconference_req
+    $(SKBGW_SRC_HOME)/modules/eipmsib/src/clicktoconference_rsp
+    $(SKBGW_SRC_HOME)/modules/eipmsib/src/clicktoconference_rpt
     tcp_server
     tcp_msg
     $(SKBGW_SRC_HOME)/modules/eipmsib/src/skb_msg

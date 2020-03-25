@@ -23,13 +23,13 @@ int clicktocall_start_req_decode_dbif_msg( clicktocall_start_req_tcp_t *clicktoc
 	if( rv < eUXC_SUCCESS) goto final;
 	strncpy(gwSessionID, uxc_dbif_get_str(dbif, 1, &rv), GW_SESSION_ID_LEN);
 	if( rv < eUXC_SUCCESS) goto final;
-	strcpy(clicktocall_start_req->subscriberName, uxc_dbif_get_str(dbif, 2, &rv));
+	strncpy(clicktocall_start_req->subscriberName, uxc_dbif_get_str(dbif, 2, &rv), SUBSCRIBER_NAME_LEN);
 	if( rv < eUXC_SUCCESS) goto final;
 	clicktocall_start_req->recordingType = uxc_dbif_get_int(dbif, 3, &rv);
 	if( rv < eUXC_SUCCESS) goto final;
-	strcpy(clicktocall_start_req->callingNumber, uxc_dbif_get_str(dbif, 4, &rv));
+	strncpy(clicktocall_start_req->callingNumber, uxc_dbif_get_str(dbif, 4, &rv), CALL_NUMBER_LEN);
 	if( rv < eUXC_SUCCESS) goto final;
-	strcpy(clicktocall_start_req->calledNumber, uxc_dbif_get_str(dbif, 5, &rv));
+	strncpy(clicktocall_start_req->calledNumber, uxc_dbif_get_str(dbif, 5, &rv), CALL_NUMBER_LEN);
 	if( rv < eUXC_SUCCESS) goto final;
 	clicktocall_start_req->serviceCode = uxc_dbif_get_int(dbif, 6, &rv);
 	if( rv < eUXC_SUCCESS) goto final;
@@ -41,11 +41,11 @@ int clicktocall_start_req_decode_dbif_msg( clicktocall_start_req_tcp_t *clicktoc
 	if( rv < eUXC_SUCCESS) goto final;
 	clicktocall_start_req->callMentID = uxc_dbif_get_int(dbif, 10, &rv);
 	if( rv < eUXC_SUCCESS) goto final;
-	strcpy(clicktocall_start_req->callingCID, uxc_dbif_get_str(dbif, 11, &rv));
+	strncpy(clicktocall_start_req->callingCID, uxc_dbif_get_str(dbif, 11, &rv), CID_LEN);
 	if( rv < eUXC_SUCCESS) goto final;
-	strcpy(clicktocall_start_req->calledCID, uxc_dbif_get_str(dbif, 12, &rv));
+	strncpy(clicktocall_start_req->calledCID, uxc_dbif_get_str(dbif, 12, &rv), CID_LEN);
 	if( rv < eUXC_SUCCESS) goto final;
-	strcpy(clicktocall_start_req->recordingFileName, uxc_dbif_get_str(dbif, 13, &rv));
+	strncpy(clicktocall_start_req->recordingFileName, uxc_dbif_get_str(dbif, 13, &rv), CID_LEN);
 	if( rv < eUXC_SUCCESS) goto final;
 	clicktocall_start_req->isAllRecording = uxc_dbif_get_int(dbif, 14, &rv);
 	if( rv < eUXC_SUCCESS) goto final;
@@ -59,10 +59,10 @@ int clicktocall_start_req_decode_dbif_msg( clicktocall_start_req_tcp_t *clicktoc
 	if( rv < eUXC_SUCCESS) goto final;
 	clicktocall_start_req->wiredTimeout = uxc_dbif_get_int(dbif, 19, &rv);
 	if( rv < eUXC_SUCCESS) goto final;
-	strcpy(clicktocall_start_req->chargingNumber, "");
+	strncpy(clicktocall_start_req->chargingNumber, "", CHARGING_NUMBER_LEN);
 	clicktocall_start_req->fillerInt8 = 0;
 	clicktocall_start_req->fillerInt16 = 0;
-	strcpy(clicktocall_start_req->filler, "");
+	strncpy(clicktocall_start_req->filler, "", 32);
 
 	return eUXC_SUCCESS;
 
@@ -140,7 +140,7 @@ void clicktocall_stop_req_tcp_final( clicktocall_stop_req_tcp_t *clicktocall_sto
 int clicktocall_stop_req_decode_dbif_msg( clicktocall_stop_req_tcp_t *clicktocall_stop_req, uxc_dbif_t *dbif)
 {
 	int rv;
-	strcpy(clicktocall_stop_req->serviceID, uxc_dbif_get_str(dbif, 0, &rv));
+	strncpy(clicktocall_stop_req->serviceID, uxc_dbif_get_str(dbif, 0, &rv), SERVICE_ID_LEN);
 	if( rv < eUXC_SUCCESS) goto final;
 
 	return eUXC_SUCCESS;
@@ -179,9 +179,9 @@ void clicktocall_startrecording_req_tcp_final( clicktocall_startrecording_req_tc
 int clicktocall_startrecording_req_decode_dbif_msg( clicktocall_startrecording_req_tcp_t *clicktocall_startrecording_req, uxc_dbif_t *dbif)
 {
 	int rv;
-	strcpy(clicktocall_startrecording_req->serviceID, uxc_dbif_get_str(dbif, 0, &rv));
+	strncpy(clicktocall_startrecording_req->serviceID, uxc_dbif_get_str(dbif, 0, &rv), SERVICE_ID_LEN);
 	if( rv < eUXC_SUCCESS) goto final;
-	strcpy(clicktocall_startrecording_req->recordingFileName, uxc_dbif_get_str(dbif, 1, &rv));
+	strncpy(clicktocall_startrecording_req->recordingFileName, uxc_dbif_get_str(dbif, 1, &rv), RECORDING_FILE_NAME_LEN);
 	if( rv < eUXC_SUCCESS) goto final;
 
 	return eUXC_SUCCESS;
@@ -221,7 +221,7 @@ void clicktocall_stoprecording_req_tcp_final( clicktocall_stoprecording_req_tcp_
 int clicktocall_stoprecording_req_decode_dbif_msg( clicktocall_stoprecording_req_tcp_t *clicktocall_stoprecording_req, uxc_dbif_t *dbif)
 {
 	int rv;
-	strcpy(clicktocall_stoprecording_req->serviceID, uxc_dbif_get_str(dbif, 0, &rv));
+	strncpy(clicktocall_stoprecording_req->serviceID, uxc_dbif_get_str(dbif, 0, &rv), SERVICE_ID_LEN);
 	if( rv < eUXC_SUCCESS) goto final;
 
 	return eUXC_SUCCESS;

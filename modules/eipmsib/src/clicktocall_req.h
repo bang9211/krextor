@@ -7,7 +7,7 @@
 #include <uxlib/ux_log.h>
 #include <uxcutor/uxcutor.h>
 #include <upa/upa_tcp.h>
-#include "skb_msg.h"
+#include "skb_msg_info.h"
 
 ///////////////////////////////////////////////////////////////////////////////////
 // ClickToCall Request Message Structure & Macro 
@@ -17,20 +17,20 @@ typedef struct clicktocall_start_req_tcp_s clicktocall_start_req_tcp_t;
 // #pragma pack(push, 1)
 struct clicktocall_start_req_tcp_s {
 	// tcp_msg_t base[1];
-	char subscriberName[32];
+	char subscriberName[SUBSCRIBER_NAME_LEN];
 	int8_t recordingType;
-	char callingNumber[24];
-	char calledNumber[24];
-	char chargingNumber[24];
+	char callingNumber[CALL_NUMBER_LEN];
+	char calledNumber[CALL_NUMBER_LEN];
+	char chargingNumber[CHARGING_NUMBER_LEN];
 	int8_t serviceCode;
 	int8_t ringBackToneType;
 	int16_t waitingMentID;
 	int8_t fillerInt8;
 	int8_t scenarioType;
 	int16_t callMentID;
-	char callingCID[16];
-	char calledCID[16];
-	char recordingFileName[64];
+	char callingCID[CID_LEN];
+	char calledCID[CID_LEN];
+	char recordingFileName[RECORDING_FILE_NAME_LEN];
 	int8_t isAllRecording;
 	int8_t endIfRecordingFailed;
 	int8_t endIfRecordingEnded;
@@ -44,18 +44,18 @@ struct clicktocall_start_req_tcp_s {
 
 typedef struct clicktocall_stop_req_tcp_s clicktocall_stop_req_tcp_t; 
 struct clicktocall_stop_req_tcp_s {
-	char serviceID[32];
+	char serviceID[SERVICE_ID_LEN];
 };
 
 typedef struct clicktocall_startrecording_req_tcp_s clicktocall_startrecording_req_tcp_t; 
 struct clicktocall_startrecording_req_tcp_s {
-	char serviceID[32];
-	char recordingFileName[64];
+	char serviceID[SERVICE_ID_LEN];
+	char recordingFileName[RECORDING_FILE_NAME_LEN];
 };
 
 typedef struct clicktocall_stoprecording_req_tcp_s clicktocall_stoprecording_req_tcp_t; 
 struct clicktocall_stoprecording_req_tcp_s {
-	char serviceID[32];
+	char serviceID[SERVICE_ID_LEN];
 };
 
 ///////////////////////////////////////////////////////////////////////////////////

@@ -14,10 +14,17 @@ SRCS =
     tcp_client
     tcp_conf
     eipmsib_main
-    clicktocall_req
-    clicktocall_rsp
     skb_msg
     uhash
+    clicktocall_req
+    clicktocall_rsp
+    clicktocall_rpt
+    clicktocallrecording_req
+    clicktocallrecording_rsp
+    clicktocallrecording_rpt
+    clicktoconference_req
+    clicktoconference_rsp
+    clicktoconference_rpt
 	;
 
 IHDRS =
