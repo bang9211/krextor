@@ -60,9 +60,9 @@ int clicktocall_start_req_decode_dbif_msg( clicktocall_start_req_tcp_t *clicktoc
 	clicktocall_start_req->wiredTimeout = uxc_dbif_get_int(dbif, 19, &rv);
 	if( rv < eUXC_SUCCESS) goto final;
 	strncpy(clicktocall_start_req->chargingNumber, "", CHARGING_NUMBER_LEN);
-	clicktocall_start_req->fillerInt8 = 0;
-	clicktocall_start_req->fillerInt16 = 0;
-	strncpy(clicktocall_start_req->filler, "", 32);
+	clicktocall_start_req->filler1 = 0;
+	clicktocall_start_req->filler2 = 0;
+	strncpy(clicktocall_start_req->filler3, "", 32);
 
 	return eUXC_SUCCESS;
 
@@ -81,7 +81,7 @@ void clicktocall_start_req_tcp_display(clicktocall_start_req_tcp_t *clicktocall_
 	ux_log(UXL_INFO, "  [serviceCode] %d", clicktocall_start_req->serviceCode);
 	ux_log(UXL_INFO, "  [ringBackToneType] %d", clicktocall_start_req->ringBackToneType);
 	ux_log(UXL_INFO, "  [waitingMentID] %d", clicktocall_start_req->waitingMentID);
-	ux_log(UXL_INFO, "  [fillerInt8] %d", clicktocall_start_req->fillerInt8);
+	ux_log(UXL_INFO, "  [filler1] %d", clicktocall_start_req->filler1);
 	ux_log(UXL_INFO, "  [scenarioType] %d", clicktocall_start_req->scenarioType);
 	ux_log(UXL_INFO, "  [callMentID] %d", clicktocall_start_req->callMentID);
 	ux_log(UXL_INFO, "  [callingCID] %s", clicktocall_start_req->callingCID);
@@ -93,8 +93,8 @@ void clicktocall_start_req_tcp_display(clicktocall_start_req_tcp_t *clicktocall_
 	ux_log(UXL_INFO, "  [hostingCode] %d", clicktocall_start_req->hostingCode);
 	ux_log(UXL_INFO, "  [wirelessTimeout] %d", clicktocall_start_req->wirelessTimeout);
 	ux_log(UXL_INFO, "  [wiredTimeout] %d", clicktocall_start_req->wiredTimeout);
-	ux_log(UXL_INFO, "  [fillerInt16] %d", clicktocall_start_req->fillerInt16);
-	ux_log(UXL_INFO, "  [filler] %s", clicktocall_start_req->filler);
+	ux_log(UXL_INFO, "  [filler2] %d", clicktocall_start_req->filler2);
+	ux_log(UXL_INFO, "  [filler3] %s", clicktocall_start_req->filler3);
 }
 
 void clicktocall_start_req_dbif_display(uxc_dbif_t *dbif) {
@@ -230,6 +230,7 @@ final:
 	ux_log( UXL_CRT, "clicktocall_stoprecording_req_decode_dbif_msg is failed (rv=%d)", rv);
 	return rv;
 }
+
 void clicktocall_stoprecording_req_tcp_display(clicktocall_stoprecording_req_tcp_t *clicktocall_stoprecording_req) {
 	ux_log(UXL_INFO, "TCP [clicktocall_stoprecording_req]");
 	ux_log(UXL_INFO, "  [serviceID] %s", clicktocall_stoprecording_req->serviceID);
@@ -239,4 +240,24 @@ void clicktocall_stoprecording_req_dbif_display(uxc_dbif_t *dbif) {
 	int rv;
 	ux_log(UXL_INFO, "DBIF [clicktocall_stoprecording_req]");
 	ux_log(UXL_INFO, "  [serviceID] %s",uxc_dbif_get_str(dbif, 0, &rv));
+}
+
+///////////////////////////////////////////////////////////////////////////////////
+// functions for clicktocall_service_status_req_tcp_t 
+///////////////////////////////////////////////////////////////////////////////////
+
+int clicktocall_service_status_req_tcp_init( clicktocall_service_status_req_tcp_t *clicktocall_service_status_req)
+{
+	memset(clicktocall_service_status_req, 0, sizeof(clicktocall_service_status_req_tcp_t));
+	return eUXC_SUCCESS;
+}
+
+void clicktocall_service_status_req_tcp_final( clicktocall_service_status_req_tcp_t *clicktocall_service_status_req)
+{
+	return;
+}
+
+void clicktocall_service_status_req_tcp_display(clicktocall_service_status_req_tcp_t *clicktocall_service_status_req) {
+	ux_log(UXL_INFO, "TCP [clicktocall_service_status_req]");
+	ux_log(UXL_INFO, "  [serviceID] %s", clicktocall_service_status_req->serviceID);
 }

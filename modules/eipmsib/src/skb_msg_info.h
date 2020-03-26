@@ -83,6 +83,20 @@
 #define CID_LEN												16
 #define RECORDING_FILE_URL_LEN								64
 #define RECORDING_FILE_NAME_LEN								64
-#define SERVICE_TIME_LEN									16
+#define TIME_LEN	        								16
+#define CALLER_INFO_LEN                                     24
+#define CALLEE_INFO_LEN                                     24
+#define SUBJECT_LEN                                         64
+#define CHAIRMAN_NAME_LEN                                   20
+#define PASSWORD_LEN                                        16
+#define PARTICIPANT_NAME_LEN                                32
+#define MAX_PARTICIPANT_LEN                                 32
+// v0.4에서 참여자 리스트의 최대 크기는 32명으로 제한한다. 추가로 회의에 참여시킬 참여자가 있는 경우는, 회의가 생성되고 주관자가 회의에 참여하여 완전히 회의가 개시된 이후에 참여자 추가 요청을 사용한다.
+// 참여자 간의 구분은 ’|’ 문자를 사용한다.
+// 참여자 정보는 이름, 전화번호로 이루어 지며, 이 같은 참여자 정보 간의 구분은 ‘^’ 문자를 사용한다. 전화 번호는 유선 전화 번호와 무선 전화번호 중 하나의 정보를 반드시 입력한다. 리스트 중 마지막 참여자의 정보 뒤에는 Null Termination 처리한다.
+#define MAX_PARTICIPANT_LIST_LEN                            (MAX_PARTICIPANT_LEN+1) * (CALL_NUMBER_LEN + PARTICIPANT_NAME_LEN + 1) - 1 + 1
+#define CONF_ID_LEN                                         32
+#define AUPKG_LEN                                           128
+#define PARTICIPANT_NUMBER_LEN                              32
 
 #endif // #ifndef __SKB_MSG_INFO_H__

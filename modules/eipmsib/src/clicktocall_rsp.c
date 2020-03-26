@@ -76,6 +76,9 @@ void clicktocall_start_rsp_dbif_display(uxc_dbif_t *dbif) {
 	ux_log(UXL_INFO, "  [recordingFileName] %s",uxc_dbif_get_str(dbif, 6, &rv));
 }
 
+///////////////////////////////////////////////////////////////////////////////////
+// functions for clicktocall_stop_rsp_tcp_t 
+///////////////////////////////////////////////////////////////////////////////////
 
 int clicktocall_stop_rsp_tcp_init( clicktocall_stop_rsp_tcp_t *clicktocall_stop_rsp) {
 	memset(clicktocall_stop_rsp, 0, sizeof(clicktocall_stop_rsp_tcp_t));
@@ -121,7 +124,9 @@ void clicktocall_stop_rsp_dbif_display(uxc_dbif_t *dbif) {
 	ux_log(UXL_INFO, "  [serviceID] %s",uxc_dbif_get_str(dbif, 1, &rv));
 }
 
-
+///////////////////////////////////////////////////////////////////////////////////
+// functions for clicktocall_startrecording_rsp_tcp_t 
+///////////////////////////////////////////////////////////////////////////////////
 
 int clicktocall_startrecording_rsp_tcp_init( clicktocall_startrecording_rsp_tcp_t *clicktocall_startrecording_rsp) {
 	memset(clicktocall_startrecording_rsp, 0, sizeof(clicktocall_startrecording_rsp_tcp_t));
@@ -176,7 +181,9 @@ void clicktocall_startrecording_rsp_dbif_display(uxc_dbif_t *dbif) {
 
 }
 
-
+///////////////////////////////////////////////////////////////////////////////////
+// functions for clicktocall_stoprecording_rsp_tcp_t 
+///////////////////////////////////////////////////////////////////////////////////
 
 int clicktocall_stoprecording_rsp_tcp_init( clicktocall_stoprecording_rsp_tcp_t *clicktocall_stoprecording_rsp) {
 	memset(clicktocall_stoprecording_rsp, 0, sizeof(clicktocall_stoprecording_rsp_tcp_t));
@@ -222,6 +229,9 @@ void clicktocall_stoprecording_rsp_dbif_display(uxc_dbif_t *dbif) {
 	ux_log(UXL_INFO, "  [serviceID] %s",uxc_dbif_get_str(dbif, 1, &rv));
 }
 
+///////////////////////////////////////////////////////////////////////////////////
+// functions for clicktocall_service_status_rsp_tcp_t 
+///////////////////////////////////////////////////////////////////////////////////
 
 int clicktocall_service_status_rsp_tcp_init( clicktocall_service_status_rsp_tcp_t *clicktocall_service_status_rsp) {
 	memset(clicktocall_service_status_rsp, 0, sizeof(clicktocall_service_status_rsp_tcp_t));

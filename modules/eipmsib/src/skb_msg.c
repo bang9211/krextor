@@ -24,7 +24,7 @@ int skb_msg_cvt_order_hton(skb_msg_t *msg, int msgId)
 		memcpy(clicktocall_start_req, msg->body, sizeof(clicktocall_start_req_tcp_t));
         clicktocall_start_req->waitingMentID = htons(clicktocall_start_req->waitingMentID);
         clicktocall_start_req->callMentID = htons(clicktocall_start_req->callMentID);
-        clicktocall_start_req->fillerInt16 = htons(clicktocall_start_req->fillerInt16);
+        clicktocall_start_req->filler2 = htons(clicktocall_start_req->filler2);
         break;
     case DBIF_CALL_STOP_REQUEST:				//처리 필요 없음
         break;
@@ -32,6 +32,10 @@ int skb_msg_cvt_order_hton(skb_msg_t *msg, int msgId)
         break;
     case DBIF_CALL_STOP_RECORDING_REQUEST:		//처리 필요 없음
         break;
+	case DBIF_CALL_RECORDING_START_REQUEST:
+		break;
+	case DBIF_CALL_RECORDING_STOP_REQUEST:
+		break;
 	default :
 		ux_log( UXL_INFO, "Unknown Msg Id : [%d]\n", msgId);
 		break;
@@ -65,6 +69,12 @@ int skb_msg_cvt_order_ntoh(skb_msg_t *msg, int chnIdx, int *msgId)
 	clicktocall_stop_rsp_tcp_t clicktocall_stop_rsp[1];
 	clicktocall_startrecording_rsp_tcp_t clicktocall_startrecording_rsp[1];
 	clicktocall_stoprecording_rsp_tcp_t clicktocall_stoprecording_rsp[1];
+	clicktocall_service_status_rsp_tcp_t clicktocall_service_status_rsp[1];
+
+	clicktocall_stop_rpt_tcp_t clicktocall_stop_rpt[1];
+	clicktocall_startrecording_rpt_tcp_t clicktocall_startrecording_rpt[1];
+	clicktocall_stoprecording_rpt_tcp_t clicktocall_stoprecording_rpt[1];
+    clicktocall_service_status_rpt_tcp_t clicktocall_service_status_rpt[1];
 
 	if (msg == NULL) return -1;
 
@@ -85,7 +95,7 @@ int skb_msg_cvt_order_ntoh(skb_msg_t *msg, int chnIdx, int *msgId)
 					memcpy(clicktocall_start_req, msg->body, sizeof(clicktocall_start_req_tcp_t));
 					clicktocall_start_req->waitingMentID = ntohs(clicktocall_start_req->waitingMentID);
 					clicktocall_start_req->callMentID = ntohs(clicktocall_start_req->callMentID);
-					clicktocall_start_req->fillerInt16 = ntohs(clicktocall_start_req->fillerInt16);
+					clicktocall_start_req->filler2 = ntohs(clicktocall_start_req->filler2);
 					break;
 				case STOP_REQUEST:
 					memcpy(clicktocall_stop_req, msg->body, sizeof(clicktocall_stop_req_tcp_t));
@@ -106,23 +116,35 @@ int skb_msg_cvt_order_ntoh(skb_msg_t *msg, int chnIdx, int *msgId)
 					memcpy(clicktocall_stop_rsp, msg->body, sizeof(clicktocall_stop_rsp_tcp_t));
 					clicktocall_stop_rsp->resultCode = ntohl(clicktocall_stop_rsp->resultCode);
 					break;
-				case STOP_REPORT:
-					break;
 				case START_RECORDING_RESPONSE:
 					memcpy(clicktocall_startrecording_rsp, msg->body, sizeof(clicktocall_startrecording_rsp_tcp_t));
 					clicktocall_startrecording_rsp->resultCode = ntohl(clicktocall_startrecording_rsp->resultCode);
-					break;
-				case START_RECORDING_REPORT:
 					break;
 				case STOP_RECORDING_RESPONSE:
 					memcpy(clicktocall_stoprecording_rsp, msg->body, sizeof(clicktocall_stoprecording_rsp_tcp_t));
 					clicktocall_stoprecording_rsp->resultCode = ntohl(clicktocall_stoprecording_rsp->resultCode);
 					break;
-				case STOP_RECORDING_REPORT:
-					break;
 				case SERVICE_STATUS_RESPONSE:
+					memcpy(clicktocall_service_status_rsp, msg->body, sizeof(clicktocall_service_status_rsp_tcp_t));
+					clicktocall_service_status_rsp->resultCode = ntohl(clicktocall_service_status_rsp->resultCode);
+					clicktocall_service_status_rsp->status = ntohl(clicktocall_service_status_rsp->status);
+					break;
+				case STOP_REPORT:
+					memcpy(clicktocall_stop_rpt, msg->body, sizeof(clicktocall_stop_rpt_tcp_t));
+					clicktocall_stop_rpt->returnCode = ntohl(clicktocall_stop_rpt->returnCode);
+					clicktocall_stop_rpt->isRecorded = ntohl(clicktocall_stop_rpt->isRecorded);
+					break;
+				case START_RECORDING_REPORT:
+					memcpy(clicktocall_startrecording_rpt, msg->body, sizeof(clicktocall_startrecording_rpt_tcp_t));
+					clicktocall_startrecording_rpt->resultCode = ntohl(clicktocall_startrecording_rpt->resultCode);
+					break;
+				case STOP_RECORDING_REPORT:
+					memcpy(clicktocall_stoprecording_rpt, msg->body, sizeof(clicktocall_stoprecording_rpt_tcp_t));
+					clicktocall_stoprecording_rpt->resultCode = ntohl(clicktocall_stoprecording_rpt->resultCode);
 					break;
 				case SERVICE_STATUS_REPORT:
+					memcpy(clicktocall_service_status_rpt, msg->body, sizeof(clicktocall_service_status_rpt_tcp_t));
+					clicktocall_service_status_rpt->status = ntohl(clicktocall_service_status_rpt->status);
 					break;
 				default:
 					ux_log(UXL_CRT, "Unsupported messageID : %#010x", msg->header.messageID)

@@ -14,9 +14,7 @@
 ///////////////////////////////////////////////////////////////////////////////////
 
 typedef struct clicktocall_start_req_tcp_s clicktocall_start_req_tcp_t; 
-// #pragma pack(push, 1)
 struct clicktocall_start_req_tcp_s {
-	// tcp_msg_t base[1];
 	char subscriberName[SUBSCRIBER_NAME_LEN];
 	int8_t recordingType;
 	char callingNumber[CALL_NUMBER_LEN];
@@ -25,7 +23,7 @@ struct clicktocall_start_req_tcp_s {
 	int8_t serviceCode;
 	int8_t ringBackToneType;
 	int16_t waitingMentID;
-	int8_t fillerInt8;
+	int8_t filler1;
 	int8_t scenarioType;
 	int16_t callMentID;
 	char callingCID[CID_LEN];
@@ -37,10 +35,9 @@ struct clicktocall_start_req_tcp_s {
 	int8_t hostingCode;
 	int8_t wirelessTimeout;
 	int8_t wiredTimeout;
-	int16_t fillerInt16;
-	char filler[32];
+	int16_t filler2;
+	char filler3[32];
 };
-// #pragma pack(pop)
 
 typedef struct clicktocall_stop_req_tcp_s clicktocall_stop_req_tcp_t; 
 struct clicktocall_stop_req_tcp_s {
@@ -92,5 +89,9 @@ void clicktocall_stoprecording_req_tcp_final( clicktocall_stoprecording_req_tcp_
 int clicktocall_stoprecording_req_decode_dbif_msg( clicktocall_stoprecording_req_tcp_t *clicktocall_stoprecording_req, uxc_dbif_t *dbif);
 void clicktocall_stoprecording_req_tcp_display(clicktocall_stoprecording_req_tcp_t *clicktocall_stoprecording_req);
 void clicktocall_stoprecording_req_dbif_display(uxc_dbif_t *dbif);
+
+int clicktocall_service_status_req_tcp_init( clicktocall_service_status_req_tcp_t *clicktocall_service_status_req);
+void clicktocall_service_status_req_tcp_final( clicktocall_service_status_req_tcp_t *clicktocall_service_status_req);
+void clicktocall_service_status_req_tcp_display(clicktocall_service_status_req_tcp_t *clicktocall_service_status_req);
 
 #endif // #ifndef __CLICKTOCALL_REQ_H__

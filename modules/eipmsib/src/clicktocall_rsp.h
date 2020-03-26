@@ -1,5 +1,5 @@
-#ifndef __CLICKTOCALL_RSP_TCP_H__
-#define __CLICKTOCALL_RSP_TCP_H__
+#ifndef __CLICKTOCALL_RSP_H__
+#define __CLICKTOCALL_RSP_H__
 
 #include <uxcutor/uxc_dbif.h>
 #include <uxlib/ux_errno.h>
@@ -9,7 +9,7 @@
 #include "skb_msg_info.h"
 
 ///////////////////////////////////////////////////////////////////////////////////
-// tcp_clicktocall Response Message Structure & Macro 
+// ClickToCall Response Message Structure & Macro 
 ///////////////////////////////////////////////////////////////////////////////////
 
 typedef struct clicktocall_start_rsp_tcp_s clicktocall_start_rsp_tcp_t; 
@@ -52,7 +52,7 @@ struct clicktocall_service_status_rsp_tcp_s {
 
 
 ///////////////////////////////////////////////////////////////////////////////////
-// tcp_clicktocall Response Message Functions 
+// ClickToCall Response Message Functions 
 ///////////////////////////////////////////////////////////////////////////////////
 
 int clicktocall_start_rsp_tcp_init( clicktocall_start_rsp_tcp_t *clicktocall_start_rsp);
@@ -83,4 +83,4 @@ int clicktocall_service_status_rsp_tcp_init( clicktocall_service_status_rsp_tcp_
 void clicktocall_service_status_rsp_tcp_final( clicktocall_service_status_rsp_tcp_t *clicktocall_service_status_rsp);
 void clicktocall_service_status_rsp_tcp_display(clicktocall_service_status_rsp_tcp_t *clicktocall_service_status_rsp);
 
-#endif // #ifndef __CLICKTOCALL_RSP_TCP_H__
+#endif // #ifndef __CLICKTOCALL_RSP_H__

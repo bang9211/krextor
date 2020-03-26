@@ -1,5 +1,5 @@
-#ifndef __CLICKTOCALL_RPT_TCP_H__
-#define __CLICKTOCALL_RPT_TCP_H__
+#ifndef __CLICKTOCALL_RPT_H__
+#define __CLICKTOCALL_RPT_H__
 
 #include <uxcutor/uxc_dbif.h>
 #include <uxlib/ux_errno.h>
@@ -9,7 +9,7 @@
 #include "skb_msg_info.h"
 
 ///////////////////////////////////////////////////////////////////////////////////
-// tcp_clicktocall Report Message Structure & Macro 
+// ClickToCall Report Message Structure & Macro 
 ///////////////////////////////////////////////////////////////////////////////////
 
 // CallEndReport
@@ -17,8 +17,8 @@ typedef struct clicktocall_stop_rpt_tcp_s clicktocall_stop_rpt_tcp_t;
 struct clicktocall_stop_rpt_tcp_s {
 	int32_t returnCode;
 	char serviceID[SERVICE_ID_LEN];
-    char serviceStartTime[SERVICE_TIME_LEN];    //YYYYMMDDHH24MISS
-    char serviceEndTime[SERVICE_TIME_LEN];      //YYYYMMDDHH24MISS
+    char startTime[TIME_LEN];    //YYYYMMDDHH24MISS
+    char endTime[TIME_LEN];      //YYYYMMDDHH24MISS
 	int32_t isRecorded;
 };
 
@@ -66,4 +66,4 @@ int clicktocall_service_status_rpt_encode_to_dbif_msg( clicktocall_service_statu
 void clicktocall_service_status_rpt_tcp_display(clicktocall_service_status_rpt_tcp_t *clicktocall_service_status_rpt);
 void clicktocall_service_status_rpt_dbif_display(uxc_dbif_t *dbif);
 
-#endif // #ifndef __CLICKTOCALL_RPT_TCP_H__
+#endif // #ifndef __CLICKTOCALL_RPT_H__
