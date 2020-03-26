@@ -6,6 +6,13 @@
 #include "skb_msg_info.h"
 #include "clicktocall_req.h"
 #include "clicktocall_rsp.h"
+#include "clicktocall_rpt.h"
+#include "clicktocallrecording_req.h"
+#include "clicktocallrecording_rsp.h"
+#include "clicktocallrecording_rpt.h"
+#include "clicktoconference_req.h"
+#include "clicktoconference_rsp.h"
+#include "clicktoconference_rpt.h"
 #include <time.h>
 #include <stdlib.h>
 #include <upa/upa_tcp.h>
@@ -66,5 +73,11 @@ int skb_msg_process_clicktocall_start_rsp( skb_msg_t *skbmsg, uxc_dbif_t *dbif);
 int skb_msg_process_clicktocall_stop_rsp( skb_msg_t *skbmsg, uxc_dbif_t *dbif);
 int skb_msg_process_clicktocall_startrecording_rsp( skb_msg_t *skbmsg, uxc_dbif_t *dbif);
 int skb_msg_process_clicktocall_stoprecording_rsp( skb_msg_t *skbmsg, uxc_dbif_t *dbif);
+int skb_msg_process_clicktocall_service_status_rsp( skb_msg_t *skbmsg);
+
+int skb_msg_process_clicktocall_stop_rpt( skb_msg_t *skbmsg, uxc_dbif_t *dbif);
+int skb_msg_process_clicktocall_startrecording_rpt( skb_msg_t *skbmsg);
+int skb_msg_process_clicktocall_stoprecording_rpt( skb_msg_t *skbmsg);
+int skb_msg_process_clicktocall_service_status_rpt( skb_msg_t *skbmsg, uxc_dbif_t *dbif);
 
 #endif // #ifndef __SKB_MSG_H__

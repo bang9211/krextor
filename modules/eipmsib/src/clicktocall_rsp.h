@@ -79,4 +79,8 @@ int clicktocall_stoprecording_rsp_encode_to_dbif_msg( clicktocall_stoprecording_
 void clicktocall_stoprecording_rsp_tcp_display(clicktocall_stoprecording_rsp_tcp_t *clicktocall_stoprecording_rsp);
 void clicktocall_stoprecording_rsp_dbif_display(uxc_dbif_t *dbif);
 
+int clicktocall_service_status_rsp_tcp_init( clicktocall_service_status_rsp_tcp_t *clicktocall_service_status_rsp);
+void clicktocall_service_status_rsp_tcp_final( clicktocall_service_status_rsp_tcp_t *clicktocall_service_status_rsp);
+void clicktocall_service_status_rsp_tcp_display(clicktocall_service_status_rsp_tcp_t *clicktocall_service_status_rsp);
+
 #endif // #ifndef __CLICKTOCALL_RSP_TCP_H__

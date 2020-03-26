@@ -26,11 +26,11 @@ int skb_msg_cvt_order_hton(skb_msg_t *msg, int msgId)
         clicktocall_start_req->callMentID = htons(clicktocall_start_req->callMentID);
         clicktocall_start_req->fillerInt16 = htons(clicktocall_start_req->fillerInt16);
         break;
-    case DBIF_CALL_STOP_REQUEST:				//없음
+    case DBIF_CALL_STOP_REQUEST:				//처리 필요 없음
         break;
-    case DBIF_CALL_START_RECORDING_REQUEST:		//없음
+    case DBIF_CALL_START_RECORDING_REQUEST:		//처리 필요 없음
         break;
-    case DBIF_CALL_STOP_RECORDING_REQUEST:		//없음
+    case DBIF_CALL_STOP_RECORDING_REQUEST:		//처리 필요 없음
         break;
 	default :
 		ux_log( UXL_INFO, "Unknown Msg Id : [%d]\n", msgId);
@@ -409,6 +409,59 @@ int skb_msg_process_clicktocall_stoprecording_rsp( skb_msg_t *skbmsg, uxc_dbif_t
 	rv = clicktocall_stoprecording_rsp_encode_to_dbif_msg(clicktocall_stoprecording_rsp, dbif);
 	if (rv <eUXC_SUCCESS) return rv;
 	clicktocall_stoprecording_rsp_dbif_display(dbif);
+
+	return rv;
+}
+
+int skb_msg_process_clicktocall_service_status_rsp( skb_msg_t *skbmsg) {
+	clicktocall_service_status_rsp_tcp_t clicktocall_service_status_rsp[1];
+
+	memcpy(clicktocall_service_status_rsp, skbmsg->body, sizeof(clicktocall_service_status_rsp_tcp_t));
+	clicktocall_service_status_rsp_tcp_display(clicktocall_service_status_rsp);
+
+	return eUXC_SUCCESS;
+}
+
+int skb_msg_process_clicktocall_stop_rpt( skb_msg_t *skbmsg, uxc_dbif_t *dbif) {
+	int rv;
+	clicktocall_stop_rpt_tcp_t clicktocall_stop_rpt[1];
+
+	memcpy(clicktocall_stop_rpt, skbmsg->body, sizeof(clicktocall_stop_rpt_tcp_t));
+	clicktocall_stop_rpt_tcp_display(clicktocall_stop_rpt);
+	rv = clicktocall_stop_rpt_encode_to_dbif_msg(clicktocall_stop_rpt, dbif);
+	if (rv <eUXC_SUCCESS) return rv;
+	clicktocall_stop_rpt_dbif_display(dbif);
+
+	return rv;
+}
+
+int skb_msg_process_clicktocall_startrecording_rpt( skb_msg_t *skbmsg) {
+	clicktocall_startrecording_rpt_tcp_t clicktocall_startrecording_rpt[1];
+
+	memcpy(clicktocall_startrecording_rpt, skbmsg->body, sizeof(clicktocall_startrecording_rpt_tcp_t));
+	clicktocall_startrecording_rpt_tcp_display(clicktocall_startrecording_rpt);
+
+	return eUXC_SUCCESS;
+}
+
+int skb_msg_process_clicktocall_stoprecording_rpt( skb_msg_t *skbmsg) {
+	clicktocall_stoprecording_rpt_tcp_t clicktocall_stoprecording_rpt[1];
+
+	memcpy(clicktocall_stoprecording_rpt, skbmsg->body, sizeof(clicktocall_stoprecording_rpt_tcp_t));
+	clicktocall_stoprecording_rpt_tcp_display(clicktocall_stoprecording_rpt);
+
+	return eUXC_SUCCESS;
+}
+
+int skb_msg_process_clicktocall_service_status_rpt( skb_msg_t *skbmsg, uxc_dbif_t *dbif) {
+	int rv;
+	clicktocall_service_status_rpt_tcp_t clicktocall_service_status_rpt[1];
+
+	memcpy(clicktocall_service_status_rpt, skbmsg->body, sizeof(clicktocall_service_status_rpt_tcp_t));
+	clicktocall_service_status_rpt_tcp_display(clicktocall_service_status_rpt);
+	rv = clicktocall_service_status_rpt_encode_to_dbif_msg(clicktocall_service_status_rpt, dbif);
+	if (rv <eUXC_SUCCESS) return rv;
+	clicktocall_service_status_rpt_dbif_display(dbif);
 
 	return rv;
 }

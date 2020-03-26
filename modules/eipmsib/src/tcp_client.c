@@ -238,27 +238,34 @@ int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpms
 	switch(tcpmsg->peerkey.chnl_idx) {
 	case TCP_CHANNEL_CALL:
 		switch(skbmsg->header.messageID) {
+		//RESPONSE
 		case START_RESPONSE:
 			rv = skb_msg_process_clicktocall_start_rsp(skbmsg, &dbif);
 			break;
 		case STOP_RESPONSE:
 			rv = skb_msg_process_clicktocall_stop_rsp(skbmsg, &dbif);
 			break;
-		case STOP_REPORT:
-			break;
 		case START_RECORDING_RESPONSE:
 			rv = skb_msg_process_clicktocall_startrecording_rsp(skbmsg, &dbif);
-			break;
-		case START_RECORDING_REPORT:
 			break;
 		case STOP_RECORDING_RESPONSE:
 			rv = skb_msg_process_clicktocall_stoprecording_rsp(skbmsg, &dbif);
 			break;
-		case STOP_RECORDING_REPORT:
-			break;
 		case SERVICE_STATUS_RESPONSE:
+			rv = skb_msg_process_clicktocall_service_status_rsp(skbmsg);	//no send
+			break;
+		//REPORT
+		case STOP_REPORT:
+			rv = skb_msg_process_clicktocall_stop_rpt(skbmsg, &dbif);
+			break;
+		case START_RECORDING_REPORT:
+			rv = skb_msg_process_clicktocall_startrecording_rpt(skbmsg);	//no send
+			break;
+		case STOP_RECORDING_REPORT:
+			rv = skb_msg_process_clicktocall_stoprecording_rpt(skbmsg);	//no send
 			break;
 		case SERVICE_STATUS_REPORT:
+			rv = skb_msg_process_clicktocall_service_status_rpt(skbmsg, &dbif);
 			break;
 		default:
 			ux_log(UXL_CRT, "Unsupported messageID : %#010x", skbmsg->header.messageID)

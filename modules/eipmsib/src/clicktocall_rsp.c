@@ -220,5 +220,22 @@ void clicktocall_stoprecording_rsp_dbif_display(uxc_dbif_t *dbif) {
 	ux_log(UXL_INFO, "DBIF [clicktocall_stoprecording_rsp]");
 	ux_log(UXL_INFO, "  [resultCode] %d",uxc_dbif_get_int(dbif, 0, &rv));
 	ux_log(UXL_INFO, "  [serviceID] %s",uxc_dbif_get_str(dbif, 1, &rv));
-
 }
+
+
+int clicktocall_service_status_rsp_tcp_init( clicktocall_service_status_rsp_tcp_t *clicktocall_service_status_rsp) {
+	memset(clicktocall_service_status_rsp, 0, sizeof(clicktocall_service_status_rsp_tcp_t));
+	return eUXC_SUCCESS;
+}
+
+void clicktocall_service_status_rsp_tcp_final( clicktocall_service_status_rsp_tcp_t *clicktocall_service_status_rsp) {
+	// 
+}
+
+void clicktocall_service_status_rsp_tcp_display(clicktocall_service_status_rsp_tcp_t *clicktocall_service_status_rsp) {
+	ux_log(UXL_INFO, "TCP [clicktocall_service_status_rsp]");
+	ux_log(UXL_INFO, "  [resultCode] %d", clicktocall_service_status_rsp->resultCode);
+	ux_log(UXL_INFO, "  [serviceID] %s", clicktocall_service_status_rsp->serviceID);
+	ux_log(UXL_INFO, "  [status] %d", clicktocall_service_status_rsp->status);
+}
+
