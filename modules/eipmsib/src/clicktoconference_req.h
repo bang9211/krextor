@@ -23,6 +23,7 @@ struct clicktoconference_start_req_tcp_s {
 	int8_t participantScenario;
     int8_t filler1;
     int8_t cidType;
+    char chairmanCID[CID_LEN];
     char startTime[TIME_LEN];
     int8_t smsNoti;
     int8_t voiceNoti;
