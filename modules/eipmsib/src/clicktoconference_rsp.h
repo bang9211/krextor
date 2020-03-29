@@ -20,7 +20,7 @@ struct clicktoconference_start_rsp_tcp_s {
     char chairmanNumber[CALL_NUMBER_LEN];
 	char chargingNumber[CHARGING_NUMBER_LEN];
     int8_t confType;
-    int8_t recordingFileDownloadPath;
+    int8_t recordingFilePath;
     int16_t filler1;
     char startTime[TIME_LEN];
     int8_t smsNoti;

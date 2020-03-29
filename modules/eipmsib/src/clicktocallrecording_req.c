@@ -101,16 +101,19 @@ int rv;
 	return eUXC_SUCCESS;
 
 final:
-	ux_log( UXL_CRT, "clicktocall_stop_req_decode_dbif_msg is failed (rv=%d)", rv);
+	ux_log( UXL_CRT, "clicktocallrecording_stop_req_decode_dbif_msg is failed (rv=%d)", rv);
 	return rv;
 }
 
 void clicktocallrecording_stop_req_tcp_display(clicktocallrecording_stop_req_tcp_t *clicktocallrecording_stop_req) {
-
+	ux_log(UXL_INFO, "TCP [clicktocallrecording_stop_req]");
+	ux_log(UXL_INFO, "  [serviceID] %s", clicktocallrecording_stop_req->serviceID);
 }
 
 void clicktocallrecording_stop_req_dbif_display(uxc_dbif_t *dbif) {
-
+	int rv;
+	ux_log(UXL_INFO, "DBIF [clicktocallrecording_stop_req]");
+	ux_log(UXL_INFO, "  [serviceID] %s",uxc_dbif_get_str(dbif, 0, &rv));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -127,5 +130,6 @@ void clicktocallrecording_service_status_req_tcp_final( clicktocallrecording_ser
 }
 
 void clicktocallrecording_service_status_req_tcp_display(clicktocallrecording_service_status_req_tcp_t *clicktocallrecording_service_status_req) {
-
+	ux_log(UXL_INFO, "TCP [clicktocallrecording_service_status_req]");
+	ux_log(UXL_INFO, "  [serviceID] %s", clicktocallrecording_service_status_req->serviceID);
 }

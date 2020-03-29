@@ -47,10 +47,8 @@ struct clicktocallrecording_service_status_rpt_tcp_s {
 ///////////////////////////////////////////////////////////////////////////////////
 
 int clicktocallrecording_start_rpt_tcp_init( clicktocallrecording_start_rpt_tcp_t *clicktocallrecording_start_rpt);
-void clicktocallrecording_start_rpt_tcp_final( clicktocallrecording_start_rpt_tcp_t *clicktocallrecording_start_rpt);
 int clicktocallrecording_start_rpt_encode_to_dbif_msg( clicktocallrecording_start_rpt_tcp_t *clicktocallrecording_start_rpt, uxc_dbif_t *dbif);
 void clicktocallrecording_start_rpt_tcp_display(clicktocallrecording_start_rpt_tcp_t *clicktocallrecording_start_rpt);
-void clicktocallrecording_start_rpt_dbif_display(uxc_dbif_t *dbif);
 
 int clicktocallrecording_stop_rpt_tcp_init( clicktocallrecording_stop_rpt_tcp_t *clicktocallrecording_stop_rpt);
 void clicktocallrecording_stop_rpt_tcp_final( clicktocallrecording_stop_rpt_tcp_t *clicktocallrecording_stop_rpt);
