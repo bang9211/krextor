@@ -20,6 +20,7 @@ struct clicktocallrecording_start_req_tcp_s {
 	char calledNumber[CALL_NUMBER_LEN];
     char callerInfo[CALLER_INFO_LEN];
     char calleeInfo[CALLEE_INFO_LEN];
+	char chargingNumber[CHARGING_NUMBER_LEN];
 	int8_t serviceCode;
     int8_t filler1;
     int16_t filler2;

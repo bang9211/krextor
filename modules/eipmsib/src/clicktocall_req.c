@@ -77,7 +77,7 @@ void clicktocall_start_req_tcp_display(clicktocall_start_req_tcp_t *clicktocall_
 	ux_log(UXL_INFO, "  [recordingType] %d", clicktocall_start_req->recordingType);
 	ux_log(UXL_INFO, "  [callingNumber] %s", clicktocall_start_req->callingNumber);
 	ux_log(UXL_INFO, "  [calledNumber] %s", clicktocall_start_req->calledNumber);
-	ux_log(UXL_INFO, "  [chargningNumber] %s", clicktocall_start_req->chargingNumber);
+	ux_log(UXL_INFO, "  [chargingNumber] %s", clicktocall_start_req->chargingNumber);
 	ux_log(UXL_INFO, "  [serviceCode] %d", clicktocall_start_req->serviceCode);
 	ux_log(UXL_INFO, "  [ringBackToneType] %d", clicktocall_start_req->ringBackToneType);
 	ux_log(UXL_INFO, "  [waitingMentID] %d", clicktocall_start_req->waitingMentID);
