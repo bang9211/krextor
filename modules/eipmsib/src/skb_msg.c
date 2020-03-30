@@ -297,6 +297,9 @@ void destroy_skb_map() {
 	uh_ipc_destroy(reqID_IPC_Map);
 }
 
+///////////////////////////////////////////////////////////////////////////////////
+// ClickToCall Functions 
+///////////////////////////////////////////////////////////////////////////////////
 
 int skb_msg_process_clicktocall_start_req( skb_msg_t *skbmsg, uxc_dbif_t *dbif, char *sessionID, char *gwSessionID) {
 	int rv;
@@ -484,6 +487,514 @@ int skb_msg_process_clicktocall_service_status_rpt( skb_msg_t *skbmsg, uxc_dbif_
 	rv = clicktocall_service_status_rpt_encode_to_dbif_msg(clicktocall_service_status_rpt, dbif);
 	if (rv <eUXC_SUCCESS) return rv;
 	clicktocall_service_status_rpt_dbif_display(dbif);
+
+	return rv;
+}
+
+///////////////////////////////////////////////////////////////////////////////////
+// ClickToCallRecording Functions 
+///////////////////////////////////////////////////////////////////////////////////
+
+int skb_msg_process_clicktocallrecording_start_req( skb_msg_t *skbmsg, uxc_dbif_t *dbif, char *sessionID, char *gwSessionID) {
+	int rv;
+	clicktocallrecording_start_req_tcp_t clicktocallrecording_start_req;
+
+	// DBIF를 body로 변환
+	clicktocallrecording_start_req_dbif_display(dbif);
+	rv = clicktocallrecording_start_req_decode_dbif_msg(&clicktocallrecording_start_req, sessionID, gwSessionID, dbif);
+	if (rv < eUXC_SUCCESS) return rv;
+	// TCP Header 설정
+	skb_msg_make_header(&skbmsg->header, START_REQUEST, sizeof(clicktocallrecording_start_req), NULL);
+	skb_msg_display_header(&skbmsg->header);
+	// TCP Body 설정
+	memcpy(skbmsg->body, &clicktocallrecording_start_req, sizeof(clicktocallrecording_start_req));
+	clicktocallrecording_start_req_tcp_display(&clicktocallrecording_start_req);
+
+	return rv;
+}
+
+int skb_msg_process_clicktocallrecording_stop_req( skb_msg_t *skbmsg, uxc_dbif_t *dbif) {
+	int rv;
+	clicktocallrecording_stop_req_tcp_t clicktocallrecording_stop_req;
+
+	// DBIF를 body로 변환
+	clicktocallrecording_stop_req_dbif_display(dbif);
+	rv = clicktocallrecording_stop_req_decode_dbif_msg(&clicktocallrecording_stop_req, dbif);
+	if (rv < 0) return rv;
+	// TCP Header 설정
+	skb_msg_make_header(&skbmsg->header, STOP_REQUEST, sizeof(clicktocallrecording_stop_req), NULL);
+	skb_msg_display_header(&skbmsg->header);
+	// TCP Body 설정
+	memcpy(skbmsg->body, &clicktocallrecording_stop_req, sizeof(clicktocallrecording_stop_req));
+	clicktocallrecording_stop_req_tcp_display(&clicktocallrecording_stop_req);
+
+	return rv;
+}
+
+int skb_msg_process_clicktocallrecording_service_status_req( skb_msg_t *skbmsg) {
+	clicktocallrecording_service_status_req_tcp_t clicktocallrecording_service_status_req;
+
+	memcpy(skbmsg->body, &clicktocallrecording_service_status_req, sizeof(clicktocallrecording_service_status_req));
+	clicktocallrecording_service_status_req_tcp_display(&clicktocallrecording_service_status_req);
+
+	return eUXC_SUCCESS;
+}
+
+int skb_msg_process_clicktocallrecording_start_rsp( skb_msg_t *skbmsg, uxc_dbif_t *dbif) {
+	int rv;
+	clicktocallrecording_start_rsp_tcp_t clicktocallrecording_start_rsp[1];
+	char sessionID[SESSION_ID_LEN];
+	char gwSessionID[GW_SESSION_ID_LEN];
+
+	memcpy(clicktocallrecording_start_rsp, skbmsg->body, sizeof(clicktocallrecording_start_rsp_tcp_t));
+	clicktocallrecording_start_rsp_tcp_display(clicktocallrecording_start_rsp);
+	//requestID에 따라 기존에 저장한 sessionID, gwSessionID 추가하여 dbif 메시지 생성
+	strncpy(sessionID, uh_int_get(reqID_SID_Map, skbmsg->header.requestID), SESSION_ID_LEN);
+	if (sessionID == NULL || strcmp(sessionID, "") == 0) {
+		ux_log(UXL_CRT, "There is no sessionID of reqID(%d)", skbmsg->header.requestID);
+		return -1;
+	}
+	strncpy(gwSessionID, uh_int_get(reqID_GWSID_Map, skbmsg->header.requestID), GW_SESSION_ID_LEN);
+	if (gwSessionID == NULL || strcmp(sessionID, "") == 0) {
+		ux_log(UXL_CRT, "There is no gwSessionID of reqID(%d)", skbmsg->header.requestID);
+		return -1;
+	}
+	rv = clicktocallrecording_start_rsp_encode_to_dbif_msg(clicktocallrecording_start_rsp, sessionID, gwSessionID, dbif);
+	if (rv <eUXC_SUCCESS) return rv;
+	clicktocallrecording_start_rsp_dbif_display(dbif);
+
+	return rv;
+}
+
+int skb_msg_process_clicktocallrecording_stop_rsp( skb_msg_t *skbmsg, uxc_dbif_t *dbif) {
+	int rv;
+	clicktocallrecording_stop_rsp_tcp_t clicktocallrecording_stop_rsp[1];
+
+	memcpy(clicktocallrecording_stop_rsp, skbmsg->body, sizeof(clicktocallrecording_stop_rsp_tcp_t));
+	clicktocallrecording_stop_rsp_tcp_display(clicktocallrecording_stop_rsp);
+	rv = clicktocallrecording_stop_rsp_encode_to_dbif_msg(clicktocallrecording_stop_rsp, dbif);
+	if (rv <eUXC_SUCCESS) return rv;
+	clicktocallrecording_stop_rsp_dbif_display(dbif);
+
+	return rv;
+}
+
+int skb_msg_process_clicktocallrecording_service_status_rsp( skb_msg_t *skbmsg) {
+	clicktocall_service_status_rsp_tcp_t clicktocall_service_status_rsp[1];
+
+	memcpy(clicktocall_service_status_rsp, skbmsg->body, sizeof(clicktocall_service_status_rsp_tcp_t));
+	clicktocall_service_status_rsp_tcp_display(clicktocall_service_status_rsp);
+
+	return eUXC_SUCCESS;
+}
+
+int skb_msg_process_clicktocallrecording_start_rpt( skb_msg_t *skbmsg, uxc_dbif_t *dbif) {
+	clicktocallrecording_start_rpt_tcp_t clicktocallrecording_start_rpt[1];
+
+	memcpy(clicktocallrecording_start_rpt, skbmsg->body, sizeof(clicktocallrecording_start_rpt_tcp_t));
+	clicktocallrecording_start_rpt_tcp_display(clicktocallrecording_start_rpt);
+
+	return eUXC_SUCCESS;
+}
+
+int skb_msg_process_clicktocallrecording_stop_rpt( skb_msg_t *skbmsg, uxc_dbif_t *dbif) {
+	int rv;
+	clicktocallrecording_stop_rpt_tcp_t clicktocallrecording_stop_rpt[1];
+
+	memcpy(clicktocallrecording_stop_rpt, skbmsg->body, sizeof(clicktocallrecording_stop_rpt_tcp_t));
+	clicktocallrecording_stop_rpt_tcp_display(clicktocallrecording_stop_rpt);
+	rv = clicktocallrecording_stop_rpt_encode_to_dbif_msg(clicktocallrecording_stop_rpt, dbif);
+	if (rv <eUXC_SUCCESS) return rv;
+	clicktocallrecording_stop_rpt_dbif_display(dbif);
+
+	return rv;
+}
+
+int skb_msg_process_clicktocallrecording_service_status_rpt( skb_msg_t *skbmsg, uxc_dbif_t *dbif) {
+	int rv;
+	clicktocallrecording_service_status_rpt_tcp_t clicktocallrecording_service_status_rpt[1];
+
+	memcpy(clicktocallrecording_service_status_rpt, skbmsg->body, sizeof(clicktocallrecording_service_status_rpt_tcp_t));
+	clicktocallrecording_service_status_rpt_tcp_display(clicktocallrecording_service_status_rpt);
+	rv = clicktocallrecording_service_status_rpt_encode_to_dbif_msg(clicktocallrecording_service_status_rpt, dbif);
+	if (rv <eUXC_SUCCESS) return rv;
+	clicktocallrecording_service_status_rpt_dbif_display(dbif);
+
+	return rv;
+}
+
+///////////////////////////////////////////////////////////////////////////////////
+// ClickToConference Functions 
+///////////////////////////////////////////////////////////////////////////////////
+
+int skb_msg_process_clicktoconference_start_req( skb_msg_t *skbmsg, uxc_dbif_t *dbif, char *sessionID, char *gwSessionID) {
+	int rv;
+	clicktoconference_start_req_tcp_t clicktoconference_start_req;
+
+	// DBIF를 body로 변환
+	clicktoconference_start_req_dbif_display(dbif);
+	rv = clicktoconference_start_req_decode_dbif_msg(&clicktoconference_start_req, sessionID, gwSessionID, dbif);
+	if (rv < eUXC_SUCCESS) return rv;
+	// TCP Header 설정
+	skb_msg_make_header(&skbmsg->header, START_REQUEST, sizeof(clicktoconference_start_req), NULL);
+	skb_msg_display_header(&skbmsg->header);
+	// TCP Body 설정
+	memcpy(skbmsg->body, &clicktoconference_start_req, sizeof(clicktoconference_start_req));
+	clicktoconference_start_req_tcp_display(&clicktoconference_start_req);
+
+	return rv;
+}
+
+int skb_msg_process_clicktoconference_add_party_req( skb_msg_t *skbmsg, uxc_dbif_t *dbif) {
+	int rv;
+	clicktoconference_add_party_req_tcp_t clicktoconference_add_party_req;
+
+	// DBIF를 body로 변환
+	clicktoconference_add_party_req_dbif_display(dbif);
+	rv = clicktoconference_add_party_req_decode_dbif_msg(&clicktoconference_add_party_req, dbif);
+	if (rv < 0) return rv;
+	// TCP Header 설정
+	skb_msg_make_header(&skbmsg->header, STOP_REQUEST, sizeof(clicktoconference_add_party_req), NULL);
+	skb_msg_display_header(&skbmsg->header);
+	// TCP Body 설정
+	memcpy(skbmsg->body, &clicktoconference_add_party_req, sizeof(clicktoconference_add_party_req));
+	clicktoconference_add_party_req_tcp_display(&clicktoconference_add_party_req);
+
+	return rv;
+}
+
+int skb_msg_process_clicktoconference_remove_party_req( skb_msg_t *skbmsg, uxc_dbif_t *dbif) {
+	int rv;
+	clicktoconference_remove_party_req_tcp_t clicktoconference_remove_party_req;
+
+	// DBIF를 body로 변환
+	clicktoconference_remove_party_req_dbif_display(dbif);
+	rv = clicktoconference_remove_party_req_decode_dbif_msg(&clicktoconference_remove_party_req, dbif);
+	if (rv < 0) return rv;
+	// TCP Header 설정
+	skb_msg_make_header(&skbmsg->header, STOP_REQUEST, sizeof(clicktoconference_remove_party_req), NULL);
+	skb_msg_display_header(&skbmsg->header);
+	// TCP Body 설정
+	memcpy(skbmsg->body, &clicktoconference_remove_party_req, sizeof(clicktoconference_remove_party_req));
+	clicktoconference_remove_party_req_tcp_display(&clicktoconference_remove_party_req);
+
+	return rv;
+}
+
+int skb_msg_process_clicktoconference_change_party_media_req( skb_msg_t *skbmsg, uxc_dbif_t *dbif) {
+	int rv;
+	clicktoconference_change_party_media_req_tcp_t clicktoconference_change_party_media_req;
+
+	// DBIF를 body로 변환
+	clicktoconference_change_party_media_req_dbif_display(dbif);
+	rv = clicktoconference_change_party_media_req_decode_dbif_msg(&clicktoconference_change_party_media_req, dbif);
+	if (rv < 0) return rv;
+	// TCP Header 설정
+	skb_msg_make_header(&skbmsg->header, STOP_REQUEST, sizeof(clicktoconference_change_party_media_req), NULL);
+	skb_msg_display_header(&skbmsg->header);
+	// TCP Body 설정
+	memcpy(skbmsg->body, &clicktoconference_change_party_media_req, sizeof(clicktoconference_change_party_media_req));
+	clicktoconference_change_party_media_req_tcp_display(&clicktoconference_change_party_media_req);
+
+	return rv;
+}
+
+int skb_msg_process_clicktoconference_change_option_req( skb_msg_t *skbmsg) {
+	clicktoconference_change_option_req_tcp_t clicktoconference_change_option_req;
+
+	// TCP Body 설정
+	memcpy(skbmsg->body, &clicktoconference_change_option_req, sizeof(clicktoconference_change_option_req));
+	clicktoconference_change_option_req_tcp_display(&clicktoconference_change_option_req);
+
+	return eUXC_SUCCESS;
+}
+
+int skb_msg_process_clicktoconference_get_number_of_party_req( skb_msg_t *skbmsg, uxc_dbif_t *dbif) {
+	int rv;
+	clicktoconference_get_number_of_party_req_tcp_t clicktoconference_get_number_of_party_req;
+
+	// DBIF를 body로 변환
+	clicktoconference_get_number_of_party_req_dbif_display(dbif);
+	rv = clicktoconference_get_number_of_party_req_decode_dbif_msg(&clicktoconference_get_number_of_party_req, dbif);
+	if (rv < 0) return rv;
+	// TCP Header 설정
+	skb_msg_make_header(&skbmsg->header, STOP_REQUEST, sizeof(clicktoconference_get_number_of_party_req), NULL);
+	skb_msg_display_header(&skbmsg->header);
+	// TCP Body 설정
+	memcpy(skbmsg->body, &clicktoconference_get_number_of_party_req, sizeof(clicktoconference_get_number_of_party_req));
+	clicktoconference_get_number_of_party_req_tcp_display(&clicktoconference_get_number_of_party_req);
+
+	return rv;
+}
+
+int skb_msg_process_clicktoconference_stop_req( skb_msg_t *skbmsg, uxc_dbif_t *dbif) {
+	int rv;
+	clicktoconference_stop_req_tcp_t clicktoconference_stop_req;
+
+	// DBIF를 body로 변환
+	clicktoconference_stop_req_dbif_display(dbif);
+	rv = clicktoconference_stop_req_decode_dbif_msg(&clicktoconference_stop_req, dbif);
+	if (rv < 0) return rv;
+	// TCP Header 설정
+	skb_msg_make_header(&skbmsg->header, STOP_REQUEST, sizeof(clicktoconference_stop_req), NULL);
+	skb_msg_display_header(&skbmsg->header);
+	// TCP Body 설정
+	memcpy(skbmsg->body, &clicktoconference_stop_req, sizeof(clicktoconference_stop_req));
+	clicktoconference_stop_req_tcp_display(&clicktoconference_stop_req);
+
+	return rv;
+}
+
+int skb_msg_process_clicktoconference_play_ment_req( skb_msg_t *skbmsg, uxc_dbif_t *dbif) {
+	int rv;
+	clicktoconference_play_ment_req_tcp_t clicktoconference_play_ment_req;
+
+	// DBIF를 body로 변환
+	clicktoconference_play_ment_req_dbif_display(dbif);
+	rv = clicktoconference_play_ment_req_decode_dbif_msg(&clicktoconference_play_ment_req, dbif);
+	if (rv < 0) return rv;
+	// TCP Header 설정
+	skb_msg_make_header(&skbmsg->header, STOP_REQUEST, sizeof(clicktoconference_play_ment_req), NULL);
+	skb_msg_display_header(&skbmsg->header);
+	// TCP Body 설정
+	memcpy(skbmsg->body, &clicktoconference_play_ment_req, sizeof(clicktoconference_play_ment_req));
+	clicktoconference_play_ment_req_tcp_display(&clicktoconference_play_ment_req);
+
+	return rv;
+}
+
+int skb_msg_process_clicktoconference_get_party_status_req( skb_msg_t *skbmsg, uxc_dbif_t *dbif) {
+	int rv;
+	clicktoconference_get_party_status_req_tcp_t clicktoconference_get_party_status_req;
+
+	// DBIF를 body로 변환
+	clicktoconference_get_party_status_req_dbif_display(dbif);
+	rv = clicktoconference_get_party_status_req_decode_dbif_msg(&clicktoconference_get_party_status_req, dbif);
+	if (rv < 0) return rv;
+	// TCP Header 설정
+	skb_msg_make_header(&skbmsg->header, STOP_REQUEST, sizeof(clicktoconference_get_party_status_req), NULL);
+	skb_msg_display_header(&skbmsg->header);
+	// TCP Body 설정
+	memcpy(skbmsg->body, &clicktoconference_get_party_status_req, sizeof(clicktoconference_get_party_status_req));
+	clicktoconference_get_party_status_req_tcp_display(&clicktoconference_get_party_status_req);
+
+	return rv;
+}
+
+int skb_msg_process_clicktoconference_cancel_party_req( skb_msg_t *skbmsg, uxc_dbif_t *dbif) {
+	int rv;
+	clicktoconference_cancel_party_req_tcp_t clicktoconference_cancel_party_req;
+
+	// DBIF를 body로 변환
+	clicktoconference_cancel_party_req_dbif_display(dbif);
+	rv = clicktoconference_cancel_party_req_decode_dbif_msg(&clicktoconference_cancel_party_req, dbif);
+	if (rv < 0) return rv;
+	// TCP Header 설정
+	skb_msg_make_header(&skbmsg->header, STOP_REQUEST, sizeof(clicktoconference_cancel_party_req), NULL);
+	skb_msg_display_header(&skbmsg->header);
+	// TCP Body 설정
+	memcpy(skbmsg->body, &clicktoconference_cancel_party_req, sizeof(clicktoconference_cancel_party_req));
+	clicktoconference_cancel_party_req_tcp_display(&clicktoconference_cancel_party_req);
+
+	return rv;
+}
+
+int skb_msg_process_clicktoconference_start_rsp( skb_msg_t *skbmsg, uxc_dbif_t *dbif) {
+	int rv;
+	clicktoconference_start_rsp_tcp_t clicktoconference_start_rsp[1];
+	char sessionID[SESSION_ID_LEN];
+	char gwSessionID[GW_SESSION_ID_LEN];
+
+	memcpy(clicktoconference_start_rsp, skbmsg->body, sizeof(clicktoconference_start_rsp_tcp_t));
+	clicktoconference_start_rsp_tcp_display(clicktoconference_start_rsp);
+	//requestID에 따라 기존에 저장한 sessionID, gwSessionID 추가하여 dbif 메시지 생성
+	strncpy(sessionID, uh_int_get(reqID_SID_Map, skbmsg->header.requestID), SESSION_ID_LEN);
+	if (sessionID == NULL || strcmp(sessionID, "") == 0) {
+		ux_log(UXL_CRT, "There is no sessionID of reqID(%d)", skbmsg->header.requestID);
+		return -1;
+	}
+	strncpy(gwSessionID, uh_int_get(reqID_GWSID_Map, skbmsg->header.requestID), GW_SESSION_ID_LEN);
+	if (gwSessionID == NULL || strcmp(sessionID, "") == 0) {
+		ux_log(UXL_CRT, "There is no gwSessionID of reqID(%d)", skbmsg->header.requestID);
+		return -1;
+	}
+	rv = clicktoconference_start_rsp_encode_to_dbif_msg(clicktoconference_start_rsp, sessionID, gwSessionID, dbif);
+	if (rv <eUXC_SUCCESS) return rv;
+	clicktoconference_start_rsp_dbif_display(dbif);
+
+	return rv;
+}
+
+int skb_msg_process_clicktoconference_add_party_rsp( skb_msg_t *skbmsg, uxc_dbif_t *dbif) {
+	int rv;
+	clicktoconference_add_party_rsp_tcp_t clicktoconference_add_party_rsp[1];
+
+	memcpy(clicktoconference_add_party_rsp, skbmsg->body, sizeof(clicktoconference_add_party_rsp_tcp_t));
+	clicktoconference_add_party_rsp_tcp_display(clicktoconference_add_party_rsp);
+	rv = clicktoconference_add_party_rsp_encode_to_dbif_msg(clicktoconference_add_party_rsp, dbif);
+	if (rv <eUXC_SUCCESS) return rv;
+	clicktoconference_add_party_rsp_dbif_display(dbif);
+
+	return rv;
+}
+
+int skb_msg_process_clicktoconference_remove_party_rsp( skb_msg_t *skbmsg, uxc_dbif_t *dbif) {
+	int rv;
+	clicktoconference_remove_party_rsp_tcp_t clicktoconference_remove_party_rsp[1];
+
+	memcpy(clicktoconference_remove_party_rsp, skbmsg->body, sizeof(clicktoconference_remove_party_rsp_tcp_t));
+	clicktoconference_remove_party_rsp_tcp_display(clicktoconference_remove_party_rsp);
+	rv = clicktoconference_remove_party_rsp_encode_to_dbif_msg(clicktoconference_remove_party_rsp, dbif);
+	if (rv <eUXC_SUCCESS) return rv;
+	clicktoconference_remove_party_rsp_dbif_display(dbif);
+
+	return rv;
+}
+
+int skb_msg_process_clicktoconference_change_party_media_rsp( skb_msg_t *skbmsg, uxc_dbif_t *dbif) {
+	int rv;
+	clicktoconference_change_party_media_rsp_tcp_t clicktoconference_change_party_media_rsp[1];
+
+	memcpy(clicktoconference_change_party_media_rsp, skbmsg->body, sizeof(clicktoconference_change_party_media_rsp_tcp_t));
+	clicktoconference_change_party_media_rsp_tcp_display(clicktoconference_change_party_media_rsp);
+	rv = clicktoconference_change_party_media_rsp_encode_to_dbif_msg(clicktoconference_change_party_media_rsp, dbif);
+	if (rv <eUXC_SUCCESS) return rv;
+	clicktoconference_change_party_media_rsp_dbif_display(dbif);
+
+	return rv;
+}
+
+int skb_msg_process_clicktoconference_change_option_rsp( skb_msg_t *skbmsg) {
+	clicktoconference_change_option_rsp_tcp_t clicktoconference_change_option_rsp[1];
+
+	memcpy(clicktoconference_change_option_rsp, skbmsg->body, sizeof(clicktoconference_change_option_rsp_tcp_t));
+	clicktoconference_change_option_rsp_tcp_display(clicktoconference_change_option_rsp);
+
+	return eUXC_SUCCESS;
+}
+
+int skb_msg_process_clicktoconference_get_number_of_party_rsp( skb_msg_t *skbmsg, uxc_dbif_t *dbif) {
+	int rv;
+	clicktoconference_get_number_of_party_rsp_tcp_t clicktoconference_get_number_of_party_rsp[1];
+
+	memcpy(clicktoconference_get_number_of_party_rsp, skbmsg->body, sizeof(clicktoconference_get_number_of_party_rsp_tcp_t));
+	clicktoconference_get_number_of_party_rsp_tcp_display(clicktoconference_get_number_of_party_rsp);
+	rv = clicktoconference_get_number_of_party_rsp_encode_to_dbif_msg(clicktoconference_get_number_of_party_rsp, dbif);
+	if (rv <eUXC_SUCCESS) return rv;
+	clicktoconference_get_number_of_party_rsp_dbif_display(dbif);
+
+	return rv;
+}
+
+int skb_msg_process_clicktoconference_stop_rsp( skb_msg_t *skbmsg, uxc_dbif_t *dbif) {
+	int rv;
+	clicktoconference_stop_rsp_tcp_t clicktoconference_stop_rsp[1];
+
+	memcpy(clicktoconference_stop_rsp, skbmsg->body, sizeof(clicktoconference_stop_rsp_tcp_t));
+	clicktoconference_stop_rsp_tcp_display(clicktoconference_stop_rsp);
+	rv = clicktoconference_stop_rsp_encode_to_dbif_msg(clicktoconference_stop_rsp, dbif);
+	if (rv <eUXC_SUCCESS) return rv;
+	clicktoconference_stop_rsp_dbif_display(dbif);
+
+	return rv;
+}
+
+int skb_msg_process_clicktoconference_play_ment_rsp( skb_msg_t *skbmsg, uxc_dbif_t *dbif) {
+	int rv;
+	clicktoconference_play_ment_rsp_tcp_t clicktoconference_play_ment_rsp[1];
+
+	memcpy(clicktoconference_play_ment_rsp, skbmsg->body, sizeof(clicktoconference_play_ment_rsp_tcp_t));
+	clicktoconference_play_ment_rsp_tcp_display(clicktoconference_play_ment_rsp);
+	rv = clicktoconference_play_ment_rsp_encode_to_dbif_msg(clicktoconference_play_ment_rsp, dbif);
+	if (rv <eUXC_SUCCESS) return rv;
+	clicktoconference_play_ment_rsp_dbif_display(dbif);
+
+	return rv;
+}
+
+int skb_msg_process_clicktoconference_get_party_status_rsp( skb_msg_t *skbmsg, uxc_dbif_t *dbif) {
+	int rv;
+	clicktoconference_get_party_status_rsp_tcp_t clicktoconference_get_party_status_rsp[1];
+
+	memcpy(clicktoconference_get_party_status_rsp, skbmsg->body, sizeof(clicktoconference_get_party_status_rsp_tcp_t));
+	clicktoconference_get_party_status_rsp_tcp_display(clicktoconference_get_party_status_rsp);
+	rv = clicktoconference_get_party_status_rsp_encode_to_dbif_msg(clicktoconference_get_party_status_rsp, dbif);
+	if (rv <eUXC_SUCCESS) return rv;
+	clicktoconference_get_party_status_rsp_dbif_display(dbif);
+
+	return rv;
+}
+
+int skb_msg_process_clicktoconference_cancel_party_rsp( skb_msg_t *skbmsg, uxc_dbif_t *dbif) {
+	int rv;
+	clicktoconference_cancel_party_rsp_tcp_t clicktoconference_cancel_party_rsp[1];
+
+	memcpy(clicktoconference_cancel_party_rsp, skbmsg->body, sizeof(clicktoconference_cancel_party_rsp_tcp_t));
+	clicktoconference_cancel_party_rsp_tcp_display(clicktoconference_cancel_party_rsp);
+	rv = clicktoconference_cancel_party_rsp_encode_to_dbif_msg(clicktoconference_cancel_party_rsp, dbif);
+	if (rv <eUXC_SUCCESS) return rv;
+	clicktoconference_cancel_party_rsp_dbif_display(dbif);
+
+	return rv;
+}
+
+int skb_msg_process_clicktoconference_add_party_rpt( skb_msg_t *skbmsg, uxc_dbif_t *dbif) {
+	int rv;
+	clicktoconference_add_party_rpt_tcp_t clicktoconference_add_party_rpt[1];
+
+	memcpy(clicktoconference_add_party_rpt, skbmsg->body, sizeof(clicktoconference_add_party_rpt_tcp_t));
+	clicktoconference_add_party_rpt_tcp_display(clicktoconference_add_party_rpt);
+	rv = clicktoconference_add_party_rpt_encode_to_dbif_msg(clicktoconference_add_party_rpt, dbif);
+	if (rv <eUXC_SUCCESS) return rv;
+	clicktoconference_add_party_rpt_dbif_display(dbif);
+
+	return rv;
+}
+
+int skb_msg_process_clicktoconference_remove_party_rpt( skb_msg_t *skbmsg, uxc_dbif_t *dbif) {
+	int rv;
+	clicktoconference_remove_party_rpt_tcp_t clicktoconference_remove_party_rpt[1];
+
+	memcpy(clicktoconference_remove_party_rpt, skbmsg->body, sizeof(clicktoconference_remove_party_rpt_tcp_t));
+	clicktoconference_remove_party_rpt_tcp_display(clicktoconference_remove_party_rpt);
+	rv = clicktoconference_remove_party_rpt_encode_to_dbif_msg(clicktoconference_remove_party_rpt, dbif);
+	if (rv <eUXC_SUCCESS) return rv;
+	clicktoconference_remove_party_rpt_dbif_display(dbif);
+
+	return rv;
+}
+
+int skb_msg_process_clicktoconference_change_party_media_rpt( skb_msg_t *skbmsg, uxc_dbif_t *dbif) {
+	int rv;
+	clicktoconference_change_party_media_rpt_tcp_t clicktoconference_change_party_media_rpt[1];
+
+	memcpy(clicktoconference_change_party_media_rpt, skbmsg->body, sizeof(clicktoconference_change_party_media_rpt_tcp_t));
+	clicktoconference_change_party_media_rpt_tcp_display(clicktoconference_change_party_media_rpt);
+	rv = clicktoconference_change_party_media_rpt_encode_to_dbif_msg(clicktoconference_change_party_media_rpt, dbif);
+	if (rv <eUXC_SUCCESS) return rv;
+	clicktoconference_change_party_media_rpt_dbif_display(dbif);
+
+	return rv;
+}
+
+int skb_msg_process_clicktoconference_change_option_rpt( skb_msg_t *skbmsg) {
+	clicktoconference_change_option_rpt_tcp_t clicktoconference_change_option_rpt[1];
+
+	memcpy(clicktoconference_change_option_rpt, skbmsg->body, sizeof(clicktoconference_change_option_rpt_tcp_t));
+	clicktoconference_change_option_rpt_tcp_display(clicktoconference_change_option_rpt);
+
+	return eUXC_SUCCESS;
+}
+
+int skb_msg_process_clicktoconference_stop_rpt( skb_msg_t *skbmsg, uxc_dbif_t *dbif) {
+	int rv;
+	clicktoconference_stop_rpt_tcp_t clicktoconference_stop_rpt[1];
+
+	memcpy(clicktoconference_stop_rpt, skbmsg->body, sizeof(clicktoconference_stop_rpt_tcp_t));
+	clicktoconference_stop_rpt_tcp_display(clicktoconference_stop_rpt);
+	rv = clicktoconference_stop_rpt_encode_to_dbif_msg(clicktoconference_stop_rpt, dbif);
+	if (rv <eUXC_SUCCESS) return rv;
+	clicktoconference_stop_rpt_dbif_display(dbif);
 
 	return rv;
 }

@@ -149,6 +149,24 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 		ux_log(UXL_INFO, "2.2. Set Channel clicktocallrecording");
 		peerkey.chnl_idx = 1; //  채널
 		peerkey.peer_key = 0; // 채널의 첫번째 PEER 
+
+		switch(msgId) {
+		case DBIF_CALL_START_REQUEST:
+			rv = skb_msg_process_clicktocall_start_req(&skbmsg, dbif, sessionID, gwSessionID);
+			break;
+		case DBIF_CALL_STOP_REQUEST:
+			rv = skb_msg_process_clicktocall_stop_req(&skbmsg, dbif);
+			break;
+		case DBIF_CALL_START_RECORDING_REQUEST:
+			rv = skb_msg_process_clicktocall_startrecording_req(&skbmsg, dbif);
+			break;
+		case DBIF_CALL_STOP_RECORDING_REQUEST:
+			rv = skb_msg_process_clicktocall_stoprecording_req(&skbmsg, dbif);
+			break;
+		default:
+			ux_log(UXL_CRT, "Unsupported msgId : %d", msgId);
+			return -1;
+		}
 		break;
 	case 3:
 		ux_log(UXL_INFO, "2.3. Set Channel clicktoconference");

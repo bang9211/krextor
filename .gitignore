@@ -4,3 +4,4 @@
 
 *.log
 report
+.git_backup_*

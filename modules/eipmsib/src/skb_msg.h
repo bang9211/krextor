@@ -64,6 +64,7 @@ void skb_msg_display_header(skb_header_t* header);
 int32_t skb_msg_generate_messasgeID();
 int32_t skb_msg_generate_requestID();
 
+//clicktocall
 int skb_msg_process_clicktocall_start_req( skb_msg_t *skbmsg, uxc_dbif_t *dbif, char *sessionID, char *gwSessionID);
 int skb_msg_process_clicktocall_stop_req( skb_msg_t *skbmsg, uxc_dbif_t *dbif);
 int skb_msg_process_clicktocall_startrecording_req( skb_msg_t *skbmsg, uxc_dbif_t *dbif);
@@ -79,5 +80,47 @@ int skb_msg_process_clicktocall_stop_rpt( skb_msg_t *skbmsg, uxc_dbif_t *dbif);
 int skb_msg_process_clicktocall_startrecording_rpt( skb_msg_t *skbmsg);
 int skb_msg_process_clicktocall_stoprecording_rpt( skb_msg_t *skbmsg);
 int skb_msg_process_clicktocall_service_status_rpt( skb_msg_t *skbmsg, uxc_dbif_t *dbif);
+
+//clicktocallrecording
+int skb_msg_process_clicktocallrecording_start_req( skb_msg_t *skbmsg, uxc_dbif_t *dbif, char *sessionID, char *gwSessionID);
+int skb_msg_process_clicktocallrecording_stop_req( skb_msg_t *skbmsg, uxc_dbif_t *dbif);
+int skb_msg_process_clicktocallrecording_service_status_req( skb_msg_t *skbmsg);
+
+int skb_msg_process_clicktocallrecording_start_rsp( skb_msg_t *skbmsg, uxc_dbif_t *dbif);
+int skb_msg_process_clicktocallrecording_stop_rsp( skb_msg_t *skbmsg, uxc_dbif_t *dbif);
+int skb_msg_process_clicktocallrecording_service_status_rsp( skb_msg_t *skbmsg);
+
+int skb_msg_process_clicktocallrecording_start_rpt( skb_msg_t *skbmsg, uxc_dbif_t *dbif);
+int skb_msg_process_clicktocallrecording_stop_rpt( skb_msg_t *skbmsg, uxc_dbif_t *dbif);
+int skb_msg_process_clicktocallrecording_service_status_rpt( skb_msg_t *skbmsg, uxc_dbif_t *dbif);
+
+//clicktoconference
+int skb_msg_process_clicktoconference_start_req( skb_msg_t *skbmsg, uxc_dbif_t *dbif, char *sessionID, char *gwSessionID);
+int skb_msg_process_clicktoconference_add_party_req( skb_msg_t *skbmsg, uxc_dbif_t *dbif);
+int skb_msg_process_clicktoconference_remove_party_req( skb_msg_t *skbmsg, uxc_dbif_t *dbif);
+int skb_msg_process_clicktoconference_change_party_media_req( skb_msg_t *skbmsg, uxc_dbif_t *dbif);
+int skb_msg_process_clicktoconference_change_option_req( skb_msg_t *skbmsg);
+int skb_msg_process_clicktoconference_get_number_of_party_req( skb_msg_t *skbmsg, uxc_dbif_t *dbif);
+int skb_msg_process_clicktoconference_stop_req( skb_msg_t *skbmsg, uxc_dbif_t *dbif);
+int skb_msg_process_clicktoconference_play_ment_req( skb_msg_t *skbmsg, uxc_dbif_t *dbif);
+int skb_msg_process_clicktoconference_get_party_status_req( skb_msg_t *skbmsg, uxc_dbif_t *dbif);
+int skb_msg_process_clicktoconference_cancel_party_req( skb_msg_t *skbmsg, uxc_dbif_t *dbif);
+
+int skb_msg_process_clicktoconference_start_rsp( skb_msg_t *skbmsg, uxc_dbif_t *dbif);
+int skb_msg_process_clicktoconference_add_party_rsp( skb_msg_t *skbmsg, uxc_dbif_t *dbif);
+int skb_msg_process_clicktoconference_remove_party_rsp( skb_msg_t *skbmsg, uxc_dbif_t *dbif);
+int skb_msg_process_clicktoconference_change_party_media_rsp( skb_msg_t *skbmsg, uxc_dbif_t *dbif);
+int skb_msg_process_clicktoconference_change_option_rsp( skb_msg_t *skbmsg);
+int skb_msg_process_clicktoconference_get_number_of_party_rsp( skb_msg_t *skbmsg, uxc_dbif_t *dbif);
+int skb_msg_process_clicktoconference_stop_rsp( skb_msg_t *skbmsg, uxc_dbif_t *dbif);
+int skb_msg_process_clicktoconference_play_ment_rsp( skb_msg_t *skbmsg, uxc_dbif_t *dbif);
+int skb_msg_process_clicktoconference_get_party_status_rsp( skb_msg_t *skbmsg, uxc_dbif_t *dbif);
+int skb_msg_process_clicktoconference_cancel_party_rsp( skb_msg_t *skbmsg, uxc_dbif_t *dbif);
+
+int skb_msg_process_clicktoconference_add_party_rpt( skb_msg_t *skbmsg, uxc_dbif_t *dbif);
+int skb_msg_process_clicktoconference_remove_party_rpt( skb_msg_t *skbmsg, uxc_dbif_t *dbif);
+int skb_msg_process_clicktoconference_change_party_media_rpt( skb_msg_t *skbmsg, uxc_dbif_t *dbif);
+int skb_msg_process_clicktoconference_change_option_rpt( skb_msg_t *skbmsg);
+int skb_msg_process_clicktoconference_stop_rpt( skb_msg_t *skbmsg, uxc_dbif_t *dbif);
 
 #endif // #ifndef __SKB_MSG_H__
