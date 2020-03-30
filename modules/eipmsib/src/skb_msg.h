@@ -90,7 +90,7 @@ int skb_msg_process_clicktocallrecording_start_rsp( skb_msg_t *skbmsg, uxc_dbif_
 int skb_msg_process_clicktocallrecording_stop_rsp( skb_msg_t *skbmsg, uxc_dbif_t *dbif);
 int skb_msg_process_clicktocallrecording_service_status_rsp( skb_msg_t *skbmsg);
 
-int skb_msg_process_clicktocallrecording_start_rpt( skb_msg_t *skbmsg, uxc_dbif_t *dbif);
+int skb_msg_process_clicktocallrecording_start_rpt( skb_msg_t *skbmsg);
 int skb_msg_process_clicktocallrecording_stop_rpt( skb_msg_t *skbmsg, uxc_dbif_t *dbif);
 int skb_msg_process_clicktocallrecording_service_status_rpt( skb_msg_t *skbmsg, uxc_dbif_t *dbif);
 

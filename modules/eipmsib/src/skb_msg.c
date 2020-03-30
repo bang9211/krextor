@@ -588,7 +588,7 @@ int skb_msg_process_clicktocallrecording_service_status_rsp( skb_msg_t *skbmsg) 
 	return eUXC_SUCCESS;
 }
 
-int skb_msg_process_clicktocallrecording_start_rpt( skb_msg_t *skbmsg, uxc_dbif_t *dbif) {
+int skb_msg_process_clicktocallrecording_start_rpt( skb_msg_t *skbmsg) {
 	clicktocallrecording_start_rpt_tcp_t clicktocallrecording_start_rpt[1];
 
 	memcpy(clicktocallrecording_start_rpt, skbmsg->body, sizeof(clicktocallrecording_start_rpt_tcp_t));

@@ -59,6 +59,7 @@
 #define BINDING_RESPONSE									0x10000001
 #define START_REQUEST										0x00000010
 #define START_RESPONSE										0x10000010
+#define START_REPORT										0x20000010
 #define STOP_REQUEST										0x00000011
 #define STOP_RESPONSE										0x10000011
 #define STOP_REPORT											0x20000011
@@ -71,6 +72,32 @@
 #define SERVICE_STATUS_REQUEST								0x00000030
 #define SERVICE_STATUS_RESPONSE								0x10000030
 #define SERVICE_STATUS_REPORT								0x20000030
+#define START_CONFERENCE_REQUEST                            0x00000010
+#define START_CONFERENCE_RESPONSE                           0x10000010
+#define ADD_PARTY_REQUEST                                   0x00000020
+#define ADD_PARTY_RESPONSE                                  0x10000020
+#define ADD_PARTY_REPORT                                    0x20000020
+#define REMOVE_PARTY_REQUEST                                0x00000030
+#define REMOVE_PARTY_RESPONSE                               0x10000030
+#define REMOVE_PARTY_REPORT                                 0x20000030
+#define CHANGE_PARTY_MEDIA_REQUEST                          0x00000040
+#define CHANGE_PARTY_MEDIA_RESPONSE                         0x10000040
+#define CHANGE_PARTY_MEDIA_REPORT                           0x20000040
+#define CHANGE_OPTION_REQUEST                               0x00000050
+#define CHANGE_OPTION_RESPONSE                              0x10000050
+#define CHANGE_OPTION_REPORT                                0x20000050
+#define GET_NUMBER_OF_PARTY_REQUEST                         0x00000060
+#define GET_NUMBER_OF_PARTY_RESPONSE                        0x10000060
+#define STOP_CONFERENCE_REQUEST                             0x00000070
+#define STOP_CONFERENCE_RESPONSE                            0x10000070
+#define STOP_CONFERENCE_REPORT                              0x20000070
+#define PLAY_MENT_REQUEST                                   0x00000080
+#define PLAY_MENT_RESPONSE                                  0x10000080
+#define GET_PARTY_STATUS_REQUEST                            0x00000090
+#define GET_PARTY_STATUS_RESPONSE                           0x10000090
+#define CANCEL_PARTY_REQUEST                                0x000000A0
+#define CANCEL_PARTY_RESPONSE                               0x100000A0
+
 
 /** @brief SKB MAX Message Length */
 #define SKB_MSG_MAX_LEN										64*1024

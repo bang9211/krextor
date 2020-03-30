@@ -151,17 +151,11 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 		peerkey.peer_key = 0; // 채널의 첫번째 PEER 
 
 		switch(msgId) {
-		case DBIF_CALL_START_REQUEST:
-			rv = skb_msg_process_clicktocall_start_req(&skbmsg, dbif, sessionID, gwSessionID);
+		case DBIF_CALL_RECORDING_START_REQUEST:
+			rv = skb_msg_process_clicktocallrecording_start_req(&skbmsg, dbif, sessionID, gwSessionID);
 			break;
-		case DBIF_CALL_STOP_REQUEST:
-			rv = skb_msg_process_clicktocall_stop_req(&skbmsg, dbif);
-			break;
-		case DBIF_CALL_START_RECORDING_REQUEST:
-			rv = skb_msg_process_clicktocall_startrecording_req(&skbmsg, dbif);
-			break;
-		case DBIF_CALL_STOP_RECORDING_REQUEST:
-			rv = skb_msg_process_clicktocall_stoprecording_req(&skbmsg, dbif);
+		case DBIF_CALL_RECORDING_STOP_REQUEST:
+			rv = skb_msg_process_clicktocallrecording_stop_req(&skbmsg, dbif);
 			break;
 		default:
 			ux_log(UXL_CRT, "Unsupported msgId : %d", msgId);
@@ -172,6 +166,39 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 		ux_log(UXL_INFO, "2.3. Set Channel clicktoconference");
 		peerkey.chnl_idx = 2; //  채널
 		peerkey.peer_key = 0; // 채널의 첫번째 PEER 
+
+		switch(msgId) {
+		case DBIF_CONFERENCE_START_REQUEST:
+			rv = skb_msg_process_clicktoconference_start_req(&skbmsg, dbif, sessionID, gwSessionID);
+			break;
+		case DBIF_CONFERENCE_STOP_REQUEST:
+			rv = skb_msg_process_clicktoconference_stop_req(&skbmsg, dbif);
+			break;
+		case DBIF_ADD_PARTY_REQUEST:
+			rv = skb_msg_process_clicktoconference_add_party_req(&skbmsg, dbif);
+			break;
+		case DBIF_REMOVE_PARTY_REQUEST:
+			rv = skb_msg_process_clicktoconference_remove_party_req(&skbmsg, dbif);
+			break;
+		case DBIF_CANCEL_PARTY_REQUEST:
+			rv = skb_msg_process_clicktoconference_cancel_party_req(&skbmsg, dbif);
+			break;
+		case DBIF_CHANGE_PARTY_MEDIA_REQUEST:
+			rv = skb_msg_process_clicktoconference_change_party_media_req(&skbmsg, dbif);
+			break;
+		case DBIF_PLAY_MENT_REQUEST:
+			rv = skb_msg_process_clicktoconference_play_ment_req(&skbmsg, dbif);
+			break;
+		case DBIF_GET_NUMBER_OF_PARTY_REQUEST:
+			rv = skb_msg_process_clicktoconference_get_number_of_party_req(&skbmsg, dbif);
+			break;
+		case DBIF_GET_PARTY_STATUS_REQUEST:
+			rv = skb_msg_process_clicktoconference_get_party_status_req(&skbmsg, dbif);
+			break;
+		default:
+			ux_log(UXL_CRT, "Unsupported msgId : %d", msgId);
+			return -1;
+		}
 		break;
 	default:
 		ux_log(UXL_CRT, "Unsupported msgId : %d", msgId);
@@ -291,8 +318,85 @@ int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpms
 		}
 		break;		
 	case TCP_CHANNEL_RECORDING:
+		switch(skbmsg->header.messageID) {
+		//RESPONSE
+		case START_RECORDING_RESPONSE:
+			rv = skb_msg_process_clicktocallrecording_start_rsp(skbmsg, &dbif);
+			break;
+		case STOP_RECORDING_RESPONSE:
+			rv = skb_msg_process_clicktocallrecording_stop_rsp(skbmsg, &dbif);
+			break;
+		case SERVICE_STATUS_RESPONSE:
+			rv = skb_msg_process_clicktocallrecording_service_status_rsp(skbmsg);	//no send
+			break;
+		//REPORT
+		case START_REPORT:
+			rv = skb_msg_process_clicktocallrecording_start_rpt(skbmsg);	//no send
+			break;
+		case STOP_REPORT:
+			rv = skb_msg_process_clicktocallrecording_stop_rpt(skbmsg, &dbif);
+			break;
+		case SERVICE_STATUS_REPORT:
+			rv = skb_msg_process_clicktocallrecording_service_status_rpt(skbmsg, &dbif);
+			break;
+		default:
+			ux_log(UXL_CRT, "Unsupported messageID : %#010x", skbmsg->header.messageID)
+			break;	
+		}
 		break;
 	case TCP_CHANNEL_CONFERENCE:
+		switch(skbmsg->header.messageID) {
+		//RESPONSE
+		case START_CONFERENCE_RESPONSE:
+			rv = skb_msg_process_clicktoconference_start_rsp(skbmsg, &dbif);
+			break;
+		case ADD_PARTY_RESPONSE:
+			rv = skb_msg_process_clicktoconference_add_party_rsp(skbmsg, &dbif);
+			break;
+		case REMOVE_PARTY_RESPONSE:
+			rv = skb_msg_process_clicktoconference_remove_party_rsp(skbmsg, &dbif);
+			break;
+		case CHANGE_PARTY_MEDIA_RESPONSE:
+			rv = skb_msg_process_clicktoconference_change_party_media_rsp(skbmsg, &dbif);
+			break;
+		case CHANGE_OPTION_RESPONSE:
+			rv = skb_msg_process_clicktoconference_change_option_rsp(skbmsg);	//no send
+			break;
+		case GET_NUMBER_OF_PARTY_RESPONSE:
+			rv = skb_msg_process_clicktoconference_get_number_of_party_rsp(skbmsg, &dbif);
+			break;
+		case STOP_CONFERENCE_RESPONSE:
+			rv = skb_msg_process_clicktoconference_stop_rsp(skbmsg, &dbif);
+			break;
+		case PLAY_MENT_RESPONSE:
+			rv = skb_msg_process_clicktoconference_play_ment_rsp(skbmsg, &dbif);
+			break;
+		case GET_PARTY_STATUS_RESPONSE:
+			rv = skb_msg_process_clicktoconference_get_party_status_rsp(skbmsg, &dbif);
+			break;
+		case CANCEL_PARTY_RESPONSE:
+			rv = skb_msg_process_clicktoconference_cancel_party_rsp(skbmsg, &dbif);
+			break;
+		//REPORT
+		case ADD_PARTY_REPORT:
+			rv = skb_msg_process_clicktoconference_add_party_rpt(skbmsg, &dbif);
+			break;
+		case REMOVE_PARTY_REPORT:
+			rv = skb_msg_process_clicktoconference_remove_party_rpt(skbmsg, &dbif);
+			break;
+		case CHANGE_PARTY_MEDIA_REPORT:
+			rv = skb_msg_process_clicktoconference_change_party_media_rpt(skbmsg, &dbif);
+			break;
+		case CHANGE_OPTION_REPORT:
+			rv = skb_msg_process_clicktoconference_change_option_rpt(skbmsg);	//no send
+			break;
+		case STOP_CONFERENCE_REPORT:
+			rv = skb_msg_process_clicktoconference_stop_rpt(skbmsg, &dbif);
+			break;
+		default:
+			ux_log(UXL_CRT, "Unsupported messageID : %#010x", skbmsg->header.messageID)
+			break;	
+		}
 		break;
 	default:
 		ux_log(UXL_CRT, "Unsupported Channel Index : %d", tcpmsg->peerkey.chnl_idx)
