@@ -41,18 +41,21 @@ uhash_int_t* uh_int_init();
 int uh_int_put(uhash_int_t* hash, khint_t key, char* value);
 char* uh_int_get(uhash_int_t* hash, khint_t key);
 int uh_int_is_exist(uhash_int_t* hash, khint_t key);
+void uh_int_del(uhash_int_t* hash, khint_t key);
 void uh_int_destroy(uhash_int_t* hash);
 
 uhash_str_t* uh_str_init();
 int uh_str_put(uhash_str_t* hash, char* key, char* value);
 char* uh_str_get(uhash_str_t* hash, kh_cstr_t key);
 int uh_str_is_exist(uhash_str_t* hash, kh_cstr_t key);
+void uh_str_del(uhash_str_t* hash, kh_cstr_t key);
 void uh_str_destroy(uhash_str_t* hash);
 
 uhash_ipc_t* uh_ipc_init();
 int uh_ipc_put(uhash_ipc_t* hash, khint_t key, uxc_ixpc_t* value);
 uxc_ixpc_t* uh_ipc_get(uhash_ipc_t* hash, khint_t key);
 int uh_ipc_is_exist(uhash_ipc_t* hash, khint_t key);
+void uh_ipc_del(uhash_ipc_t* hash, khint_t key);
 void uh_ipc_destroy(uhash_ipc_t* hash);
 
 

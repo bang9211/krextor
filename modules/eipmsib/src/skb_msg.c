@@ -421,11 +421,15 @@ int skb_msg_process_clicktocall_start_rsp( skb_msg_t *skbmsg, uxc_dbif_t *dbif) 
 	if (sessionID == NULL || strcmp(sessionID, "") == 0) {
 		ux_log(UXL_CRT, "There is no sessionID of reqID(%d)", skbmsg->header.requestID);
 		return -1;
+	} else {
+		// uh_int_del(reqID_SID_Map, skbmsg->header.requestID);
 	}
 	strncpy(gwSessionID, uh_int_get(reqID_GWSID_Map, skbmsg->header.requestID), GW_SESSION_ID_LEN);
-	if (gwSessionID == NULL || strcmp(sessionID, "") == 0) {
+	if (gwSessionID == NULL || strcmp(gwSessionID, "") == 0) {
 		ux_log(UXL_CRT, "There is no gwSessionID of reqID(%d)", skbmsg->header.requestID);
 		return -1;
+	} else {
+		// uh_int_del(reqID_GWSID_Map, skbmsg->header.requestID);
 	}
 	rv = clicktocall_start_rsp_encode_to_dbif_msg(clicktocall_start_rsp, sessionID, gwSessionID, dbif);
 	if (rv <eUXC_SUCCESS) return rv;
@@ -623,11 +627,15 @@ int skb_msg_process_clicktocallrecording_start_rsp( skb_msg_t *skbmsg, uxc_dbif_
 	if (sessionID == NULL || strcmp(sessionID, "") == 0) {
 		ux_log(UXL_CRT, "There is no sessionID of reqID(%d)", skbmsg->header.requestID);
 		return -1;
+	} else {
+		// uh_int_del(reqID_SID_Map, skbmsg->header.requestID);
 	}
 	strncpy(gwSessionID, uh_int_get(reqID_GWSID_Map, skbmsg->header.requestID), GW_SESSION_ID_LEN);
-	if (gwSessionID == NULL || strcmp(sessionID, "") == 0) {
+	if (gwSessionID == NULL || strcmp(gwSessionID, "") == 0) {
 		ux_log(UXL_CRT, "There is no gwSessionID of reqID(%d)", skbmsg->header.requestID);
 		return -1;
+	} else {
+		// uh_int_del(reqID_GWSID_Map, skbmsg->header.requestID);
 	}
 	rv = clicktocallrecording_start_rsp_encode_to_dbif_msg(clicktocallrecording_start_rsp, sessionID, gwSessionID, dbif);
 	if (rv <eUXC_SUCCESS) return rv;
@@ -918,11 +926,15 @@ int skb_msg_process_clicktoconference_start_rsp( skb_msg_t *skbmsg, uxc_dbif_t *
 	if (sessionID == NULL || strcmp(sessionID, "") == 0) {
 		ux_log(UXL_CRT, "There is no sessionID of reqID(%d)", skbmsg->header.requestID);
 		return -1;
+	} else {
+		// uh_int_del(reqID_SID_Map, skbmsg->header.requestID);
 	}
 	strncpy(gwSessionID, uh_int_get(reqID_GWSID_Map, skbmsg->header.requestID), GW_SESSION_ID_LEN);
-	if (gwSessionID == NULL || strcmp(sessionID, "") == 0) {
+	if (gwSessionID == NULL || strcmp(gwSessionID, "") == 0) {
 		ux_log(UXL_CRT, "There is no gwSessionID of reqID(%d)", skbmsg->header.requestID);
 		return -1;
+	} else {
+		// uh_int_del(reqID_GWSID_Map, skbmsg->header.requestID);
 	}
 	rv = clicktoconference_start_rsp_encode_to_dbif_msg(clicktoconference_start_rsp, sessionID, gwSessionID, dbif);
 	if (rv <eUXC_SUCCESS) return rv;

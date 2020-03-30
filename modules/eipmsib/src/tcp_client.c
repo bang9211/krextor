@@ -475,6 +475,8 @@ int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpms
 		if (dbif_header == NULL) {
 			ux_log(UXL_CRT, "There is no ipc_header of reqID(%d)", skbmsg->header.requestID);
 			return -1;
+		} else {
+			// uh_ipc_del(reqID_IPC_Map, skbmsg->header.requestID);
 		}
 		ipcmsg.header = *dbif_header;
 		ipcmsg.header.msgId = msgID;
