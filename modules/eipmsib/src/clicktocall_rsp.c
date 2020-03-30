@@ -1,6 +1,29 @@
 #include "clicktocall_rsp.h"
 
 ///////////////////////////////////////////////////////////////////////////////////
+// functions for clicktocall_binding_rsp_tcp_t 
+///////////////////////////////////////////////////////////////////////////////////
+
+int clicktocall_binding_rsp_tcp_init( clicktocall_binding_rsp_tcp_t *clicktocall_binding_rsp)
+{
+	memset(clicktocall_binding_rsp, 0, sizeof(clicktocall_binding_rsp_tcp_t));
+
+	return eUXC_SUCCESS;
+}
+
+void clicktocall_binding_rsp_tcp_final( clicktocall_binding_rsp_tcp_t *clicktocall_binding_rsp)
+{
+	//
+}
+
+void clicktocall_binding_rsp_tcp_display(clicktocall_binding_rsp_tcp_t *clicktocall_binding_rsp) {
+	ux_log(UXL_INFO, "TCP [clicktocall_binding_rsp]");
+	ux_log(UXL_INFO, "  [resultCode] %d", clicktocall_binding_rsp->resultCode);
+	ux_log(UXL_INFO, "  [userID] %s", clicktocall_binding_rsp->userID);
+	ux_log(UXL_INFO, "  [password] %s", clicktocall_binding_rsp->password);
+}
+
+///////////////////////////////////////////////////////////////////////////////////
 // functions for clicktocall_start_rsp_tcp_t 
 ///////////////////////////////////////////////////////////////////////////////////
 

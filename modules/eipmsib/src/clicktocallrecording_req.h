@@ -13,6 +13,12 @@
 // ClickToCallRecording Request Message Structure & Macro 
 ///////////////////////////////////////////////////////////////////////////////////
 
+typedef struct clicktocallrecording_binding_req_tcp_s clicktocallrecording_binding_req_tcp_t;
+struct clicktocallrecording_binding_req_tcp_s {
+	char userID[BINDING_USER_ID_LEN];
+	char password[BINDING_PASSWORD_LEN];
+};
+
 typedef struct clicktocallrecording_start_req_tcp_s clicktocallrecording_start_req_tcp_t; 
 struct clicktocallrecording_start_req_tcp_s {
 	char subscriberName[SUBSCRIBER_NAME_LEN];
@@ -44,6 +50,9 @@ struct clicktocallrecording_service_status_req_tcp_s {
 ///////////////////////////////////////////////////////////////////////////////////
 // ClickToCallRecording Request Message Functions 
 ///////////////////////////////////////////////////////////////////////////////////
+int clicktocallrecording_binding_req_tcp_init( clicktocallrecording_binding_req_tcp_t *clicktocallrecording_binding_req);
+void clicktocallrecording_binding_req_tcp_final( clicktocallrecording_binding_req_tcp_t *clicktocallrecording_binding_req);
+void clicktocallrecording_binding_req_tcp_display(clicktocallrecording_binding_req_tcp_t *clicktocallrecording_binding_req);
 
 int clicktocallrecording_start_req_tcp_init( clicktocallrecording_start_req_tcp_t *clicktocallrecording_start_req);
 void clicktocallrecording_start_req_tcp_final( clicktocallrecording_start_req_tcp_t *clicktocallrecording_start_req);

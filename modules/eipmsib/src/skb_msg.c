@@ -301,6 +301,24 @@ void destroy_skb_map() {
 // ClickToCall Functions 
 ///////////////////////////////////////////////////////////////////////////////////
 
+void skb_msg_process_clicktocall_heartbeat_req(skb_msg_t *skbmsg) {
+	// TCP Header 설정
+	skb_msg_make_header(&skbmsg->header, HEARTBEAT_RESPONSE, 0, &skbmsg->header.requestID);
+	skb_msg_display_header(&skbmsg->header);
+}
+
+void skb_msg_process_clicktocall_binding_req(skb_msg_t *skbmsg, char *userID, char *password) {
+	clicktocall_binding_req_tcp_t clicktocall_binding_req;
+	// TCP Header 설정
+	skb_msg_make_header(&skbmsg->header, BINDING_REQUEST, 0, NULL);
+	skb_msg_display_header(&skbmsg->header);
+	// TCP Body 설정
+	strncpy(clicktocall_binding_req.userID, userID, BINDING_USER_ID_LEN);
+	strncpy(clicktocall_binding_req.password, password, BINDING_PASSWORD_LEN);
+	memcpy(skbmsg->body, &clicktocall_binding_req, sizeof(clicktocall_binding_req));
+	clicktocall_binding_req_tcp_display(&clicktocall_binding_req);
+}
+
 int skb_msg_process_clicktocall_start_req( skb_msg_t *skbmsg, uxc_dbif_t *dbif, char *sessionID, char *gwSessionID) {
 	int rv;
 	clicktocall_start_req_tcp_t clicktocall_start_req;
@@ -371,6 +389,23 @@ int skb_msg_process_clicktocall_stoprecording_req( skb_msg_t *skbmsg, uxc_dbif_t
 	clicktocall_stoprecording_req_tcp_display(&clicktocall_stoprecording_req);
 
 	return rv;
+}
+
+void skb_msg_process_clicktocall_heartbeat_rsp(skb_msg_t *skbmsg) {
+	skb_msg_display_header(&skbmsg->header);
+}
+
+int skb_msg_process_clicktocall_binding_rsp(skb_msg_t *skbmsg) {
+	clicktocall_binding_rsp_tcp_t clicktocall_binding_rsp[1];
+
+	memcpy(clicktocall_binding_rsp, skbmsg->body, sizeof(clicktocall_binding_rsp_tcp_t));
+	clicktocall_binding_rsp_tcp_display(clicktocall_binding_rsp);
+	
+	if (clicktocall_binding_rsp->resultCode < 2) {
+		return eUXC_SUCCESS;
+	}
+	ux_log(UXL_CRT, "failed to bind : %d", clicktocall_binding_rsp->resultCode);
+	return -1;
 }
 
 int skb_msg_process_clicktocall_start_rsp( skb_msg_t *skbmsg, uxc_dbif_t *dbif) {
@@ -495,6 +530,24 @@ int skb_msg_process_clicktocall_service_status_rpt( skb_msg_t *skbmsg, uxc_dbif_
 // ClickToCallRecording Functions 
 ///////////////////////////////////////////////////////////////////////////////////
 
+void skb_msg_process_clicktocallrecording_heartbeat_req(skb_msg_t *skbmsg) {
+	// TCP Header 설정
+	skb_msg_make_header(&skbmsg->header, HEARTBEAT_RESPONSE, 0, &skbmsg->header.requestID);
+	skb_msg_display_header(&skbmsg->header);
+}
+
+void skb_msg_process_clicktocallrecording_binding_req(skb_msg_t *skbmsg, char *userID, char *password) {
+	clicktocallrecording_binding_req_tcp_t clicktocallrecording_binding_req;
+	// TCP Header 설정
+	skb_msg_make_header(&skbmsg->header, BINDING_REQUEST, 0, NULL);
+	skb_msg_display_header(&skbmsg->header);
+	// TCP Body 설정
+	strncpy(clicktocallrecording_binding_req.userID, userID, BINDING_USER_ID_LEN);
+	strncpy(clicktocallrecording_binding_req.password, password, BINDING_PASSWORD_LEN);
+	memcpy(skbmsg->body, &clicktocallrecording_binding_req, sizeof(clicktocallrecording_binding_req));
+	clicktocallrecording_binding_req_tcp_display(&clicktocallrecording_binding_req);
+}
+
 int skb_msg_process_clicktocallrecording_start_req( skb_msg_t *skbmsg, uxc_dbif_t *dbif, char *sessionID, char *gwSessionID) {
 	int rv;
 	clicktocallrecording_start_req_tcp_t clicktocallrecording_start_req;
@@ -538,6 +591,23 @@ int skb_msg_process_clicktocallrecording_service_status_req( skb_msg_t *skbmsg) 
 	clicktocallrecording_service_status_req_tcp_display(&clicktocallrecording_service_status_req);
 
 	return eUXC_SUCCESS;
+}
+
+void skb_msg_process_clicktocallrecording_heartbeat_rsp(skb_msg_t *skbmsg) {
+	skb_msg_display_header(&skbmsg->header);
+}
+
+int skb_msg_process_clicktocallrecording_binding_rsp(skb_msg_t *skbmsg) {
+	clicktocallrecording_binding_rsp_tcp_t clicktocallrecording_binding_rsp[1];
+
+	memcpy(clicktocallrecording_binding_rsp, skbmsg->body, sizeof(clicktocallrecording_binding_rsp_tcp_t));
+	clicktocallrecording_binding_rsp_tcp_display(clicktocallrecording_binding_rsp);
+	
+	if (clicktocallrecording_binding_rsp->resultCode < 2) {
+		return eUXC_SUCCESS;
+	}
+	ux_log(UXL_CRT, "failed to bind : %d", clicktocallrecording_binding_rsp->resultCode);
+	return -1;
 }
 
 int skb_msg_process_clicktocallrecording_start_rsp( skb_msg_t *skbmsg, uxc_dbif_t *dbif) {
@@ -626,6 +696,25 @@ int skb_msg_process_clicktocallrecording_service_status_rpt( skb_msg_t *skbmsg, 
 ///////////////////////////////////////////////////////////////////////////////////
 // ClickToConference Functions 
 ///////////////////////////////////////////////////////////////////////////////////
+
+void skb_msg_process_clicktoconference_heartbeat_req(skb_msg_t *skbmsg) {
+	// TCP Header 설정
+	skb_msg_make_header(&skbmsg->header, HEARTBEAT_RESPONSE, 0, &skbmsg->header.requestID);
+	skb_msg_display_header(&skbmsg->header);
+}
+
+void skb_msg_process_clicktoconference_binding_req(skb_msg_t *skbmsg, char *userID, char *password) {
+	clicktoconference_binding_req_tcp_t clicktoconference_binding_req;
+	// TCP Header 설정
+	skb_msg_make_header(&skbmsg->header, BINDING_REQUEST, 0, NULL);
+	skb_msg_display_header(&skbmsg->header);
+	// TCP Body 설정
+	strncpy(clicktoconference_binding_req.userID, userID, BINDING_USER_ID_LEN);
+	strncpy(clicktoconference_binding_req.password, password, BINDING_PASSWORD_LEN);
+	memcpy(skbmsg->body, &clicktoconference_binding_req, sizeof(clicktoconference_binding_req));
+	clicktoconference_binding_req_tcp_display(&clicktoconference_binding_req);
+}
+
 
 int skb_msg_process_clicktoconference_start_req( skb_msg_t *skbmsg, uxc_dbif_t *dbif, char *sessionID, char *gwSessionID) {
 	int rv;
@@ -797,6 +886,23 @@ int skb_msg_process_clicktoconference_cancel_party_req( skb_msg_t *skbmsg, uxc_d
 	clicktoconference_cancel_party_req_tcp_display(&clicktoconference_cancel_party_req);
 
 	return rv;
+}
+
+void skb_msg_process_clicktoconference_heartbeat_rsp(skb_msg_t *skbmsg) {
+	skb_msg_display_header(&skbmsg->header);
+}
+
+int skb_msg_process_clicktoconference_binding_rsp(skb_msg_t *skbmsg) {
+	clicktoconference_binding_rsp_tcp_t clicktoconference_binding_rsp[1];
+
+	memcpy(clicktoconference_binding_rsp, skbmsg->body, sizeof(clicktoconference_binding_rsp_tcp_t));
+	clicktoconference_binding_rsp_tcp_display(clicktoconference_binding_rsp);
+	
+	if (clicktoconference_binding_rsp->resultCode < 2) {
+		return eUXC_SUCCESS;
+	}
+	ux_log(UXL_CRT, "failed to bind : %d", clicktoconference_binding_rsp->resultCode);
+	return -1;
 }
 
 int skb_msg_process_clicktoconference_start_rsp( skb_msg_t *skbmsg, uxc_dbif_t *dbif) {

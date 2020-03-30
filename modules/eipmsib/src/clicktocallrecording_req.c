@@ -1,6 +1,28 @@
 #include "clicktocallrecording_req.h"
 
 ///////////////////////////////////////////////////////////////////////////////////
+// functions for clicktocallrecording_binding_req_tcp_t 
+///////////////////////////////////////////////////////////////////////////////////
+
+int clicktocallrecording_binding_req_tcp_init( clicktocallrecording_binding_req_tcp_t *clicktocallrecording_binding_req)
+{
+	memset(clicktocallrecording_binding_req, 0, sizeof(clicktocallrecording_binding_req_tcp_t));
+	return eUXC_SUCCESS;
+}
+
+void clicktocallrecording_binding_req_tcp_final( clicktocallrecording_binding_req_tcp_t *clicktocallrecording_binding_req)
+{
+	return;
+}
+
+void clicktocallrecording_binding_req_tcp_display(clicktocallrecording_binding_req_tcp_t *clicktocallrecording_binding_req)
+{
+	ux_log(UXL_INFO, "TCP [clicktocallrecording_binding_req]");
+	ux_log(UXL_INFO, "  [userID] %s", clicktocallrecording_binding_req->userID);
+	ux_log(UXL_INFO, "  [password] %s", clicktocallrecording_binding_req->password);
+}
+
+///////////////////////////////////////////////////////////////////////////////////
 // functions for clicktocallrecording_start_req_tcp_t 
 ///////////////////////////////////////////////////////////////////////////////////
 

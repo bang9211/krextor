@@ -1,6 +1,29 @@
 #include "clicktoconference_rsp.h"
 
 ///////////////////////////////////////////////////////////////////////////////////
+// functions for clicktoconference_binding_rsp_tcp_t 
+///////////////////////////////////////////////////////////////////////////////////
+
+int clicktoconference_binding_rsp_tcp_init( clicktoconference_binding_rsp_tcp_t *clicktoconference_binding_rsp)
+{
+	memset(clicktoconference_binding_rsp, 0, sizeof(clicktoconference_binding_rsp_tcp_t));
+
+	return eUXC_SUCCESS;
+}
+
+void clicktoconference_binding_rsp_tcp_final( clicktoconference_binding_rsp_tcp_t *clicktoconference_binding_rsp)
+{
+	//
+}
+
+void clicktoconference_binding_rsp_tcp_display(clicktoconference_binding_rsp_tcp_t *clicktoconference_binding_rsp) {
+	ux_log(UXL_INFO, "TCP [clicktoconference_binding_rsp]");
+	ux_log(UXL_INFO, "  [resultCode] %d", clicktoconference_binding_rsp->resultCode);
+	ux_log(UXL_INFO, "  [userID] %s", clicktoconference_binding_rsp->userID);
+	ux_log(UXL_INFO, "  [password] %s", clicktoconference_binding_rsp->password);
+}
+
+///////////////////////////////////////////////////////////////////////////////////
 // functions for clicktoconference_start_rsp_tcp_t 
 ///////////////////////////////////////////////////////////////////////////////////
 

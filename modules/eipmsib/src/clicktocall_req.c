@@ -1,6 +1,28 @@
 #include "clicktocall_req.h"
 
 ///////////////////////////////////////////////////////////////////////////////////
+// functions for clicktocall_binding_req_tcp_t 
+///////////////////////////////////////////////////////////////////////////////////
+
+int clicktocall_binding_req_tcp_init( clicktocall_binding_req_tcp_t *clicktocall_binding_req)
+{
+	memset(clicktocall_binding_req, 0, sizeof(clicktocall_binding_req_tcp_t));
+	return eUXC_SUCCESS;
+}
+
+void clicktocall_binding_req_tcp_final( clicktocall_binding_req_tcp_t *clicktocall_binding_req)
+{
+	return;
+}
+
+void clicktocall_binding_req_tcp_display(clicktocall_binding_req_tcp_t *clicktocall_binding_req)
+{
+	ux_log(UXL_INFO, "TCP [clicktocall_binding_req]");
+	ux_log(UXL_INFO, "  [userID] %s", clicktocall_binding_req->userID);
+	ux_log(UXL_INFO, "  [password] %s", clicktocall_binding_req->password);
+}
+
+///////////////////////////////////////////////////////////////////////////////////
 // functions for clicktocall_start_req_tcp_t 
 ///////////////////////////////////////////////////////////////////////////////////
 

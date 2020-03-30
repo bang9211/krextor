@@ -1,6 +1,28 @@
 #include "clicktocallrecording_rsp.h"
 
 ///////////////////////////////////////////////////////////////////////////////////
+// functions for clicktocallrecording_binding_rsp_tcp_t 
+///////////////////////////////////////////////////////////////////////////////////
+
+int clicktocallrecording_binding_rsp_tcp_init( clicktocallrecording_binding_rsp_tcp_t *clicktocallrecording_binding_rsp)
+{
+	memset(clicktocallrecording_binding_rsp, 0, sizeof(clicktocallrecording_binding_rsp_tcp_t));
+
+	return eUXC_SUCCESS;
+}
+
+void clicktocallrecording_binding_rsp_tcp_final( clicktocallrecording_binding_rsp_tcp_t *clicktocallrecording_binding_rsp)
+{
+	//
+}
+
+void clicktocallrecording_binding_rsp_tcp_display(clicktocallrecording_binding_rsp_tcp_t *clicktocallrecording_binding_rsp) {
+	ux_log(UXL_INFO, "TCP [clicktocallrecording_binding_rsp]");
+	ux_log(UXL_INFO, "  [resultCode] %d", clicktocallrecording_binding_rsp->resultCode);
+	ux_log(UXL_INFO, "  [userID] %s", clicktocallrecording_binding_rsp->userID);
+}
+
+///////////////////////////////////////////////////////////////////////////////////
 // functions for clicktocallrecording_start_rsp_tcp_t 
 ///////////////////////////////////////////////////////////////////////////////////
 

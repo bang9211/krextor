@@ -283,6 +283,27 @@ int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpms
 	switch(tcpmsg->peerkey.chnl_idx) {
 	case TCP_CHANNEL_CALL:
 		switch(skbmsg->header.messageID) {
+		//HEARTBEAT
+		case HEARTBEAT_RESPONSE:
+			skb_msg_process_clicktocall_heartbeat_rsp(skbmsg);
+			break;
+		case HEARTBEAT_REQUEST:
+			skb_msg_process_clicktocall_heartbeat_req(skbmsg);
+			rv = upa_tcp_send2(_g_client->patcp, &tcpmsg->peerkey, &skbmsg, skbmsg->header.length, 1);
+			if( rv < UX_SUCCESS) {
+				ux_log( UXL_CRT, "can't send data.");
+				return -1;
+			}
+			return rv;
+		//BINDING
+		case BINDING_RESPONSE:
+			rv = skb_msg_process_clicktocall_binding_rsp(skbmsg);
+			if( rv < UX_SUCCESS) {
+				ux_log( UXL_CRT, "failed to bind.");
+				//TODO : TCP 연결 끊기
+				return -1;
+			}
+			break;
 		//RESPONSE
 		case START_RESPONSE:
 			rv = skb_msg_process_clicktocall_start_rsp(skbmsg, &dbif);
@@ -319,6 +340,27 @@ int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpms
 		break;		
 	case TCP_CHANNEL_RECORDING:
 		switch(skbmsg->header.messageID) {
+		//HEARTBEAT
+		case HEARTBEAT_RESPONSE:
+			skb_msg_process_clicktocallrecording_heartbeat_rsp(skbmsg);
+			break;
+		case HEARTBEAT_REQUEST:
+			skb_msg_process_clicktocallrecording_heartbeat_req(skbmsg);
+			rv = upa_tcp_send2(_g_client->patcp, &tcpmsg->peerkey, &skbmsg, skbmsg->header.length, 1);
+			if( rv < UX_SUCCESS) {
+				ux_log( UXL_CRT, "can't send data.");
+				return -1;
+			}
+			return rv;
+		//BINDING
+		case BINDING_RESPONSE:
+			rv = skb_msg_process_clicktocallrecording_binding_rsp(skbmsg);
+			if( rv < UX_SUCCESS) {
+				ux_log( UXL_CRT, "failed to bind.");
+				//TODO : TCP 연결 끊기
+				return -1;
+			}
+			break;
 		//RESPONSE
 		case START_RECORDING_RESPONSE:
 			rv = skb_msg_process_clicktocallrecording_start_rsp(skbmsg, &dbif);
@@ -346,6 +388,27 @@ int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpms
 		break;
 	case TCP_CHANNEL_CONFERENCE:
 		switch(skbmsg->header.messageID) {
+		//HEARTBEAT
+		case HEARTBEAT_RESPONSE:
+			skb_msg_process_clicktoconference_heartbeat_rsp(skbmsg);
+			break;
+		case HEARTBEAT_REQUEST:
+			skb_msg_process_clicktoconference_heartbeat_req(skbmsg);
+			rv = upa_tcp_send2(_g_client->patcp, &tcpmsg->peerkey, &skbmsg, skbmsg->header.length, 1);
+			if( rv < UX_SUCCESS) {
+				ux_log( UXL_CRT, "can't send data.");
+				return -1;
+			}
+			return rv;
+		//BINDING
+		case BINDING_RESPONSE:
+			rv = skb_msg_process_clicktoconference_binding_rsp(skbmsg);
+			if( rv < UX_SUCCESS) {
+				ux_log( UXL_CRT, "failed to bind.");
+				//TODO : TCP 연결 끊기
+				return -1;
+			}
+			break;
 		//RESPONSE
 		case START_CONFERENCE_RESPONSE:
 			rv = skb_msg_process_clicktoconference_start_rsp(skbmsg, &dbif);
@@ -470,6 +533,8 @@ static int _tcp_client_on_accept(upa_tcp_t *tcp, ux_channel_t *channel, ux_accpt
 static int _tcp_client_on_open(upa_tcp_t *tcp, ux_channel_t *channel, ux_cnector_t *cnector, upa_peerkey_t *peerkey)
 {
 	ux_log( UXL_INFO, "Open TCP connection");
+	//TODO : heartbeat 보내기
+	//TODO : binding request 보내기
 	return eUXC_SUCCESS;
 }
 

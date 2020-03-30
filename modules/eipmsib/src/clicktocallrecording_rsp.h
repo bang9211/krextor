@@ -12,6 +12,12 @@
 // ClickToCallRecording Response Message Structure & Macro 
 ///////////////////////////////////////////////////////////////////////////////////
 
+typedef struct clicktocallrecording_binding_rsp_tcp_s clicktocallrecording_binding_rsp_tcp_t;
+struct clicktocallrecording_binding_rsp_tcp_s {
+	int32_t resultCode;
+	char userID[BINDING_USER_ID_LEN];
+};
+
 typedef struct clicktocallrecording_start_rsp_tcp_s clicktocallrecording_start_rsp_tcp_t; 
 struct clicktocallrecording_start_rsp_tcp_s {
 	int32_t resultCode;
@@ -37,6 +43,10 @@ struct clicktocallrecording_service_status_rsp_tcp_s {
 ///////////////////////////////////////////////////////////////////////////////////
 // ClickToCallRecording Response Message Functions 
 ///////////////////////////////////////////////////////////////////////////////////
+
+int clicktocallrecording_binding_rsp_tcp_init( clicktocallrecording_binding_rsp_tcp_t *clicktocallrecording_binding_rsp);
+void clicktocallrecording_binding_rsp_tcp_final( clicktocallrecording_binding_rsp_tcp_t *clicktocallrecording_binding_rsp);
+void clicktocallrecording_binding_rsp_tcp_display(clicktocallrecording_binding_rsp_tcp_t *clicktocallrecording_binding_rsp);
 
 int clicktocallrecording_start_rsp_tcp_init( clicktocallrecording_start_rsp_tcp_t *clicktocallrecording_start_rsp);
 void clicktocallrecording_start_rsp_tcp_final( clicktocallrecording_start_rsp_tcp_t *clicktocallrecording_start_rsp);

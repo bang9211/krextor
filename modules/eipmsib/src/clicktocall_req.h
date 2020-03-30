@@ -13,6 +13,12 @@
 // ClickToCall Request Message Structure & Macro 
 ///////////////////////////////////////////////////////////////////////////////////
 
+typedef struct clicktocall_binding_req_tcp_s clicktocall_binding_req_tcp_t;
+struct clicktocall_binding_req_tcp_s {
+	char userID[BINDING_USER_ID_LEN];
+	char password[BINDING_PASSWORD_LEN];
+};
+
 typedef struct clicktocall_start_req_tcp_s clicktocall_start_req_tcp_t; 
 struct clicktocall_start_req_tcp_s {
 	char subscriberName[SUBSCRIBER_NAME_LEN];
@@ -65,6 +71,9 @@ struct clicktocall_service_status_req_tcp_s {
 ///////////////////////////////////////////////////////////////////////////////////
 // ClickToCall Request Message Functions 
 ///////////////////////////////////////////////////////////////////////////////////
+int clicktocall_binding_req_tcp_init( clicktocall_binding_req_tcp_t *clicktocall_binding_req);
+void clicktocall_binding_req_tcp_final( clicktocall_binding_req_tcp_t *clicktocall_binding_req);
+void clicktocall_binding_req_tcp_display(clicktocall_binding_req_tcp_t *clicktocall_binding_req);
 
 int clicktocall_start_req_tcp_init( clicktocall_start_req_tcp_t *clicktocall_start_req);
 void clicktocall_start_req_tcp_final( clicktocall_start_req_tcp_t *clicktocall_start_req);

@@ -12,6 +12,13 @@
 // ClickToConference Response Message Structure & Macro 
 ///////////////////////////////////////////////////////////////////////////////////
 
+typedef struct clicktoconference_binding_rsp_tcp_s clicktoconference_binding_rsp_tcp_t;
+struct clicktoconference_binding_rsp_tcp_s {
+	int32_t resultCode;
+	char userID[BINDING_USER_ID_LEN];
+	char password[BINDING_PASSWORD_LEN];
+};
+
 typedef struct clicktoconference_start_rsp_tcp_s clicktoconference_start_rsp_tcp_t;
 struct clicktoconference_start_rsp_tcp_s {
 	int32_t resultCode;
@@ -106,6 +113,10 @@ struct clicktoconference_cancel_party_rsp_tcp_s {
 ///////////////////////////////////////////////////////////////////////////////////
 // ClickToConference Response Message Functions 
 ///////////////////////////////////////////////////////////////////////////////////
+
+int clicktoconference_binding_rsp_tcp_init( clicktoconference_binding_rsp_tcp_t *clicktoconference_binding_rsp);
+void clicktoconference_binding_rsp_tcp_final( clicktoconference_binding_rsp_tcp_t *clicktoconference_binding_rsp);
+void clicktoconference_binding_rsp_tcp_display(clicktoconference_binding_rsp_tcp_t *clicktoconference_binding_rsp);
 
 int clicktoconference_start_rsp_tcp_init( clicktoconference_start_rsp_tcp_t *clicktoconference_start_rsp);
 void clicktoconference_start_rsp_tcp_final( clicktoconference_start_rsp_tcp_t *clicktoconference_start_rsp);

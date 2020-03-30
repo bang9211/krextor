@@ -1,6 +1,28 @@
 #include "clicktoconference_req.h"
 
 ///////////////////////////////////////////////////////////////////////////////////
+// functions for clicktoconference_binding_req_tcp_t 
+///////////////////////////////////////////////////////////////////////////////////
+
+int clicktoconference_binding_req_tcp_init( clicktoconference_binding_req_tcp_t *clicktoconference_binding_req)
+{
+	memset(clicktoconference_binding_req, 0, sizeof(clicktoconference_binding_req_tcp_t));
+	return eUXC_SUCCESS;
+}
+
+void clicktoconference_binding_req_tcp_final( clicktoconference_binding_req_tcp_t *clicktoconference_binding_req)
+{
+	return;
+}
+
+void clicktoconference_binding_req_tcp_display(clicktoconference_binding_req_tcp_t *clicktoconference_binding_req)
+{
+	ux_log(UXL_INFO, "TCP [clicktoconference_binding_req]");
+	ux_log(UXL_INFO, "  [userID] %s", clicktoconference_binding_req->userID);
+	ux_log(UXL_INFO, "  [password] %s", clicktoconference_binding_req->password);
+}
+
+///////////////////////////////////////////////////////////////////////////////////
 // functions for clicktoconference_start_req_tcp_t 
 ///////////////////////////////////////////////////////////////////////////////////
 

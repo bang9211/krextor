@@ -13,6 +13,12 @@
 // ClickToConference Request Message Structure & Macro 
 ///////////////////////////////////////////////////////////////////////////////////
 
+typedef struct clicktoconference_binding_req_tcp_s clicktoconference_binding_req_tcp_t;
+struct clicktoconference_binding_req_tcp_s {
+	char userID[BINDING_USER_ID_LEN];
+	char password[BINDING_PASSWORD_LEN];
+};
+
 typedef struct clicktoconference_start_req_tcp_s clicktoconference_start_req_tcp_t;
 struct clicktoconference_start_req_tcp_s {
 	char subject[SUBSCRIBER_NAME_LEN];
@@ -98,6 +104,10 @@ struct clicktoconference_cancel_party_req_tcp_s {
 ///////////////////////////////////////////////////////////////////////////////////
 // ClickToConference Request Message Functions 
 ///////////////////////////////////////////////////////////////////////////////////
+
+int clicktoconference_binding_req_tcp_init( clicktoconference_binding_req_tcp_t *clicktoconference_binding_req);
+void clicktoconference_binding_req_tcp_final( clicktoconference_binding_req_tcp_t *clicktoconference_binding_req);
+void clicktoconference_binding_req_tcp_display(clicktoconference_binding_req_tcp_t *clicktoconference_binding_req);
 
 int clicktoconference_start_req_tcp_init( clicktoconference_start_req_tcp_t *clicktoconference_start_req);
 void clicktoconference_start_req_tcp_final( clicktoconference_start_req_tcp_t *clicktoconference_start_req);

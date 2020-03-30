@@ -37,15 +37,15 @@
 #define DBIF_GET_NUMBER_OF_PARTY_REQUEST						507
 #define DBIF_GET_PARTY_STATUS_REQUEST							508
 
-#define DBIF_CONFERENCE_START_RESEPONSE							600
-#define DBIF_CONFERENCE_STOP_RESEPONSE							601
-#define DBIF_ADD_PARTY_RESEPONSE								602
-#define DBIF_REMOVE_PARTY_RESEPONSE								603
-#define DBIF_CANCEL_PARTY_RESEPONSE								604
-#define DBIF_CHANGE_PARTY_MEDIA_RESEPONSE						605
-#define DBIF_PLAY_MENT_RESEPONSE								606
-#define DBIF_GET_NUMBER_OF_PARTY_RESEPONSE						607
-#define DBIF_GET_PARTY_STATUS_RESEPONSE							608
+#define DBIF_CONFERENCE_START_RESPONSE							600
+#define DBIF_CONFERENCE_STOP_RESPONSE							601
+#define DBIF_ADD_PARTY_RESPONSE								602
+#define DBIF_REMOVE_PARTY_RESPONSE								603
+#define DBIF_CANCEL_PARTY_RESPONSE								604
+#define DBIF_CHANGE_PARTY_MEDIA_RESPONSE						605
+#define DBIF_PLAY_MENT_RESPONSE								606
+#define DBIF_GET_NUMBER_OF_PARTY_RESPONSE						607
+#define DBIF_GET_PARTY_STATUS_RESPONSE							608
 #define DBIF_ADD_PARTY_REPORT									609
 #define DBIF_REMOVE_PARTY_REPORT								610
 #define DBIF_CHANGE_PARTY_MEDIA_REPORT							611
@@ -54,7 +54,7 @@
 
 /** @brief define TCP(eIPMS) message ID */
 #define HEARTBEAT_REQUEST									0x00000000
-#define HEARTBEAT_RESEPONSE									0x10000000
+#define HEARTBEAT_RESPONSE									0x10000000
 #define BINDING_REQUEST										0x00000001
 #define BINDING_RESPONSE									0x10000001
 #define START_REQUEST										0x00000010
@@ -125,5 +125,7 @@
 #define CONF_ID_LEN                                         32
 #define AUPKG_LEN                                           128
 #define PARTICIPANT_NUMBER_LEN                              32
+#define BINDING_USER_ID_LEN                                 16
+#define BINDING_PASSWORD_LEN                                16
 
 #endif // #ifndef __SKB_MSG_INFO_H__
