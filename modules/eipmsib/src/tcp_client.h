@@ -11,6 +11,8 @@
 // TCP Client Service Manager(plugin) Structure & Macro 
 ///////////////////////////////////////////////////////////////////////////////////
 
+#define CHANNEL_SIZE 	3
+
 typedef struct tcp_client_s tcp_client_t; 
 struct tcp_client_s {
 	uxc_plugin_t base[1];
@@ -19,6 +21,7 @@ struct tcp_client_s {
 	upa_dbif_t *padbif;
 	upa_tcp_t *patcp;
 };
+
 
 ///////////////////////////////////////////////////////////////////////////////////
 // TCP Client Service Manager(plugin) functions 

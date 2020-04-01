@@ -14,6 +14,8 @@ SRCS =
     tcp_client
     tcp_conf
     tcp_dlmain
+    tcp_server
+    tcp_msg
     $(SKBGW_SRC_HOME)/modules/eipmsib/src/clicktocall_req
     $(SKBGW_SRC_HOME)/modules/eipmsib/src/clicktocall_rsp
     $(SKBGW_SRC_HOME)/modules/eipmsib/src/clicktocall_rpt
@@ -23,8 +25,6 @@ SRCS =
     $(SKBGW_SRC_HOME)/modules/eipmsib/src/clicktoconference_req
     $(SKBGW_SRC_HOME)/modules/eipmsib/src/clicktoconference_rsp
     $(SKBGW_SRC_HOME)/modules/eipmsib/src/clicktoconference_rpt
-    tcp_server
-    tcp_msg
     $(SKBGW_SRC_HOME)/modules/eipmsib/src/skb_msg
     $(SKBGW_SRC_HOME)/modules/eipmsib/src/uhash
 	;

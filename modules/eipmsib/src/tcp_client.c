@@ -4,7 +4,16 @@
 // functions for tcp_client_t 
 ///////////////////////////////////////////////////////////////////////////////////
 
+int seconds[CHANNEL_SIZE] = {0};
+int last_recv_seconds[CHANNEL_SIZE] = {0};
 static tcp_client_t *_g_client = NULL;
+pthread_t timer_thread[CHANNEL_SIZE];
+int timer_idx[CHANNEL_SIZE] = {0, 1, 2};
+ux_channel_t* channel_arr[CHANNEL_SIZE];
+upa_peerkey_t peerkey_arr[CHANNEL_SIZE];
+int timer_switch[CHANNEL_SIZE] = {0};
+int is_heartbeat_sent[CHANNEL_SIZE];
+
 static void _tcp_client_destroy( uxc_plugin_t *plugin);
 static int _tcp_client_on_accept(upa_tcp_t *tcp, ux_channel_t *channel, ux_accptor_t *accptor,
 				ux_cnector_t *cnector, upa_peerkey_t *peerkey);
@@ -262,13 +271,16 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpmsg_t *tcpmsg)
 {
 	int rv, msgID;
-	skb_msg_t *skbmsg;
+	// skb_msg_t *skbmsg;
+	skb_msg_t skbmsg[1];
 	uxc_dbif_t dbif;
 	uxc_ixpc_t *dbif_header;
 	uxc_ipcmsg_t ipcmsg;
+	int msg_size;
 
 	// 1. receive skbmsg 
-	skbmsg = (skb_msg_t *) tcpmsg->netmsg->buffer;
+	// skbmsg = (skb_msg_t *) tcpmsg->netmsg->buffer;
+	memcpy(skbmsg, tcpmsg->netmsg->buffer, sizeof(skb_msg_t));
 
 	//endian 복구
 	rv = skb_msg_cvt_order_ntoh(skbmsg, tcpmsg->peerkey.chnl_idx, &msgID);
@@ -277,7 +289,7 @@ int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpms
 		return rv;
 	}
 
-	skb_msg_display_header(&skbmsg->header);
+	skb_msg_display_recv_header(&skbmsg->header);
 	// 2. process and response to uxcutor
 	//채널 index를 먼저 구분하여 clicktocall, clicktocallrecording, clicktoconference 구분
 	switch(tcpmsg->peerkey.chnl_idx) {
@@ -285,11 +297,21 @@ int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpms
 		switch(skbmsg->header.messageID) {
 		//HEARTBEAT
 		case HEARTBEAT_RESPONSE:
-			skb_msg_process_clicktocall_heartbeat_rsp(skbmsg);
-			break;
+			is_heartbeat_sent[TCP_CHANNEL_CALL] = 0;
+			last_recv_seconds[TCP_CHANNEL_CALL] = seconds[TCP_CHANNEL_CALL];		
+			return UX_SUCCESS;
 		case HEARTBEAT_REQUEST:
 			skb_msg_process_clicktocall_heartbeat_req(skbmsg);
-			rv = upa_tcp_send2(_g_client->patcp, &tcpmsg->peerkey, &skbmsg, skbmsg->header.length, 1);
+			msg_size = skbmsg->header.length;
+			// 메시지를 Network byte ordering으로 변경
+			rv = skb_msg_cvt_order_hton2(skbmsg);
+			if( rv< UX_SUCCESS) {
+				ux_log(UXL_INFO, "msg data error");
+				break;
+			}
+			// ux_log(UXL_CRT, "seding tcp header size : %lu", sizeof(skbmsg->header));
+			// ux_log(UXL_CRT, "seding tcp body size : %lu", msg_size - sizeof(skbmsg->header));
+			rv = upa_tcp_send2(_g_client->patcp, &tcpmsg->peerkey, skbmsg, msg_size, 1);
 			if( rv < UX_SUCCESS) {
 				ux_log( UXL_CRT, "can't send data.");
 				return -1;
@@ -300,8 +322,7 @@ int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpms
 			rv = skb_msg_process_clicktocall_binding_rsp(skbmsg);
 			if( rv < UX_SUCCESS) {
 				ux_log( UXL_CRT, "failed to bind.");
-				//TODO : TCP 연결 끊기
-				return -1;
+				//TODO : Bind 실패 시 어떻게 처리?
 			}
 			break;
 		//RESPONSE
@@ -342,11 +363,21 @@ int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpms
 		switch(skbmsg->header.messageID) {
 		//HEARTBEAT
 		case HEARTBEAT_RESPONSE:
-			skb_msg_process_clicktocallrecording_heartbeat_rsp(skbmsg);
-			break;
+			is_heartbeat_sent[TCP_CHANNEL_RECORDING] = 0;
+			last_recv_seconds[TCP_CHANNEL_RECORDING] = seconds[TCP_CHANNEL_RECORDING];		
+			return UX_SUCCESS;
 		case HEARTBEAT_REQUEST:
 			skb_msg_process_clicktocallrecording_heartbeat_req(skbmsg);
-			rv = upa_tcp_send2(_g_client->patcp, &tcpmsg->peerkey, &skbmsg, skbmsg->header.length, 1);
+			msg_size = skbmsg->header.length;
+			// 메시지를 Network byte ordering으로 변경
+			rv = skb_msg_cvt_order_hton(skbmsg, 0);
+			if( rv< UX_SUCCESS) {
+				ux_log(UXL_INFO, "msg data error");
+				break;
+			}
+			ux_log(UXL_CRT, "seding tcp header size : %lu", sizeof(skbmsg->header));
+			ux_log(UXL_CRT, "seding tcp body size : %lu", msg_size - sizeof(skbmsg->header));
+			rv = upa_tcp_send2(_g_client->patcp, &tcpmsg->peerkey, skbmsg, msg_size, 1);
 			if( rv < UX_SUCCESS) {
 				ux_log( UXL_CRT, "can't send data.");
 				return -1;
@@ -357,8 +388,7 @@ int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpms
 			rv = skb_msg_process_clicktocallrecording_binding_rsp(skbmsg);
 			if( rv < UX_SUCCESS) {
 				ux_log( UXL_CRT, "failed to bind.");
-				//TODO : TCP 연결 끊기
-				return -1;
+				//TODO : Bind 실패 시 어떻게 처리?
 			}
 			break;
 		//RESPONSE
@@ -390,11 +420,21 @@ int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpms
 		switch(skbmsg->header.messageID) {
 		//HEARTBEAT
 		case HEARTBEAT_RESPONSE:
-			skb_msg_process_clicktoconference_heartbeat_rsp(skbmsg);
-			break;
+			is_heartbeat_sent[TCP_CHANNEL_CONFERENCE] = 0;
+			last_recv_seconds[TCP_CHANNEL_CONFERENCE] = seconds[TCP_CHANNEL_CONFERENCE];		
+			return UX_SUCCESS;
 		case HEARTBEAT_REQUEST:
 			skb_msg_process_clicktoconference_heartbeat_req(skbmsg);
-			rv = upa_tcp_send2(_g_client->patcp, &tcpmsg->peerkey, &skbmsg, skbmsg->header.length, 1);
+			msg_size = skbmsg->header.length;
+			// 메시지를 Network byte ordering으로 변경
+			rv = skb_msg_cvt_order_hton(skbmsg, 0);
+			if( rv< UX_SUCCESS) {
+				ux_log(UXL_INFO, "msg data error");
+				break;
+			}
+			ux_log(UXL_CRT, "seding tcp header size : %lu", sizeof(skbmsg->header));
+			ux_log(UXL_CRT, "seding tcp body size : %lu", msg_size - sizeof(skbmsg->header));
+			rv = upa_tcp_send2(_g_client->patcp, &tcpmsg->peerkey, skbmsg, msg_size, 1);
 			if( rv < UX_SUCCESS) {
 				ux_log( UXL_CRT, "can't send data.");
 				return -1;
@@ -405,8 +445,7 @@ int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpms
 			rv = skb_msg_process_clicktoconference_binding_rsp(skbmsg);
 			if( rv < UX_SUCCESS) {
 				ux_log( UXL_CRT, "failed to bind.");
-				//TODO : TCP 연결 끊기
-				return -1;
+				//TODO : Bind 실패 시 어떻게 처리?
 			}
 			break;
 		//RESPONSE
@@ -464,7 +503,11 @@ int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpms
 	default:
 		ux_log(UXL_CRT, "Unsupported Channel Index : %d", tcpmsg->peerkey.chnl_idx)
 		break;
-	}		
+	}
+	if (skbmsg->header.messageID != HEARTBEAT_REQUEST) {
+		last_recv_seconds[tcpmsg->peerkey.chnl_idx] = seconds[tcpmsg->peerkey.chnl_idx];		
+	}
+
 	if( rv < UX_SUCCESS) {
 		ux_log( UXL_CRT, "can't send data in process rsp.");
 		return rv;
@@ -531,18 +574,104 @@ static int _tcp_client_on_accept(upa_tcp_t *tcp, ux_channel_t *channel, ux_accpt
 	return eUXC_SUCCESS;
 }
 
+void *t_function(void *chnl_idx)
+{
+	int rv;
+	int timeout = 7;
+	int interval = 2;
+	int sent_time = 0;
+	int cidx;
+	skb_msg_t skbmsg[1];
+	int msg_size;
+
+	memcpy(&cidx, chnl_idx, sizeof(int));
+	while(timer_switch[cidx] > 0) {
+		sleep(1);
+		seconds[cidx]++;
+		if (is_heartbeat_sent[cidx] == 0) {
+			if (seconds[cidx] - last_recv_seconds[cidx] >= interval) {
+				ux_log( UXL_INFO, "send heartbeat(%d)", cidx);
+				skb_msg_make_header(&skbmsg->header, HEARTBEAT_REQUEST, 0, NULL);
+				msg_size = skbmsg->header.length;
+				skb_msg_display_send_header(&skbmsg->header);
+				strcpy(skbmsg[0].body,  "");
+
+				//메시지를 Network byte ordering으로 변경
+				rv = skb_msg_cvt_order_hton2(skbmsg);
+				if( rv< UX_SUCCESS) {
+					ux_log(UXL_INFO, "msg data error");
+					return NULL;
+				}
+
+				// ux_log(UXL_CRT, "seding tcp header size : %lu", sizeof(skbmsg->header));
+				// ux_log(UXL_CRT, "seding tcp body size : %lu", msg_size - sizeof(skbmsg->header));
+				rv = upa_tcp_send2(_g_client->patcp, &peerkey_arr[cidx], skbmsg, msg_size, 1);
+				if( rv < UX_SUCCESS) {
+					ux_log( UXL_CRT, "can't send data.");
+					//세션 연결 종료
+					ux_channel_stop2(channel_arr[cidx], UX_TRUE);
+					return NULL;
+				}
+				is_heartbeat_sent[cidx] = 1;
+				sent_time = seconds[cidx];
+			}
+		} else if (seconds[cidx] - sent_time >= timeout) {	//TIMEOUT
+			//세션 연결 종료
+			ux_channel_stop2(channel_arr[cidx], UX_TRUE);
+			return NULL;
+		}
+	}
+
+	return NULL;
+}
+
+void turn_heartbeat_timer_on(int chnl_idx) {
+	if (timer_switch[chnl_idx] == 0) {
+		timer_switch[chnl_idx] = 1;
+		ux_log( UXL_INFO, "heartbeat(%d) timer on", chnl_idx);
+		if (chnl_idx < 0 || chnl_idx >= CHANNEL_SIZE) {
+			ux_log(UXL_CRT, "failed to tcp_client_open, unsupported chnl_idx : %d", chnl_idx);
+			return;
+		}
+		pthread_create(&timer_thread[chnl_idx], NULL, t_function, &timer_idx[chnl_idx]);
+	}
+}
+
+void turn_heartbeat_timer_off(int chnl_idx) {
+	if (timer_switch[chnl_idx] > 0) {
+		ux_log( UXL_INFO, "heartbeat(%d) timer off", chnl_idx);
+		timer_switch[chnl_idx] = 0;
+	}
+}
 
 static int _tcp_client_on_open(upa_tcp_t *tcp, ux_channel_t *channel, ux_cnector_t *cnector, upa_peerkey_t *peerkey)
 {
 	ux_log( UXL_INFO, "Open TCP connection");
-	//TODO : heartbeat 보내기
+
+	//heartbeat
+	// 1) IP녹취 시스템은 메시지의 교환이 없는 주기에는 세션의 유효성 검사를 위해 개방형GW로 Heartbeat 요청 메시지를 전달한다. 
+	//    이 같은 경우 개방형 GW는 반드시 Heartbeat 응답 메시지를 IP녹취시스템으로 전달하여야 한다.
+	// 2) 필요에 의해 개방형GW도 IP녹취시스템으로 Heartbeat 요청 메시지를 전송할 수 있으며, 
+	//    이에 대해서 IP녹취 시스템은 바로 Heartbeat 응답 메시지를 개방형 GW로 전달하여야 한다.
+	// 3) 세션의 유효성 검사는 2초(주기) 이상 상대 시스템으로부터 수신하는 메시지가 없을 때 요청 메시지를 전송하며, 
+	//    7초(Timeout) 이상 Heartbeat응답 메시지를 포함하여 어떠한 메시지의 수신도 없을 때는 연결된 세션을 종료한다.(단, 협의에 의해 변경이 가능하다)
+	channel_arr[peerkey->chnl_idx] = channel;
+	peerkey_arr[peerkey->chnl_idx] = *peerkey;
+	timer_switch[peerkey->chnl_idx] = 0;
+	is_heartbeat_sent[peerkey->chnl_idx] = 0;
+	seconds[peerkey->chnl_idx] = 0;
+	last_recv_seconds[peerkey->chnl_idx] = 0;
+	turn_heartbeat_timer_on(peerkey->chnl_idx);
+
 	//TODO : binding request 보내기
+
 	return eUXC_SUCCESS;
 }
 
 
 static int _tcp_client_on_close(upa_tcp_t *tcp, ux_channel_t *channel, ux_cnector_t *cnector, upa_peerkey_t *peerkey)
 {
+	turn_heartbeat_timer_off(peerkey->chnl_idx);
 	ux_log( UXL_INFO, "Close TCP connection");
 	return eUXC_SUCCESS;
 }

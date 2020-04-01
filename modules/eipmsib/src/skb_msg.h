@@ -19,6 +19,10 @@
 #include <uxlib/ux_errno.h>
 #include <uxlib/ux_log.h>
 #include <uxcutor/uxcutor.h>
+#include <signal.h>
+#include <sys/time.h>
+#include <pthread.h>
+#include <unistd.h>
 
 ///////////////////////////////////////////////////////////////////////////////////
 // SKB Common Message Structure & Macro 
@@ -54,13 +58,16 @@ struct skb_msg_s {
 void create_skb_map();
 void destroy_skb_map();
 
-int skb_msg_cvt_order_hton(skb_msg_t *msg, int msgId);
+int skb_msg_cvt_order_hton(skb_msg_t *msg, int dbif_msgId);
+int skb_msg_cvt_order_hton2(skb_msg_t *msg);
 int skb_msg_cvt_order_ntoh(skb_msg_t *msg, int chnIdx, int *msgId);
 int skb_msg_send( skb_msg_t *msg, upa_tcp_t *tcp, upa_peerkey_t *peerkey);
 
 int32_t getRandomInt32();
 void skb_msg_make_header(skb_header_t* header, int32_t messageID, int16_t bodySize, int32_t *requestID);
 void skb_msg_display_header(skb_header_t* header);
+void skb_msg_display_send_header(skb_header_t* header);
+void skb_msg_display_recv_header(skb_header_t* header);
 int32_t skb_msg_generate_messasgeID();
 int32_t skb_msg_generate_requestID();
 

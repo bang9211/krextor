@@ -73,9 +73,9 @@ int uh_int_is_exist(uhash_int_t* hash, khint_t key) {
 
 void uh_int_del(uhash_int_t* hash, khint_t key) {
 
-    pthread_mutex_lock(&hash->mutex_lock);
+    // pthread_mutex_lock(&hash->mutex_lock);
     kh_del(m32, hash->h, key);
-    pthread_mutex_unlock(&hash->mutex_lock);
+    // pthread_mutex_unlock(&hash->mutex_lock);
 }
 
 void uh_int_destroy(uhash_int_t* hash) {
