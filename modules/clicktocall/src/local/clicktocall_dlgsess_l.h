@@ -8,17 +8,17 @@
 #include <uxlib/ux_def.h>
 
 ////////////////////////////////////////////////////////////////////////////////
-// CLICKTOCALL dialog °ü·Ã internal types & definitions
+// CLICKTOCALL dialog ï¿½ï¿½ï¿½ï¿½ internal types & definitions
 ////////////////////////////////////////////////////////////////////////////////
 
 /** @brief CLICKTOCALL dialog session */
 struct clicktocall_dlgsess_s {
-	uims_sess_t *sess; /**< °ü·Ã IMS session */
+	uims_sess_t *sess; /**< ï¿½ï¿½ï¿½ï¿½ IMS session */
 	uint64_t extime; /**< executed time-sec*/
-	int32_t error; /**< ¼­ºñ½º error code */
+	int32_t error; /**< ï¿½ï¿½ï¿½ï¿½ error code */
 	uint8_t dlgstate; /**< dialog state */
 	uint8_t prevstate; /**< preivios dialog state */
-	uint8_t method; /**< dialog »ý¼º ¸Þ½ÃÁö method */
+	uint8_t method; /**< dialog ï¿½ï¿½ï¿½ï¿½ ï¿½Þ½ï¿½ï¿½ï¿½ method */
 
 	/* http */
 	uint32_t thread_id;
@@ -39,7 +39,12 @@ struct clicktocall_dlgsess_s {
 	char *callingcid;
 	char *calledcid;
 	uint8_t hostcode;
+	uint8_t scenariotype;
 	char *recordingfile;
+	char *recordingfileurl;
+	char *callstarttime;
+	char *callendtime;
+	uint8_t isrecored;
 
 	/* sip */
 	uint32_t ocseq; /**< originator cseq */
@@ -60,15 +65,15 @@ struct clicktocall_dlgsess_s {
 	
 	/* dbif */
 	char *serviceid; /* eIPMS session id */
-	void *data; /**< session µ¥ÀÌÅÍ */
-	void *user_data; /**< ÇØ´ç session¿¡ ¿¬°áÇÒ »ç¿ëÀÚ µ¥ÀÌÅÍ Á¤º¸ */
+	void *data; /**< session ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
+	void *user_data; /**< ï¿½Ø´ï¿½ sessionï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿? ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ */
 };
 
-/** @brief dialog session DAO Å¸ÀÔ */
+/** @brief dialog session DAO Å¸ï¿½ï¿½ */
 typedef struct clicktocall_dlgdao_s clicktocall_dlgdao_t; 
-/** @brief diloag session DAO ±¸Á¶Ã¼ */
+/** @brief diloag session DAO ï¿½ï¿½ï¿½ï¿½Ã¼ */
 struct clicktocall_dlgdao_s {
-	uims_db_t *db; /**< »ç¿ëÇÒ DB Å¸ÀÔ */
+	uims_db_t *db; /**< ï¿½ï¿½ï¿½ï¿½ï¿? DB Å¸ï¿½ï¿½ */
 	uims_dbmgr_t *dbmgr; /** dbmgr */
 	clicktocall_conf_t *conf; /** plugin conf */
 };

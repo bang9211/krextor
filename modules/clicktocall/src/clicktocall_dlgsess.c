@@ -1021,12 +1021,13 @@ UX_DECLARE(int) clicktocall_dlgsess_sprint( clicktocall_dlgsess_t *dlgsess, char
 	len += uims_util_sprint_str( buffer+len, buflen-len, "   + SUBSCRIBER = %s\n", dlgsess->subscribername, 20);
 	len += uims_util_sprint_str( buffer+len, buflen-len, "   + CHARGING   = %s\n", dlgsess->chargingnumber, 20);
 	len += uims_util_sprint_int( buffer+len, buflen-len, "   + RINGTONE   = %d\n", dlgsess->ringbacktonetype, 20);
-	len += uims_util_sprint_str( buffer+len, buflen-len, "   + WAITMENTID = %d\n", dlgsess->watitngmentid, 20);
-	len += uims_util_sprint_str( buffer+len, buflen-len, "   + CALLMENTID = %d\n", dlgsess->callmentid, 20);
+	len += uims_util_sprint_int( buffer+len, buflen-len, "   + WAITMENTID = %d\n", dlgsess->watitngmentid, 20);
+	len += uims_util_sprint_int( buffer+len, buflen-len, "   + CALLMENTID = %d\n", dlgsess->callmentid, 20);
 	len += uims_util_sprint_str( buffer+len, buflen-len, "   + CALLINGCID = %s\n", dlgsess->callingcid, 20);
 	len += uims_util_sprint_str( buffer+len, buflen-len, "   + CALLEDCID  = %s\n", dlgsess->calledcid, 20);
 	len += uims_util_sprint_str( buffer+len, buflen-len, "   + RECORDINGFILE = %s\n", dlgsess->recordingfile, 20);
 	len += uims_util_sprint_int( buffer+len, buflen-len, "   + HOSTCODE   = %d\n", dlgsess->hostcode, 20);
+	len += uims_util_sprint_int( buffer+len, buflen-len, "   + SCENARIOTYPE = %d\n", dlgsess->scenariotype, 20);
 	len += uims_util_sprint_int( buffer+len, buflen-len, "   + OCSEQ      = %d\n", dlgsess->ocseq, 20);
 	len += uims_util_sprint_str( buffer+len, buflen-len, "   + OSTAG      = %s\n", dlgsess->ostag, 20);
 	len += uims_util_sprint_str( buffer+len, buflen-len, "   + OCALL_ID   = %s\n", dlgsess->ocall_id, 20);	

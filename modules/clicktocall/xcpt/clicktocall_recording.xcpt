@@ -66,11 +66,13 @@
 				</oncall>
 			</send>
 
-			<invoke name="number_normalizing" protocol="DBIF_SLEE" operation="100" procname="EIPMSIB" timeout="5000">
+			<invoke name="SEND_EIPMSIB_CALL_START_REQ" protocol="DBIF_SLEE" operation="100" procname="EIPMSIB" timeout="5000">
 				<onsend >
 					<call type="SYS" function="clicktocall_dlgsvc_on_send_dbif_start_req()"/>
 				</onsend>
-				<onrecv/>
+				<onrecv>
+					<call type="SYS" function="clicktocall_dlgsvc_on_send_dbif_start_res()"/>
+				</onrecv>
 				<onsuccess>
 				</onsuccess>
 				<onerror target="SEND_CLICKTOCALL_RESPOND">
@@ -81,11 +83,33 @@
 				</ontimeout>
 			</invoke>
 
+			<wait name="WAIT_REQ" timeout="180000">
+				<onrecv target="RECV_EIPMSIB_STATUS_RPT"/>
+				<onrecv target="RECV_EIPMSIB_CALL_END_RPT"/>
+				<onrecv target="RECV_CLICKTOCALL_STOP"/>
+				<default target="stop"/>
+			</wait>
+
+			<recv name="RECV_EIPMSIB_STATUS_RPT" protocol="DBIF_SLEE" operation="204">
+				<oncall>
+					<call type="SYS" function="clicktocall_dlgsvc_on_recv_dbif_status_rpt(status)"/>
+				</oncall>
+			</recv>
+
+			<switch name="CHECK_EIPMSIB_STATUS_RPT" value="status">
+				<case value="0" target="SEND_CALLED_CLICKTOCALL_NOTI"/>
+				<case value="1" target="WAIT_REQ"/>
+				<case value="2" target="SEND_CALLING_CLICKTOCALL_NOTI"/>
+				<case value="3" target="WAIT_REQ"/>
+				<case value="4" target="WAIT_REQ"/>
+				<default target="stop"/>
+			</switch>
+
 			<invoke name="SEND_CALLING_CLICKTOCALL_NOTI" protocol="HTTP" operation="POST" url="http://localhost:8070/clicktocallrecording/notify" version="1.0" timeout="5000" is_req="yes">
 				<onsend>
 					<call type="SYS" function="clicktocall_dlgsvc_on_send_http_notify(CALL_TO_CALLING, 0)"/>
 				</onsend>
-				<onsuccess>
+				<onsuccess target="WAIT_REQ">
 					<call function="log_msg('HTTP NOTIFY SUCCESS')"/>
 				</onsuccess>
 				<onerror target="SEND_CLICKTOCALL_RESPOND">
@@ -100,7 +124,7 @@
 				<onsend>
 					<call type="SYS" function="clicktocall_dlgsvc_on_send_http_notify(CALL_TO_CALLED, 0)"/>
 				</onsend>
-				<onsuccess>
+				<onsuccess target="WAIT_REQ">
 					<call function="log_msg('HTTP NOTIFY SUCCESS')"/>
 				</onsuccess>
 				<onerror target="SEND_CLICKTOCALL_RESPOND">
@@ -111,10 +135,6 @@
 				</ontimeout>
 			</invoke>
 
-			<wait name="CALL_ESTABLISHED" timeout="3600000">
-				<onrecv target="RECV_CLICKTOCALL_STOP"/>
-				<default target="stop"/>
-			</wait>
 
 			<recv name="RECV_CLICKTOCALL_STOP" protocol="HTTP" operation="DELETE" url="/clicktocallrecording/stop" timeout="30000" is_req="yes" did="0">
 				<oncall>
