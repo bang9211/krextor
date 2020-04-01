@@ -128,4 +128,7 @@
 #define BINDING_USER_ID_LEN                                 16
 #define BINDING_PASSWORD_LEN                                16
 
+#define BINDING_USER_ID                                      "PGW"
+#define BINDING_PASSWORD                                      "PGW99"
+
 #endif // #ifndef __SKB_MSG_INFO_H__

@@ -755,6 +755,20 @@ void skb_msg_make_header(skb_header_t* header, int32_t messageID, int16_t bodySi
 	header->filler = 0;
 }
 
+void skb_msg_make_bind_request(skb_msg_t *skbmsg, int chnl_idx) {
+	switch(chnl_idx) {
+	case TCP_CHANNEL_CALL:
+		skb_msg_process_clicktocall_binding_req(skbmsg, BINDING_USER_ID, BINDING_PASSWORD);
+		break;
+	case TCP_CHANNEL_RECORDING:
+		skb_msg_process_clicktocallrecording_binding_req(skbmsg, BINDING_USER_ID, BINDING_PASSWORD);
+		break;
+	case TCP_CHANNEL_CONFERENCE:
+		skb_msg_process_clicktoconference_binding_req(skbmsg, BINDING_USER_ID, BINDING_PASSWORD);
+		break;
+	}
+}
+
 void skb_msg_display_header(skb_header_t* header) {
 	ux_log(UXL_INFO, 
 	"TCP Header\n"
@@ -866,13 +880,14 @@ void skb_msg_process_clicktocall_heartbeat_req(skb_msg_t *skbmsg) {
 
 void skb_msg_process_clicktocall_binding_req(skb_msg_t *skbmsg, char *userID, char *password) {
 	clicktocall_binding_req_tcp_t clicktocall_binding_req;
-	// TCP Header 설정
-	skb_msg_make_header(&skbmsg->header, BINDING_REQUEST, 0, NULL);
-	skb_msg_display_send_header(&skbmsg->header);
+	int msg_size = sizeof(clicktocall_binding_req);
 	// TCP Body 설정
 	strncpy(clicktocall_binding_req.userID, userID, BINDING_USER_ID_LEN);
 	strncpy(clicktocall_binding_req.password, password, BINDING_PASSWORD_LEN);
-	memcpy(skbmsg->body, &clicktocall_binding_req, sizeof(clicktocall_binding_req));
+	memcpy(skbmsg->body, &clicktocall_binding_req, msg_size);
+	// TCP Header 설정
+	skb_msg_make_header(&skbmsg->header, BINDING_REQUEST, msg_size, NULL);
+	skb_msg_display_send_header(&skbmsg->header);
 	clicktocall_binding_req_tcp_display(&clicktocall_binding_req);
 }
 
@@ -1099,13 +1114,14 @@ void skb_msg_process_clicktocallrecording_heartbeat_req(skb_msg_t *skbmsg) {
 
 void skb_msg_process_clicktocallrecording_binding_req(skb_msg_t *skbmsg, char *userID, char *password) {
 	clicktocallrecording_binding_req_tcp_t clicktocallrecording_binding_req;
-	// TCP Header 설정
-	skb_msg_make_header(&skbmsg->header, BINDING_REQUEST, 0, NULL);
-	skb_msg_display_send_header(&skbmsg->header);
+	int msg_size = sizeof(clicktocallrecording_binding_req);
 	// TCP Body 설정
 	strncpy(clicktocallrecording_binding_req.userID, userID, BINDING_USER_ID_LEN);
 	strncpy(clicktocallrecording_binding_req.password, password, BINDING_PASSWORD_LEN);
-	memcpy(skbmsg->body, &clicktocallrecording_binding_req, sizeof(clicktocallrecording_binding_req));
+	memcpy(skbmsg->body, &clicktocallrecording_binding_req, msg_size);
+	// TCP Header 설정
+	skb_msg_make_header(&skbmsg->header, BINDING_REQUEST, msg_size, NULL);
+	skb_msg_display_send_header(&skbmsg->header);
 	clicktocallrecording_binding_req_tcp_display(&clicktocallrecording_binding_req);
 }
 
@@ -1271,13 +1287,14 @@ void skb_msg_process_clicktoconference_heartbeat_req(skb_msg_t *skbmsg) {
 
 void skb_msg_process_clicktoconference_binding_req(skb_msg_t *skbmsg, char *userID, char *password) {
 	clicktoconference_binding_req_tcp_t clicktoconference_binding_req;
-	// TCP Header 설정
-	skb_msg_make_header(&skbmsg->header, BINDING_REQUEST, 0, NULL);
-	skb_msg_display_send_header(&skbmsg->header);
+	int msg_size = sizeof(clicktoconference_binding_req);
 	// TCP Body 설정
 	strncpy(clicktoconference_binding_req.userID, userID, BINDING_USER_ID_LEN);
 	strncpy(clicktoconference_binding_req.password, password, BINDING_PASSWORD_LEN);
-	memcpy(skbmsg->body, &clicktoconference_binding_req, sizeof(clicktoconference_binding_req));
+	memcpy(skbmsg->body, &clicktoconference_binding_req, msg_size);
+	// TCP Header 설정
+	skb_msg_make_header(&skbmsg->header, BINDING_REQUEST, msg_size, NULL);
+	skb_msg_display_send_header(&skbmsg->header);
 	clicktoconference_binding_req_tcp_display(&clicktoconference_binding_req);
 }
 

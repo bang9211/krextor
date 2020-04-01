@@ -89,6 +89,8 @@ int tcp_server_handle_svrreq( tcp_server_t *server, uxc_worker_t* worker, upa_tc
 	clicktocall_stop_req_tcp_t clicktocall_stop_req[1];
 	clicktocall_startrecording_req_tcp_t clicktocall_startrecording_req[1];
 	clicktocall_stoprecording_req_tcp_t clicktocall_stoprecording_req[1];
+
+	clicktocall_binding_rsp_tcp_t clicktocall_binding_rsp = {.resultCode = 0,.userID = "PGW", .password = "PGW99"};
 	int msg_size;
 
 	// 1. receive msg 
@@ -130,6 +132,26 @@ int tcp_server_handle_svrreq( tcp_server_t *server, uxc_worker_t* worker, upa_tc
 					msg_size = skbmsg->header.length;
 					// 메시지를 Network byte ordering으로 변경
 					rv = skb_msg_cvt_order_hton(skbmsg, 0);
+					if( rv< UX_SUCCESS) {
+						ux_log(UXL_INFO, "msg data error");
+						break;
+					}
+
+					rv = upa_tcp_send2(_g_server->patcp, &tcpmsg->peerkey, skbmsg, msg_size, 1);
+					if( rv < UX_SUCCESS) {
+						ux_log( UXL_CRT, "can't send data.");
+						return -1;
+					}
+					return UX_SUCCESS;
+					break;
+				case BINDING_REQUEST:
+					skb_msg_display_recv_header(&skbmsg->header);
+					msg_size = sizeof(clicktocall_binding_rsp_tcp_t);
+					memcpy(skbmsg->body, &clicktocall_binding_rsp, msg_size);
+					skb_msg_make_header(&skbmsg->header, BINDING_RESPONSE, msg_size, &skbmsg->header.requestID);
+					msg_size = skbmsg->header.length;
+					// 메시지를 Network byte ordering으로 변경
+					rv = skb_msg_cvt_order_hton3(skbmsg, 0);
 					if( rv< UX_SUCCESS) {
 						ux_log(UXL_INFO, "msg data error");
 						break;

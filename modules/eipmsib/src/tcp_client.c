@@ -655,9 +655,11 @@ void turn_heartbeat_timer_off(int chnl_idx) {
 
 static int _tcp_client_on_open(upa_tcp_t *tcp, ux_channel_t *channel, ux_cnector_t *cnector, upa_peerkey_t *peerkey)
 {
-	ux_log( UXL_INFO, "Open TCP connection");
 
-	//TODO : binding request 보내기
+	skb_msg_t skbmsg[1];
+	int msg_size, rv;
+	int chnl_idx = peerkey->chnl_idx;
+	ux_log( UXL_INFO, "Open TCP connection");
 
 	//heartbeat 초기화
 	// 1) IP녹취 시스템은 메시지의 교환이 없는 주기에는 세션의 유효성 검사를 위해 개방형GW로 Heartbeat 요청 메시지를 전달한다. 
@@ -666,13 +668,35 @@ static int _tcp_client_on_open(upa_tcp_t *tcp, ux_channel_t *channel, ux_cnector
 	//    이에 대해서 IP녹취 시스템은 바로 Heartbeat 응답 메시지를 개방형 GW로 전달하여야 한다.
 	// 3) 세션의 유효성 검사는 2초(주기) 이상 상대 시스템으로부터 수신하는 메시지가 없을 때 요청 메시지를 전송하며, 
 	//    7초(Timeout) 이상 Heartbeat응답 메시지를 포함하여 어떠한 메시지의 수신도 없을 때는 연결된 세션을 종료한다.(단, 협의에 의해 변경이 가능하다)
-	channel_arr[peerkey->chnl_idx] = channel;
-	peerkey_arr[peerkey->chnl_idx] = *peerkey;
-	timer_switch[peerkey->chnl_idx] = 0;
-	is_heartbeat_sent[peerkey->chnl_idx] = 0;
-	seconds[peerkey->chnl_idx] = 0;
-	last_recv_seconds[peerkey->chnl_idx] = 0;
+	channel_arr[chnl_idx] = channel;
+	peerkey_arr[chnl_idx] = *peerkey;
+	timer_switch[chnl_idx] = 0;
+	is_heartbeat_sent[chnl_idx] = 0;
+	seconds[chnl_idx] = 0;
+	last_recv_seconds[chnl_idx] = 0;
 	//heartbeat는 bind response 받은 이후 수행
+
+	//binding request 전송
+	ux_log( UXL_INFO, "send binding request(%d)", chnl_idx);
+	skb_msg_make_bind_request(skbmsg, chnl_idx);
+	msg_size = skbmsg->header.length;
+	//메시지를 Network byte ordering으로 변경
+	rv = skb_msg_cvt_order_hton3(skbmsg, chnl_idx);
+	if( rv< UX_SUCCESS) {
+		ux_log(UXL_INFO, "msg data error");
+		return -1;
+	}
+
+	// ux_log(UXL_CRT, "seding tcp header size : %lu", sizeof(skbmsg->header));
+	// ux_log(UXL_CRT, "seding tcp body size : %lu", msg_size - sizeof(skbmsg->header));
+	rv = upa_tcp_send2(_g_client->patcp, &peerkey_arr[chnl_idx], skbmsg, msg_size, 1);
+	if( rv < UX_SUCCESS) {
+		ux_log( UXL_CRT, "can't send data.");
+		//세션 연결 종료
+		ux_channel_stop2(channel_arr[chnl_idx], UX_TRUE);
+		return -1;
+	}
+
 
 	return eUXC_SUCCESS;
 }
