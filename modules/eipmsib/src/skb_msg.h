@@ -60,8 +60,9 @@ void destroy_skb_map();
 
 int skb_msg_cvt_order_hton(skb_msg_t *msg, int dbif_msgId);
 int skb_msg_cvt_order_hton2(skb_msg_t *msg);
+int skb_msg_cvt_order_hton3(skb_msg_t *msg, int chnl_idx);
 int skb_msg_cvt_order_ntoh(skb_msg_t *msg, int chnIdx, int *msgId);
-int skb_msg_send( skb_msg_t *msg, upa_tcp_t *tcp, upa_peerkey_t *peerkey);
+int skb_msg_send( skb_msg_t *msg, upa_tcp_t *tcp, upa_peerkey_t *peerkey, int dbif_msgId);
 
 int32_t getRandomInt32();
 void skb_msg_make_header(skb_header_t* header, int32_t messageID, int16_t bodySize, int32_t *requestID);

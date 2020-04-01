@@ -14,6 +14,9 @@ upa_peerkey_t peerkey_arr[CHANNEL_SIZE];
 int timer_switch[CHANNEL_SIZE] = {0};
 int is_heartbeat_sent[CHANNEL_SIZE];
 
+void turn_heartbeat_timer_on(int chnl_idx);
+void turn_heartbeat_timer_off(int chnl_idx);
+
 static void _tcp_client_destroy( uxc_plugin_t *plugin);
 static int _tcp_client_on_accept(upa_tcp_t *tcp, ux_channel_t *channel, ux_accptor_t *accptor,
 				ux_cnector_t *cnector, upa_peerkey_t *peerkey);
@@ -322,8 +325,10 @@ int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpms
 			rv = skb_msg_process_clicktocall_binding_rsp(skbmsg);
 			if( rv < UX_SUCCESS) {
 				ux_log( UXL_CRT, "failed to bind.");
-				//TODO : Bind 실패 시 어떻게 처리?
+				//세션 연결 종료
+				ux_channel_stop2(channel_arr[TCP_CHANNEL_CALL], UX_TRUE);
 			}
+			turn_heartbeat_timer_on(TCP_CHANNEL_CALL);
 			break;
 		//RESPONSE
 		case START_RESPONSE:
@@ -388,8 +393,10 @@ int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpms
 			rv = skb_msg_process_clicktocallrecording_binding_rsp(skbmsg);
 			if( rv < UX_SUCCESS) {
 				ux_log( UXL_CRT, "failed to bind.");
-				//TODO : Bind 실패 시 어떻게 처리?
+				//세션 연결 종료
+				ux_channel_stop2(channel_arr[TCP_CHANNEL_RECORDING], UX_TRUE);
 			}
+			turn_heartbeat_timer_on(TCP_CHANNEL_RECORDING);
 			break;
 		//RESPONSE
 		case START_RECORDING_RESPONSE:
@@ -445,8 +452,10 @@ int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpms
 			rv = skb_msg_process_clicktoconference_binding_rsp(skbmsg);
 			if( rv < UX_SUCCESS) {
 				ux_log( UXL_CRT, "failed to bind.");
-				//TODO : Bind 실패 시 어떻게 처리?
+				//세션 연결 종료
+				ux_channel_stop2(channel_arr[TCP_CHANNEL_CONFERENCE], UX_TRUE);
 			}
+			turn_heartbeat_timer_on(TCP_CHANNEL_CONFERENCE);
 			break;
 		//RESPONSE
 		case START_CONFERENCE_RESPONSE:
@@ -648,7 +657,9 @@ static int _tcp_client_on_open(upa_tcp_t *tcp, ux_channel_t *channel, ux_cnector
 {
 	ux_log( UXL_INFO, "Open TCP connection");
 
-	//heartbeat
+	//TODO : binding request 보내기
+
+	//heartbeat 초기화
 	// 1) IP녹취 시스템은 메시지의 교환이 없는 주기에는 세션의 유효성 검사를 위해 개방형GW로 Heartbeat 요청 메시지를 전달한다. 
 	//    이 같은 경우 개방형 GW는 반드시 Heartbeat 응답 메시지를 IP녹취시스템으로 전달하여야 한다.
 	// 2) 필요에 의해 개방형GW도 IP녹취시스템으로 Heartbeat 요청 메시지를 전송할 수 있으며, 
@@ -661,9 +672,7 @@ static int _tcp_client_on_open(upa_tcp_t *tcp, ux_channel_t *channel, ux_cnector
 	is_heartbeat_sent[peerkey->chnl_idx] = 0;
 	seconds[peerkey->chnl_idx] = 0;
 	last_recv_seconds[peerkey->chnl_idx] = 0;
-	turn_heartbeat_timer_on(peerkey->chnl_idx);
-
-	//TODO : binding request 보내기
+	//heartbeat는 bind response 받은 이후 수행
 
 	return eUXC_SUCCESS;
 }

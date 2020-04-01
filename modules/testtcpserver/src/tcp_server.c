@@ -189,7 +189,7 @@ static int tcp_server_handle_clicktocall_start_req( tcp_server_t *server, uxc_wo
 	clicktocall_start_rsp_tcp_display(clicktocall_start_rsp);
 	memcpy(rspMsg.body, clicktocall_start_rsp, sizeof(clicktocall_start_rsp_tcp_t));
 
-	rv = skb_msg_send(&rspMsg, server->patcp, &tcpmsg->peerkey);	
+	rv = skb_msg_send(&rspMsg, server->patcp, &tcpmsg->peerkey, DBIF_CALL_START_RESPONSE);	
 	if (rv <eUXC_SUCCESS) return rv;
 
 	return 0;
@@ -219,8 +219,8 @@ static int tcp_server_handle_clicktocall_stop_req( tcp_server_t *server, uxc_wor
 	skb_msg_display_send_header(&rspMsg.header);
 	clicktocall_stop_rsp_tcp_display(clicktocall_stop_rsp);
 	memcpy(rspMsg.body, clicktocall_stop_rsp, sizeof(clicktocall_stop_rsp_tcp_t));
-
-	rv = skb_msg_send(&rspMsg, server->patcp, &tcpmsg->peerkey);	
+	
+	rv = skb_msg_send(&rspMsg, server->patcp, &tcpmsg->peerkey, DBIF_CALL_STOP_RESPONSE);	
 	if (rv <eUXC_SUCCESS) return rv;
 
 	return 0;
@@ -251,7 +251,7 @@ static int tcp_server_handle_clicktocall_startrecording_req( tcp_server_t *serve
 	clicktocall_startrecording_rsp_tcp_display(clicktocall_startrecording_rsp);
 	memcpy(rspMsg.body, clicktocall_startrecording_rsp, sizeof(clicktocall_startrecording_rsp_tcp_t));
 
-	rv = skb_msg_send(&rspMsg, server->patcp, &tcpmsg->peerkey);	
+	rv = skb_msg_send(&rspMsg, server->patcp, &tcpmsg->peerkey, DBIF_CALL_START_RECORDING_RESPONSE);	
 	if (rv <eUXC_SUCCESS) return rv;
 
 	return 0;
@@ -280,7 +280,7 @@ static int tcp_server_handle_clicktocall_stoprecording_req( tcp_server_t *server
 	clicktocall_stoprecording_rsp_tcp_display(clicktocall_stoprecording_rsp);
 	memcpy(rspMsg.body, clicktocall_stoprecording_rsp, sizeof(clicktocall_stoprecording_rsp_tcp_t));
 
-	rv = skb_msg_send(&rspMsg, server->patcp, &tcpmsg->peerkey);	
+	rv = skb_msg_send(&rspMsg, server->patcp, &tcpmsg->peerkey, DBIF_CALL_STOP_RECORDING_RESPONSE);	
 	if (rv <eUXC_SUCCESS) return rv;
 
 	return 0;
