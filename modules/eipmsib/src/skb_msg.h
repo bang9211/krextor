@@ -66,7 +66,7 @@ int skb_msg_send( skb_msg_t *msg, upa_tcp_t *tcp, upa_peerkey_t *peerkey, int db
 
 int32_t getRandomInt32();
 void skb_msg_make_header(skb_header_t* header, int32_t messageID, int16_t bodySize, int32_t *requestID);
-void skb_msg_make_bind_request(skb_msg_t *skbmsg, int chnl_idx);
+int skb_msg_make_bind_request(skb_msg_t *skbmsg, int chnl_idx);
 void skb_msg_display_header(skb_header_t* header);
 void skb_msg_display_send_header(skb_header_t* header);
 void skb_msg_display_recv_header(skb_header_t* header);

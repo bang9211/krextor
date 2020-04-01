@@ -755,7 +755,7 @@ void skb_msg_make_header(skb_header_t* header, int32_t messageID, int16_t bodySi
 	header->filler = 0;
 }
 
-void skb_msg_make_bind_request(skb_msg_t *skbmsg, int chnl_idx) {
+int skb_msg_make_bind_request(skb_msg_t *skbmsg, int chnl_idx) {
 	switch(chnl_idx) {
 	case TCP_CHANNEL_CALL:
 		skb_msg_process_clicktocall_binding_req(skbmsg, BINDING_USER_ID, BINDING_PASSWORD);
@@ -766,7 +766,11 @@ void skb_msg_make_bind_request(skb_msg_t *skbmsg, int chnl_idx) {
 	case TCP_CHANNEL_CONFERENCE:
 		skb_msg_process_clicktoconference_binding_req(skbmsg, BINDING_USER_ID, BINDING_PASSWORD);
 		break;
+	default:
+		ux_log(UXL_CRT, "failed to skb_msg_make_bind_request");
+		return -1;
 	}
+	return UX_SUCCESS;
 }
 
 void skb_msg_display_header(skb_header_t* header) {

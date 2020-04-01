@@ -678,12 +678,16 @@ static int _tcp_client_on_open(upa_tcp_t *tcp, ux_channel_t *channel, ux_cnector
 
 	//binding request 전송
 	ux_log( UXL_INFO, "send binding request(%d)", chnl_idx);
-	skb_msg_make_bind_request(skbmsg, chnl_idx);
+	rv = skb_msg_make_bind_request(skbmsg, chnl_idx);
+	if( rv< UX_SUCCESS) {
+		ux_log(UXL_CRT, "failed to skb_msg_make_bind_request");
+		return -1;
+	}
 	msg_size = skbmsg->header.length;
 	//메시지를 Network byte ordering으로 변경
 	rv = skb_msg_cvt_order_hton3(skbmsg, chnl_idx);
 	if( rv< UX_SUCCESS) {
-		ux_log(UXL_INFO, "msg data error");
+		ux_log(UXL_CRT, "msg data error");
 		return -1;
 	}
 
