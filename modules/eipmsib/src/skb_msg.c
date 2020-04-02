@@ -746,6 +746,9 @@ void skb_msg_make_header(skb_header_t* header, int32_t messageID, int16_t bodySi
 	header->messageID = messageID;
 	if (requestID == NULL) {
 		temp = skb_msg_generate_requestID();
+		// while (uh_int_is_exist(GW_)) {
+
+		// }
 		requestID = &temp;
 	}
 	header->requestID = *requestID;
@@ -755,16 +758,16 @@ void skb_msg_make_header(skb_header_t* header, int32_t messageID, int16_t bodySi
 	header->filler = 0;
 }
 
-int skb_msg_make_bind_request(skb_msg_t *skbmsg, int chnl_idx) {
+int skb_msg_make_bind_request(skb_msg_t *skbmsg, int chnl_idx, char *id, char *pw) {
 	switch(chnl_idx) {
 	case TCP_CHANNEL_CALL:
-		skb_msg_process_clicktocall_binding_req(skbmsg, BINDING_USER_ID, BINDING_PASSWORD);
+		skb_msg_process_clicktocall_binding_req(skbmsg, id, pw);
 		break;
 	case TCP_CHANNEL_RECORDING:
-		skb_msg_process_clicktocallrecording_binding_req(skbmsg, BINDING_USER_ID, BINDING_PASSWORD);
+		skb_msg_process_clicktocallrecording_binding_req(skbmsg, id, pw);
 		break;
 	case TCP_CHANNEL_CONFERENCE:
-		skb_msg_process_clicktoconference_binding_req(skbmsg, BINDING_USER_ID, BINDING_PASSWORD);
+		skb_msg_process_clicktoconference_binding_req(skbmsg, id, pw);
 		break;
 	default:
 		ux_log(UXL_CRT, "failed to skb_msg_make_bind_request");
@@ -819,7 +822,6 @@ void skb_msg_display_recv_header(skb_header_t* header) {
 	ux_log(UXL_INFO, "%s", log);
 }
 
-//TODO : requestID 수명이 다하면 초기화해줘야함(고갈 가능성)
 int32_t skb_msg_generate_requestID() {
 	return getRandomInt32();
 }
@@ -991,14 +993,14 @@ int skb_msg_process_clicktocall_start_rsp( skb_msg_t *skbmsg, uxc_dbif_t *dbif) 
 		ux_log(UXL_CRT, "There is no sessionID of reqID(%d)", skbmsg->header.requestID);
 		return -1;
 	} else {
-		// uh_int_del(reqID_SID_Map, skbmsg->header.requestID);
+		uh_int_del(reqID_SID_Map, skbmsg->header.requestID);
 	}
 	strncpy(gwSessionID, uh_int_get(reqID_GWSID_Map, skbmsg->header.requestID), GW_SESSION_ID_LEN);
 	if (gwSessionID == NULL || strcmp(gwSessionID, "") == 0) {
 		ux_log(UXL_CRT, "There is no gwSessionID of reqID(%d)", skbmsg->header.requestID);
 		return -1;
 	} else {
-		// uh_int_del(reqID_GWSID_Map, skbmsg->header.requestID);
+		uh_int_del(reqID_GWSID_Map, skbmsg->header.requestID);
 	}
 	rv = clicktocall_start_rsp_encode_to_dbif_msg(clicktocall_start_rsp, sessionID, gwSessionID, dbif);
 	if (rv <eUXC_SUCCESS) return rv;
@@ -1224,14 +1226,14 @@ int skb_msg_process_clicktocallrecording_start_rsp( skb_msg_t *skbmsg, uxc_dbif_
 		ux_log(UXL_CRT, "There is no sessionID of reqID(%d)", skbmsg->header.requestID);
 		return -1;
 	} else {
-		// uh_int_del(reqID_SID_Map, skbmsg->header.requestID);
+		uh_int_del(reqID_SID_Map, skbmsg->header.requestID);
 	}
 	strncpy(gwSessionID, uh_int_get(reqID_GWSID_Map, skbmsg->header.requestID), GW_SESSION_ID_LEN);
 	if (gwSessionID == NULL || strcmp(gwSessionID, "") == 0) {
 		ux_log(UXL_CRT, "There is no gwSessionID of reqID(%d)", skbmsg->header.requestID);
 		return -1;
 	} else {
-		// uh_int_del(reqID_GWSID_Map, skbmsg->header.requestID);
+		uh_int_del(reqID_GWSID_Map, skbmsg->header.requestID);
 	}
 	rv = clicktocallrecording_start_rsp_encode_to_dbif_msg(clicktocallrecording_start_rsp, sessionID, gwSessionID, dbif);
 	if (rv <eUXC_SUCCESS) return rv;
@@ -1552,14 +1554,14 @@ int skb_msg_process_clicktoconference_start_rsp( skb_msg_t *skbmsg, uxc_dbif_t *
 		ux_log(UXL_CRT, "There is no sessionID of reqID(%d)", skbmsg->header.requestID);
 		return -1;
 	} else {
-		// uh_int_del(reqID_SID_Map, skbmsg->header.requestID);
+		uh_int_del(reqID_SID_Map, skbmsg->header.requestID);
 	}
 	strncpy(gwSessionID, uh_int_get(reqID_GWSID_Map, skbmsg->header.requestID), GW_SESSION_ID_LEN);
 	if (gwSessionID == NULL || strcmp(gwSessionID, "") == 0) {
 		ux_log(UXL_CRT, "There is no gwSessionID of reqID(%d)", skbmsg->header.requestID);
 		return -1;
 	} else {
-		// uh_int_del(reqID_GWSID_Map, skbmsg->header.requestID);
+		uh_int_del(reqID_GWSID_Map, skbmsg->header.requestID);
 	}
 	rv = clicktoconference_start_rsp_encode_to_dbif_msg(clicktoconference_start_rsp, sessionID, gwSessionID, dbif);
 	if (rv <eUXC_SUCCESS) return rv;

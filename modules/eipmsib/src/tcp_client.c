@@ -88,7 +88,7 @@ int tcp_client_init( tcp_client_t *client, uxc_xcutor_t *xcutor, const char* cfi
 
 	client->xcutor = xcutor;
 
-	rv = tcp_conf_init( client->conf, client->xcutor, cfile);
+	rv = eipmsib_conf_init( client->conf, client->xcutor, cfile);
 	if ( rv < eUXC_SUCCESS) return rv;
 
 	client->patcp = (upa_tcp_t*) uxc_xcutor_get_paif( client->xcutor, "PA_TCP");
@@ -532,8 +532,6 @@ int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpms
 		if (dbif_header == NULL) {
 			ux_log(UXL_CRT, "There is no ipc_header of reqID(%d)", skbmsg->header.requestID);
 			return -1;
-		} else {
-			// uh_ipc_del(reqID_IPC_Map, skbmsg->header.requestID);
 		}
 		ipcmsg.header = *dbif_header;
 		ipcmsg.header.msgId = msgID;
@@ -544,6 +542,7 @@ int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpms
 		if( rv< UX_SUCCESS) {
 			ux_log( UXL_INFO, "can't send skbmsg");
 		}
+		uh_ipc_del(reqID_IPC_Map, skbmsg->header.requestID);
 		return rv;
 	}
 	
@@ -556,7 +555,6 @@ int tcp_client_send_ipcmsg( tcp_client_t *client, uxc_ipcmsg_t* ipcmsg, int rv)
 	int msg_size;
 
 	//DBIF 헤더 설정
-	//TODO : serviceID 같은지 확인하기
 	ux_log(UXL_CRT, "sending dbif size : %d ",ipcmsg->header.length);
 	ux_log(UXL_CRT, "sending dbif msgId : %d ", ipcmsg->header.msgId);
 	
@@ -591,8 +589,8 @@ static int _tcp_client_on_accept(upa_tcp_t *tcp, ux_channel_t *channel, ux_accpt
 void *t_function(void *chnl_idx)
 {
 	int rv;
-	int timeout = 7;
-	int interval = 2;
+	int timeout = _g_client->conf->heartbeat_timeout;
+	int interval = _g_client->conf->heartbeat_interval;
 	int sent_time = 0;
 	int cidx;
 	skb_msg_t skbmsg[1];
@@ -662,6 +660,7 @@ static int _tcp_client_on_open(upa_tcp_t *tcp, ux_channel_t *channel, ux_cnector
 	skb_msg_t skbmsg[1];
 	int msg_size, rv;
 	int chnl_idx = peerkey->chnl_idx;
+
 	ux_log( UXL_INFO, "Open TCP connection");
 
 	//heartbeat 초기화
@@ -681,7 +680,7 @@ static int _tcp_client_on_open(upa_tcp_t *tcp, ux_channel_t *channel, ux_cnector
 
 	//binding request 전송
 	ux_log( UXL_INFO, "send binding request(%d)", chnl_idx);
-	rv = skb_msg_make_bind_request(skbmsg, chnl_idx);
+	rv = skb_msg_make_bind_request(skbmsg, chnl_idx, _g_client->conf->binding_user_id, _g_client->conf->binding_password);
 	if( rv< UX_SUCCESS) {
 		ux_log(UXL_CRT, "failed to skb_msg_make_bind_request");
 		return -1;

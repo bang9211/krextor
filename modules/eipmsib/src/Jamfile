@@ -12,7 +12,7 @@ LOCAL_DEF = $(SYS_CCFLAGS) ;
 
 SRCS =
     tcp_client
-    tcp_conf
+    eipmsib_conf
     eipmsib_main
     skb_msg
     uhash

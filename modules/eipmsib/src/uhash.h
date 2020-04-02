@@ -32,7 +32,7 @@ struct uhash_str_s {
 
 typedef struct uhash_ipc_s uhash_ipc_t;
 struct uhash_ipc_s {
-    kh_m32_t* h;
+    kh_ipc_t* h;
     int available;
     pthread_mutex_t mutex_lock;
 };

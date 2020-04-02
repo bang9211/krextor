@@ -131,7 +131,7 @@ int tcp_server_handle_svrreq( tcp_server_t *server, uxc_worker_t* worker, upa_tc
 					skb_msg_process_clicktocall_heartbeat_req(skbmsg);
 					msg_size = skbmsg->header.length;
 					// 메시지를 Network byte ordering으로 변경
-					rv = skb_msg_cvt_order_hton(skbmsg, 0);
+					rv = skb_msg_cvt_order_hton2(skbmsg);
 					if( rv< UX_SUCCESS) {
 						ux_log(UXL_INFO, "msg data error");
 						break;
@@ -151,7 +151,7 @@ int tcp_server_handle_svrreq( tcp_server_t *server, uxc_worker_t* worker, upa_tc
 					skb_msg_make_header(&skbmsg->header, BINDING_RESPONSE, msg_size, &skbmsg->header.requestID);
 					msg_size = skbmsg->header.length;
 					// 메시지를 Network byte ordering으로 변경
-					rv = skb_msg_cvt_order_hton3(skbmsg, 0);
+					rv = skb_msg_cvt_order_hton3(skbmsg, TCP_CHANNEL_CALL);
 					if( rv< UX_SUCCESS) {
 						ux_log(UXL_INFO, "msg data error");
 						break;

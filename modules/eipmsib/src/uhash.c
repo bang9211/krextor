@@ -73,9 +73,13 @@ int uh_int_is_exist(uhash_int_t* hash, khint_t key) {
 
 void uh_int_del(uhash_int_t* hash, khint_t key) {
 
-    // pthread_mutex_lock(&hash->mutex_lock);
-    kh_del(m32, hash->h, key);
-    // pthread_mutex_unlock(&hash->mutex_lock);
+    pthread_mutex_lock(&hash->mutex_lock);
+    khint_t k = kh_get(m32, hash->h, key);
+    if (k == kh_end(hash->h)) {
+        return;
+    }
+    kh_del(m32, hash->h, k);
+    pthread_mutex_unlock(&hash->mutex_lock);
 }
 
 void uh_int_destroy(uhash_int_t* hash) {
@@ -152,7 +156,11 @@ int uh_str_is_exist(uhash_str_t* hash, kh_cstr_t key) {
 
 void uh_str_del(uhash_str_t* hash, kh_cstr_t key) {
     pthread_mutex_lock(&hash->mutex_lock);
-    kh_del(str, hash->h, key);
+    khint_t k = kh_get(str, hash->h, key);
+    if (k == kh_end(hash->h)) {
+        return;
+    }
+    kh_del(str, hash->h, k);
     pthread_mutex_unlock(&hash->mutex_lock);
 }
 
@@ -216,7 +224,11 @@ int uh_ipc_is_exist(uhash_ipc_t* hash, khint_t key) {
 
 void uh_ipc_del(uhash_ipc_t* hash, khint_t key) {
     pthread_mutex_lock(&hash->mutex_lock);
-    kh_del(ipc, hash->h, key);
+    khint_t k = kh_get(ipc, hash->h, key);
+    if (k == kh_end(hash->h)) {
+        return;
+    }
+    kh_del(ipc, hash->h, k);
     pthread_mutex_unlock(&hash->mutex_lock);
 }
 

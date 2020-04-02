@@ -131,8 +131,8 @@
 #define BINDING_USER_ID_LEN                                     16
 #define BINDING_PASSWORD_LEN                                    16
 
-#define BINDING_USER_ID                                         "PGW"
-#define BINDING_PASSWORD                                        "PGW99"
+// #define BINDING_USER_ID                                         "PGW"
+// #define BINDING_PASSWORD                                        "PGW99"
 
 #define SKB_HEADER_DISPLAY_SIZE                                 256
 

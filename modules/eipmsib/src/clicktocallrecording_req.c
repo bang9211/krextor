@@ -19,8 +19,8 @@ void clicktocallrecording_binding_req_tcp_display(char *headerStr, clicktocallre
 {
 	ux_log(UXL_INFO, 
 		"%s\n"
-		"Body [clicktocallrecording_binding_req]"
-		"  [userID] %s"
+		"Body [clicktocallrecording_binding_req]\n"
+		"  [userID] %s\n"
 		"  [password] %s", 
 		headerStr,
 		clicktocallrecording_binding_req->userID,

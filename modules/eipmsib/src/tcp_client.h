@@ -17,7 +17,7 @@ typedef struct tcp_client_s tcp_client_t;
 struct tcp_client_s {
 	uxc_plugin_t base[1];
 	uxc_xcutor_t *xcutor;
-	tcp_conf_t conf[1];
+	eipmsib_conf_t conf[1];
 	upa_dbif_t *padbif;
 	upa_tcp_t *patcp;
 };
