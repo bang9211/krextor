@@ -125,7 +125,7 @@ UX_DECLARE(ux_status_t) clicktocall_dlgsess_handle_http_start_req( clicktocall_d
 		ux_log(UXL_INFO, "get_body(len=%d, %s)", bufsize, buffer);
 	} else {
 		ux_log(UXL_MAJ, "Fail to get HTTP body");
-		return rv;
+		return UX_EINVAL;
 	}
 
 	dlgsess->prevstate = dlgsess->dlgstate = CLICKTOCALL_DLGSTATE_INIT;
@@ -241,7 +241,7 @@ UX_DECLARE(ux_status_t) clicktocall_dlgsess_handle_http_stop_req( clicktocall_dl
 		ux_log(UXL_INFO, "get_body(len=%d, %s)", bufsize, buffer);
 	} else {
 		ux_log(UXL_MAJ, "Fail to get HTTP body");
-		return rv;
+		return UX_EINVAL;
 	}
 
 	clicktocall_dlgstate_change(dlgsess, CLICKTOCALL_DLGSTATE_TERMINATING);
@@ -589,6 +589,11 @@ UX_DECLARE(ux_status_t) clicktocall_dlgsess_handle_sip_invite_res( clicktocall_d
 {
 	int rv;
 	usip_mobj_t *res;
+
+	if (dlgsess == NULL || resmsg == NULL) {
+		ux_log( UXL_MAJ, "Invalid parameter. dlgsess=%p, resmsg=%p", dlgsess, resmsg);
+		return UX_EINVAL;
+	}
 
 	if (resmsg != NULL && resmsg->mobj != NULL && resmsg->mobj->status != NULL && resmsg->mobj->status->code <= 100) {
 		return USIP_SUCCESS;
@@ -1095,11 +1100,12 @@ clicktocall_dlgsess_t* clicktocall_dlgdao_find( clicktocall_dlgdao_t *dao,
 	static const char* query = "SELECT * FROM 1 WHERE 0=?";
 
 	int rv;
-	uint8_t dlgstate, method, network_type, recording, ringbacktone_type, hostcode, waitingment_id, callment_id;
+	uint8_t dlgstate, method, network_type, recording, ringbacktone_type, hostcode, scenariotype, isrecorded;
 	uint16_t state;
-	uint32_t ocseq, tcseq, mscseq;
+	uint32_t ocseq, tcseq, mscseq, waitingment_id, callment_id;
 	uint64_t rsessid, extime;
 	char *http_session_id, *calling_number, *called_number, *subscriber_name, *charging_number, *calling_cid, *called_cid;
+	char *recordingfile, *recordingfileurl, *callstarttime, *callendtime;
 	char *ostag, *ocall_id, *ofrom, *oto, *tstag, *tcall_id, *tfrom, *tto, *msstag, *mscall_id, *msfrom, *msto;
 	ux_mem_t *allocator;
 	uxc_sesshdr_t *sesshdr;
@@ -1166,7 +1172,7 @@ clicktocall_dlgsess_t* clicktocall_dlgdao_find( clicktocall_dlgdao_t *dao,
 		return NULL;
 	}
 
-	rv = uims_dbdataset_read( rsltset, 30,
+	rv = uims_dbdataset_read( rsltset, 36,
 			//name, type, value, [length:octet only]
 			"sess_id", UIMS_DBTYPE_UINT64, &rsessid,
 			"extime", UIMS_DBTYPE_UINT64, &extime,
@@ -1186,6 +1192,12 @@ clicktocall_dlgsess_t* clicktocall_dlgdao_find( clicktocall_dlgdao_t *dao,
 			"calling_cid", UIMS_DBTYPE_STR, &calling_cid,
 			"called_cid", UIMS_DBTYPE_STR, &called_cid,
 			"hostcode", UIMS_DBTYPE_UINT8, &hostcode, 
+			"scenariotype", UIMS_DBTYPE_UINT8, &scenariotype,
+			"recordingfile", UIMS_DBTYPE_STR, &recordingfile,
+			"recordingfileurl", UIMS_DBTYPE_STR, &recordingfileurl,
+			"callstarttime", UIMS_DBTYPE_STR, &callstarttime,
+			"callendtime", UIMS_DBTYPE_STR, &callendtime,
+			"isrecorded", UIMS_DBTYPE_UINT8, &isrecorded,
 			"ocseq", UIMS_DBTYPE_UINT32, &ocseq,
 			"ocall_id", UIMS_DBTYPE_STR, &ocall_id,
 			"ofrom", UIMS_DBTYPE_STR, &ofrom,
@@ -1210,13 +1222,15 @@ clicktocall_dlgsess_t* clicktocall_dlgdao_find( clicktocall_dlgdao_t *dao,
 			"network_type=%u, http_session_id=%s, calling_number=%s, called_number=%s, recording=%u, "
 			"subscriber_name=%s, charging_number=%s, ringbacktone_type=%u, waitingment_id=%d, "
 			"callment_id=%d, calling_cid=%s, called_cid=%s, hostcode=%u, "
+			"scenariotype=%u, recordingfile=%s, recordingfileurl=%s, callstarttime=%s, callendtime=%s, isrecorded=%u, "
 			"ocseq=%d, ostag=%s, ocall_id=%s, ofrom=%s, oto=%s, "
 			"tcseq=%d, tstag=%s, tcall_id=%s, tfrom=%s, tto=%s, "
 			"mscseq=%d, msstag=%s, mscall_id=%s, msfrom=%s, msto=%s)",
 			(unsigned long long)rsessid, state, (unsigned long long)extime, dlgstate, method, 
 			network_type, http_session_id ? http_session_id : "NULL", calling_number ? calling_number : "NULL", called_number ? called_number : "NULL", recording, 
 			subscriber_name ? subscriber_name : "NULL", charging_number ? charging_number : "NULL", ringbacktone_type, waitingment_id,
-			callment_id, calling_cid ? calling_cid : "NULL", called_cid ? called_cid : "NULL", hostcode,
+			callment_id, calling_cid ? calling_cid : "NULL", called_cid ? called_cid : "NULL", hostcode, callstarttime ? callstarttime : "NULL", callendtime ? callendtime : "NULL", isrecorded, 
+			scenariotype, recordingfile ? recordingfile : "NULL", recordingfileurl ? recordingfileurl: "NULL", 
 			ocseq, ostag ? ostag : "NULL", ocall_id ? ocall_id : "NULL", ofrom ? ofrom : "NULL", oto ? oto : "NULL",
 			tcseq, tstag ? tstag : "NULL", tcall_id ? tcall_id : "NULL", tfrom ? tfrom : "NULL", tto ? tto : "NULL",
 			mscseq, msstag ? msstag : "NULL", mscall_id ? mscall_id : "NULL", msfrom ? msfrom : "NULL", msto ? msto : "NULL");
@@ -1258,6 +1272,12 @@ clicktocall_dlgsess_t* clicktocall_dlgdao_find( clicktocall_dlgdao_t *dao,
 	dlgsess->callingcid =  ux_str_dup( calling_cid,  allocator);
 	dlgsess->calledcid =  ux_str_dup( called_cid,  allocator);
 	dlgsess->hostcode = hostcode;
+	dlgsess->scenariotype = scenariotype;
+	dlgsess->recordingfile = ux_str_dup( recordingfile,  allocator);
+	dlgsess->recordingfileurl = ux_str_dup( recordingfileurl,  allocator);
+	dlgsess->callstarttime = ux_str_dup( callstarttime,  allocator);
+	dlgsess->callendtime = ux_str_dup( callendtime,  allocator);
+	dlgsess->isrecorded = isrecorded;
 
 	sippa = dao->conf->sippa;
 	sipmsg->sessinfo->sessid = sessid; 
@@ -1326,7 +1346,7 @@ clicktocall_dlgsess_t* clicktocall_dlgdao_find( clicktocall_dlgdao_t *dao,
 ux_status_t clicktocall_dlgdao_insert( clicktocall_dlgdao_t *dao, clicktocall_dlgsess_t *dlgsess)
 {
 	static const char* stmtid = "CLICKTOCALL:INSERT";
-	static const char* query = "INSERT INTO table1 VALUES(?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?)";
+	static const char* query = "INSERT INTO table1 VALUES(?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?)";
 
 	int rv, bufsize, buflen;
 	uxc_sess_t *uxcsess;
@@ -1436,7 +1456,7 @@ ux_status_t clicktocall_dlgdao_insert( clicktocall_dlgdao_t *dao, clicktocall_dl
 		return UX_ERR_FAILED;
 	}
 
-	rv = uims_dbdataset_write( paraset, 30,
+	rv = uims_dbdataset_write( paraset, 36,
 			//name, type, value, [length:octet only]
 			"sess_id", UIMS_DBTYPE_UINT64, uims_sess_get_id(dlgsess->sess),
 			"extime", UIMS_DBTYPE_UINT64, dlgsess->extime,
@@ -1456,18 +1476,24 @@ ux_status_t clicktocall_dlgdao_insert( clicktocall_dlgdao_t *dao, clicktocall_dl
 			"calling_cid", UIMS_DBTYPE_STR, dlgsess->callingcid ? dlgsess->callingcid : "",
 			"called_cid", UIMS_DBTYPE_STR, dlgsess->calledcid ? dlgsess->calledcid : "",
 			"hostcode", UIMS_DBTYPE_UINT8, dlgsess->hostcode, 
+			"scenariotype", UIMS_DBTYPE_UINT8, dlgsess->scenariotype,
+			"recordingfile", UIMS_DBTYPE_STR, dlgsess->recordingfile ? dlgsess->recordingfile : "",
+			"recordingfileurl", UIMS_DBTYPE_STR, dlgsess->recordingfileurl ? dlgsess->recordingfileurl : "",
+			"callstarttime", UIMS_DBTYPE_STR, dlgsess->callstarttime ? dlgsess->callstarttime : "",
+			"callendtime", UIMS_DBTYPE_STR, dlgsess->callendtime ? dlgsess->callendtime : "",
+			"isrecorded", UIMS_DBTYPE_UINT8, dlgsess->isrecorded,
 			"ocseq", UIMS_DBTYPE_UINT32, dlgsess->ocseq,
-			"ocall_id", UIMS_DBTYPE_STR, dlgsess->ocall_id,
-			"ofrom", UIMS_DBTYPE_STR, ofrom,
-			"oto", UIMS_DBTYPE_STR, oto,
+			"ocall_id", UIMS_DBTYPE_STR, dlgsess->ocall_id ? dlgsess->ocall_id : "",
+			"ofrom", UIMS_DBTYPE_STR, ofrom ? ofrom : "",
+			"oto", UIMS_DBTYPE_STR, oto ? oto : "",
 			"tcseq", UIMS_DBTYPE_UINT32, dlgsess->tcseq,
-			"tcall_id", UIMS_DBTYPE_STR, dlgsess->tcall_id,
-			"tfrom", UIMS_DBTYPE_STR, tfrom,
-			"tto", UIMS_DBTYPE_STR, tto,
+			"tcall_id", UIMS_DBTYPE_STR, dlgsess->tcall_id ? dlgsess->tcall_id : "",
+			"tfrom", UIMS_DBTYPE_STR, tfrom ? tfrom : "",
+			"tto", UIMS_DBTYPE_STR, tto ? tto : "",
 			"mscseq", UIMS_DBTYPE_UINT32, dlgsess->mscseq,
-			"mscall_id", UIMS_DBTYPE_STR, dlgsess->mscall_id,
-			"msfrom", UIMS_DBTYPE_STR, msfrom,
-			"msto", UIMS_DBTYPE_STR, msto);
+			"mscall_id", UIMS_DBTYPE_STR, dlgsess->mscall_id ? dlgsess->mscall_id : "",
+			"msfrom", UIMS_DBTYPE_STR, msfrom ? msfrom : "",
+			"msto", UIMS_DBTYPE_STR, msto ? msto : "");
 	if( rv < UIMS_DB_SUCCESS) {
 		ux_log(UXL_MIN, "Failed to set parameters to statement. (stmtid=%s, err=%d,%s)",
 				stmtid, rv, uims_dberr_to_str(rv));
@@ -1593,7 +1619,8 @@ ux_status_t clicktocall_dlgdao_update_calling_p( clicktocall_dlgdao_t *dao, clic
 {
 	static const char* stmtid = "CLICKTOCALL:UPDATE_CALLING_P";
 	static const char* query = "UPDATE table1 SET column1=?, column2=?, column3=?, "
-				"column18=?, column19=?, column20=?, column21=? WHERE index0=?";
+				"column19=?, column20=?, column21=?, column22=?, column23=?, "
+				"column24=?, column25=?, column26=?, column27=? WHERE index0=?";
 
 	int rv, bufsize, buflen;
 	uxc_sess_t *uxcsess;
@@ -1670,6 +1697,11 @@ ux_status_t clicktocall_dlgdao_update_calling_p( clicktocall_dlgdao_t *dao, clic
 			"extime", UIMS_DBTYPE_UINT64, dlgsess->extime,
 			"state", UIMS_DBTYPE_UINT16, sesshdr->state,
 			"dlgstate", UIMS_DBTYPE_UINT8, dlgsess->dlgstate,
+			"recordingfile", UIMS_DBTYPE_STR, dlgsess->recordingfile ? dlgsess->recordingfile : "",
+			"recordingfileurl", UIMS_DBTYPE_STR, dlgsess->recordingfileurl ? dlgsess->recordingfileurl : "",
+			"callstarttime", UIMS_DBTYPE_STR, dlgsess->callstarttime ? dlgsess->callstarttime : "",
+			"callendtime", UIMS_DBTYPE_STR, dlgsess->callendtime ? dlgsess->callendtime : "",
+			"isrecorded", UIMS_DBTYPE_UINT8, dlgsess->isrecorded,
 			"ocseq", UIMS_DBTYPE_UINT32, dlgsess->ocseq,
 			"ocall_id", UIMS_DBTYPE_STR, dlgsess->ocall_id,
 			"ofrom", UIMS_DBTYPE_STR, ofrom,
