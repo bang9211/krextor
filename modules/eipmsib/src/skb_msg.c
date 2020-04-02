@@ -359,255 +359,255 @@ int skb_msg_cvt_order_ntoh(skb_msg_t *msg, int chnIdx, int *msgId)
 
 	//body 복구
 	switch(chnIdx) {
-		case TCP_CHANNEL_CALL:
-			switch(msg->header.messageID)
-			{
-				case HEARTBEAT_REQUEST:				//처리 필요 없음
-					break;
-				case HEARTBEAT_RESPONSE:			//처리 필요 없음
-					break;
-				case BINDING_REQUEST:				//처리 필요 없음
-					break;
-				case BINDING_RESPONSE:
-					clicktocall_binding_rsp = (clicktocall_binding_rsp_tcp_t *) msg->body;
-					clicktocall_binding_rsp->resultCode = ntohl(clicktocall_binding_rsp->resultCode);
-					break;
-				//받은 메시지가 요청인 경우(simulator case)
-				case START_REQUEST:
-					clicktocall_start_req = (clicktocall_start_req_tcp_t *) msg->body;
-					clicktocall_start_req->waitingMentID = ntohs(clicktocall_start_req->waitingMentID);
-					clicktocall_start_req->callMentID = ntohs(clicktocall_start_req->callMentID);
-					clicktocall_start_req->filler2 = ntohs(clicktocall_start_req->filler2);
-					break;
-				case STOP_REQUEST:					//처리 필요 없음
-					break;
-				case START_RECORDING_REQUEST:		//처리 필요 없음
-					break;
-				case STOP_RECORDING_REQUEST:		//처리 필요 없음
-					break;
-				//받은 메시지가 응답, 보고의 경우(normal case)
-				case START_RESPONSE:
-					clicktocall_start_rsp = (clicktocall_start_rsp_tcp_t *) msg->body;
-					clicktocall_start_rsp->resultCode = ntohl(clicktocall_start_rsp->resultCode);
-					clicktocall_start_rsp->filler2 = ntohs(clicktocall_start_rsp->filler2);
-					break;
-				case STOP_RESPONSE:
-					clicktocall_stop_rsp = (clicktocall_stop_rsp_tcp_t *) msg->body;
-					clicktocall_stop_rsp->resultCode = ntohl(clicktocall_stop_rsp->resultCode);
-					break;
-				case START_RECORDING_RESPONSE:
-					clicktocall_startrecording_rsp = (clicktocall_startrecording_rsp_tcp_t *) msg->body;
-					clicktocall_startrecording_rsp->resultCode = ntohl(clicktocall_startrecording_rsp->resultCode);
-					break;
-				case STOP_RECORDING_RESPONSE:
-					clicktocall_stoprecording_rsp = (clicktocall_stoprecording_rsp_tcp_t *) msg->body;
-					clicktocall_stoprecording_rsp->resultCode = ntohl(clicktocall_stoprecording_rsp->resultCode);
-					break;
-				case SERVICE_STATUS_RESPONSE:
-					clicktocall_service_status_rsp = (clicktocall_service_status_rsp_tcp_t *) msg->body;
-					clicktocall_service_status_rsp->resultCode = ntohl(clicktocall_service_status_rsp->resultCode);
-					clicktocall_service_status_rsp->status = ntohl(clicktocall_service_status_rsp->status);
-					break;
-				case STOP_REPORT:
-					clicktocallrecording_stop_rpt = (clicktocallrecording_stop_rpt_tcp_t *) msg->body;
-					clicktocall_stop_rpt->returnCode = ntohl(clicktocall_stop_rpt->returnCode);
-					clicktocall_stop_rpt->isRecorded = ntohl(clicktocall_stop_rpt->isRecorded);
-					break;
-				case START_RECORDING_REPORT:
-					clicktocall_startrecording_rpt = (clicktocall_startrecording_rpt_tcp_t *) msg->body;
-					clicktocall_startrecording_rpt->resultCode = ntohl(clicktocall_startrecording_rpt->resultCode);
-					break;
-				case STOP_RECORDING_REPORT:
-					clicktocall_stoprecording_rpt = (clicktocall_stoprecording_rpt_tcp_t *) msg->body;
-					clicktocall_stoprecording_rpt->resultCode = ntohl(clicktocall_stoprecording_rpt->resultCode);
-					break;
-				case SERVICE_STATUS_REPORT:
-					clicktocall_service_status_rpt = (clicktocall_service_status_rpt_tcp_t *) msg->body;
-					clicktocall_service_status_rpt->status = ntohl(clicktocall_service_status_rpt->status);
-					break;
-				default:
-					ux_log(UXL_CRT, "Unsupported messageID : %#010x", msg->header.messageID)
-					return -1;
-					// break;
-			}
-			break;
-		case TCP_CHANNEL_RECORDING:
-			switch(msg->header.messageID)
-			{
-				case HEARTBEAT_REQUEST:				//처리 필요 없음
-					break;
-				case HEARTBEAT_RESPONSE:			//처리 필요 없음
-					break;
-				case BINDING_REQUEST:				//처리 필요 없음
-					break;
-				case BINDING_RESPONSE:
-					clicktocallrecording_binding_rsp = (clicktocallrecording_binding_rsp_tcp_t *) msg->body;
-					clicktocallrecording_binding_rsp->resultCode = ntohl(clicktocallrecording_binding_rsp->resultCode);
-					break;
-				//받은 메시지가 요청인 경우(simulator case)
-				case START_REQUEST:
-					clicktocallrecording_start_req = (clicktocallrecording_start_req_tcp_t *) msg->body;
-					clicktocallrecording_start_req->filler2 = ntohs(clicktocallrecording_start_req->filler2);
-					break;
-				case STOP_REQUEST:					//처리 필요 없음
-					break;
-				case SERVICE_STATUS_REQUEST:		//처리 필요 없음
-					break;
-				//받은 메시지가 응답, 보고의 경우(normal case)
-				case START_RESPONSE:
-					clicktocallrecording_start_rsp = (clicktocallrecording_start_rsp_tcp_t *) msg->body;
-					clicktocallrecording_start_rsp->resultCode = ntohl(clicktocallrecording_start_rsp->resultCode);
-					break;
-				case STOP_RESPONSE:
-					clicktocallrecording_stop_rsp = (clicktocallrecording_stop_rsp_tcp_t *) msg->body;
-					clicktocallrecording_stop_rsp->resultCode = ntohl(clicktocallrecording_stop_rsp->resultCode);
-					break;
-				case SERVICE_STATUS_RESPONSE:
-					clicktocallrecording_service_status_rsp = (clicktocallrecording_service_status_rsp_tcp_t *) msg->body;
-					clicktocallrecording_service_status_rsp->resultCode = ntohl(clicktocallrecording_service_status_rsp->resultCode);
-					clicktocallrecording_service_status_rsp->status = ntohl(clicktocallrecording_service_status_rsp->status);
-					break;
-				case START_REPORT:
-					clicktocallrecording_start_rpt = (clicktocallrecording_start_rpt_tcp_t *) msg->body;
-					clicktocallrecording_start_rpt->resultCode = ntohl(clicktocallrecording_start_rpt->resultCode);
-					break;
-				case STOP_REPORT:
-					clicktocallrecording_stop_rpt = (clicktocallrecording_stop_rpt_tcp_t *) msg->body;
-					clicktocallrecording_stop_rpt->returnCode = ntohl(clicktocallrecording_stop_rpt->returnCode);
-					clicktocallrecording_stop_rpt->isRecorded = ntohl(clicktocallrecording_stop_rpt->isRecorded);
-					break;
-				case SERVICE_STATUS_REPORT:
-					clicktocallrecording_service_status_rpt = (clicktocallrecording_service_status_rpt_tcp_t *) msg->body;
-					clicktocallrecording_service_status_rpt->status = ntohl(clicktocallrecording_service_status_rpt->status);
-					break;
-				default:
-					ux_log(UXL_CRT, "Unsupported messageID : %#010x", msg->header.messageID)
-					return -1;
-					// break;
-			}
-			break;
-		case TCP_CHANNEL_CONFERENCE:
-			switch(msg->header.messageID)
-			{
-				case HEARTBEAT_REQUEST:				//처리 필요 없음
-					break;
-				case HEARTBEAT_RESPONSE:			//처리 필요 없음
-					break;
-				case BINDING_REQUEST:				//처리 필요 없음
-					break;
-				case BINDING_RESPONSE:
-					clicktoconference_binding_rsp = (clicktoconference_binding_rsp_tcp_t *) msg->body;
-					clicktoconference_binding_rsp->resultCode = ntohl(clicktoconference_binding_rsp->resultCode);
-					break;
-				//받은 메시지가 요청인 경우(simulator case)
-				case START_CONFERENCE_REQUEST:
-					clicktoconference_start_req = (clicktoconference_start_req_tcp_t *) msg->body;
-					clicktoconference_start_req->callingCategoryType = ntohl(clicktoconference_start_req->callingCategoryType);
-					break;
-				case STOP_CONFERENCE_REQUEST:		//처리 필요 없음
-					break;
-				case ADD_PARTY_REQUEST:				//처리 필요 없음
-					break;
-				case REMOVE_PARTY_REQUEST:			//처리 필요 없음
-					break;
-				case CHANGE_PARTY_MEDIA_REQUEST:
-					clicktoconference_change_party_media_req = (clicktoconference_change_party_media_req_tcp_t *) msg->body;
-					clicktoconference_change_party_media_req->mediaType = ntohl(clicktoconference_change_party_media_req->mediaType);
-					break;
-				case CHANGE_OPTION_REQUEST:			//처리 필요 없음
-					break;
-				case GET_NUMBER_OF_PARTY_REQUEST:	//처리 필요 없음
-					break;
-				case PLAY_MENT_REQUEST:				//처리 필요 없음
-					break;
-				case GET_PARTY_STATUS_REQUEST:		//처리 필요 없음
-					break;
-				case CANCEL_PARTY_REQUEST:			//처리 필요 없음
-					break;
-				//받은 메시지가 응답, 보고의 경우(normal case)
-				case START_CONFERENCE_RESPONSE:
-					clicktoconference_start_rsp = (clicktoconference_start_rsp_tcp_t *) msg->body;
-					clicktoconference_start_rsp->resultCode = ntohl(clicktoconference_start_rsp->resultCode);
-					clicktoconference_start_rsp->filler1 = ntohs(clicktoconference_start_rsp->filler1);
-					clicktoconference_start_rsp->filler2 = ntohs(clicktoconference_start_rsp->filler2);
-					clicktoconference_start_rsp->recordingFileID = ntohl(clicktoconference_start_rsp->recordingFileID);
-					clicktoconference_start_rsp->serviceMentID = ntohl(clicktoconference_start_rsp->serviceMentID);
-					clicktoconference_start_rsp->callingCategoryType = ntohl(clicktoconference_start_rsp->callingCategoryType);
-					break;
-				case STOP_CONFERENCE_RESPONSE:
-					clicktoconference_stop_rsp = (clicktoconference_stop_rsp_tcp_t *) msg->body;
-					clicktoconference_stop_rsp->resultCode = ntohl(clicktoconference_stop_rsp->resultCode);
-        			clicktoconference_stop_rsp->recordingFileID = ntohl(clicktoconference_stop_rsp->recordingFileID);
-					break;
-				case ADD_PARTY_RESPONSE:
-					clicktoconference_add_party_rsp = (clicktoconference_add_party_rsp_tcp_t *) msg->body;
-					clicktoconference_add_party_rsp->resultCode = ntohl(clicktoconference_add_party_rsp->resultCode);
-					break;
-				case REMOVE_PARTY_RESPONSE:
-					clicktoconference_remove_party_rsp = (clicktoconference_remove_party_rsp_tcp_t *) msg->body;
-					clicktoconference_remove_party_rsp->resultCode = ntohl(clicktoconference_remove_party_rsp->resultCode);
-					break;
-				case CHANGE_PARTY_MEDIA_RESPONSE:
-					clicktoconference_change_party_media_rsp = (clicktoconference_change_party_media_rsp_tcp_t *) msg->body;
-					clicktoconference_change_party_media_rsp->resultCode = ntohl(clicktoconference_change_party_media_rsp->resultCode);
-					clicktoconference_change_party_media_rsp->mediaType = ntohl(clicktoconference_change_party_media_rsp->mediaType);
-					break;
-				case CHANGE_OPTION_RESPONSE:
-					clicktoconference_change_option_rsp = (clicktoconference_change_option_rsp_tcp_t *) msg->body;
-					clicktoconference_change_option_rsp->resultCode = ntohl(clicktoconference_change_option_rsp->resultCode);
-					break;
-				case PLAY_MENT_RESPONSE:
-					clicktoconference_play_ment_rsp = (clicktoconference_play_ment_rsp_tcp_t *) msg->body;
-					clicktoconference_play_ment_rsp->resultCode = ntohl(clicktoconference_play_ment_rsp->resultCode);
-					break;
-				case GET_NUMBER_OF_PARTY_RESPONSE:
-					clicktoconference_get_number_of_party_rsp = (clicktoconference_get_number_of_party_rsp_tcp_t *) msg->body;
-					clicktoconference_get_number_of_party_rsp->resultCode = ntohl(clicktoconference_get_number_of_party_rsp->resultCode);
-					clicktoconference_get_number_of_party_rsp->number = ntohl(clicktoconference_get_number_of_party_rsp->number);
-					break;
-				case GET_PARTY_STATUS_RESPONSE:
-					clicktoconference_get_party_status_rsp = (clicktoconference_get_party_status_rsp_tcp_t *) msg->body;
-					clicktoconference_get_party_status_rsp->resultCode = ntohl(clicktoconference_get_party_status_rsp->resultCode);
-					break;
-				case CANCEL_PARTY_RESPONSE:
-					clicktoconference_cancel_party_rsp = (clicktoconference_cancel_party_rsp_tcp_t *) msg->body;
-					clicktoconference_cancel_party_rsp->resultCode = ntohl(clicktoconference_cancel_party_rsp->resultCode);
-					break;
-				case ADD_PARTY_REPORT:
-					clicktoconference_add_party_rpt = (clicktoconference_add_party_rpt_tcp_t *) msg->body;
-					clicktoconference_add_party_rpt->resultCode = ntohl(clicktoconference_add_party_rpt->resultCode);
-					break;
-				case REMOVE_PARTY_REPORT:
-					clicktoconference_remove_party_rpt = (clicktoconference_remove_party_rpt_tcp_t *) msg->body;
-					clicktoconference_remove_party_rpt->resultCode = ntohl(clicktoconference_remove_party_rpt->resultCode);
-					break;
-				case CHANGE_PARTY_MEDIA_REPORT:
-					clicktoconference_change_party_media_rpt = (clicktoconference_change_party_media_rpt_tcp_t *) msg->body;
-					clicktoconference_change_party_media_rpt->resultCode = ntohl(clicktoconference_change_party_media_rpt->resultCode);
-					clicktoconference_change_party_media_rpt->mediaType = ntohl(clicktoconference_change_party_media_rpt->mediaType);
-					break;
-				case CHANGE_OPTION_REPORT:
-					clicktoconference_change_option_rpt = (clicktoconference_change_option_rpt_tcp_t *) msg->body;
-					clicktoconference_change_option_rpt->resultCode = ntohl(clicktoconference_change_option_rpt->resultCode);
-					break;
-				case STOP_CONFERENCE_REPORT:
-					clicktoconference_stop_rpt = (clicktoconference_stop_rpt_tcp_t *) msg->body;
-					clicktoconference_stop_rpt->returnCode = ntohl(clicktoconference_stop_rpt->returnCode);
-					clicktoconference_stop_rpt->isRecorded = ntohl(clicktoconference_stop_rpt->isRecorded);
-					break;
-				default:
-					ux_log(UXL_CRT, "Unsupported messageID : %#010x", msg->header.messageID)
-					return -1;
-					// break;
-			}
-			break;
-		default:
-			ux_log(UXL_CRT, "Unsupported Channel Index : %d", chnIdx)
-			return -1;
+	case TCP_CHANNEL_CALL:
+		switch(msg->header.messageID)
+		{
+			case HEARTBEAT_REQUEST:				//처리 필요 없음
+				break;
+			case HEARTBEAT_RESPONSE:			//처리 필요 없음
+				break;
+			case BINDING_REQUEST:				//처리 필요 없음
+				break;
+			case BINDING_RESPONSE:
+				clicktocall_binding_rsp = (clicktocall_binding_rsp_tcp_t *) msg->body;
+				clicktocall_binding_rsp->resultCode = ntohl(clicktocall_binding_rsp->resultCode);
+				break;
+			//받은 메시지가 요청인 경우(simulator case)
+			case START_REQUEST:
+				clicktocall_start_req = (clicktocall_start_req_tcp_t *) msg->body;
+				clicktocall_start_req->waitingMentID = ntohs(clicktocall_start_req->waitingMentID);
+				clicktocall_start_req->callMentID = ntohs(clicktocall_start_req->callMentID);
+				clicktocall_start_req->filler2 = ntohs(clicktocall_start_req->filler2);
+				break;
+			case STOP_REQUEST:					//처리 필요 없음
+				break;
+			case START_RECORDING_REQUEST:		//처리 필요 없음
+				break;
+			case STOP_RECORDING_REQUEST:		//처리 필요 없음
+				break;
+			//받은 메시지가 응답, 보고의 경우(normal case)
+			case START_RESPONSE:
+				clicktocall_start_rsp = (clicktocall_start_rsp_tcp_t *) msg->body;
+				clicktocall_start_rsp->resultCode = ntohl(clicktocall_start_rsp->resultCode);
+				clicktocall_start_rsp->filler2 = ntohs(clicktocall_start_rsp->filler2);
+				break;
+			case STOP_RESPONSE:
+				clicktocall_stop_rsp = (clicktocall_stop_rsp_tcp_t *) msg->body;
+				clicktocall_stop_rsp->resultCode = ntohl(clicktocall_stop_rsp->resultCode);
+				break;
+			case START_RECORDING_RESPONSE:
+				clicktocall_startrecording_rsp = (clicktocall_startrecording_rsp_tcp_t *) msg->body;
+				clicktocall_startrecording_rsp->resultCode = ntohl(clicktocall_startrecording_rsp->resultCode);
+				break;
+			case STOP_RECORDING_RESPONSE:
+				clicktocall_stoprecording_rsp = (clicktocall_stoprecording_rsp_tcp_t *) msg->body;
+				clicktocall_stoprecording_rsp->resultCode = ntohl(clicktocall_stoprecording_rsp->resultCode);
+				break;
+			case SERVICE_STATUS_RESPONSE:
+				clicktocall_service_status_rsp = (clicktocall_service_status_rsp_tcp_t *) msg->body;
+				clicktocall_service_status_rsp->resultCode = ntohl(clicktocall_service_status_rsp->resultCode);
+				clicktocall_service_status_rsp->status = ntohl(clicktocall_service_status_rsp->status);
+				break;
+			case STOP_REPORT:
+				clicktocallrecording_stop_rpt = (clicktocallrecording_stop_rpt_tcp_t *) msg->body;
+				clicktocall_stop_rpt->returnCode = ntohl(clicktocall_stop_rpt->returnCode);
+				clicktocall_stop_rpt->isRecorded = ntohl(clicktocall_stop_rpt->isRecorded);
+				break;
+			case START_RECORDING_REPORT:
+				clicktocall_startrecording_rpt = (clicktocall_startrecording_rpt_tcp_t *) msg->body;
+				clicktocall_startrecording_rpt->resultCode = ntohl(clicktocall_startrecording_rpt->resultCode);
+				break;
+			case STOP_RECORDING_REPORT:
+				clicktocall_stoprecording_rpt = (clicktocall_stoprecording_rpt_tcp_t *) msg->body;
+				clicktocall_stoprecording_rpt->resultCode = ntohl(clicktocall_stoprecording_rpt->resultCode);
+				break;
+			case SERVICE_STATUS_REPORT:
+				clicktocall_service_status_rpt = (clicktocall_service_status_rpt_tcp_t *) msg->body;
+				clicktocall_service_status_rpt->status = ntohl(clicktocall_service_status_rpt->status);
+				break;
+			default:
+				ux_log(UXL_CRT, "Unsupported messageID : %#010x", msg->header.messageID)
+				return -1;
+				// break;
+		}
+		break;
+	case TCP_CHANNEL_RECORDING:
+		switch(msg->header.messageID)
+		{
+			case HEARTBEAT_REQUEST:				//처리 필요 없음
+				break;
+			case HEARTBEAT_RESPONSE:			//처리 필요 없음
+				break;
+			case BINDING_REQUEST:				//처리 필요 없음
+				break;
+			case BINDING_RESPONSE:
+				clicktocallrecording_binding_rsp = (clicktocallrecording_binding_rsp_tcp_t *) msg->body;
+				clicktocallrecording_binding_rsp->resultCode = ntohl(clicktocallrecording_binding_rsp->resultCode);
+				break;
+			//받은 메시지가 요청인 경우(simulator case)
+			case START_REQUEST:
+				clicktocallrecording_start_req = (clicktocallrecording_start_req_tcp_t *) msg->body;
+				clicktocallrecording_start_req->filler2 = ntohs(clicktocallrecording_start_req->filler2);
+				break;
+			case STOP_REQUEST:					//처리 필요 없음
+				break;
+			case SERVICE_STATUS_REQUEST:		//처리 필요 없음
+				break;
+			//받은 메시지가 응답, 보고의 경우(normal case)
+			case START_RESPONSE:
+				clicktocallrecording_start_rsp = (clicktocallrecording_start_rsp_tcp_t *) msg->body;
+				clicktocallrecording_start_rsp->resultCode = ntohl(clicktocallrecording_start_rsp->resultCode);
+				break;
+			case STOP_RESPONSE:
+				clicktocallrecording_stop_rsp = (clicktocallrecording_stop_rsp_tcp_t *) msg->body;
+				clicktocallrecording_stop_rsp->resultCode = ntohl(clicktocallrecording_stop_rsp->resultCode);
+				break;
+			case SERVICE_STATUS_RESPONSE:
+				clicktocallrecording_service_status_rsp = (clicktocallrecording_service_status_rsp_tcp_t *) msg->body;
+				clicktocallrecording_service_status_rsp->resultCode = ntohl(clicktocallrecording_service_status_rsp->resultCode);
+				clicktocallrecording_service_status_rsp->status = ntohl(clicktocallrecording_service_status_rsp->status);
+				break;
+			case START_REPORT:
+				clicktocallrecording_start_rpt = (clicktocallrecording_start_rpt_tcp_t *) msg->body;
+				clicktocallrecording_start_rpt->resultCode = ntohl(clicktocallrecording_start_rpt->resultCode);
+				break;
+			case STOP_REPORT:
+				clicktocallrecording_stop_rpt = (clicktocallrecording_stop_rpt_tcp_t *) msg->body;
+				clicktocallrecording_stop_rpt->returnCode = ntohl(clicktocallrecording_stop_rpt->returnCode);
+				clicktocallrecording_stop_rpt->isRecorded = ntohl(clicktocallrecording_stop_rpt->isRecorded);
+				break;
+			case SERVICE_STATUS_REPORT:
+				clicktocallrecording_service_status_rpt = (clicktocallrecording_service_status_rpt_tcp_t *) msg->body;
+				clicktocallrecording_service_status_rpt->status = ntohl(clicktocallrecording_service_status_rpt->status);
+				break;
+			default:
+				ux_log(UXL_CRT, "Unsupported messageID : %#010x", msg->header.messageID)
+				return -1;
+				// break;
+		}
+		break;
+	case TCP_CHANNEL_CONFERENCE:
+		switch(msg->header.messageID)
+		{
+			case HEARTBEAT_REQUEST:				//처리 필요 없음
+				break;
+			case HEARTBEAT_RESPONSE:			//처리 필요 없음
+				break;
+			case BINDING_REQUEST:				//처리 필요 없음
+				break;
+			case BINDING_RESPONSE:
+				clicktoconference_binding_rsp = (clicktoconference_binding_rsp_tcp_t *) msg->body;
+				clicktoconference_binding_rsp->resultCode = ntohl(clicktoconference_binding_rsp->resultCode);
+				break;
+			//받은 메시지가 요청인 경우(simulator case)
+			case START_CONFERENCE_REQUEST:
+				clicktoconference_start_req = (clicktoconference_start_req_tcp_t *) msg->body;
+				clicktoconference_start_req->callingCategoryType = ntohl(clicktoconference_start_req->callingCategoryType);
+				break;
+			case STOP_CONFERENCE_REQUEST:		//처리 필요 없음
+				break;
+			case ADD_PARTY_REQUEST:				//처리 필요 없음
+				break;
+			case REMOVE_PARTY_REQUEST:			//처리 필요 없음
+				break;
+			case CHANGE_PARTY_MEDIA_REQUEST:
+				clicktoconference_change_party_media_req = (clicktoconference_change_party_media_req_tcp_t *) msg->body;
+				clicktoconference_change_party_media_req->mediaType = ntohl(clicktoconference_change_party_media_req->mediaType);
+				break;
+			case CHANGE_OPTION_REQUEST:			//처리 필요 없음
+				break;
+			case GET_NUMBER_OF_PARTY_REQUEST:	//처리 필요 없음
+				break;
+			case PLAY_MENT_REQUEST:				//처리 필요 없음
+				break;
+			case GET_PARTY_STATUS_REQUEST:		//처리 필요 없음
+				break;
+			case CANCEL_PARTY_REQUEST:			//처리 필요 없음
+				break;
+			//받은 메시지가 응답, 보고의 경우(normal case)
+			case START_CONFERENCE_RESPONSE:
+				clicktoconference_start_rsp = (clicktoconference_start_rsp_tcp_t *) msg->body;
+				clicktoconference_start_rsp->resultCode = ntohl(clicktoconference_start_rsp->resultCode);
+				clicktoconference_start_rsp->filler1 = ntohs(clicktoconference_start_rsp->filler1);
+				clicktoconference_start_rsp->filler2 = ntohs(clicktoconference_start_rsp->filler2);
+				clicktoconference_start_rsp->recordingFileID = ntohl(clicktoconference_start_rsp->recordingFileID);
+				clicktoconference_start_rsp->serviceMentID = ntohl(clicktoconference_start_rsp->serviceMentID);
+				clicktoconference_start_rsp->callingCategoryType = ntohl(clicktoconference_start_rsp->callingCategoryType);
+				break;
+			case STOP_CONFERENCE_RESPONSE:
+				clicktoconference_stop_rsp = (clicktoconference_stop_rsp_tcp_t *) msg->body;
+				clicktoconference_stop_rsp->resultCode = ntohl(clicktoconference_stop_rsp->resultCode);
+				clicktoconference_stop_rsp->recordingFileID = ntohl(clicktoconference_stop_rsp->recordingFileID);
+				break;
+			case ADD_PARTY_RESPONSE:
+				clicktoconference_add_party_rsp = (clicktoconference_add_party_rsp_tcp_t *) msg->body;
+				clicktoconference_add_party_rsp->resultCode = ntohl(clicktoconference_add_party_rsp->resultCode);
+				break;
+			case REMOVE_PARTY_RESPONSE:
+				clicktoconference_remove_party_rsp = (clicktoconference_remove_party_rsp_tcp_t *) msg->body;
+				clicktoconference_remove_party_rsp->resultCode = ntohl(clicktoconference_remove_party_rsp->resultCode);
+				break;
+			case CHANGE_PARTY_MEDIA_RESPONSE:
+				clicktoconference_change_party_media_rsp = (clicktoconference_change_party_media_rsp_tcp_t *) msg->body;
+				clicktoconference_change_party_media_rsp->resultCode = ntohl(clicktoconference_change_party_media_rsp->resultCode);
+				clicktoconference_change_party_media_rsp->mediaType = ntohl(clicktoconference_change_party_media_rsp->mediaType);
+				break;
+			case CHANGE_OPTION_RESPONSE:
+				clicktoconference_change_option_rsp = (clicktoconference_change_option_rsp_tcp_t *) msg->body;
+				clicktoconference_change_option_rsp->resultCode = ntohl(clicktoconference_change_option_rsp->resultCode);
+				break;
+			case PLAY_MENT_RESPONSE:
+				clicktoconference_play_ment_rsp = (clicktoconference_play_ment_rsp_tcp_t *) msg->body;
+				clicktoconference_play_ment_rsp->resultCode = ntohl(clicktoconference_play_ment_rsp->resultCode);
+				break;
+			case GET_NUMBER_OF_PARTY_RESPONSE:
+				clicktoconference_get_number_of_party_rsp = (clicktoconference_get_number_of_party_rsp_tcp_t *) msg->body;
+				clicktoconference_get_number_of_party_rsp->resultCode = ntohl(clicktoconference_get_number_of_party_rsp->resultCode);
+				clicktoconference_get_number_of_party_rsp->number = ntohl(clicktoconference_get_number_of_party_rsp->number);
+				break;
+			case GET_PARTY_STATUS_RESPONSE:
+				clicktoconference_get_party_status_rsp = (clicktoconference_get_party_status_rsp_tcp_t *) msg->body;
+				clicktoconference_get_party_status_rsp->resultCode = ntohl(clicktoconference_get_party_status_rsp->resultCode);
+				break;
+			case CANCEL_PARTY_RESPONSE:
+				clicktoconference_cancel_party_rsp = (clicktoconference_cancel_party_rsp_tcp_t *) msg->body;
+				clicktoconference_cancel_party_rsp->resultCode = ntohl(clicktoconference_cancel_party_rsp->resultCode);
+				break;
+			case ADD_PARTY_REPORT:
+				clicktoconference_add_party_rpt = (clicktoconference_add_party_rpt_tcp_t *) msg->body;
+				clicktoconference_add_party_rpt->resultCode = ntohl(clicktoconference_add_party_rpt->resultCode);
+				break;
+			case REMOVE_PARTY_REPORT:
+				clicktoconference_remove_party_rpt = (clicktoconference_remove_party_rpt_tcp_t *) msg->body;
+				clicktoconference_remove_party_rpt->resultCode = ntohl(clicktoconference_remove_party_rpt->resultCode);
+				break;
+			case CHANGE_PARTY_MEDIA_REPORT:
+				clicktoconference_change_party_media_rpt = (clicktoconference_change_party_media_rpt_tcp_t *) msg->body;
+				clicktoconference_change_party_media_rpt->resultCode = ntohl(clicktoconference_change_party_media_rpt->resultCode);
+				clicktoconference_change_party_media_rpt->mediaType = ntohl(clicktoconference_change_party_media_rpt->mediaType);
+				break;
+			case CHANGE_OPTION_REPORT:
+				clicktoconference_change_option_rpt = (clicktoconference_change_option_rpt_tcp_t *) msg->body;
+				clicktoconference_change_option_rpt->resultCode = ntohl(clicktoconference_change_option_rpt->resultCode);
+				break;
+			case STOP_CONFERENCE_REPORT:
+				clicktoconference_stop_rpt = (clicktoconference_stop_rpt_tcp_t *) msg->body;
+				clicktoconference_stop_rpt->returnCode = ntohl(clicktoconference_stop_rpt->returnCode);
+				clicktoconference_stop_rpt->isRecorded = ntohl(clicktoconference_stop_rpt->isRecorded);
+				break;
+			default:
+				ux_log(UXL_CRT, "Unsupported messageID : %#010x", msg->header.messageID)
+				return -1;
+				// break;
+		}
+		break;
+	default:
+		ux_log(UXL_CRT, "Unsupported Channel Index : %d", chnIdx)
+		return -1;
 	}
 #endif
-//DBIF로 보내져야 하는 메시지인 경우, DBIF msgId 설정
-switch(chnIdx) {
+	//DBIF로 보내져야 하는 메시지인 경우, DBIF msgId 설정
+	switch(chnIdx) {
 		case TCP_CHANNEL_CALL:
 			switch(msg->header.messageID) {
 			//받은 메시지가 응답, 보고의 경우(normal case)
@@ -774,7 +774,8 @@ int skb_msg_make_bind_request(skb_msg_t *skbmsg, int chnl_idx) {
 }
 
 void skb_msg_get_header_display(skb_header_t* header, char *log) {
-	sprintf(log,
+	char temp[SKB_HEADER_DISPLAY_SIZE] = "";
+	sprintf(temp,
 	"  [frameStart1] 0x%hhX\n"
 	"  [length] %d\n"
 	"  [messageID] %#010x\n"
@@ -791,28 +792,31 @@ void skb_msg_get_header_display(skb_header_t* header, char *log) {
 		header->version1, 
 		header->userID, 
 		header->filler);
+	strcat(log, temp);
 }
 
 void skb_msg_get_send_header_display(skb_header_t* header, char *log) {
-	strcat(log, "Sending TCP Header\n");
+	strcpy(log, "");
+	strcat(log, "Sending TCP \nHeader\n");
 	skb_msg_get_header_display(header, log);
 }
 
 void skb_msg_get_recv_header_display(skb_header_t* header, char *log) {
-	strcat(log, "Recived TCP Header\n");
+	strcpy(log, "");
+	strcat(log, "Received TCP \nHeader\n");
 	skb_msg_get_header_display(header, log);
 }
 
 void skb_msg_display_send_header(skb_header_t* header) {
-	char log[SKB_HEADER_DISPLAY_SIZE];
-	skb_msg_get_header_display(header, log);
-	ux_log(UXL_INFO, "Sending TCP Header\n%s", log);
+	char log[SKB_HEADER_DISPLAY_SIZE] = "";
+	skb_msg_get_send_header_display(header, log);
+	ux_log(UXL_INFO, "%s", log);
 }
 
 void skb_msg_display_recv_header(skb_header_t* header) {
-	char log[SKB_HEADER_DISPLAY_SIZE];
-	skb_msg_get_header_display(header, log);
-	ux_log(UXL_INFO, "Recived TCP Header\n%s", log);
+	char log[SKB_HEADER_DISPLAY_SIZE] = "";
+	skb_msg_get_recv_header_display(header, log);
+	ux_log(UXL_INFO, "%s", log);
 }
 
 //TODO : requestID 수명이 다하면 초기화해줘야함(고갈 가능성)
@@ -858,7 +862,8 @@ void destroy_skb_map() {
 void skb_msg_process_clicktocall_heartbeat_req(skb_msg_t *skbmsg) {
 	// TCP Header 설정
 	skb_msg_make_header(&skbmsg->header, HEARTBEAT_RESPONSE, 0, &skbmsg->header.requestID);
-	skb_msg_display_send_header(&skbmsg->header);
+	char headerLog[256];
+	skb_msg_get_send_header_display(&skbmsg->header, headerLog);
 }
 
 void skb_msg_process_clicktocall_binding_req(skb_msg_t *skbmsg, char *userID, char *password) {
@@ -870,8 +875,9 @@ void skb_msg_process_clicktocall_binding_req(skb_msg_t *skbmsg, char *userID, ch
 	memcpy(skbmsg->body, &clicktocall_binding_req, msg_size);
 	// TCP Header 설정
 	skb_msg_make_header(&skbmsg->header, BINDING_REQUEST, msg_size, NULL);
-	skb_msg_display_send_header(&skbmsg->header);
-	clicktocall_binding_req_tcp_display(&clicktocall_binding_req);
+	char headerLog[256];
+	skb_msg_get_send_header_display(&skbmsg->header, headerLog);
+	clicktocall_binding_req_tcp_display(headerLog, &clicktocall_binding_req);
 }
 
 int skb_msg_process_clicktocall_start_req( skb_msg_t *skbmsg, uxc_dbif_t *dbif, char *sessionID, char *gwSessionID) {
@@ -884,10 +890,11 @@ int skb_msg_process_clicktocall_start_req( skb_msg_t *skbmsg, uxc_dbif_t *dbif, 
 	if (rv < eUXC_SUCCESS) return rv;
 	// TCP Header 설정
 	skb_msg_make_header(&skbmsg->header, START_REQUEST, sizeof(clicktocall_start_req), NULL);
-	skb_msg_display_send_header(&skbmsg->header);
+	char headerLog[256];
+	skb_msg_get_send_header_display(&skbmsg->header, headerLog);
 	// TCP Body 설정
 	memcpy(skbmsg->body, &clicktocall_start_req, sizeof(clicktocall_start_req));
-	clicktocall_start_req_tcp_display(&clicktocall_start_req);
+	clicktocall_start_req_tcp_display(headerLog, &clicktocall_start_req);
 
 	return rv;
 }
@@ -902,10 +909,11 @@ int skb_msg_process_clicktocall_stop_req( skb_msg_t *skbmsg, uxc_dbif_t *dbif) {
 	if (rv < 0) return rv;
 	// TCP Header 설정
 	skb_msg_make_header(&skbmsg->header, STOP_REQUEST, sizeof(clicktocall_stop_req), NULL);
-	skb_msg_display_send_header(&skbmsg->header);
+	char headerLog[256];
+	skb_msg_get_send_header_display(&skbmsg->header, headerLog);
 	// TCP Body 설정
 	memcpy(skbmsg->body, &clicktocall_stop_req, sizeof(clicktocall_stop_req));
-	clicktocall_stop_req_tcp_display(&clicktocall_stop_req);
+	clicktocall_stop_req_tcp_display(headerLog, &clicktocall_stop_req);
 
 	return rv;
 }
@@ -920,10 +928,11 @@ int skb_msg_process_clicktocall_startrecording_req( skb_msg_t *skbmsg, uxc_dbif_
 	if (rv < 0) return rv;
 	// TCP Header 설정
 	skb_msg_make_header(&skbmsg->header, START_RECORDING_REQUEST, sizeof(clicktocall_startrecording_req), NULL);
-	skb_msg_display_send_header(&skbmsg->header);
+	char headerLog[256];
+	skb_msg_get_send_header_display(&skbmsg->header, headerLog);
 	// TCP Body 설정
 	memcpy(skbmsg->body, &clicktocall_startrecording_req, sizeof(clicktocall_startrecording_req));
-	clicktocall_startrecording_req_tcp_display(&clicktocall_startrecording_req);
+	clicktocall_startrecording_req_tcp_display(headerLog, &clicktocall_startrecording_req);
 	
 	return rv;
 }
@@ -938,23 +947,26 @@ int skb_msg_process_clicktocall_stoprecording_req( skb_msg_t *skbmsg, uxc_dbif_t
 	if (rv < 0) return rv;
 	// TCP Header 설정
 	skb_msg_make_header(&skbmsg->header, STOP_RECORDING_REQUEST, sizeof(clicktocall_stoprecording_req), NULL);
-	skb_msg_display_send_header(&skbmsg->header);
+	char headerLog[256];
+	skb_msg_get_send_header_display(&skbmsg->header, headerLog);
 	// TCP Body 설정
 	memcpy(skbmsg->body, &clicktocall_stoprecording_req, sizeof(clicktocall_stoprecording_req));
-	clicktocall_stoprecording_req_tcp_display(&clicktocall_stoprecording_req);
+	clicktocall_stoprecording_req_tcp_display(headerLog, &clicktocall_stoprecording_req);
 
 	return rv;
 }
 
 void skb_msg_process_clicktocall_heartbeat_rsp(skb_msg_t *skbmsg) {
-	// skb_msg_get_header_display(&skbmsg->header);
+	// skb_msg_get_header_display(&skbmsg->header, headerLog);
 }
 
 int skb_msg_process_clicktocall_binding_rsp(skb_msg_t *skbmsg) {
 	clicktocall_binding_rsp_tcp_t clicktocall_binding_rsp[1];
 
+	char headerLog[256];
+	skb_msg_get_recv_header_display(&skbmsg->header, headerLog);
 	memcpy(clicktocall_binding_rsp, skbmsg->body, sizeof(clicktocall_binding_rsp_tcp_t));
-	clicktocall_binding_rsp_tcp_display(clicktocall_binding_rsp);
+	clicktocall_binding_rsp_tcp_display(headerLog, clicktocall_binding_rsp);
 	
 	if (clicktocall_binding_rsp->resultCode < 2) {
 		return eUXC_SUCCESS;
@@ -969,8 +981,10 @@ int skb_msg_process_clicktocall_start_rsp( skb_msg_t *skbmsg, uxc_dbif_t *dbif) 
 	char sessionID[SESSION_ID_LEN];
 	char gwSessionID[GW_SESSION_ID_LEN];
 
+	char headerLog[256];
+	skb_msg_get_recv_header_display(&skbmsg->header, headerLog);
 	memcpy(clicktocall_start_rsp, skbmsg->body, sizeof(clicktocall_start_rsp_tcp_t));
-	clicktocall_start_rsp_tcp_display(clicktocall_start_rsp);
+	clicktocall_start_rsp_tcp_display(headerLog, clicktocall_start_rsp);
 	//requestID에 따라 기존에 저장한 sessionID, gwSessionID 추가하여 dbif 메시지 생성
 	strncpy(sessionID, uh_int_get(reqID_SID_Map, skbmsg->header.requestID), SESSION_ID_LEN);
 	if (sessionID == NULL || strcmp(sessionID, "") == 0) {
@@ -997,8 +1011,10 @@ int skb_msg_process_clicktocall_stop_rsp( skb_msg_t *skbmsg, uxc_dbif_t *dbif) {
 	int rv;
 	clicktocall_stop_rsp_tcp_t clicktocall_stop_rsp[1];
 
+	char headerLog[256];
+	skb_msg_get_recv_header_display(&skbmsg->header, headerLog);
 	memcpy(clicktocall_stop_rsp, skbmsg->body, sizeof(clicktocall_stop_rsp_tcp_t));
-	clicktocall_stop_rsp_tcp_display(clicktocall_stop_rsp);
+	clicktocall_stop_rsp_tcp_display(headerLog, clicktocall_stop_rsp);
 	rv = clicktocall_stop_rsp_encode_to_dbif_msg(clicktocall_stop_rsp, dbif);
 	if (rv <eUXC_SUCCESS) return rv;
 	clicktocall_stop_rsp_dbif_display(dbif);
@@ -1010,8 +1026,10 @@ int skb_msg_process_clicktocall_startrecording_rsp( skb_msg_t *skbmsg, uxc_dbif_
 	int rv;
 	clicktocall_startrecording_rsp_tcp_t clicktocall_startrecording_rsp[1];
 
+	char headerLog[256];
+	skb_msg_get_recv_header_display(&skbmsg->header, headerLog);
 	memcpy(clicktocall_startrecording_rsp, skbmsg->body, sizeof(clicktocall_startrecording_rsp_tcp_t));
-	clicktocall_startrecording_rsp_tcp_display(clicktocall_startrecording_rsp);
+	clicktocall_startrecording_rsp_tcp_display(headerLog, clicktocall_startrecording_rsp);
 	rv = clicktocall_startrecording_rsp_encode_to_dbif_msg(clicktocall_startrecording_rsp, dbif);
 	if (rv <eUXC_SUCCESS) return rv;
 	clicktocall_startrecording_rsp_dbif_display(dbif);
@@ -1023,8 +1041,10 @@ int skb_msg_process_clicktocall_stoprecording_rsp( skb_msg_t *skbmsg, uxc_dbif_t
 	int rv;
 	clicktocall_stoprecording_rsp_tcp_t clicktocall_stoprecording_rsp[1];
 
+	char headerLog[256];
+	skb_msg_get_recv_header_display(&skbmsg->header, headerLog);
 	memcpy(clicktocall_stoprecording_rsp, skbmsg->body, sizeof(clicktocall_stoprecording_rsp_tcp_t));
-	clicktocall_stoprecording_rsp_tcp_display(clicktocall_stoprecording_rsp);
+	clicktocall_stoprecording_rsp_tcp_display(headerLog, clicktocall_stoprecording_rsp);
 	rv = clicktocall_stoprecording_rsp_encode_to_dbif_msg(clicktocall_stoprecording_rsp, dbif);
 	if (rv <eUXC_SUCCESS) return rv;
 	clicktocall_stoprecording_rsp_dbif_display(dbif);
@@ -1035,8 +1055,10 @@ int skb_msg_process_clicktocall_stoprecording_rsp( skb_msg_t *skbmsg, uxc_dbif_t
 int skb_msg_process_clicktocall_service_status_rsp( skb_msg_t *skbmsg) {
 	clicktocall_service_status_rsp_tcp_t clicktocall_service_status_rsp[1];
 
+	char headerLog[256];
+	skb_msg_get_recv_header_display(&skbmsg->header, headerLog);
 	memcpy(clicktocall_service_status_rsp, skbmsg->body, sizeof(clicktocall_service_status_rsp_tcp_t));
-	clicktocall_service_status_rsp_tcp_display(clicktocall_service_status_rsp);
+	clicktocall_service_status_rsp_tcp_display(headerLog, clicktocall_service_status_rsp);
 
 	return eUXC_SUCCESS;
 }
@@ -1045,8 +1067,10 @@ int skb_msg_process_clicktocall_stop_rpt( skb_msg_t *skbmsg, uxc_dbif_t *dbif) {
 	int rv;
 	clicktocall_stop_rpt_tcp_t clicktocall_stop_rpt[1];
 
+	char headerLog[256];
+	skb_msg_get_recv_header_display(&skbmsg->header, headerLog);
 	memcpy(clicktocall_stop_rpt, skbmsg->body, sizeof(clicktocall_stop_rpt_tcp_t));
-	clicktocall_stop_rpt_tcp_display(clicktocall_stop_rpt);
+	clicktocall_stop_rpt_tcp_display(headerLog, clicktocall_stop_rpt);
 	rv = clicktocall_stop_rpt_encode_to_dbif_msg(clicktocall_stop_rpt, dbif);
 	if (rv <eUXC_SUCCESS) return rv;
 	clicktocall_stop_rpt_dbif_display(dbif);
@@ -1057,8 +1081,10 @@ int skb_msg_process_clicktocall_stop_rpt( skb_msg_t *skbmsg, uxc_dbif_t *dbif) {
 int skb_msg_process_clicktocall_startrecording_rpt( skb_msg_t *skbmsg) {
 	clicktocall_startrecording_rpt_tcp_t clicktocall_startrecording_rpt[1];
 
+	char headerLog[256];
+	skb_msg_get_recv_header_display(&skbmsg->header, headerLog);
 	memcpy(clicktocall_startrecording_rpt, skbmsg->body, sizeof(clicktocall_startrecording_rpt_tcp_t));
-	clicktocall_startrecording_rpt_tcp_display(clicktocall_startrecording_rpt);
+	clicktocall_startrecording_rpt_tcp_display(headerLog, clicktocall_startrecording_rpt);
 
 	return eUXC_SUCCESS;
 }
@@ -1066,8 +1092,10 @@ int skb_msg_process_clicktocall_startrecording_rpt( skb_msg_t *skbmsg) {
 int skb_msg_process_clicktocall_stoprecording_rpt( skb_msg_t *skbmsg) {
 	clicktocall_stoprecording_rpt_tcp_t clicktocall_stoprecording_rpt[1];
 
+	char headerLog[256];
+	skb_msg_get_recv_header_display(&skbmsg->header, headerLog);
 	memcpy(clicktocall_stoprecording_rpt, skbmsg->body, sizeof(clicktocall_stoprecording_rpt_tcp_t));
-	clicktocall_stoprecording_rpt_tcp_display(clicktocall_stoprecording_rpt);
+	clicktocall_stoprecording_rpt_tcp_display(headerLog, clicktocall_stoprecording_rpt);
 
 	return eUXC_SUCCESS;
 }
@@ -1076,8 +1104,10 @@ int skb_msg_process_clicktocall_service_status_rpt( skb_msg_t *skbmsg, uxc_dbif_
 	int rv;
 	clicktocall_service_status_rpt_tcp_t clicktocall_service_status_rpt[1];
 
+	char headerLog[256];
+	skb_msg_get_recv_header_display(&skbmsg->header, headerLog);
 	memcpy(clicktocall_service_status_rpt, skbmsg->body, sizeof(clicktocall_service_status_rpt_tcp_t));
-	clicktocall_service_status_rpt_tcp_display(clicktocall_service_status_rpt);
+	clicktocall_service_status_rpt_tcp_display(headerLog, clicktocall_service_status_rpt);
 	rv = clicktocall_service_status_rpt_encode_to_dbif_msg(clicktocall_service_status_rpt, dbif);
 	if (rv <eUXC_SUCCESS) return rv;
 	clicktocall_service_status_rpt_dbif_display(dbif);
@@ -1092,7 +1122,8 @@ int skb_msg_process_clicktocall_service_status_rpt( skb_msg_t *skbmsg, uxc_dbif_
 void skb_msg_process_clicktocallrecording_heartbeat_req(skb_msg_t *skbmsg) {
 	// TCP Header 설정
 	skb_msg_make_header(&skbmsg->header, HEARTBEAT_RESPONSE, 0, &skbmsg->header.requestID);
-	skb_msg_display_send_header(&skbmsg->header);
+	char headerLog[256];
+	skb_msg_get_send_header_display(&skbmsg->header, headerLog);
 }
 
 void skb_msg_process_clicktocallrecording_binding_req(skb_msg_t *skbmsg, char *userID, char *password) {
@@ -1104,8 +1135,9 @@ void skb_msg_process_clicktocallrecording_binding_req(skb_msg_t *skbmsg, char *u
 	memcpy(skbmsg->body, &clicktocallrecording_binding_req, msg_size);
 	// TCP Header 설정
 	skb_msg_make_header(&skbmsg->header, BINDING_REQUEST, msg_size, NULL);
-	skb_msg_display_send_header(&skbmsg->header);
-	clicktocallrecording_binding_req_tcp_display(&clicktocallrecording_binding_req);
+	char headerLog[256];
+	skb_msg_get_send_header_display(&skbmsg->header, headerLog);
+	clicktocallrecording_binding_req_tcp_display(headerLog, &clicktocallrecording_binding_req);
 }
 
 int skb_msg_process_clicktocallrecording_start_req( skb_msg_t *skbmsg, uxc_dbif_t *dbif, char *sessionID, char *gwSessionID) {
@@ -1118,10 +1150,11 @@ int skb_msg_process_clicktocallrecording_start_req( skb_msg_t *skbmsg, uxc_dbif_
 	if (rv < eUXC_SUCCESS) return rv;
 	// TCP Header 설정
 	skb_msg_make_header(&skbmsg->header, START_REQUEST, sizeof(clicktocallrecording_start_req), NULL);
-	skb_msg_display_send_header(&skbmsg->header);
+	char headerLog[256];
+	skb_msg_get_send_header_display(&skbmsg->header, headerLog);
 	// TCP Body 설정
 	memcpy(skbmsg->body, &clicktocallrecording_start_req, sizeof(clicktocallrecording_start_req));
-	clicktocallrecording_start_req_tcp_display(&clicktocallrecording_start_req);
+	clicktocallrecording_start_req_tcp_display(headerLog, &clicktocallrecording_start_req);
 
 	return rv;
 }
@@ -1136,10 +1169,11 @@ int skb_msg_process_clicktocallrecording_stop_req( skb_msg_t *skbmsg, uxc_dbif_t
 	if (rv < 0) return rv;
 	// TCP Header 설정
 	skb_msg_make_header(&skbmsg->header, STOP_REQUEST, sizeof(clicktocallrecording_stop_req), NULL);
-	skb_msg_display_send_header(&skbmsg->header);
+	char headerLog[256];
+	skb_msg_get_send_header_display(&skbmsg->header, headerLog);
 	// TCP Body 설정
 	memcpy(skbmsg->body, &clicktocallrecording_stop_req, sizeof(clicktocallrecording_stop_req));
-	clicktocallrecording_stop_req_tcp_display(&clicktocallrecording_stop_req);
+	clicktocallrecording_stop_req_tcp_display(headerLog, &clicktocallrecording_stop_req);
 
 	return rv;
 }
@@ -1148,21 +1182,24 @@ int skb_msg_process_clicktocallrecording_service_status_req( skb_msg_t *skbmsg) 
 	clicktocallrecording_service_status_req_tcp_t clicktocallrecording_service_status_req;
 
 	memcpy(&clicktocallrecording_service_status_req, skbmsg->body, sizeof(clicktocallrecording_service_status_req));
-	skb_msg_display_send_header(&skbmsg->header);
-	clicktocallrecording_service_status_req_tcp_display(&clicktocallrecording_service_status_req);
+	char headerLog[256];
+	skb_msg_get_send_header_display(&skbmsg->header, headerLog);
+	clicktocallrecording_service_status_req_tcp_display(headerLog, &clicktocallrecording_service_status_req);
 
 	return eUXC_SUCCESS;
 }
 
 void skb_msg_process_clicktocallrecording_heartbeat_rsp(skb_msg_t *skbmsg) {
-	// skb_msg_get_header_display(&skbmsg->header);
+	// skb_msg_get_header_display(&skbmsg->header, headerLog);
 }
 
 int skb_msg_process_clicktocallrecording_binding_rsp(skb_msg_t *skbmsg) {
 	clicktocallrecording_binding_rsp_tcp_t clicktocallrecording_binding_rsp[1];
 
+	char headerLog[256];
+	skb_msg_get_recv_header_display(&skbmsg->header, headerLog);
 	memcpy(clicktocallrecording_binding_rsp, skbmsg->body, sizeof(clicktocallrecording_binding_rsp_tcp_t));
-	clicktocallrecording_binding_rsp_tcp_display(clicktocallrecording_binding_rsp);
+	clicktocallrecording_binding_rsp_tcp_display(headerLog, clicktocallrecording_binding_rsp);
 	
 	if (clicktocallrecording_binding_rsp->resultCode < 2) {
 		return eUXC_SUCCESS;
@@ -1177,8 +1214,10 @@ int skb_msg_process_clicktocallrecording_start_rsp( skb_msg_t *skbmsg, uxc_dbif_
 	char sessionID[SESSION_ID_LEN];
 	char gwSessionID[GW_SESSION_ID_LEN];
 
+	char headerLog[256];
+	skb_msg_get_recv_header_display(&skbmsg->header, headerLog);
 	memcpy(clicktocallrecording_start_rsp, skbmsg->body, sizeof(clicktocallrecording_start_rsp_tcp_t));
-	clicktocallrecording_start_rsp_tcp_display(clicktocallrecording_start_rsp);
+	clicktocallrecording_start_rsp_tcp_display(headerLog, clicktocallrecording_start_rsp);
 	//requestID에 따라 기존에 저장한 sessionID, gwSessionID 추가하여 dbif 메시지 생성
 	strncpy(sessionID, uh_int_get(reqID_SID_Map, skbmsg->header.requestID), SESSION_ID_LEN);
 	if (sessionID == NULL || strcmp(sessionID, "") == 0) {
@@ -1205,8 +1244,10 @@ int skb_msg_process_clicktocallrecording_stop_rsp( skb_msg_t *skbmsg, uxc_dbif_t
 	int rv;
 	clicktocallrecording_stop_rsp_tcp_t clicktocallrecording_stop_rsp[1];
 
+	char headerLog[256];
+	skb_msg_get_recv_header_display(&skbmsg->header, headerLog);
 	memcpy(clicktocallrecording_stop_rsp, skbmsg->body, sizeof(clicktocallrecording_stop_rsp_tcp_t));
-	clicktocallrecording_stop_rsp_tcp_display(clicktocallrecording_stop_rsp);
+	clicktocallrecording_stop_rsp_tcp_display(headerLog, clicktocallrecording_stop_rsp);
 	rv = clicktocallrecording_stop_rsp_encode_to_dbif_msg(clicktocallrecording_stop_rsp, dbif);
 	if (rv <eUXC_SUCCESS) return rv;
 	clicktocallrecording_stop_rsp_dbif_display(dbif);
@@ -1217,8 +1258,10 @@ int skb_msg_process_clicktocallrecording_stop_rsp( skb_msg_t *skbmsg, uxc_dbif_t
 int skb_msg_process_clicktocallrecording_service_status_rsp( skb_msg_t *skbmsg) {
 	clicktocall_service_status_rsp_tcp_t clicktocall_service_status_rsp[1];
 
+	char headerLog[256];
+	skb_msg_get_recv_header_display(&skbmsg->header, headerLog);
 	memcpy(clicktocall_service_status_rsp, skbmsg->body, sizeof(clicktocall_service_status_rsp_tcp_t));
-	clicktocall_service_status_rsp_tcp_display(clicktocall_service_status_rsp);
+	clicktocall_service_status_rsp_tcp_display(headerLog, clicktocall_service_status_rsp);
 
 	return eUXC_SUCCESS;
 }
@@ -1226,8 +1269,10 @@ int skb_msg_process_clicktocallrecording_service_status_rsp( skb_msg_t *skbmsg) 
 int skb_msg_process_clicktocallrecording_start_rpt( skb_msg_t *skbmsg) {
 	clicktocallrecording_start_rpt_tcp_t clicktocallrecording_start_rpt[1];
 
+	char headerLog[256];
+	skb_msg_get_recv_header_display(&skbmsg->header, headerLog);
 	memcpy(clicktocallrecording_start_rpt, skbmsg->body, sizeof(clicktocallrecording_start_rpt_tcp_t));
-	clicktocallrecording_start_rpt_tcp_display(clicktocallrecording_start_rpt);
+	clicktocallrecording_start_rpt_tcp_display(headerLog, clicktocallrecording_start_rpt);
 
 	return eUXC_SUCCESS;
 }
@@ -1236,8 +1281,10 @@ int skb_msg_process_clicktocallrecording_stop_rpt( skb_msg_t *skbmsg, uxc_dbif_t
 	int rv;
 	clicktocallrecording_stop_rpt_tcp_t clicktocallrecording_stop_rpt[1];
 
+	char headerLog[256];
+	skb_msg_get_recv_header_display(&skbmsg->header, headerLog);
 	memcpy(clicktocallrecording_stop_rpt, skbmsg->body, sizeof(clicktocallrecording_stop_rpt_tcp_t));
-	clicktocallrecording_stop_rpt_tcp_display(clicktocallrecording_stop_rpt);
+	clicktocallrecording_stop_rpt_tcp_display(headerLog, clicktocallrecording_stop_rpt);
 	rv = clicktocallrecording_stop_rpt_encode_to_dbif_msg(clicktocallrecording_stop_rpt, dbif);
 	if (rv <eUXC_SUCCESS) return rv;
 	clicktocallrecording_stop_rpt_dbif_display(dbif);
@@ -1249,8 +1296,10 @@ int skb_msg_process_clicktocallrecording_service_status_rpt( skb_msg_t *skbmsg, 
 	int rv;
 	clicktocallrecording_service_status_rpt_tcp_t clicktocallrecording_service_status_rpt[1];
 
+	char headerLog[256];
+	skb_msg_get_recv_header_display(&skbmsg->header, headerLog);
 	memcpy(clicktocallrecording_service_status_rpt, skbmsg->body, sizeof(clicktocallrecording_service_status_rpt_tcp_t));
-	clicktocallrecording_service_status_rpt_tcp_display(clicktocallrecording_service_status_rpt);
+	clicktocallrecording_service_status_rpt_tcp_display(headerLog, clicktocallrecording_service_status_rpt);
 	rv = clicktocallrecording_service_status_rpt_encode_to_dbif_msg(clicktocallrecording_service_status_rpt, dbif);
 	if (rv <eUXC_SUCCESS) return rv;
 	clicktocallrecording_service_status_rpt_dbif_display(dbif);
@@ -1265,7 +1314,8 @@ int skb_msg_process_clicktocallrecording_service_status_rpt( skb_msg_t *skbmsg, 
 void skb_msg_process_clicktoconference_heartbeat_req(skb_msg_t *skbmsg) {
 	// TCP Header 설정
 	skb_msg_make_header(&skbmsg->header, HEARTBEAT_RESPONSE, 0, &skbmsg->header.requestID);
-	skb_msg_display_send_header(&skbmsg->header);
+	char headerLog[256];
+	skb_msg_get_send_header_display(&skbmsg->header, headerLog);
 }
 
 void skb_msg_process_clicktoconference_binding_req(skb_msg_t *skbmsg, char *userID, char *password) {
@@ -1277,8 +1327,9 @@ void skb_msg_process_clicktoconference_binding_req(skb_msg_t *skbmsg, char *user
 	memcpy(skbmsg->body, &clicktoconference_binding_req, msg_size);
 	// TCP Header 설정
 	skb_msg_make_header(&skbmsg->header, BINDING_REQUEST, msg_size, NULL);
-	skb_msg_display_send_header(&skbmsg->header);
-	clicktoconference_binding_req_tcp_display(&clicktoconference_binding_req);
+	char headerLog[256];
+	skb_msg_get_send_header_display(&skbmsg->header, headerLog);
+	clicktoconference_binding_req_tcp_display(headerLog, &clicktoconference_binding_req);
 }
 
 
@@ -1292,10 +1343,11 @@ int skb_msg_process_clicktoconference_start_req( skb_msg_t *skbmsg, uxc_dbif_t *
 	if (rv < eUXC_SUCCESS) return rv;
 	// TCP Header 설정
 	skb_msg_make_header(&skbmsg->header, START_REQUEST, sizeof(clicktoconference_start_req), NULL);
-	skb_msg_display_send_header(&skbmsg->header);
+	char headerLog[256];
+	skb_msg_get_send_header_display(&skbmsg->header, headerLog);
 	// TCP Body 설정
 	memcpy(skbmsg->body, &clicktoconference_start_req, sizeof(clicktoconference_start_req));
-	clicktoconference_start_req_tcp_display(&clicktoconference_start_req);
+	clicktoconference_start_req_tcp_display(headerLog, &clicktoconference_start_req);
 
 	return rv;
 }
@@ -1310,10 +1362,11 @@ int skb_msg_process_clicktoconference_add_party_req( skb_msg_t *skbmsg, uxc_dbif
 	if (rv < 0) return rv;
 	// TCP Header 설정
 	skb_msg_make_header(&skbmsg->header, STOP_REQUEST, sizeof(clicktoconference_add_party_req), NULL);
-	skb_msg_display_send_header(&skbmsg->header);
+	char headerLog[256];
+	skb_msg_get_send_header_display(&skbmsg->header, headerLog);
 	// TCP Body 설정
 	memcpy(skbmsg->body, &clicktoconference_add_party_req, sizeof(clicktoconference_add_party_req));
-	clicktoconference_add_party_req_tcp_display(&clicktoconference_add_party_req);
+	clicktoconference_add_party_req_tcp_display(headerLog, &clicktoconference_add_party_req);
 
 	return rv;
 }
@@ -1328,10 +1381,11 @@ int skb_msg_process_clicktoconference_remove_party_req( skb_msg_t *skbmsg, uxc_d
 	if (rv < 0) return rv;
 	// TCP Header 설정
 	skb_msg_make_header(&skbmsg->header, STOP_REQUEST, sizeof(clicktoconference_remove_party_req), NULL);
-	skb_msg_display_send_header(&skbmsg->header);
+	char headerLog[256];
+	skb_msg_get_send_header_display(&skbmsg->header, headerLog);
 	// TCP Body 설정
 	memcpy(skbmsg->body, &clicktoconference_remove_party_req, sizeof(clicktoconference_remove_party_req));
-	clicktoconference_remove_party_req_tcp_display(&clicktoconference_remove_party_req);
+	clicktoconference_remove_party_req_tcp_display(headerLog, &clicktoconference_remove_party_req);
 
 	return rv;
 }
@@ -1346,10 +1400,11 @@ int skb_msg_process_clicktoconference_change_party_media_req( skb_msg_t *skbmsg,
 	if (rv < 0) return rv;
 	// TCP Header 설정
 	skb_msg_make_header(&skbmsg->header, STOP_REQUEST, sizeof(clicktoconference_change_party_media_req), NULL);
-	skb_msg_display_send_header(&skbmsg->header);
+	char headerLog[256];
+	skb_msg_get_send_header_display(&skbmsg->header, headerLog);
 	// TCP Body 설정
 	memcpy(skbmsg->body, &clicktoconference_change_party_media_req, sizeof(clicktoconference_change_party_media_req));
-	clicktoconference_change_party_media_req_tcp_display(&clicktoconference_change_party_media_req);
+	clicktoconference_change_party_media_req_tcp_display(headerLog, &clicktoconference_change_party_media_req);
 
 	return rv;
 }
@@ -1357,9 +1412,12 @@ int skb_msg_process_clicktoconference_change_party_media_req( skb_msg_t *skbmsg,
 int skb_msg_process_clicktoconference_change_option_req( skb_msg_t *skbmsg) {
 	clicktoconference_change_option_req_tcp_t clicktoconference_change_option_req;
 
+	char headerLog[256];
+	skb_msg_get_send_header_display(&skbmsg->header, headerLog);
+
 	// TCP Body 설정
 	memcpy(&clicktoconference_change_option_req, skbmsg->body, sizeof(clicktoconference_change_option_req));
-	clicktoconference_change_option_req_tcp_display(&clicktoconference_change_option_req);
+	clicktoconference_change_option_req_tcp_display(headerLog, &clicktoconference_change_option_req);
 
 	return eUXC_SUCCESS;
 }
@@ -1374,10 +1432,11 @@ int skb_msg_process_clicktoconference_get_number_of_party_req( skb_msg_t *skbmsg
 	if (rv < 0) return rv;
 	// TCP Header 설정
 	skb_msg_make_header(&skbmsg->header, STOP_REQUEST, sizeof(clicktoconference_get_number_of_party_req), NULL);
-	skb_msg_display_send_header(&skbmsg->header);
+	char headerLog[256];
+	skb_msg_get_send_header_display(&skbmsg->header, headerLog);
 	// TCP Body 설정
 	memcpy(skbmsg->body, &clicktoconference_get_number_of_party_req, sizeof(clicktoconference_get_number_of_party_req));
-	clicktoconference_get_number_of_party_req_tcp_display(&clicktoconference_get_number_of_party_req);
+	clicktoconference_get_number_of_party_req_tcp_display(headerLog, &clicktoconference_get_number_of_party_req);
 
 	return rv;
 }
@@ -1392,10 +1451,11 @@ int skb_msg_process_clicktoconference_stop_req( skb_msg_t *skbmsg, uxc_dbif_t *d
 	if (rv < 0) return rv;
 	// TCP Header 설정
 	skb_msg_make_header(&skbmsg->header, STOP_REQUEST, sizeof(clicktoconference_stop_req), NULL);
-	skb_msg_display_send_header(&skbmsg->header);
+	char headerLog[256];
+	skb_msg_get_send_header_display(&skbmsg->header, headerLog);
 	// TCP Body 설정
 	memcpy(skbmsg->body, &clicktoconference_stop_req, sizeof(clicktoconference_stop_req));
-	clicktoconference_stop_req_tcp_display(&clicktoconference_stop_req);
+	clicktoconference_stop_req_tcp_display(headerLog, &clicktoconference_stop_req);
 
 	return rv;
 }
@@ -1410,10 +1470,11 @@ int skb_msg_process_clicktoconference_play_ment_req( skb_msg_t *skbmsg, uxc_dbif
 	if (rv < 0) return rv;
 	// TCP Header 설정
 	skb_msg_make_header(&skbmsg->header, STOP_REQUEST, sizeof(clicktoconference_play_ment_req), NULL);
-	skb_msg_display_send_header(&skbmsg->header);
+	char headerLog[256];
+	skb_msg_get_send_header_display(&skbmsg->header, headerLog);
 	// TCP Body 설정
 	memcpy(skbmsg->body, &clicktoconference_play_ment_req, sizeof(clicktoconference_play_ment_req));
-	clicktoconference_play_ment_req_tcp_display(&clicktoconference_play_ment_req);
+	clicktoconference_play_ment_req_tcp_display(headerLog, &clicktoconference_play_ment_req);
 
 	return rv;
 }
@@ -1428,10 +1489,11 @@ int skb_msg_process_clicktoconference_get_party_status_req( skb_msg_t *skbmsg, u
 	if (rv < 0) return rv;
 	// TCP Header 설정
 	skb_msg_make_header(&skbmsg->header, STOP_REQUEST, sizeof(clicktoconference_get_party_status_req), NULL);
-	skb_msg_display_send_header(&skbmsg->header);
+	char headerLog[256];
+	skb_msg_get_send_header_display(&skbmsg->header, headerLog);
 	// TCP Body 설정
 	memcpy(skbmsg->body, &clicktoconference_get_party_status_req, sizeof(clicktoconference_get_party_status_req));
-	clicktoconference_get_party_status_req_tcp_display(&clicktoconference_get_party_status_req);
+	clicktoconference_get_party_status_req_tcp_display(headerLog, &clicktoconference_get_party_status_req);
 
 	return rv;
 }
@@ -1446,23 +1508,26 @@ int skb_msg_process_clicktoconference_cancel_party_req( skb_msg_t *skbmsg, uxc_d
 	if (rv < 0) return rv;
 	// TCP Header 설정
 	skb_msg_make_header(&skbmsg->header, STOP_REQUEST, sizeof(clicktoconference_cancel_party_req), NULL);
-	skb_msg_display_send_header(&skbmsg->header);
+	char headerLog[256];
+	skb_msg_get_send_header_display(&skbmsg->header, headerLog);
 	// TCP Body 설정
 	memcpy(skbmsg->body, &clicktoconference_cancel_party_req, sizeof(clicktoconference_cancel_party_req));
-	clicktoconference_cancel_party_req_tcp_display(&clicktoconference_cancel_party_req);
+	clicktoconference_cancel_party_req_tcp_display(headerLog, &clicktoconference_cancel_party_req);
 
 	return rv;
 }
 
 void skb_msg_process_clicktoconference_heartbeat_rsp(skb_msg_t *skbmsg) {
-	// skb_msg_get_header_display(&skbmsg->header);
+	// skb_msg_get_header_display(&skbmsg->header, headerLog);
 }
 
 int skb_msg_process_clicktoconference_binding_rsp(skb_msg_t *skbmsg) {
 	clicktoconference_binding_rsp_tcp_t clicktoconference_binding_rsp[1];
 
+	char headerLog[256];
+	skb_msg_get_recv_header_display(&skbmsg->header, headerLog);
 	memcpy(clicktoconference_binding_rsp, skbmsg->body, sizeof(clicktoconference_binding_rsp_tcp_t));
-	clicktoconference_binding_rsp_tcp_display(clicktoconference_binding_rsp);
+	clicktoconference_binding_rsp_tcp_display(headerLog, clicktoconference_binding_rsp);
 	
 	if (clicktoconference_binding_rsp->resultCode < 2) {
 		return eUXC_SUCCESS;
@@ -1477,8 +1542,10 @@ int skb_msg_process_clicktoconference_start_rsp( skb_msg_t *skbmsg, uxc_dbif_t *
 	char sessionID[SESSION_ID_LEN];
 	char gwSessionID[GW_SESSION_ID_LEN];
 
+	char headerLog[256];
+	skb_msg_get_recv_header_display(&skbmsg->header, headerLog);
 	memcpy(clicktoconference_start_rsp, skbmsg->body, sizeof(clicktoconference_start_rsp_tcp_t));
-	clicktoconference_start_rsp_tcp_display(clicktoconference_start_rsp);
+	clicktoconference_start_rsp_tcp_display(headerLog, clicktoconference_start_rsp);
 	//requestID에 따라 기존에 저장한 sessionID, gwSessionID 추가하여 dbif 메시지 생성
 	strncpy(sessionID, uh_int_get(reqID_SID_Map, skbmsg->header.requestID), SESSION_ID_LEN);
 	if (sessionID == NULL || strcmp(sessionID, "") == 0) {
@@ -1505,8 +1572,10 @@ int skb_msg_process_clicktoconference_add_party_rsp( skb_msg_t *skbmsg, uxc_dbif
 	int rv;
 	clicktoconference_add_party_rsp_tcp_t clicktoconference_add_party_rsp[1];
 
+	char headerLog[256];
+	skb_msg_get_recv_header_display(&skbmsg->header, headerLog);
 	memcpy(clicktoconference_add_party_rsp, skbmsg->body, sizeof(clicktoconference_add_party_rsp_tcp_t));
-	clicktoconference_add_party_rsp_tcp_display(clicktoconference_add_party_rsp);
+	clicktoconference_add_party_rsp_tcp_display(headerLog, clicktoconference_add_party_rsp);
 	rv = clicktoconference_add_party_rsp_encode_to_dbif_msg(clicktoconference_add_party_rsp, dbif);
 	if (rv <eUXC_SUCCESS) return rv;
 	clicktoconference_add_party_rsp_dbif_display(dbif);
@@ -1518,8 +1587,10 @@ int skb_msg_process_clicktoconference_remove_party_rsp( skb_msg_t *skbmsg, uxc_d
 	int rv;
 	clicktoconference_remove_party_rsp_tcp_t clicktoconference_remove_party_rsp[1];
 
+	char headerLog[256];
+	skb_msg_get_recv_header_display(&skbmsg->header, headerLog);
 	memcpy(clicktoconference_remove_party_rsp, skbmsg->body, sizeof(clicktoconference_remove_party_rsp_tcp_t));
-	clicktoconference_remove_party_rsp_tcp_display(clicktoconference_remove_party_rsp);
+	clicktoconference_remove_party_rsp_tcp_display(headerLog, clicktoconference_remove_party_rsp);
 	rv = clicktoconference_remove_party_rsp_encode_to_dbif_msg(clicktoconference_remove_party_rsp, dbif);
 	if (rv <eUXC_SUCCESS) return rv;
 	clicktoconference_remove_party_rsp_dbif_display(dbif);
@@ -1531,8 +1602,10 @@ int skb_msg_process_clicktoconference_change_party_media_rsp( skb_msg_t *skbmsg,
 	int rv;
 	clicktoconference_change_party_media_rsp_tcp_t clicktoconference_change_party_media_rsp[1];
 
+	char headerLog[256];
+	skb_msg_get_recv_header_display(&skbmsg->header, headerLog);
 	memcpy(clicktoconference_change_party_media_rsp, skbmsg->body, sizeof(clicktoconference_change_party_media_rsp_tcp_t));
-	clicktoconference_change_party_media_rsp_tcp_display(clicktoconference_change_party_media_rsp);
+	clicktoconference_change_party_media_rsp_tcp_display(headerLog, clicktoconference_change_party_media_rsp);
 	rv = clicktoconference_change_party_media_rsp_encode_to_dbif_msg(clicktoconference_change_party_media_rsp, dbif);
 	if (rv <eUXC_SUCCESS) return rv;
 	clicktoconference_change_party_media_rsp_dbif_display(dbif);
@@ -1543,8 +1616,10 @@ int skb_msg_process_clicktoconference_change_party_media_rsp( skb_msg_t *skbmsg,
 int skb_msg_process_clicktoconference_change_option_rsp( skb_msg_t *skbmsg) {
 	clicktoconference_change_option_rsp_tcp_t clicktoconference_change_option_rsp[1];
 
+	char headerLog[256];
+	skb_msg_get_recv_header_display(&skbmsg->header, headerLog);
 	memcpy(clicktoconference_change_option_rsp, skbmsg->body, sizeof(clicktoconference_change_option_rsp_tcp_t));
-	clicktoconference_change_option_rsp_tcp_display(clicktoconference_change_option_rsp);
+	clicktoconference_change_option_rsp_tcp_display(headerLog, clicktoconference_change_option_rsp);
 
 	return eUXC_SUCCESS;
 }
@@ -1553,8 +1628,10 @@ int skb_msg_process_clicktoconference_get_number_of_party_rsp( skb_msg_t *skbmsg
 	int rv;
 	clicktoconference_get_number_of_party_rsp_tcp_t clicktoconference_get_number_of_party_rsp[1];
 
+	char headerLog[256];
+	skb_msg_get_recv_header_display(&skbmsg->header, headerLog);
 	memcpy(clicktoconference_get_number_of_party_rsp, skbmsg->body, sizeof(clicktoconference_get_number_of_party_rsp_tcp_t));
-	clicktoconference_get_number_of_party_rsp_tcp_display(clicktoconference_get_number_of_party_rsp);
+	clicktoconference_get_number_of_party_rsp_tcp_display(headerLog, clicktoconference_get_number_of_party_rsp);
 	rv = clicktoconference_get_number_of_party_rsp_encode_to_dbif_msg(clicktoconference_get_number_of_party_rsp, dbif);
 	if (rv <eUXC_SUCCESS) return rv;
 	clicktoconference_get_number_of_party_rsp_dbif_display(dbif);
@@ -1566,8 +1643,10 @@ int skb_msg_process_clicktoconference_stop_rsp( skb_msg_t *skbmsg, uxc_dbif_t *d
 	int rv;
 	clicktoconference_stop_rsp_tcp_t clicktoconference_stop_rsp[1];
 
+	char headerLog[256];
+	skb_msg_get_recv_header_display(&skbmsg->header, headerLog);
 	memcpy(clicktoconference_stop_rsp, skbmsg->body, sizeof(clicktoconference_stop_rsp_tcp_t));
-	clicktoconference_stop_rsp_tcp_display(clicktoconference_stop_rsp);
+	clicktoconference_stop_rsp_tcp_display(headerLog, clicktoconference_stop_rsp);
 	rv = clicktoconference_stop_rsp_encode_to_dbif_msg(clicktoconference_stop_rsp, dbif);
 	if (rv <eUXC_SUCCESS) return rv;
 	clicktoconference_stop_rsp_dbif_display(dbif);
@@ -1579,8 +1658,10 @@ int skb_msg_process_clicktoconference_play_ment_rsp( skb_msg_t *skbmsg, uxc_dbif
 	int rv;
 	clicktoconference_play_ment_rsp_tcp_t clicktoconference_play_ment_rsp[1];
 
+	char headerLog[256];
+	skb_msg_get_recv_header_display(&skbmsg->header, headerLog);
 	memcpy(clicktoconference_play_ment_rsp, skbmsg->body, sizeof(clicktoconference_play_ment_rsp_tcp_t));
-	clicktoconference_play_ment_rsp_tcp_display(clicktoconference_play_ment_rsp);
+	clicktoconference_play_ment_rsp_tcp_display(headerLog, clicktoconference_play_ment_rsp);
 	rv = clicktoconference_play_ment_rsp_encode_to_dbif_msg(clicktoconference_play_ment_rsp, dbif);
 	if (rv <eUXC_SUCCESS) return rv;
 	clicktoconference_play_ment_rsp_dbif_display(dbif);
@@ -1592,8 +1673,10 @@ int skb_msg_process_clicktoconference_get_party_status_rsp( skb_msg_t *skbmsg, u
 	int rv;
 	clicktoconference_get_party_status_rsp_tcp_t clicktoconference_get_party_status_rsp[1];
 
+	char headerLog[256];
+	skb_msg_get_recv_header_display(&skbmsg->header, headerLog);
 	memcpy(clicktoconference_get_party_status_rsp, skbmsg->body, sizeof(clicktoconference_get_party_status_rsp_tcp_t));
-	clicktoconference_get_party_status_rsp_tcp_display(clicktoconference_get_party_status_rsp);
+	clicktoconference_get_party_status_rsp_tcp_display(headerLog, clicktoconference_get_party_status_rsp);
 	rv = clicktoconference_get_party_status_rsp_encode_to_dbif_msg(clicktoconference_get_party_status_rsp, dbif);
 	if (rv <eUXC_SUCCESS) return rv;
 	clicktoconference_get_party_status_rsp_dbif_display(dbif);
@@ -1605,8 +1688,10 @@ int skb_msg_process_clicktoconference_cancel_party_rsp( skb_msg_t *skbmsg, uxc_d
 	int rv;
 	clicktoconference_cancel_party_rsp_tcp_t clicktoconference_cancel_party_rsp[1];
 
+	char headerLog[256];
+	skb_msg_get_recv_header_display(&skbmsg->header, headerLog);
 	memcpy(clicktoconference_cancel_party_rsp, skbmsg->body, sizeof(clicktoconference_cancel_party_rsp_tcp_t));
-	clicktoconference_cancel_party_rsp_tcp_display(clicktoconference_cancel_party_rsp);
+	clicktoconference_cancel_party_rsp_tcp_display(headerLog, clicktoconference_cancel_party_rsp);
 	rv = clicktoconference_cancel_party_rsp_encode_to_dbif_msg(clicktoconference_cancel_party_rsp, dbif);
 	if (rv <eUXC_SUCCESS) return rv;
 	clicktoconference_cancel_party_rsp_dbif_display(dbif);
@@ -1618,8 +1703,10 @@ int skb_msg_process_clicktoconference_add_party_rpt( skb_msg_t *skbmsg, uxc_dbif
 	int rv;
 	clicktoconference_add_party_rpt_tcp_t clicktoconference_add_party_rpt[1];
 
+	char headerLog[256];
+	skb_msg_get_recv_header_display(&skbmsg->header, headerLog);
 	memcpy(clicktoconference_add_party_rpt, skbmsg->body, sizeof(clicktoconference_add_party_rpt_tcp_t));
-	clicktoconference_add_party_rpt_tcp_display(clicktoconference_add_party_rpt);
+	clicktoconference_add_party_rpt_tcp_display(headerLog, clicktoconference_add_party_rpt);
 	rv = clicktoconference_add_party_rpt_encode_to_dbif_msg(clicktoconference_add_party_rpt, dbif);
 	if (rv <eUXC_SUCCESS) return rv;
 	clicktoconference_add_party_rpt_dbif_display(dbif);
@@ -1631,8 +1718,10 @@ int skb_msg_process_clicktoconference_remove_party_rpt( skb_msg_t *skbmsg, uxc_d
 	int rv;
 	clicktoconference_remove_party_rpt_tcp_t clicktoconference_remove_party_rpt[1];
 
+	char headerLog[256];
+	skb_msg_get_recv_header_display(&skbmsg->header, headerLog);
 	memcpy(clicktoconference_remove_party_rpt, skbmsg->body, sizeof(clicktoconference_remove_party_rpt_tcp_t));
-	clicktoconference_remove_party_rpt_tcp_display(clicktoconference_remove_party_rpt);
+	clicktoconference_remove_party_rpt_tcp_display(headerLog, clicktoconference_remove_party_rpt);
 	rv = clicktoconference_remove_party_rpt_encode_to_dbif_msg(clicktoconference_remove_party_rpt, dbif);
 	if (rv <eUXC_SUCCESS) return rv;
 	clicktoconference_remove_party_rpt_dbif_display(dbif);
@@ -1644,8 +1733,10 @@ int skb_msg_process_clicktoconference_change_party_media_rpt( skb_msg_t *skbmsg,
 	int rv;
 	clicktoconference_change_party_media_rpt_tcp_t clicktoconference_change_party_media_rpt[1];
 
+	char headerLog[256];
+	skb_msg_get_recv_header_display(&skbmsg->header, headerLog);
 	memcpy(clicktoconference_change_party_media_rpt, skbmsg->body, sizeof(clicktoconference_change_party_media_rpt_tcp_t));
-	clicktoconference_change_party_media_rpt_tcp_display(clicktoconference_change_party_media_rpt);
+	clicktoconference_change_party_media_rpt_tcp_display(headerLog, clicktoconference_change_party_media_rpt);
 	rv = clicktoconference_change_party_media_rpt_encode_to_dbif_msg(clicktoconference_change_party_media_rpt, dbif);
 	if (rv <eUXC_SUCCESS) return rv;
 	clicktoconference_change_party_media_rpt_dbif_display(dbif);
@@ -1656,8 +1747,10 @@ int skb_msg_process_clicktoconference_change_party_media_rpt( skb_msg_t *skbmsg,
 int skb_msg_process_clicktoconference_change_option_rpt( skb_msg_t *skbmsg) {
 	clicktoconference_change_option_rpt_tcp_t clicktoconference_change_option_rpt[1];
 
+	char headerLog[256];
+	skb_msg_get_recv_header_display(&skbmsg->header, headerLog);
 	memcpy(clicktoconference_change_option_rpt, skbmsg->body, sizeof(clicktoconference_change_option_rpt_tcp_t));
-	clicktoconference_change_option_rpt_tcp_display(clicktoconference_change_option_rpt);
+	clicktoconference_change_option_rpt_tcp_display(headerLog, clicktoconference_change_option_rpt);
 
 	return eUXC_SUCCESS;
 }
@@ -1666,8 +1759,10 @@ int skb_msg_process_clicktoconference_stop_rpt( skb_msg_t *skbmsg, uxc_dbif_t *d
 	int rv;
 	clicktoconference_stop_rpt_tcp_t clicktoconference_stop_rpt[1];
 
+	char headerLog[256];
+	skb_msg_get_recv_header_display(&skbmsg->header, headerLog);
 	memcpy(clicktoconference_stop_rpt, skbmsg->body, sizeof(clicktoconference_stop_rpt_tcp_t));
-	clicktoconference_stop_rpt_tcp_display(clicktoconference_stop_rpt);
+	clicktoconference_stop_rpt_tcp_display(headerLog, clicktoconference_stop_rpt);
 	rv = clicktoconference_stop_rpt_encode_to_dbif_msg(clicktoconference_stop_rpt, dbif);
 	if (rv <eUXC_SUCCESS) return rv;
 	clicktoconference_stop_rpt_dbif_display(dbif);

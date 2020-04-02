@@ -42,13 +42,15 @@ final:
 	return rv;
 }
 
-void clicktoconference_add_party_rpt_tcp_display(clicktoconference_add_party_rpt_tcp_t *clicktoconference_add_party_rpt) {
+void clicktoconference_add_party_rpt_tcp_display(char *headerStr, clicktoconference_add_party_rpt_tcp_t *clicktoconference_add_party_rpt) {
     ux_log(UXL_INFO, 
-		"TCP [clicktoconference_remove_party_rpt]\n"
+		"%s\n"
+		"Body [clicktoconference_remove_party_rpt]\n"
 		"  [resultCode] %d\n"
 		"  [confID] %s\n"
 		"  [participantNumber] %s\n"
 		"  [participantName] %s"
+		, headerStr
 		, clicktoconference_add_party_rpt->resultCode
 		, clicktoconference_add_party_rpt->confID
 		, clicktoconference_add_party_rpt->participantNumber
@@ -58,7 +60,8 @@ void clicktoconference_add_party_rpt_tcp_display(clicktoconference_add_party_rpt
 void clicktoconference_add_party_rpt_dbif_display(uxc_dbif_t *dbif) {
 	int rv;
 		ux_log(UXL_INFO, 
-		"DBIF [clicktoconference_remove_party_rpt]\n"
+		"Sending DBIF\n"
+		"[clicktoconference_remove_party_rpt]\n"
 		"  [resultCode] %d\n"
 		"  [confID] %s\n"
 		"  [participantNumber] %s\n"
@@ -109,12 +112,14 @@ final:
 	return rv;
 }
 
-void clicktoconference_remove_party_rpt_tcp_display(clicktoconference_remove_party_rpt_tcp_t *clicktoconference_remove_party_rpt) {
+void clicktoconference_remove_party_rpt_tcp_display(char *headerStr, clicktoconference_remove_party_rpt_tcp_t *clicktoconference_remove_party_rpt) {
     ux_log(UXL_INFO, 
-		"TCP [clicktoconference_remove_party_rpt]\n"
+		"%s\n"
+		"Body [clicktoconference_remove_party_rpt]\n"
 		"  [resultCode] %d\n"
 		"  [confID] %s\n"
 		"  [participantNumber] %s"
+		, headerStr
 		, clicktoconference_remove_party_rpt->resultCode
 		, clicktoconference_remove_party_rpt->confID
 		, clicktoconference_remove_party_rpt->participantNumber);
@@ -123,7 +128,8 @@ void clicktoconference_remove_party_rpt_tcp_display(clicktoconference_remove_par
 void clicktoconference_remove_party_rpt_dbif_display(uxc_dbif_t *dbif) {
 	int rv;
 	ux_log(UXL_INFO, 
-		"DBIF [clicktoconference_remove_party_rpt]\n"
+		"Sending DBIF\n"
+		"[clicktoconference_remove_party_rpt]\n"
 		"  [resultCode] %d\n"
 		"  [confID] %s\n"
 		"  [participantNumber] %s"
@@ -174,13 +180,15 @@ final:
 	return rv;
 }
 
-void clicktoconference_change_party_media_rpt_tcp_display(clicktoconference_change_party_media_rpt_tcp_t *clicktoconference_change_party_media_rpt) {
+void clicktoconference_change_party_media_rpt_tcp_display(char *headerStr, clicktoconference_change_party_media_rpt_tcp_t *clicktoconference_change_party_media_rpt) {
 	ux_log(UXL_INFO, 
-		"TCP [clicktoconference_change_party_media_rpt]\n"
+		"%s\n"
+		"Body [clicktoconference_change_party_media_rpt]\n"
 		"  [resultCode] %d\n"
 		"  [confID] %s\n"
 		"  [participantNumber] %s\n"
 		"  [mediaType] %d"
+		, headerStr
 		, clicktoconference_change_party_media_rpt->resultCode
 		, clicktoconference_change_party_media_rpt->confID
 		, clicktoconference_change_party_media_rpt->participantNumber
@@ -190,7 +198,8 @@ void clicktoconference_change_party_media_rpt_tcp_display(clicktoconference_chan
 void clicktoconference_change_party_media_rpt_dbif_display(uxc_dbif_t *dbif) {
 	int rv;
 	ux_log(UXL_INFO, 
-		"DBIF [clicktoconference_change_party_media_rpt]\n"
+		"Sending DBIF\n"
+		"[clicktoconference_change_party_media_rpt]\n"
 		"  [resultCode] %d\n"
 		"  [confID] %s\n"
 		"  [participantNumber] %s\n"
@@ -214,12 +223,14 @@ void clicktoconference_change_option_rpt_tcp_final( clicktoconference_change_opt
     return;
 }
 
-void clicktoconference_change_option_rpt_tcp_display(clicktoconference_change_option_rpt_tcp_t *clicktoconference_change_option_rpt) {
+void clicktoconference_change_option_rpt_tcp_display(char *headerStr, clicktoconference_change_option_rpt_tcp_t *clicktoconference_change_option_rpt) {
 	ux_log(UXL_INFO, 
-		"TCP [clicktoconference_stop_rpt]\n"
+		"%s\n"
+		"Body [clicktoconference_stop_rpt]\n"
 		"  [resultCode] %d\n"
 		"  [confID] %s\n"
 		"  [password] %s"
+		, headerStr
 		, clicktoconference_change_option_rpt->resultCode
 		, clicktoconference_change_option_rpt->confID
 		, clicktoconference_change_option_rpt->password);
@@ -270,14 +281,16 @@ final:
 	return rv;
 }
 
-void clicktoconference_stop_rpt_tcp_display(clicktoconference_stop_rpt_tcp_t *clicktoconference_stop_rpt) {
+void clicktoconference_stop_rpt_tcp_display(char *headerStr, clicktoconference_stop_rpt_tcp_t *clicktoconference_stop_rpt) {
 	ux_log(UXL_INFO, 
-		"TCP [clicktoconference_stop_rpt]\n"
+		"%s\n"
+		"Body [clicktoconference_stop_rpt]\n"
 		"  [returnCode] %d\n"
 		"  [confID] %s\n"
 		"  [startTime] %s\n"
 		"  [endTime] %s\n"
 		"  [isRecorded] %d"
+		, headerStr
 		, clicktoconference_stop_rpt->returnCode
 		, clicktoconference_stop_rpt->confID
 		, clicktoconference_stop_rpt->startTime
@@ -288,7 +301,8 @@ void clicktoconference_stop_rpt_tcp_display(clicktoconference_stop_rpt_tcp_t *cl
 void clicktoconference_stop_rpt_dbif_display(uxc_dbif_t *dbif) {
 	int rv;
 	ux_log(UXL_INFO, 
-		"DBIF [clicktoconference_stop_rpt]\n"
+		"Sending DBIF\n"
+		"[clicktoconference_stop_rpt]\n"
 		"  [returnCode] %d\n"
 		"  [confID] %s\n"
 		"  [startTime] %s\n"

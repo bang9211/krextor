@@ -16,12 +16,14 @@ void clicktoconference_binding_rsp_tcp_final( clicktoconference_binding_rsp_tcp_
 	//
 }
 
-void clicktoconference_binding_rsp_tcp_display(clicktoconference_binding_rsp_tcp_t *clicktoconference_binding_rsp) {
+void clicktoconference_binding_rsp_tcp_display(char *headerStr, clicktoconference_binding_rsp_tcp_t *clicktoconference_binding_rsp) {
 	ux_log(UXL_INFO, 
-		"TCP [clicktoconference_binding_rsp]\n"
+		"%s\n"
+		"Body [clicktoconference_binding_rsp]\n"
 		"  [resultCode] %d\n"
 		"  [userID] %s\n"
 		"  [password] %s"
+		, headerStr
 		, clicktoconference_binding_rsp->resultCode
 		, clicktoconference_binding_rsp->userID
 		, clicktoconference_binding_rsp->password);
@@ -93,9 +95,10 @@ final:
 	return rv;
 }
 
-void clicktoconference_start_rsp_tcp_display(clicktoconference_start_rsp_tcp_t *clicktoconference_start_rsp) {
+void clicktoconference_start_rsp_tcp_display(char *headerStr, clicktoconference_start_rsp_tcp_t *clicktoconference_start_rsp) {
 	ux_log(UXL_INFO, 
-		"TCP [clicktoconference_start_rsp]\n"
+		"%s\n"
+		"Body [clicktoconference_start_rsp]\n"
 		"  [resultCode] %d\n"
 		"  [confID] %s\n"
 		"  [chairmanName] %s\n"
@@ -117,6 +120,7 @@ void clicktoconference_start_rsp_tcp_display(clicktoconference_start_rsp_tcp_t *
 		"  [msp_id] %s\n"
 		"  [sp_id] %s\n"
 		"  [service_id] %s"
+		, headerStr
 		, clicktoconference_start_rsp->resultCode
 		, clicktoconference_start_rsp->confID
 		, clicktoconference_start_rsp->chairmanName
@@ -143,7 +147,8 @@ void clicktoconference_start_rsp_tcp_display(clicktoconference_start_rsp_tcp_t *
 void clicktoconference_start_rsp_dbif_display(uxc_dbif_t *dbif) {
 	int rv;
 	ux_log(UXL_INFO, 
-		"DBIF [clicktoconference_start_rsp]\n"
+		"Sending DBIF\n"
+		"[clicktoconference_start_rsp]\n"
 		"  [sessionID] %s\n"
 		"  [gwSessionID] %s\n"
 		"  [resultCode] %d\n"
@@ -214,12 +219,14 @@ final:
 	return rv;
 }
 
-void clicktoconference_add_party_rsp_tcp_display(clicktoconference_add_party_rsp_tcp_t *clicktoconference_add_party_rsp) {
+void clicktoconference_add_party_rsp_tcp_display(char *headerStr, clicktoconference_add_party_rsp_tcp_t *clicktoconference_add_party_rsp) {
 	ux_log(UXL_INFO, 
-		"TCP [clicktoconference_add_party_rsp]"
+		"%s\n"
+		"Body [clicktoconference_add_party_rsp]"
 		"  [resultCode] %d"
 		"  [confID] %s"
 		"  [participantList] %s"
+		, headerStr
 		, clicktoconference_add_party_rsp->resultCode
 		, clicktoconference_add_party_rsp->confID
 		, clicktoconference_add_party_rsp->participantList);
@@ -228,7 +235,8 @@ void clicktoconference_add_party_rsp_tcp_display(clicktoconference_add_party_rsp
 void clicktoconference_add_party_rsp_dbif_display(uxc_dbif_t *dbif) {
 	int rv;
 	ux_log(UXL_INFO, 
-		"DBIF [clicktoconference_start_rsp]\n"
+		"Sending DBIF\n"
+		"[clicktoconference_start_rsp]\n"
 		"  [resultCode] %d\n"
 		"  [confID] %s\n"
 		"  [participantList] %s"
@@ -277,12 +285,14 @@ final:
 	return rv;
 }
 
-void clicktoconference_remove_party_rsp_tcp_display(clicktoconference_remove_party_rsp_tcp_t *clicktoconference_remove_party_rsp) {
+void clicktoconference_remove_party_rsp_tcp_display(char *headerStr, clicktoconference_remove_party_rsp_tcp_t *clicktoconference_remove_party_rsp) {
 	ux_log(UXL_INFO, 
-		"TCP [clicktoconference_remove_party_rsp]\n"
+		"%s\n"
+		"Body [clicktoconference_remove_party_rsp]\n"
 		"  [resultCode] %d\n"
 		"  [confID] %s\n"
 		"  [participantNumber] %s"
+		, headerStr
 		, clicktoconference_remove_party_rsp->resultCode
 		, clicktoconference_remove_party_rsp->confID
 		, clicktoconference_remove_party_rsp->participantNumber);
@@ -291,7 +301,8 @@ void clicktoconference_remove_party_rsp_tcp_display(clicktoconference_remove_par
 void clicktoconference_remove_party_rsp_dbif_display(uxc_dbif_t *dbif) {
 	int rv;
 	ux_log(UXL_INFO, 
-		"DBIF [clicktoconference_start_rsp]\n"
+		"Sending DBIF\n"
+		"[clicktoconference_start_rsp]\n"
 		"  [resultCode] %d\n"
 		"  [confID] %s\n"
 		"  [participantNumber] %s"
@@ -342,13 +353,15 @@ final:
 	return rv;
 }
 
-void clicktoconference_change_party_media_rsp_tcp_display(clicktoconference_change_party_media_rsp_tcp_t *clicktoconference_change_party_media_rsp) {
+void clicktoconference_change_party_media_rsp_tcp_display(char *headerStr, clicktoconference_change_party_media_rsp_tcp_t *clicktoconference_change_party_media_rsp) {
 	ux_log(UXL_INFO, 
-		"TCP [clicktoconference_add_party_rsp]\n"
+		"%s\n"
+		"Body [clicktoconference_add_party_rsp]\n"
 		"  [resultCode] %d\n"
 		"  [confID] %s\n"
 		"  [participantNumber] %s\n"
 		"  [mediaType] %d"
+		, headerStr
 		, clicktoconference_change_party_media_rsp->resultCode
 		, clicktoconference_change_party_media_rsp->confID
 		, clicktoconference_change_party_media_rsp->participantNumber
@@ -358,7 +371,8 @@ void clicktoconference_change_party_media_rsp_tcp_display(clicktoconference_chan
 void clicktoconference_change_party_media_rsp_dbif_display(uxc_dbif_t *dbif) {
 	int rv;
 	ux_log(UXL_INFO, 
-		"DBIF [clicktoconference_start_rsp]\n"
+		"Sending DBIF\n"
+		"[clicktoconference_start_rsp]\n"
 		"  [resultCode] %d\n"
 		"  [confID] %s\n"
 		"  [participantNumber] %s\n"
@@ -382,12 +396,14 @@ void clicktoconference_change_option_rsp_tcp_final( clicktoconference_change_opt
 	return;
 }
 
-void clicktoconference_change_option_rsp_tcp_display(clicktoconference_change_option_rsp_tcp_t *clicktoconference_change_option_rsp) {
+void clicktoconference_change_option_rsp_tcp_display(char *headerStr, clicktoconference_change_option_rsp_tcp_t *clicktoconference_change_option_rsp) {
 	ux_log(UXL_INFO, 
-		"TCP [clicktoconference_add_party_rsp]\n"
+		"%s\n"
+		"Body [clicktoconference_add_party_rsp]\n"
 		"  [resultCode] %d\n"
 		"  [confID] %s\n"
 		"  [password] %s"
+		, headerStr
 		, clicktoconference_change_option_rsp->resultCode
 		, clicktoconference_change_option_rsp->confID
 		, clicktoconference_change_option_rsp->password);
@@ -434,12 +450,14 @@ final:
 	return rv;
 }
 
-void clicktoconference_get_number_of_party_rsp_tcp_display(clicktoconference_get_number_of_party_rsp_tcp_t *clicktoconference_get_number_of_party_rsp) {
+void clicktoconference_get_number_of_party_rsp_tcp_display(char *headerStr, clicktoconference_get_number_of_party_rsp_tcp_t *clicktoconference_get_number_of_party_rsp) {
 	ux_log(UXL_INFO, 
-		"TCP [clicktoconference_add_party_rsp]\n"
+		"%s\n"
+		"Body [clicktoconference_add_party_rsp]\n"
 		"  [resultCode] %d\n"
 		"  [confID] %s\n"
 		"  [number] %d"
+		, headerStr
 		, clicktoconference_get_number_of_party_rsp->resultCode
 		, clicktoconference_get_number_of_party_rsp->confID
 		, clicktoconference_get_number_of_party_rsp->number);
@@ -448,7 +466,8 @@ void clicktoconference_get_number_of_party_rsp_tcp_display(clicktoconference_get
 void clicktoconference_get_number_of_party_rsp_dbif_display(uxc_dbif_t *dbif) {
 	int rv;
 	ux_log(UXL_INFO, 
-		"DBIF [clicktoconference_start_rsp]\n"
+		"Sending DBIF\n"
+		"[clicktoconference_start_rsp]\n"
 		"  [resultCode] %d\n"
 		"  [confID] %s\n"
 		"  [number] %d"
@@ -497,14 +516,16 @@ final:
 	return rv;
 }
 
-void clicktoconference_stop_rsp_tcp_display(clicktoconference_stop_rsp_tcp_t *clicktoconference_stop_rsp) {
+void clicktoconference_stop_rsp_tcp_display(char *headerStr, clicktoconference_stop_rsp_tcp_t *clicktoconference_stop_rsp) {
 	ux_log(UXL_INFO, 
-		"TCP [clicktoconference_stop_rsp]\b"
+		"%s\n"
+		"Body [clicktoconference_stop_rsp]\b"
 		"  [resultCode] %d\b"
 		"  [confID] %s\b"
 		"  [startTime] %s\b"
 		"  [endTime] %s\b"
 		"  [recordingFileID] %d"
+		, headerStr
 		, clicktoconference_stop_rsp->resultCode
 		, clicktoconference_stop_rsp->confID
 		, clicktoconference_stop_rsp->startTime
@@ -515,7 +536,8 @@ void clicktoconference_stop_rsp_tcp_display(clicktoconference_stop_rsp_tcp_t *cl
 void clicktoconference_stop_rsp_dbif_display(uxc_dbif_t *dbif) {
 	int rv;
 	ux_log(UXL_INFO, 
-		"DBIF [clicktoconference_stop_rsp]\n"
+		"Sending DBIF\n"
+		"[clicktoconference_stop_rsp]\n"
 		"  [resultCode] %d\n"
 		"  [confID] %s\n"
 		"  [startTime] %s\n"
@@ -562,11 +584,13 @@ final:
 	return rv;
 }
 
-void clicktoconference_play_ment_rsp_tcp_display(clicktoconference_play_ment_rsp_tcp_t *clicktoconference_play_ment_rsp) {
+void clicktoconference_play_ment_rsp_tcp_display(char *headerStr, clicktoconference_play_ment_rsp_tcp_t *clicktoconference_play_ment_rsp) {
 	ux_log(UXL_INFO, 
-		"TCP [clicktoconference_play_ment_rsp]\n"
+		"%s\n"
+		"Body [clicktoconference_play_ment_rsp]\n"
 		"  [resultCode] %d\n"
 		"  [confID] %s"
+		, headerStr
 		, clicktoconference_play_ment_rsp->resultCode
 		, clicktoconference_play_ment_rsp->confID);
 }
@@ -574,7 +598,8 @@ void clicktoconference_play_ment_rsp_tcp_display(clicktoconference_play_ment_rsp
 void clicktoconference_play_ment_rsp_dbif_display(uxc_dbif_t *dbif) {
 	int rv;
 	ux_log(UXL_INFO, 
-		"DBIF [clicktoconference_play_ment_rsp]\n"
+		"Sending DBIF\n"
+		"[clicktoconference_play_ment_rsp]\n"
 		"  [resultCode] %d\n"
 		"  [confID] %s"
 		,uxc_dbif_get_int(dbif, 0, &rv)
@@ -619,13 +644,15 @@ final:
 	return rv;
 }
 
-void clicktoconference_get_party_status_rsp_tcp_display(clicktoconference_get_party_status_rsp_tcp_t *clicktoconference_get_party_status_rsp) {
+void clicktoconference_get_party_status_rsp_tcp_display(char *headerStr, clicktoconference_get_party_status_rsp_tcp_t *clicktoconference_get_party_status_rsp) {
 	ux_log(UXL_INFO, 
-		"TCP [clicktoconference_get_party_status_rsp]\n"
+		"%s\n"
+		"Body [clicktoconference_get_party_status_rsp]\n"
 		"  [resultCode] %d\n"
 		"  [confID] %s\n"
 		"  [participantName] %s\n"
 		"  [participantNumber] %s"
+		, headerStr
 		, clicktoconference_get_party_status_rsp->resultCode
 		, clicktoconference_get_party_status_rsp->confID
 		, clicktoconference_get_party_status_rsp->participantName
@@ -635,7 +662,8 @@ void clicktoconference_get_party_status_rsp_tcp_display(clicktoconference_get_pa
 void clicktoconference_get_party_status_rsp_dbif_display(uxc_dbif_t *dbif) {
 	int rv;
 	ux_log(UXL_INFO, 
-		"DBIF [clicktoconference_get_party_status_rsp]\n"
+		"Sending DBIF\n"
+		"[clicktoconference_get_party_status_rsp]\n"
 		"  [resultCode] %d\n"
 		"  [confID] %s\n"
 		"  [participantName] %s\n"
@@ -681,12 +709,14 @@ final:
 	return rv;
 }
 
-void clicktoconference_cancel_party_rsp_tcp_display(clicktoconference_cancel_party_rsp_tcp_t *clicktoconference_cancel_party_rsp) {
+void clicktoconference_cancel_party_rsp_tcp_display(char *headerStr, clicktoconference_cancel_party_rsp_tcp_t *clicktoconference_cancel_party_rsp) {
 	ux_log(UXL_INFO, 
-		"TCP [clicktoconference_cancel_party_rsp]\n"
+		"%s\n"
+		"Body [clicktoconference_cancel_party_rsp]\n"
 		"  [resultCode] %d\n"
 		"  [confID] %s\n"
 		"  [participantNumber] %s"
+		, headerStr
 		, clicktoconference_cancel_party_rsp->resultCode
 		, clicktoconference_cancel_party_rsp->confID
 		, clicktoconference_cancel_party_rsp->participantNumber);
@@ -695,7 +725,8 @@ void clicktoconference_cancel_party_rsp_tcp_display(clicktoconference_cancel_par
 void clicktoconference_cancel_party_rsp_dbif_display(uxc_dbif_t *dbif) {
 	int rv;
 	ux_log(UXL_INFO, 
-		"DBIF [clicktoconference_cancel_party_req]\n"
+		"Sending DBIF\n"
+		"[clicktoconference_cancel_party_req]\n"
 		"  [resultCode] %d\n"
 		"  [confID] %s\n"
 		"  [participantNumber] %s"

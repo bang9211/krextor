@@ -292,7 +292,6 @@ int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpms
 		return rv;
 	}
 
-	skb_msg_display_recv_header(&skbmsg->header);
 	// 2. process and response to uxcutor
 	//채널 index를 먼저 구분하여 clicktocall, clicktocallrecording, clicktoconference 구분
 	switch(tcpmsg->peerkey.chnl_idx) {
@@ -300,10 +299,12 @@ int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpms
 		switch(skbmsg->header.messageID) {
 		//HEARTBEAT
 		case HEARTBEAT_RESPONSE:
+			skb_msg_display_recv_header(&skbmsg->header);
 			is_heartbeat_sent[TCP_CHANNEL_CALL] = 0;
 			last_recv_seconds[TCP_CHANNEL_CALL] = seconds[TCP_CHANNEL_CALL];		
 			return UX_SUCCESS;
 		case HEARTBEAT_REQUEST:
+			skb_msg_display_recv_header(&skbmsg->header);
 			skb_msg_process_clicktocall_heartbeat_req(skbmsg);
 			msg_size = skbmsg->header.length;
 			// 메시지를 Network byte ordering으로 변경
@@ -354,7 +355,7 @@ int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpms
 			rv = skb_msg_process_clicktocall_startrecording_rpt(skbmsg);	//no send
 			break;
 		case STOP_RECORDING_REPORT:
-			rv = skb_msg_process_clicktocall_stoprecording_rpt(skbmsg);	//no send
+			rv = skb_msg_process_clicktocall_stoprecording_rpt(skbmsg);		//no send
 			break;
 		case SERVICE_STATUS_REPORT:
 			rv = skb_msg_process_clicktocall_service_status_rpt(skbmsg, &dbif);
@@ -368,10 +369,12 @@ int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpms
 		switch(skbmsg->header.messageID) {
 		//HEARTBEAT
 		case HEARTBEAT_RESPONSE:
+			skb_msg_display_recv_header(&skbmsg->header);
 			is_heartbeat_sent[TCP_CHANNEL_RECORDING] = 0;
 			last_recv_seconds[TCP_CHANNEL_RECORDING] = seconds[TCP_CHANNEL_RECORDING];		
 			return UX_SUCCESS;
 		case HEARTBEAT_REQUEST:
+			skb_msg_display_recv_header(&skbmsg->header);
 			skb_msg_process_clicktocallrecording_heartbeat_req(skbmsg);
 			msg_size = skbmsg->header.length;
 			// 메시지를 Network byte ordering으로 변경
@@ -427,10 +430,12 @@ int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpms
 		switch(skbmsg->header.messageID) {
 		//HEARTBEAT
 		case HEARTBEAT_RESPONSE:
+			skb_msg_display_recv_header(&skbmsg->header);
 			is_heartbeat_sent[TCP_CHANNEL_CONFERENCE] = 0;
 			last_recv_seconds[TCP_CHANNEL_CONFERENCE] = seconds[TCP_CHANNEL_CONFERENCE];		
 			return UX_SUCCESS;
 		case HEARTBEAT_REQUEST:
+			skb_msg_display_recv_header(&skbmsg->header);
 			skb_msg_process_clicktoconference_heartbeat_req(skbmsg);
 			msg_size = skbmsg->header.length;
 			// 메시지를 Network byte ordering으로 변경
@@ -562,7 +567,7 @@ int tcp_client_send_ipcmsg( tcp_client_t *client, uxc_ipcmsg_t* ipcmsg, int rv)
 	ipcmsg->header.srcQid = client->conf->mqid;
 	ipcmsg->header.result = rv;
 	
-	ux_log(UXL_INFO, "5. Send ipcmsg to %d from %d, size=%d, header=%lu + dbif=%d\n",
+	ux_log(UXL_INFO, "5. Send ipcmsg to %d from %d, size=%d, header=%lu + dbif=%d",
 		ipcmsg->header.dstQid, ipcmsg->header.srcQid, msg_size, sizeof(uxc_ixpc_t),ipcmsg->header.length); 
 
 	rv = msgsnd(ipcmsg->header.dstQid, &ipcmsg, msg_size, IPC_NOWAIT);
@@ -591,7 +596,6 @@ void *t_function(void *chnl_idx)
 	int sent_time = 0;
 	int cidx;
 	skb_msg_t skbmsg[1];
-	int msg_size;
 
 	memcpy(&cidx, chnl_idx, sizeof(int));
 	while(timer_switch[cidx] > 0) {
@@ -601,7 +605,6 @@ void *t_function(void *chnl_idx)
 			if (seconds[cidx] - last_recv_seconds[cidx] >= interval) {
 				ux_log( UXL_INFO, "send heartbeat(%d)", cidx);
 				skb_msg_make_header(&skbmsg->header, HEARTBEAT_REQUEST, 0, NULL);
-				msg_size = skbmsg->header.length;
 				skb_msg_display_send_header(&skbmsg->header);
 				strcpy(skbmsg[0].body,  "");
 
@@ -614,7 +617,7 @@ void *t_function(void *chnl_idx)
 
 				// ux_log(UXL_CRT, "seding tcp header size : %lu", sizeof(skbmsg->header));
 				// ux_log(UXL_CRT, "seding tcp body size : %lu", msg_size - sizeof(skbmsg->header));
-				rv = upa_tcp_send2(_g_client->patcp, &peerkey_arr[cidx], skbmsg, msg_size, 1);
+				rv = upa_tcp_send2(_g_client->patcp, &peerkey_arr[cidx], skbmsg, sizeof(skb_header_t), 1);
 				if( rv < UX_SUCCESS) {
 					ux_log( UXL_CRT, "can't send data.");
 					//세션 연결 종료

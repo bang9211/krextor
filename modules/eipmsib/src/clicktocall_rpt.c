@@ -44,14 +44,16 @@ final:
 	return rv;
 }
 
-void clicktocall_stop_rpt_tcp_display(clicktocall_stop_rpt_tcp_t *clicktocall_stop_rpt) {
+void clicktocall_stop_rpt_tcp_display(char *headerStr, clicktocall_stop_rpt_tcp_t *clicktocall_stop_rpt) {
 	ux_log(UXL_INFO, 
-		"TCP [clicktocall_stop_rpt]\n"
+		"%s\n"
+		"Body [clicktocall_stop_rpt]\n"
 		"  [returnCode] %d\n"
 		"  [serviceID] %s\n"
 		"  [startTime] %s\n"
 		"  [endTime] %s\n"
 		"  [isRecorded] %d\n"
+		, headerStr
 		, clicktocall_stop_rpt->returnCode
 		, clicktocall_stop_rpt->serviceID
 		, clicktocall_stop_rpt->startTime
@@ -62,7 +64,8 @@ void clicktocall_stop_rpt_tcp_display(clicktocall_stop_rpt_tcp_t *clicktocall_st
 void clicktocall_stop_rpt_dbif_display(uxc_dbif_t *dbif) {
 	int rv;
 	ux_log(UXL_INFO, 
-		"DBIF [clicktocall_stop_rpt]\n"
+		"Sending DBIF\n"
+		"[clicktocall_stop_rpt]\n"
 		"  [returnCode] %d\n"
 		"  [serviceID] %s\n"
 		"  [startTime] %s\n"
@@ -89,11 +92,13 @@ void clicktocall_startrecording_rpt_tcp_final( clicktocall_startrecording_rpt_tc
 	// 
 }
 
-void clicktocall_startrecording_rpt_tcp_display(clicktocall_startrecording_rpt_tcp_t *clicktocall_startrecording_rpt) {
+void clicktocall_startrecording_rpt_tcp_display(char *headerStr, clicktocall_startrecording_rpt_tcp_t *clicktocall_startrecording_rpt) {
 	ux_log(UXL_INFO, 
-		"TCP [clicktocall_startrecording_rpt]\n"
+		"%s\n"
+		"Body [clicktocall_startrecording_rpt]\n"
 		"  [resultCode] %d\n"
 		"  [serviceID] %s", 
+		headerStr,
 		clicktocall_startrecording_rpt->resultCode,
 		clicktocall_startrecording_rpt->serviceID);
 }
@@ -111,11 +116,13 @@ void clicktocall_stoprecording_rpt_tcp_final( clicktocall_stoprecording_rpt_tcp_
 	// 
 }
 
-void clicktocall_stoprecording_rpt_tcp_display(clicktocall_stoprecording_rpt_tcp_t *clicktocall_stoprecording_rpt) {
+void clicktocall_stoprecording_rpt_tcp_display(char *headerStr, clicktocall_stoprecording_rpt_tcp_t *clicktocall_stoprecording_rpt) {
 	ux_log(UXL_INFO, 
-		"TCP [clicktocall_stoprecording_rpt]\n"
+		"%s\n"
+		"Body [clicktocall_stoprecording_rpt]\n"
 		"  [resultCode] %d\n"
-		"  [serviceID] %s\n", 
+		"  [serviceID] %s\n",
+		headerStr,
 		clicktocall_stoprecording_rpt->resultCode,
 		clicktocall_stoprecording_rpt->serviceID);
 }
@@ -158,11 +165,13 @@ final:
 	return rv;
 }
 
-void clicktocall_service_status_rpt_tcp_display(clicktocall_service_status_rpt_tcp_t *clicktocall_service_status_rpt) {
+void clicktocall_service_status_rpt_tcp_display(char *headerStr, clicktocall_service_status_rpt_tcp_t *clicktocall_service_status_rpt) {
 	ux_log(UXL_INFO, 
-		"TCP [clicktocall_service_status_rpt]\n"
+		"%s\n"
+		"Body [clicktocall_service_status_rpt]\n"
 		"  [serviceID] %s\n"
 		"  [status] %d"
+		, headerStr
 		, clicktocall_service_status_rpt->serviceID
 		, clicktocall_service_status_rpt->status);
 }
@@ -170,7 +179,8 @@ void clicktocall_service_status_rpt_tcp_display(clicktocall_service_status_rpt_t
 void clicktocall_service_status_rpt_dbif_display(uxc_dbif_t *dbif) {
 	int rv;
 	ux_log(UXL_INFO, 
-		"DBIF [clicktocall_service_status_rpt]\n"
+		"Sending DBIF\n"
+		"[clicktocall_service_status_rpt]\n"
 		"  [serviceID] %s\n"
 		"  [status] %d"
 		,uxc_dbif_get_str(dbif, 0, &rv)

@@ -189,12 +189,14 @@ static int tcp_server_handle_clicktocall_start_req( tcp_server_t *server, uxc_wo
 	clicktocall_start_rsp_tcp_t clicktocall_start_rsp[1];
 	clicktocall_start_req_tcp_t clicktocall_start_req[1];
 	skb_msg_t rspMsg;
+	char log[SKB_HEADER_DISPLAY_SIZE];
 
 	//request display
 	ux_log(UXL_INFO, "* tcp_server_handle_clicktocall_start_req ");
 	memcpy(clicktocall_start_req, skbmsg->body, sizeof(clicktocall_start_req_tcp_t));
-	skb_msg_display_recv_header(&skbmsg->header);
-	clicktocall_start_req_tcp_display(clicktocall_start_req);
+	// skb_msg_display_recv_header(&skbmsg->header);
+	skb_msg_get_recv_header_display(&skbmsg->header, log);
+	clicktocall_start_req_tcp_display(log, clicktocall_start_req);
 
 	//make response
 	clicktocall_start_rsp_tcp_init(clicktocall_start_rsp);
@@ -207,8 +209,9 @@ static int tcp_server_handle_clicktocall_start_req( tcp_server_t *server, uxc_wo
 	strncpy(clicktocall_start_rsp->recordingFileName, "testFileName", RECORDING_FILE_NAME_LEN);
 
 	skb_msg_make_header(&rspMsg.header, START_RESPONSE, sizeof(clicktocall_start_rsp), &skbmsg->header.requestID);
-	skb_msg_display_send_header(&rspMsg.header);
-	clicktocall_start_rsp_tcp_display(clicktocall_start_rsp);
+	// skb_msg_display_send_header(&rspMsg.header);
+	skb_msg_get_send_header_display(&rspMsg.header, log);
+	clicktocall_start_rsp_tcp_display(log, clicktocall_start_rsp);
 	memcpy(rspMsg.body, clicktocall_start_rsp, sizeof(clicktocall_start_rsp_tcp_t));
 
 	rv = skb_msg_send(&rspMsg, server->patcp, &tcpmsg->peerkey, DBIF_CALL_START_RESPONSE);	
@@ -225,12 +228,14 @@ static int tcp_server_handle_clicktocall_stop_req( tcp_server_t *server, uxc_wor
 	clicktocall_stop_rsp_tcp_t clicktocall_stop_rsp[1];
 	clicktocall_stop_req_tcp_t clicktocall_stop_req[1];
 	skb_msg_t rspMsg;
+	char log[SKB_HEADER_DISPLAY_SIZE];
 
 	//request display
 	ux_log(UXL_INFO, "* tcp_server_handle_clicktocall_stop_req ");
 	memcpy(clicktocall_stop_req, skbmsg->body, sizeof(clicktocall_stop_req_tcp_t));
-	skb_msg_display_recv_header(&skbmsg->header);
-	clicktocall_stop_req_tcp_display(clicktocall_stop_req);
+	// skb_msg_display_recv_header(&skbmsg->header);
+	skb_msg_get_recv_header_display(&skbmsg->header, log);
+	clicktocall_stop_req_tcp_display(log, clicktocall_stop_req);
 
 	//make response
 	clicktocall_stop_rsp_tcp_init(clicktocall_stop_rsp);
@@ -238,8 +243,9 @@ static int tcp_server_handle_clicktocall_stop_req( tcp_server_t *server, uxc_wor
 	strncpy(clicktocall_stop_rsp->serviceID, "service0001", SERVICE_ID_LEN);
 
 	skb_msg_make_header(&rspMsg.header, STOP_RESPONSE, sizeof(clicktocall_stop_rsp), &skbmsg->header.requestID);
-	skb_msg_display_send_header(&rspMsg.header);
-	clicktocall_stop_rsp_tcp_display(clicktocall_stop_rsp);
+	// skb_msg_display_send_header(&rspMsg.header);
+	skb_msg_get_send_header_display(&rspMsg.header, log);
+	clicktocall_stop_rsp_tcp_display(log, clicktocall_stop_rsp);
 	memcpy(rspMsg.body, clicktocall_stop_rsp, sizeof(clicktocall_stop_rsp_tcp_t));
 	
 	rv = skb_msg_send(&rspMsg, server->patcp, &tcpmsg->peerkey, DBIF_CALL_STOP_RESPONSE);	
@@ -254,12 +260,14 @@ static int tcp_server_handle_clicktocall_startrecording_req( tcp_server_t *serve
 	clicktocall_startrecording_rsp_tcp_t clicktocall_startrecording_rsp[1];
 	clicktocall_startrecording_req_tcp_t clicktocall_startrecording_req[1];
 	skb_msg_t rspMsg;
+	char log[SKB_HEADER_DISPLAY_SIZE];
 
 	//request display
 	ux_log(UXL_INFO, "* tcp_server_handle_clicktocall_startrecording_req ");
 	memcpy(clicktocall_startrecording_req, skbmsg->body, sizeof(clicktocall_startrecording_req_tcp_t));
-	skb_msg_display_recv_header(&skbmsg->header);
-	clicktocall_startrecording_req_tcp_display(clicktocall_startrecording_req);
+	// skb_msg_display_recv_header(&skbmsg->header);
+	skb_msg_get_recv_header_display(&skbmsg->header, log);
+	clicktocall_startrecording_req_tcp_display(log, clicktocall_startrecording_req);
 
 	//make response
 	clicktocall_startrecording_rsp_tcp_init(clicktocall_startrecording_rsp);
@@ -269,8 +277,9 @@ static int tcp_server_handle_clicktocall_startrecording_req( tcp_server_t *serve
 	strncpy(clicktocall_startrecording_rsp->recordingFileName, "testFileName", RECORDING_FILE_NAME_LEN);
 
 	skb_msg_make_header(&rspMsg.header, START_RECORDING_RESPONSE, sizeof(clicktocall_startrecording_rsp), &skbmsg->header.requestID);
-	skb_msg_display_send_header(&rspMsg.header);
-	clicktocall_startrecording_rsp_tcp_display(clicktocall_startrecording_rsp);
+	// skb_msg_display_send_header(&rspMsg.header);
+	skb_msg_get_send_header_display(&rspMsg.header, log);
+	clicktocall_startrecording_rsp_tcp_display(log, clicktocall_startrecording_rsp);
 	memcpy(rspMsg.body, clicktocall_startrecording_rsp, sizeof(clicktocall_startrecording_rsp_tcp_t));
 
 	rv = skb_msg_send(&rspMsg, server->patcp, &tcpmsg->peerkey, DBIF_CALL_START_RECORDING_RESPONSE);	
@@ -285,12 +294,14 @@ static int tcp_server_handle_clicktocall_stoprecording_req( tcp_server_t *server
 	clicktocall_stoprecording_rsp_tcp_t clicktocall_stoprecording_rsp[1];
 	clicktocall_stoprecording_req_tcp_t clicktocall_stoprecording_req[1];
 	skb_msg_t rspMsg;
+	char log[SKB_HEADER_DISPLAY_SIZE];
 
 	//request display
 	ux_log(UXL_INFO, "* tcp_server_handle_clicktocall_clicktocall_stoprecording_req ");
 	memcpy(clicktocall_stoprecording_req, skbmsg->body, sizeof(clicktocall_stoprecording_req_tcp_t));
-	skb_msg_display_recv_header(&skbmsg->header);
-	clicktocall_stoprecording_req_tcp_display(clicktocall_stoprecording_req);
+	// skb_msg_display_recv_header(&skbmsg->header);
+	skb_msg_get_recv_header_display(&skbmsg->header, log);
+	clicktocall_stoprecording_req_tcp_display(log, clicktocall_stoprecording_req);
 
 	//make response
 	clicktocall_stoprecording_rsp_tcp_init(clicktocall_stoprecording_rsp);
@@ -298,8 +309,9 @@ static int tcp_server_handle_clicktocall_stoprecording_req( tcp_server_t *server
 	strncpy(clicktocall_stoprecording_rsp->serviceID, "service0001", SERVICE_ID_LEN);
 
 	skb_msg_make_header(&rspMsg.header, STOP_RECORDING_RESPONSE, sizeof(clicktocall_stoprecording_rsp), &skbmsg->header.requestID);
-	skb_msg_display_send_header(&rspMsg.header);
-	clicktocall_stoprecording_rsp_tcp_display(clicktocall_stoprecording_rsp);
+	// skb_msg_display_send_header(&rspMsg.header);
+	skb_msg_get_send_header_display(&rspMsg.header, log);
+	clicktocall_stoprecording_rsp_tcp_display(log, clicktocall_stoprecording_rsp);
 	memcpy(rspMsg.body, clicktocall_stoprecording_rsp, sizeof(clicktocall_stoprecording_rsp_tcp_t));
 
 	rv = skb_msg_send(&rspMsg, server->patcp, &tcpmsg->peerkey, DBIF_CALL_STOP_RECORDING_RESPONSE);	

@@ -52,22 +52,22 @@ struct clicktocallrecording_service_status_req_tcp_s {
 ///////////////////////////////////////////////////////////////////////////////////
 int clicktocallrecording_binding_req_tcp_init( clicktocallrecording_binding_req_tcp_t *clicktocallrecording_binding_req);
 void clicktocallrecording_binding_req_tcp_final( clicktocallrecording_binding_req_tcp_t *clicktocallrecording_binding_req);
-void clicktocallrecording_binding_req_tcp_display(clicktocallrecording_binding_req_tcp_t *clicktocallrecording_binding_req);
+void clicktocallrecording_binding_req_tcp_display(char *headerStr, clicktocallrecording_binding_req_tcp_t *clicktocallrecording_binding_req);
 
 int clicktocallrecording_start_req_tcp_init( clicktocallrecording_start_req_tcp_t *clicktocallrecording_start_req);
 void clicktocallrecording_start_req_tcp_final( clicktocallrecording_start_req_tcp_t *clicktocallrecording_start_req);
 int clicktocallrecording_start_req_decode_dbif_msg( clicktocallrecording_start_req_tcp_t *clicktocallrecording_start_req, char *sessionID, char *gwSessionID, uxc_dbif_t *dbif);
-void clicktocallrecording_start_req_tcp_display(clicktocallrecording_start_req_tcp_t *clicktocallrecording_start_req);
+void clicktocallrecording_start_req_tcp_display(char *headerStr, clicktocallrecording_start_req_tcp_t *clicktocallrecording_start_req);
 void clicktocallrecording_start_req_dbif_display(uxc_dbif_t *dbif);
 
 int clicktocallrecording_stop_req_tcp_init( clicktocallrecording_stop_req_tcp_t *clicktocallrecording_stop_req);
 void clicktocallrecording_stop_req_tcp_final( clicktocallrecording_stop_req_tcp_t *clicktocallrecording_stop_req);
 int clicktocallrecording_stop_req_decode_dbif_msg( clicktocallrecording_stop_req_tcp_t *clicktocallrecording_stop_req, uxc_dbif_t *dbif);
-void clicktocallrecording_stop_req_tcp_display(clicktocallrecording_stop_req_tcp_t *clicktocallrecording_stop_req);
+void clicktocallrecording_stop_req_tcp_display(char *headerStr, clicktocallrecording_stop_req_tcp_t *clicktocallrecording_stop_req);
 void clicktocallrecording_stop_req_dbif_display(uxc_dbif_t *dbif);
 
 int clicktocallrecording_service_status_req_tcp_init( clicktocallrecording_service_status_req_tcp_t *clicktocallrecording_service_status_req);
 void clicktocallrecording_service_status_req_tcp_final( clicktocallrecording_service_status_req_tcp_t *clicktocallrecording_service_status_req);
-void clicktocallrecording_service_status_req_tcp_display(clicktocallrecording_service_status_req_tcp_t *clicktocallrecording_service_status_req);
+void clicktocallrecording_service_status_req_tcp_display(char *headerStr, clicktocallrecording_service_status_req_tcp_t *clicktocallrecording_service_status_req);
 
 #endif // #ifndef __CLICKTOCALLRECORDING_REQ_H__

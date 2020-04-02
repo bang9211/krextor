@@ -16,12 +16,14 @@ void clicktocall_binding_rsp_tcp_final( clicktocall_binding_rsp_tcp_t *clicktoca
 	//
 }
 
-void clicktocall_binding_rsp_tcp_display(clicktocall_binding_rsp_tcp_t *clicktocall_binding_rsp) {
+void clicktocall_binding_rsp_tcp_display(char *headerStr, clicktocall_binding_rsp_tcp_t *clicktocall_binding_rsp) {
 	ux_log(UXL_INFO, 
-		"TCP [clicktocall_binding_rsp]\n"
+		"%s\n"
+		"Body [clicktocall_binding_rsp]\n"
 		"  [resultCode] %d\n"
 		"  [userID] %s\n"
 		"  [password] %s",
+		headerStr,
 		clicktocall_binding_rsp->resultCode,
 		clicktocall_binding_rsp->userID,
 		clicktocall_binding_rsp->password);
@@ -80,9 +82,10 @@ final:
 	return rv;
 }
 
-void clicktocall_start_rsp_tcp_display(clicktocall_start_rsp_tcp_t *clicktocall_start_rsp) {
+void clicktocall_start_rsp_tcp_display(char *headerStr, clicktocall_start_rsp_tcp_t *clicktocall_start_rsp) {
 	ux_log(UXL_INFO, 
-		"TCP [clicktocall_start_rsp]\n" 
+		"%s\n"
+		"Body [clicktocall_start_rsp]\n" 
 		"  [resultCode] %d\n"
 		"  [serviceID] %s\n"
 		"  [isRecording] %d\n"
@@ -90,6 +93,7 @@ void clicktocall_start_rsp_tcp_display(clicktocall_start_rsp_tcp_t *clicktocall_
 		"  [filler2] %d\n"
 		"  [recordingFileURL] %s\n"
 		"  [recordingFileName] %s",
+		headerStr,
 		clicktocall_start_rsp->resultCode, 
 		clicktocall_start_rsp->serviceID, 
 		clicktocall_start_rsp->isRecording, 
@@ -102,7 +106,8 @@ void clicktocall_start_rsp_tcp_display(clicktocall_start_rsp_tcp_t *clicktocall_
 void clicktocall_start_rsp_dbif_display(uxc_dbif_t *dbif) {
 	int rv;
 	ux_log(UXL_INFO, 
-		"DBIF [clicktocall_start_rsp]\n"
+		"Sending DBIF\n"
+		"[clicktocall_start_rsp]\n"
 		"  [sessionID] %s\n"
 		"  [gwSessionID] %s\n"
 		"  [resultCode] %d\n"
@@ -154,11 +159,13 @@ final:
 	return rv;
 }
 
-void clicktocall_stop_rsp_tcp_display(clicktocall_stop_rsp_tcp_t *clicktocall_stop_rsp) {
+void clicktocall_stop_rsp_tcp_display(char *headerStr, clicktocall_stop_rsp_tcp_t *clicktocall_stop_rsp) {
 	ux_log(UXL_INFO, 
-		"TCP [clicktocall_stop_rsp]\n"
+		"%s\n"
+		"Body [clicktocall_stop_rsp]\n"
 		"  [resultCode] %d\n"
 		"  [serviceID] %s", 
+		headerStr,
 		clicktocall_stop_rsp->resultCode,
 		clicktocall_stop_rsp->serviceID);
 }
@@ -166,7 +173,8 @@ void clicktocall_stop_rsp_tcp_display(clicktocall_stop_rsp_tcp_t *clicktocall_st
 void clicktocall_stop_rsp_dbif_display(uxc_dbif_t *dbif) {
 	int rv;
 	ux_log(UXL_INFO, 
-		"DBIF [clicktocall_stop_rsp]\n"
+		"Sending DBIF\n"
+		"[clicktocall_stop_rsp]\n"
 		"  [resultCode] %d\n"
 		"  [serviceID] %s",
 		uxc_dbif_get_int(dbif, 0, &rv),
@@ -212,13 +220,15 @@ final:
 	return rv;
 }
 
-void clicktocall_startrecording_rsp_tcp_display(clicktocall_startrecording_rsp_tcp_t *clicktocall_startrecording_rsp) {
+void clicktocall_startrecording_rsp_tcp_display(char *headerStr, clicktocall_startrecording_rsp_tcp_t *clicktocall_startrecording_rsp) {
 	ux_log(UXL_INFO, 
-		"TCP [clicktocall_startrecording_rsp]\n"
+		"%s\n"
+		"Body [clicktocall_startrecording_rsp]\n"
 		"  [resultCode] %d\n"
 		"  [serviceID] %s\n"
 		"  [recordingFileURL] %s\n"
 		"  [recordingFileName] %s"
+		, headerStr
 		, clicktocall_startrecording_rsp->resultCode
 		, clicktocall_startrecording_rsp->serviceID
 		, clicktocall_startrecording_rsp->recordingFileURL
@@ -228,7 +238,8 @@ void clicktocall_startrecording_rsp_tcp_display(clicktocall_startrecording_rsp_t
 void clicktocall_startrecording_rsp_dbif_display(uxc_dbif_t *dbif) {
 	int rv;
 	ux_log(UXL_INFO, 
-		"DBIF [clicktocall_startrecording_rsp]\n"
+		"Sending DBIF\n"
+		"[clicktocall_startrecording_rsp]\n"
 		"  [resultCode] %d\n"
 		"  [serviceID] %s\n"
 		"  [recordingFileURL] %s\n"
@@ -274,11 +285,13 @@ final:
 	return rv;
 }
 
-void clicktocall_stoprecording_rsp_tcp_display(clicktocall_stoprecording_rsp_tcp_t *clicktocall_stoprecording_rsp) {
+void clicktocall_stoprecording_rsp_tcp_display(char *headerStr, clicktocall_stoprecording_rsp_tcp_t *clicktocall_stoprecording_rsp) {
 	ux_log(UXL_INFO, 
-		"TCP [clicktocall_stoprecording_rsp]\n"
+		"%s\n"
+		"Body [clicktocall_stoprecording_rsp]\n"
 		"  [resultCode] %d\n"
 		"  [serviceID] %s"
+		, headerStr
 		, clicktocall_stoprecording_rsp->resultCode
 		, clicktocall_stoprecording_rsp->serviceID);
 }
@@ -286,7 +299,8 @@ void clicktocall_stoprecording_rsp_tcp_display(clicktocall_stoprecording_rsp_tcp
 void clicktocall_stoprecording_rsp_dbif_display(uxc_dbif_t *dbif) {
 	int rv;
 	ux_log(UXL_INFO, 
-		"DBIF [clicktocall_stoprecording_rsp]\n"
+		"Sending DBIF\n"
+		"[clicktocall_stoprecording_rsp]\n"
 		"  [resultCode] %d\n"
 		"  [serviceID] %s"
 		,uxc_dbif_get_int(dbif, 0, &rv)
@@ -306,12 +320,14 @@ void clicktocall_service_status_rsp_tcp_final( clicktocall_service_status_rsp_tc
 	// 
 }
 
-void clicktocall_service_status_rsp_tcp_display(clicktocall_service_status_rsp_tcp_t *clicktocall_service_status_rsp) {
+void clicktocall_service_status_rsp_tcp_display(char *headerStr, clicktocall_service_status_rsp_tcp_t *clicktocall_service_status_rsp) {
 	ux_log(UXL_INFO, 
-		"TCP [clicktocall_service_status_rsp]"
+		"%s\n"
+		"Body [clicktocall_service_status_rsp]"
 		"  [resultCode] %d"
 		"  [serviceID] %s"
 		"  [status] %d"
+		, headerStr
 		, clicktocall_service_status_rsp->resultCode
 		, clicktocall_service_status_rsp->serviceID
 		, clicktocall_service_status_rsp->status);

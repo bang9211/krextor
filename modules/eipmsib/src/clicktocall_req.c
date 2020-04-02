@@ -15,12 +15,14 @@ void clicktocall_binding_req_tcp_final( clicktocall_binding_req_tcp_t *clicktoca
 	return;
 }
 
-void clicktocall_binding_req_tcp_display(clicktocall_binding_req_tcp_t *clicktocall_binding_req)
+void clicktocall_binding_req_tcp_display(char *headerStr, clicktocall_binding_req_tcp_t *clicktocall_binding_req)
 {
 	ux_log(UXL_INFO, 
-		"TCP [clicktocall_binding_req]\n"
+		"%s\n"
+		"Body [clicktocall_binding_req]\n"
 		"  [userID] %s\n"
 		"  [password] %s", 
+		headerStr,
 		clicktocall_binding_req->userID, 
 		clicktocall_binding_req->password);
 }
@@ -96,9 +98,10 @@ final:
 	return rv;
 }
 
-void clicktocall_start_req_tcp_display(clicktocall_start_req_tcp_t *clicktocall_start_req) {
+void clicktocall_start_req_tcp_display(char *headerStr, clicktocall_start_req_tcp_t *clicktocall_start_req) {
 	ux_log(UXL_INFO, 
-		"TCP [clicktocall_start_req]\n"
+		"%s\n"
+		"Body [clicktocall_start_req]\n"
 		"  [subscriberName] %s\n"
 		"  [recordingType] %d\n"
 		"  [callingNumber] %s\n"
@@ -121,6 +124,7 @@ void clicktocall_start_req_tcp_display(clicktocall_start_req_tcp_t *clicktocall_
 		"  [wiredTimeout] %d\n"
 		"  [filler2] %d\n"
 		"  [filler3] %s",
+		headerStr,
 		clicktocall_start_req->subscriberName,
 		clicktocall_start_req->recordingType,
 		clicktocall_start_req->callingNumber,
@@ -148,7 +152,8 @@ void clicktocall_start_req_tcp_display(clicktocall_start_req_tcp_t *clicktocall_
 void clicktocall_start_req_dbif_display(uxc_dbif_t *dbif) {
 	int rv;
 	ux_log(UXL_INFO, 
-		"DBIF [clicktocall_start_req]\n"
+		"Received DBIF\n"
+		"[clicktocall_start_req]\n"
 		"  [sessionID] %s\n"
 		"  [gwSessionID] %s\n"
 		"  [subscriberName] %s\n"
@@ -219,17 +224,20 @@ final:
 	return rv;
 }
 
-void clicktocall_stop_req_tcp_display(clicktocall_stop_req_tcp_t *clicktocall_stop_req) {
+void clicktocall_stop_req_tcp_display(char *headerStr, clicktocall_stop_req_tcp_t *clicktocall_stop_req) {
 	ux_log(UXL_INFO, 
-		"TCP [clicktocall_stop_req]\n"
+		"%s\n"
+		"Body [clicktocall_stop_req]\n"
 		"  [serviceID] %s", 
+		headerStr,
 		clicktocall_stop_req->serviceID);
 }
 
 void clicktocall_stop_req_dbif_display(uxc_dbif_t *dbif) {
 	int rv;
 	ux_log(UXL_INFO, 
-		"DBIF [clicktocall_stop_req]\n"
+		"Received DBIF\n"
+		"[clicktocall_stop_req]\n"
 		"  [serviceID] %s",
 		uxc_dbif_get_str(dbif, 0, &rv));
 }
@@ -264,11 +272,13 @@ final:
 	return rv;
 }
 
-void clicktocall_startrecording_req_tcp_display(clicktocall_startrecording_req_tcp_t *clicktocall_startrecording_req) {
+void clicktocall_startrecording_req_tcp_display(char *headerStr, clicktocall_startrecording_req_tcp_t *clicktocall_startrecording_req) {
 	ux_log(UXL_INFO, 
-		"TCP [clicktocall_startrecording_req]\n"
+		"%s\n"
+		"Body [clicktocall_startrecording_req]\n"
 		"  [serviceID] %s\n"
 		"  [recordingFileName] %s", 
+		headerStr,
 		clicktocall_startrecording_req->serviceID, 
 		clicktocall_startrecording_req->recordingFileName);
 }
@@ -276,7 +286,8 @@ void clicktocall_startrecording_req_tcp_display(clicktocall_startrecording_req_t
 void clicktocall_startrecording_req_dbif_display(uxc_dbif_t *dbif) {
 	int rv;
 	ux_log(UXL_INFO, 
-		"DBIF [clicktocall_startrecording_req]\n"
+		"Received DBIF\n"
+		"[clicktocall_startrecording_req]\n"
 		"  [serviceID] %s",
 		uxc_dbif_get_str(dbif, 0, &rv));
 }
@@ -309,17 +320,20 @@ final:
 	return rv;
 }
 
-void clicktocall_stoprecording_req_tcp_display(clicktocall_stoprecording_req_tcp_t *clicktocall_stoprecording_req) {
+void clicktocall_stoprecording_req_tcp_display(char *headerStr, clicktocall_stoprecording_req_tcp_t *clicktocall_stoprecording_req) {
 	ux_log(UXL_INFO, 
-		"TCP [clicktocall_stoprecording_req]\n"
+		"%s\n"
+		"Body [clicktocall_stoprecording_req]\n"
 		"  [serviceID] %s", 
+		headerStr,
 		clicktocall_stoprecording_req->serviceID);
 }
 
 void clicktocall_stoprecording_req_dbif_display(uxc_dbif_t *dbif) {
 	int rv;
 	ux_log(UXL_INFO, 
-		"DBIF [clicktocall_stoprecording_req]\n"
+		"Received DBIF\n"
+		"[clicktocall_stoprecording_req]\n"
 		"  [serviceID] %s",
 		uxc_dbif_get_str(dbif, 0, &rv));
 }
@@ -339,9 +353,11 @@ void clicktocall_service_status_req_tcp_final( clicktocall_service_status_req_tc
 	return;
 }
 
-void clicktocall_service_status_req_tcp_display(clicktocall_service_status_req_tcp_t *clicktocall_service_status_req) {
+void clicktocall_service_status_req_tcp_display(char *headerStr, clicktocall_service_status_req_tcp_t *clicktocall_service_status_req) {
 	ux_log(UXL_INFO, 
-		"TCP [clicktocall_service_status_req]\n"
+		"%s\n"
+		"Body [clicktocall_service_status_req]\n"
 		"  [serviceID] %s", 
+		headerStr,
 		clicktocall_service_status_req->serviceID);
 }

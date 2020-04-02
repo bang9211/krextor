@@ -64,34 +64,34 @@ struct clicktocall_service_status_rsp_tcp_s {
 
 int clicktocall_binding_rsp_tcp_init( clicktocall_binding_rsp_tcp_t *clicktocall_binding_rsp);
 void clicktocall_binding_rsp_tcp_final( clicktocall_binding_rsp_tcp_t *clicktocall_binding_rsp);
-void clicktocall_binding_rsp_tcp_display(clicktocall_binding_rsp_tcp_t *clicktocall_binding_rsp);
+void clicktocall_binding_rsp_tcp_display(char *headerStr, clicktocall_binding_rsp_tcp_t *clicktocall_binding_rsp);
 
 int clicktocall_start_rsp_tcp_init( clicktocall_start_rsp_tcp_t *clicktocall_start_rsp);
 void clicktocall_start_rsp_tcp_final( clicktocall_start_rsp_tcp_t *clicktocall_start_rsp);
 int clicktocall_start_rsp_encode_to_dbif_msg( clicktocall_start_rsp_tcp_t *clicktocall_start_rsp, char *sessionID, char *gwSessionID, uxc_dbif_t *dbif);
-void clicktocall_start_rsp_tcp_display(clicktocall_start_rsp_tcp_t *clicktocall_start_rsp);
+void clicktocall_start_rsp_tcp_display(char *headerStr, clicktocall_start_rsp_tcp_t *clicktocall_start_rsp);
 void clicktocall_start_rsp_dbif_display(uxc_dbif_t *dbif);
 
 int clicktocall_stop_rsp_tcp_init( clicktocall_stop_rsp_tcp_t *clicktocall_stop_rsp);
 void clicktocall_stop_rsp_tcp_final( clicktocall_stop_rsp_tcp_t *clicktocall_stop_rsp);
 int clicktocall_stop_rsp_encode_to_dbif_msg( clicktocall_stop_rsp_tcp_t *clicktocall_stop_rsp, uxc_dbif_t *dbif);
-void clicktocall_stop_rsp_tcp_display(clicktocall_stop_rsp_tcp_t *clicktocall_stop_rsp);
+void clicktocall_stop_rsp_tcp_display(char *headerStr, clicktocall_stop_rsp_tcp_t *clicktocall_stop_rsp);
 void clicktocall_stop_rsp_dbif_display(uxc_dbif_t *dbif);
 
 int clicktocall_startrecording_rsp_tcp_init( clicktocall_startrecording_rsp_tcp_t *clicktocall_startrecording_rsp);
 void clicktocall_startrecording_rsp_tcp_final( clicktocall_startrecording_rsp_tcp_t *clicktocall_startrecording_rsp);
 int clicktocall_startrecording_rsp_encode_to_dbif_msg( clicktocall_startrecording_rsp_tcp_t *clicktocall_startrecording_rsp, uxc_dbif_t *dbif);
-void clicktocall_startrecording_rsp_tcp_display(clicktocall_startrecording_rsp_tcp_t *clicktocall_startrecording_rsp);
+void clicktocall_startrecording_rsp_tcp_display(char *headerStr, clicktocall_startrecording_rsp_tcp_t *clicktocall_startrecording_rsp);
 void clicktocall_startrecording_rsp_dbif_display(uxc_dbif_t *dbif);
 
 int clicktocall_stoprecording_rsp_tcp_init( clicktocall_stoprecording_rsp_tcp_t *clicktocall_stoprecording_rsp);
 void clicktocall_stoprecording_rsp_tcp_final( clicktocall_stoprecording_rsp_tcp_t *clicktocall_stoprecording_rsp);
 int clicktocall_stoprecording_rsp_encode_to_dbif_msg( clicktocall_stoprecording_rsp_tcp_t *clicktocall_stoprecording_rsp, uxc_dbif_t *dbif);
-void clicktocall_stoprecording_rsp_tcp_display(clicktocall_stoprecording_rsp_tcp_t *clicktocall_stoprecording_rsp);
+void clicktocall_stoprecording_rsp_tcp_display(char *headerStr, clicktocall_stoprecording_rsp_tcp_t *clicktocall_stoprecording_rsp);
 void clicktocall_stoprecording_rsp_dbif_display(uxc_dbif_t *dbif);
 
 int clicktocall_service_status_rsp_tcp_init( clicktocall_service_status_rsp_tcp_t *clicktocall_service_status_rsp);
 void clicktocall_service_status_rsp_tcp_final( clicktocall_service_status_rsp_tcp_t *clicktocall_service_status_rsp);
-void clicktocall_service_status_rsp_tcp_display(clicktocall_service_status_rsp_tcp_t *clicktocall_service_status_rsp);
+void clicktocall_service_status_rsp_tcp_display(char *headerStr, clicktocall_service_status_rsp_tcp_t *clicktocall_service_status_rsp);
 
 #endif // #ifndef __CLICKTOCALL_RSP_H__
