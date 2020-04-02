@@ -773,9 +773,8 @@ int skb_msg_make_bind_request(skb_msg_t *skbmsg, int chnl_idx) {
 	return UX_SUCCESS;
 }
 
-void skb_msg_display_header(skb_header_t* header) {
-	ux_log(UXL_INFO, 
-	"TCP Header\n"
+void skb_msg_get_header_display(skb_header_t* header, char *log) {
+	sprintf(log,
 	"  [frameStart1] 0x%hhX\n"
 	"  [length] %d\n"
 	"  [messageID] %#010x\n"
@@ -792,48 +791,28 @@ void skb_msg_display_header(skb_header_t* header) {
 		header->version1, 
 		header->userID, 
 		header->filler);
+}
+
+void skb_msg_get_send_header_display(skb_header_t* header, char *log) {
+	strcat(log, "Sending TCP Header\n");
+	skb_msg_get_header_display(header, log);
+}
+
+void skb_msg_get_recv_header_display(skb_header_t* header, char *log) {
+	strcat(log, "Recived TCP Header\n");
+	skb_msg_get_header_display(header, log);
 }
 
 void skb_msg_display_send_header(skb_header_t* header) {
-	ux_log(UXL_INFO, 
-	"Sending TCP Header\n"
-	"  [frameStart1] 0x%hhX\n"
-	"  [length] %d\n"
-	"  [messageID] %#010x\n"
-	"  [requestID] %d\n"
-	"  [version0] 0x%hhX\n"
-	"  [version1] 0x%hhX\n"
-	"  [userID] %d\n"
-	"  [filler] %d", 
-		header->frameStart1, 
-		header->length, 
-		header->messageID, 
-		header->requestID, 
-		header->version0, 
-		header->version1, 
-		header->userID, 
-		header->filler);
+	char log[SKB_HEADER_DISPLAY_SIZE];
+	skb_msg_get_header_display(header, log);
+	ux_log(UXL_INFO, "Sending TCP Header\n%s", log);
 }
 
 void skb_msg_display_recv_header(skb_header_t* header) {
-	ux_log(UXL_INFO, 
-	"Recived TCP Header\n"
-	"  [frameStart1] 0x%hhX\n"
-	"  [length] %d\n"
-	"  [messageID] %#010x\n"
-	"  [requestID] %d\n"
-	"  [version0] 0x%hhX\n"
-	"  [version1] 0x%hhX\n"
-	"  [userID] %d\n"
-	"  [filler] %d", 
-		header->frameStart1, 
-		header->length, 
-		header->messageID, 
-		header->requestID, 
-		header->version0, 
-		header->version1, 
-		header->userID, 
-		header->filler);
+	char log[SKB_HEADER_DISPLAY_SIZE];
+	skb_msg_get_header_display(header, log);
+	ux_log(UXL_INFO, "Recived TCP Header\n%s", log);
 }
 
 //TODO : requestID 수명이 다하면 초기화해줘야함(고갈 가능성)
@@ -968,7 +947,7 @@ int skb_msg_process_clicktocall_stoprecording_req( skb_msg_t *skbmsg, uxc_dbif_t
 }
 
 void skb_msg_process_clicktocall_heartbeat_rsp(skb_msg_t *skbmsg) {
-	// skb_msg_display_header(&skbmsg->header);
+	// skb_msg_get_header_display(&skbmsg->header);
 }
 
 int skb_msg_process_clicktocall_binding_rsp(skb_msg_t *skbmsg) {
@@ -1176,7 +1155,7 @@ int skb_msg_process_clicktocallrecording_service_status_req( skb_msg_t *skbmsg) 
 }
 
 void skb_msg_process_clicktocallrecording_heartbeat_rsp(skb_msg_t *skbmsg) {
-	// skb_msg_display_header(&skbmsg->header);
+	// skb_msg_get_header_display(&skbmsg->header);
 }
 
 int skb_msg_process_clicktocallrecording_binding_rsp(skb_msg_t *skbmsg) {
@@ -1476,7 +1455,7 @@ int skb_msg_process_clicktoconference_cancel_party_req( skb_msg_t *skbmsg, uxc_d
 }
 
 void skb_msg_process_clicktoconference_heartbeat_rsp(skb_msg_t *skbmsg) {
-	// skb_msg_display_header(&skbmsg->header);
+	// skb_msg_get_header_display(&skbmsg->header);
 }
 
 int skb_msg_process_clicktoconference_binding_rsp(skb_msg_t *skbmsg) {

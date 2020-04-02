@@ -17,10 +17,14 @@ void clicktoconference_binding_rsp_tcp_final( clicktoconference_binding_rsp_tcp_
 }
 
 void clicktoconference_binding_rsp_tcp_display(clicktoconference_binding_rsp_tcp_t *clicktoconference_binding_rsp) {
-	ux_log(UXL_INFO, "TCP [clicktoconference_binding_rsp]");
-	ux_log(UXL_INFO, "  [resultCode] %d", clicktoconference_binding_rsp->resultCode);
-	ux_log(UXL_INFO, "  [userID] %s", clicktoconference_binding_rsp->userID);
-	ux_log(UXL_INFO, "  [password] %s", clicktoconference_binding_rsp->password);
+	ux_log(UXL_INFO, 
+		"TCP [clicktoconference_binding_rsp]\n"
+		"  [resultCode] %d\n"
+		"  [userID] %s\n"
+		"  [password] %s"
+		, clicktoconference_binding_rsp->resultCode
+		, clicktoconference_binding_rsp->userID
+		, clicktoconference_binding_rsp->password);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -90,47 +94,84 @@ final:
 }
 
 void clicktoconference_start_rsp_tcp_display(clicktoconference_start_rsp_tcp_t *clicktoconference_start_rsp) {
-	ux_log(UXL_INFO, "TCP [clicktoconference_start_rsp]");
-	ux_log(UXL_INFO, "  [resultCode] %d", clicktoconference_start_rsp->resultCode);
-	ux_log(UXL_INFO, "  [confID] %s", clicktoconference_start_rsp->confID);
-	ux_log(UXL_INFO, "  [chairmanName] %s", clicktoconference_start_rsp->chairmanName);
-	ux_log(UXL_INFO, "  [chairmanNumber] %s", clicktoconference_start_rsp->chairmanNumber);
-	ux_log(UXL_INFO, "  [chargingNumber] %s", clicktoconference_start_rsp->chargingNumber);
-	ux_log(UXL_INFO, "  [confType] %d", clicktoconference_start_rsp->confType);
-	ux_log(UXL_INFO, "  [recordingFilePath] %d", clicktoconference_start_rsp->recordingFilePath);
-	ux_log(UXL_INFO, "  [filler1] %d", clicktoconference_start_rsp->filler1);
-	ux_log(UXL_INFO, "  [startTime] %s", clicktoconference_start_rsp->startTime);
-	ux_log(UXL_INFO, "  [smsNoti] %d", clicktoconference_start_rsp->smsNoti);
-	ux_log(UXL_INFO, "  [voiceNoti] %d", clicktoconference_start_rsp->voiceNoti);
-	ux_log(UXL_INFO, "  [filler2] %d", clicktoconference_start_rsp->filler2);
-	ux_log(UXL_INFO, "  [recordingFileID] %d", clicktoconference_start_rsp->recordingFileID);
-	ux_log(UXL_INFO, "  [recordingFileURL] %s", clicktoconference_start_rsp->recordingFileURL);
-	ux_log(UXL_INFO, "  [recordingFileName] %s", clicktoconference_start_rsp->recordingFileName);
-	ux_log(UXL_INFO, "  [password] %s", clicktoconference_start_rsp->password);
-	ux_log(UXL_INFO, "  [serviceMentID] %d", clicktoconference_start_rsp->serviceMentID);
-	ux_log(UXL_INFO, "  [callingCategoryType] %d", clicktoconference_start_rsp->callingCategoryType);
-	ux_log(UXL_INFO, "  [msp_id] %s", clicktoconference_start_rsp->msp_id);
-	ux_log(UXL_INFO, "  [sp_id] %s", clicktoconference_start_rsp->sp_id);
-	ux_log(UXL_INFO, "  [service_id] %s", clicktoconference_start_rsp->service_id);
+	ux_log(UXL_INFO, 
+		"TCP [clicktoconference_start_rsp]\n"
+		"  [resultCode] %d\n"
+		"  [confID] %s\n"
+		"  [chairmanName] %s\n"
+		"  [chairmanNumber] %s\n"
+		"  [chargingNumber] %s\n"
+		"  [confType] %d\n"
+		"  [recordingFilePath] %d\n"
+		"  [filler1] %d\n"
+		"  [startTime] %s\n"
+		"  [smsNoti] %d\n"
+		"  [voiceNoti] %d\n"
+		"  [filler2] %d\n"
+		"  [recordingFileID] %d\n"
+		"  [recordingFileURL] %s\n"
+		"  [recordingFileName] %s\n"
+		"  [password] %s\n"
+		"  [serviceMentID] %d\n"
+		"  [callingCategoryType] %d\n"
+		"  [msp_id] %s\n"
+		"  [sp_id] %s\n"
+		"  [service_id] %s"
+		, clicktoconference_start_rsp->resultCode
+		, clicktoconference_start_rsp->confID
+		, clicktoconference_start_rsp->chairmanName
+		, clicktoconference_start_rsp->chairmanNumber
+		, clicktoconference_start_rsp->chargingNumber
+		, clicktoconference_start_rsp->confType
+		, clicktoconference_start_rsp->recordingFilePath
+		, clicktoconference_start_rsp->filler1
+		, clicktoconference_start_rsp->startTime
+		, clicktoconference_start_rsp->smsNoti
+		, clicktoconference_start_rsp->voiceNoti
+		, clicktoconference_start_rsp->filler2
+		, clicktoconference_start_rsp->recordingFileID
+		, clicktoconference_start_rsp->recordingFileURL
+		, clicktoconference_start_rsp->recordingFileName
+		, clicktoconference_start_rsp->password
+		, clicktoconference_start_rsp->serviceMentID
+		, clicktoconference_start_rsp->callingCategoryType
+		, clicktoconference_start_rsp->msp_id
+		, clicktoconference_start_rsp->sp_id
+		, clicktoconference_start_rsp->service_id);
 }
 
 void clicktoconference_start_rsp_dbif_display(uxc_dbif_t *dbif) {
 	int rv;
-	ux_log(UXL_INFO, "DBIF [clicktoconference_start_rsp]");
-	ux_log(UXL_INFO, "  [sessionID] %s",uxc_dbif_get_str(dbif, 0, &rv));
-	ux_log(UXL_INFO, "  [gwSessionID] %s",uxc_dbif_get_str(dbif, 1, &rv));
-	ux_log(UXL_INFO, "  [resultCode] %d",uxc_dbif_get_int(dbif, 2, &rv));
-	ux_log(UXL_INFO, "  [confID] %s",uxc_dbif_get_str(dbif, 3, &rv));
-	ux_log(UXL_INFO, "  [chairmanName] %s",uxc_dbif_get_str(dbif, 4, &rv));
-	ux_log(UXL_INFO, "  [chairmanNumber] %s",uxc_dbif_get_str(dbif, 5, &rv));
-	ux_log(UXL_INFO, "  [chargingNumber] %s",uxc_dbif_get_str(dbif, 6, &rv));
-	ux_log(UXL_INFO, "  [confType] %d",uxc_dbif_get_int(dbif, 7, &rv));
-	ux_log(UXL_INFO, "  [recordingFilePath] %d",uxc_dbif_get_int(dbif, 8, &rv));
-	ux_log(UXL_INFO, "  [recordingFileURL] %s",uxc_dbif_get_str(dbif, 9, &rv));
-	ux_log(UXL_INFO, "  [recordingFileName] %s",uxc_dbif_get_str(dbif, 10, &rv));
-	ux_log(UXL_INFO, "  [password] %s",uxc_dbif_get_str(dbif, 11, &rv));
-	ux_log(UXL_INFO, "  [serviceMentID] %d",uxc_dbif_get_int(dbif, 12, &rv));
-	ux_log(UXL_INFO, "  [callingCategoryType] %d",uxc_dbif_get_int(dbif, 13, &rv));
+	ux_log(UXL_INFO, 
+		"DBIF [clicktoconference_start_rsp]\n"
+		"  [sessionID] %s\n"
+		"  [gwSessionID] %s\n"
+		"  [resultCode] %d\n"
+		"  [confID] %s\n"
+		"  [chairmanName] %s\n"
+		"  [chairmanNumber] %s\n"
+		"  [chargingNumber] %s\n"
+		"  [confType] %d\n"
+		"  [recordingFilePath] %d\n"
+		"  [recordingFileURL] %s\n"
+		"  [recordingFileName] %s\n"
+		"  [password] %s\n"
+		"  [serviceMentID] %d\n"
+		"  [callingCategoryType] %d"
+		,uxc_dbif_get_str(dbif, 0, &rv)
+		,uxc_dbif_get_str(dbif, 1, &rv)
+		,uxc_dbif_get_int(dbif, 2, &rv)
+		,uxc_dbif_get_str(dbif, 3, &rv)
+		,uxc_dbif_get_str(dbif, 4, &rv)
+		,uxc_dbif_get_str(dbif, 5, &rv)
+		,uxc_dbif_get_str(dbif, 6, &rv)
+		,uxc_dbif_get_int(dbif, 7, &rv)
+		,uxc_dbif_get_int(dbif, 8, &rv)
+		,uxc_dbif_get_str(dbif, 9, &rv)
+		,uxc_dbif_get_str(dbif, 10, &rv)
+		,uxc_dbif_get_str(dbif, 11, &rv)
+		,uxc_dbif_get_int(dbif, 12, &rv)
+		,uxc_dbif_get_int(dbif, 13, &rv));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -174,18 +215,26 @@ final:
 }
 
 void clicktoconference_add_party_rsp_tcp_display(clicktoconference_add_party_rsp_tcp_t *clicktoconference_add_party_rsp) {
-	ux_log(UXL_INFO, "TCP [clicktoconference_add_party_rsp]");
-	ux_log(UXL_INFO, "  [resultCode] %d", clicktoconference_add_party_rsp->resultCode);
-	ux_log(UXL_INFO, "  [confID] %s", clicktoconference_add_party_rsp->confID);
-	ux_log(UXL_INFO, "  [participantList] %s", clicktoconference_add_party_rsp->participantList);
+	ux_log(UXL_INFO, 
+		"TCP [clicktoconference_add_party_rsp]"
+		"  [resultCode] %d"
+		"  [confID] %s"
+		"  [participantList] %s"
+		, clicktoconference_add_party_rsp->resultCode
+		, clicktoconference_add_party_rsp->confID
+		, clicktoconference_add_party_rsp->participantList);
 }
 
 void clicktoconference_add_party_rsp_dbif_display(uxc_dbif_t *dbif) {
 	int rv;
-	ux_log(UXL_INFO, "DBIF [clicktoconference_start_rsp]");
-	ux_log(UXL_INFO, "  [resultCode] %d",uxc_dbif_get_int(dbif, 0, &rv));
-	ux_log(UXL_INFO, "  [confID] %s",uxc_dbif_get_str(dbif, 1, &rv));
-	ux_log(UXL_INFO, "  [participantList] %s",uxc_dbif_get_str(dbif, 2, &rv));
+	ux_log(UXL_INFO, 
+		"DBIF [clicktoconference_start_rsp]\n"
+		"  [resultCode] %d\n"
+		"  [confID] %s\n"
+		"  [participantList] %s"
+		,uxc_dbif_get_int(dbif, 0, &rv)
+		,uxc_dbif_get_str(dbif, 1, &rv)
+		,uxc_dbif_get_str(dbif, 2, &rv));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -229,18 +278,26 @@ final:
 }
 
 void clicktoconference_remove_party_rsp_tcp_display(clicktoconference_remove_party_rsp_tcp_t *clicktoconference_remove_party_rsp) {
-	ux_log(UXL_INFO, "TCP [clicktoconference_remove_party_rsp]");
-	ux_log(UXL_INFO, "  [resultCode] %d", clicktoconference_remove_party_rsp->resultCode);
-	ux_log(UXL_INFO, "  [confID] %s", clicktoconference_remove_party_rsp->confID);
-	ux_log(UXL_INFO, "  [participantNumber] %s", clicktoconference_remove_party_rsp->participantNumber);
+	ux_log(UXL_INFO, 
+		"TCP [clicktoconference_remove_party_rsp]\n"
+		"  [resultCode] %d\n"
+		"  [confID] %s\n"
+		"  [participantNumber] %s"
+		, clicktoconference_remove_party_rsp->resultCode
+		, clicktoconference_remove_party_rsp->confID
+		, clicktoconference_remove_party_rsp->participantNumber);
 }
 
 void clicktoconference_remove_party_rsp_dbif_display(uxc_dbif_t *dbif) {
 	int rv;
-	ux_log(UXL_INFO, "DBIF [clicktoconference_start_rsp]");
-	ux_log(UXL_INFO, "  [resultCode] %d",uxc_dbif_get_int(dbif, 0, &rv));
-	ux_log(UXL_INFO, "  [confID] %s",uxc_dbif_get_str(dbif, 1, &rv));
-	ux_log(UXL_INFO, "  [participantNumber] %s",uxc_dbif_get_str(dbif, 2, &rv));
+	ux_log(UXL_INFO, 
+		"DBIF [clicktoconference_start_rsp]\n"
+		"  [resultCode] %d\n"
+		"  [confID] %s\n"
+		"  [participantNumber] %s"
+		,uxc_dbif_get_int(dbif, 0, &rv)
+		,uxc_dbif_get_str(dbif, 1, &rv)
+		,uxc_dbif_get_str(dbif, 2, &rv));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -286,20 +343,30 @@ final:
 }
 
 void clicktoconference_change_party_media_rsp_tcp_display(clicktoconference_change_party_media_rsp_tcp_t *clicktoconference_change_party_media_rsp) {
-	ux_log(UXL_INFO, "TCP [clicktoconference_add_party_rsp]");
-	ux_log(UXL_INFO, "  [resultCode] %d", clicktoconference_change_party_media_rsp->resultCode);
-	ux_log(UXL_INFO, "  [confID] %s", clicktoconference_change_party_media_rsp->confID);
-	ux_log(UXL_INFO, "  [participantNumber] %s", clicktoconference_change_party_media_rsp->participantNumber);
-	ux_log(UXL_INFO, "  [mediaType] %d", clicktoconference_change_party_media_rsp->mediaType);
+	ux_log(UXL_INFO, 
+		"TCP [clicktoconference_add_party_rsp]\n"
+		"  [resultCode] %d\n"
+		"  [confID] %s\n"
+		"  [participantNumber] %s\n"
+		"  [mediaType] %d"
+		, clicktoconference_change_party_media_rsp->resultCode
+		, clicktoconference_change_party_media_rsp->confID
+		, clicktoconference_change_party_media_rsp->participantNumber
+		, clicktoconference_change_party_media_rsp->mediaType);
 }
 
 void clicktoconference_change_party_media_rsp_dbif_display(uxc_dbif_t *dbif) {
 	int rv;
-	ux_log(UXL_INFO, "DBIF [clicktoconference_start_rsp]");
-	ux_log(UXL_INFO, "  [resultCode] %d",uxc_dbif_get_int(dbif, 0, &rv));
-	ux_log(UXL_INFO, "  [confID] %s",uxc_dbif_get_str(dbif, 1, &rv));
-	ux_log(UXL_INFO, "  [participantNumber] %s",uxc_dbif_get_str(dbif, 2, &rv));
-	ux_log(UXL_INFO, "  [mediaType] %d",uxc_dbif_get_int(dbif, 3, &rv));
+	ux_log(UXL_INFO, 
+		"DBIF [clicktoconference_start_rsp]\n"
+		"  [resultCode] %d\n"
+		"  [confID] %s\n"
+		"  [participantNumber] %s\n"
+		"  [mediaType] %d"
+		,uxc_dbif_get_int(dbif, 0, &rv)
+		,uxc_dbif_get_str(dbif, 1, &rv)
+		,uxc_dbif_get_str(dbif, 2, &rv)
+		,uxc_dbif_get_int(dbif, 3, &rv));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -316,10 +383,14 @@ void clicktoconference_change_option_rsp_tcp_final( clicktoconference_change_opt
 }
 
 void clicktoconference_change_option_rsp_tcp_display(clicktoconference_change_option_rsp_tcp_t *clicktoconference_change_option_rsp) {
-	ux_log(UXL_INFO, "TCP [clicktoconference_add_party_rsp]");
-	ux_log(UXL_INFO, "  [resultCode] %d", clicktoconference_change_option_rsp->resultCode);
-	ux_log(UXL_INFO, "  [confID] %s", clicktoconference_change_option_rsp->confID);
-	ux_log(UXL_INFO, "  [password] %s", clicktoconference_change_option_rsp->password);
+	ux_log(UXL_INFO, 
+		"TCP [clicktoconference_add_party_rsp]\n"
+		"  [resultCode] %d\n"
+		"  [confID] %s\n"
+		"  [password] %s"
+		, clicktoconference_change_option_rsp->resultCode
+		, clicktoconference_change_option_rsp->confID
+		, clicktoconference_change_option_rsp->password);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -364,18 +435,26 @@ final:
 }
 
 void clicktoconference_get_number_of_party_rsp_tcp_display(clicktoconference_get_number_of_party_rsp_tcp_t *clicktoconference_get_number_of_party_rsp) {
-	ux_log(UXL_INFO, "TCP [clicktoconference_add_party_rsp]");
-	ux_log(UXL_INFO, "  [resultCode] %d", clicktoconference_get_number_of_party_rsp->resultCode);
-	ux_log(UXL_INFO, "  [confID] %s", clicktoconference_get_number_of_party_rsp->confID);
-	ux_log(UXL_INFO, "  [number] %d", clicktoconference_get_number_of_party_rsp->number);
+	ux_log(UXL_INFO, 
+		"TCP [clicktoconference_add_party_rsp]\n"
+		"  [resultCode] %d\n"
+		"  [confID] %s\n"
+		"  [number] %d"
+		, clicktoconference_get_number_of_party_rsp->resultCode
+		, clicktoconference_get_number_of_party_rsp->confID
+		, clicktoconference_get_number_of_party_rsp->number);
 }
 
 void clicktoconference_get_number_of_party_rsp_dbif_display(uxc_dbif_t *dbif) {
 	int rv;
-	ux_log(UXL_INFO, "DBIF [clicktoconference_start_rsp]");
-	ux_log(UXL_INFO, "  [resultCode] %d",uxc_dbif_get_int(dbif, 0, &rv));
-	ux_log(UXL_INFO, "  [confID] %s",uxc_dbif_get_str(dbif, 1, &rv));
-	ux_log(UXL_INFO, "  [number] %d",uxc_dbif_get_int(dbif, 2, &rv));
+	ux_log(UXL_INFO, 
+		"DBIF [clicktoconference_start_rsp]\n"
+		"  [resultCode] %d\n"
+		"  [confID] %s\n"
+		"  [number] %d"
+		,uxc_dbif_get_int(dbif, 0, &rv)
+		,uxc_dbif_get_str(dbif, 1, &rv)
+		,uxc_dbif_get_int(dbif, 2, &rv));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -419,22 +498,34 @@ final:
 }
 
 void clicktoconference_stop_rsp_tcp_display(clicktoconference_stop_rsp_tcp_t *clicktoconference_stop_rsp) {
-	ux_log(UXL_INFO, "TCP [clicktoconference_stop_rsp]");
-	ux_log(UXL_INFO, "  [resultCode] %d", clicktoconference_stop_rsp->resultCode);
-	ux_log(UXL_INFO, "  [confID] %s", clicktoconference_stop_rsp->confID);
-	ux_log(UXL_INFO, "  [startTime] %s", clicktoconference_stop_rsp->startTime);
-	ux_log(UXL_INFO, "  [endTime] %s", clicktoconference_stop_rsp->endTime);
-	ux_log(UXL_INFO, "  [recordingFileID] %d", clicktoconference_stop_rsp->recordingFileID);
+	ux_log(UXL_INFO, 
+		"TCP [clicktoconference_stop_rsp]\b"
+		"  [resultCode] %d\b"
+		"  [confID] %s\b"
+		"  [startTime] %s\b"
+		"  [endTime] %s\b"
+		"  [recordingFileID] %d"
+		, clicktoconference_stop_rsp->resultCode
+		, clicktoconference_stop_rsp->confID
+		, clicktoconference_stop_rsp->startTime
+		, clicktoconference_stop_rsp->endTime
+		, clicktoconference_stop_rsp->recordingFileID);
 }
 
 void clicktoconference_stop_rsp_dbif_display(uxc_dbif_t *dbif) {
 	int rv;
-	ux_log(UXL_INFO, "DBIF [clicktoconference_stop_rsp]");
-	ux_log(UXL_INFO, "  [resultCode] %d",uxc_dbif_get_int(dbif, 0, &rv));
-	ux_log(UXL_INFO, "  [confID] %s",uxc_dbif_get_str(dbif, 1, &rv));
-	ux_log(UXL_INFO, "  [startTime] %s",uxc_dbif_get_str(dbif, 2, &rv));
-	ux_log(UXL_INFO, "  [endTime] %s",uxc_dbif_get_str(dbif, 3, &rv));
-	ux_log(UXL_INFO, "  [recordingFileID] %d",uxc_dbif_get_int(dbif, 4, &rv));
+	ux_log(UXL_INFO, 
+		"DBIF [clicktoconference_stop_rsp]\n"
+		"  [resultCode] %d\n"
+		"  [confID] %s\n"
+		"  [startTime] %s\n"
+		"  [endTime] %s\n"
+		"  [recordingFileID] %d"
+		,uxc_dbif_get_int(dbif, 0, &rv)
+		,uxc_dbif_get_str(dbif, 1, &rv)
+		,uxc_dbif_get_str(dbif, 2, &rv)
+		,uxc_dbif_get_str(dbif, 3, &rv)
+		,uxc_dbif_get_int(dbif, 4, &rv));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -472,16 +563,22 @@ final:
 }
 
 void clicktoconference_play_ment_rsp_tcp_display(clicktoconference_play_ment_rsp_tcp_t *clicktoconference_play_ment_rsp) {
-	ux_log(UXL_INFO, "TCP [clicktoconference_play_ment_rsp]");
-	ux_log(UXL_INFO, "  [resultCode] %d", clicktoconference_play_ment_rsp->resultCode);
-	ux_log(UXL_INFO, "  [confID] %s", clicktoconference_play_ment_rsp->confID);
+	ux_log(UXL_INFO, 
+		"TCP [clicktoconference_play_ment_rsp]\n"
+		"  [resultCode] %d\n"
+		"  [confID] %s"
+		, clicktoconference_play_ment_rsp->resultCode
+		, clicktoconference_play_ment_rsp->confID);
 }
 
 void clicktoconference_play_ment_rsp_dbif_display(uxc_dbif_t *dbif) {
 	int rv;
-	ux_log(UXL_INFO, "DBIF [clicktoconference_play_ment_rsp]");
-	ux_log(UXL_INFO, "  [resultCode] %d",uxc_dbif_get_int(dbif, 0, &rv));
-	ux_log(UXL_INFO, "  [confID] %s",uxc_dbif_get_str(dbif, 1, &rv));
+	ux_log(UXL_INFO, 
+		"DBIF [clicktoconference_play_ment_rsp]\n"
+		"  [resultCode] %d\n"
+		"  [confID] %s"
+		,uxc_dbif_get_int(dbif, 0, &rv)
+		,uxc_dbif_get_str(dbif, 1, &rv));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -523,20 +620,30 @@ final:
 }
 
 void clicktoconference_get_party_status_rsp_tcp_display(clicktoconference_get_party_status_rsp_tcp_t *clicktoconference_get_party_status_rsp) {
-	ux_log(UXL_INFO, "TCP [clicktoconference_get_party_status_rsp]");
-	ux_log(UXL_INFO, "  [resultCode] %d", clicktoconference_get_party_status_rsp->resultCode);
-	ux_log(UXL_INFO, "  [confID] %s", clicktoconference_get_party_status_rsp->confID);
-	ux_log(UXL_INFO, "  [participantName] %s", clicktoconference_get_party_status_rsp->participantName);
-	ux_log(UXL_INFO, "  [participantNumber] %s", clicktoconference_get_party_status_rsp->participantNumber);
+	ux_log(UXL_INFO, 
+		"TCP [clicktoconference_get_party_status_rsp]\n"
+		"  [resultCode] %d\n"
+		"  [confID] %s\n"
+		"  [participantName] %s\n"
+		"  [participantNumber] %s"
+		, clicktoconference_get_party_status_rsp->resultCode
+		, clicktoconference_get_party_status_rsp->confID
+		, clicktoconference_get_party_status_rsp->participantName
+		, clicktoconference_get_party_status_rsp->participantNumber);
 }
 
 void clicktoconference_get_party_status_rsp_dbif_display(uxc_dbif_t *dbif) {
 	int rv;
-	ux_log(UXL_INFO, "DBIF [clicktoconference_get_party_status_rsp]");
-	ux_log(UXL_INFO, "  [resultCode] %d",uxc_dbif_get_int(dbif, 0, &rv));
-	ux_log(UXL_INFO, "  [confID] %s",uxc_dbif_get_str(dbif, 1, &rv));
-	ux_log(UXL_INFO, "  [participantName] %s",uxc_dbif_get_str(dbif, 2, &rv));
-	ux_log(UXL_INFO, "  [participantNumber] %s",uxc_dbif_get_str(dbif, 3, &rv));
+	ux_log(UXL_INFO, 
+		"DBIF [clicktoconference_get_party_status_rsp]\n"
+		"  [resultCode] %d\n"
+		"  [confID] %s\n"
+		"  [participantName] %s\n"
+		"  [participantNumber] %s"
+		,uxc_dbif_get_int(dbif, 0, &rv)
+		,uxc_dbif_get_str(dbif, 1, &rv)
+		,uxc_dbif_get_str(dbif, 2, &rv)
+		,uxc_dbif_get_str(dbif, 3, &rv));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -575,16 +682,25 @@ final:
 }
 
 void clicktoconference_cancel_party_rsp_tcp_display(clicktoconference_cancel_party_rsp_tcp_t *clicktoconference_cancel_party_rsp) {
-	ux_log(UXL_INFO, "TCP [clicktoconference_cancel_party_rsp]");
-	ux_log(UXL_INFO, "  [resultCode] %d", clicktoconference_cancel_party_rsp->resultCode);
-	ux_log(UXL_INFO, "  [confID] %s", clicktoconference_cancel_party_rsp->confID);
-	ux_log(UXL_INFO, "  [participantNumber] %s", clicktoconference_cancel_party_rsp->participantNumber);
+	ux_log(UXL_INFO, 
+		"TCP [clicktoconference_cancel_party_rsp]\n"
+		"  [resultCode] %d\n"
+		"  [confID] %s\n"
+		"  [participantNumber] %s"
+		, clicktoconference_cancel_party_rsp->resultCode
+		, clicktoconference_cancel_party_rsp->confID
+		, clicktoconference_cancel_party_rsp->participantNumber);
 }
 
 void clicktoconference_cancel_party_rsp_dbif_display(uxc_dbif_t *dbif) {
 	int rv;
-	ux_log(UXL_INFO, "  [resultCode] %d",uxc_dbif_get_int(dbif, 0, &rv));
-	ux_log(UXL_INFO, "  [confID] %s",uxc_dbif_get_str(dbif, 1, &rv));
-	ux_log(UXL_INFO, "  [participantNumber] %s",uxc_dbif_get_str(dbif, 2, &rv));
+	ux_log(UXL_INFO, 
+		"DBIF [clicktoconference_cancel_party_req]\n"
+		"  [resultCode] %d\n"
+		"  [confID] %s\n"
+		"  [participantNumber] %s"
+		,uxc_dbif_get_int(dbif, 0, &rv)
+		,uxc_dbif_get_str(dbif, 1, &rv)
+		,uxc_dbif_get_str(dbif, 2, &rv));
 }
 
