@@ -1690,7 +1690,7 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_recv_dbif_stop_recording_res( uxc_sfcall_t
 UX_DECLARE(int) clicktocall_dlgsvc_on_recv_dbif_status_rpt( uxc_sfcall_t *sfcall, uxc_sdmvars_t *params)
 {
 	enum { NORMAL, CALLING_PROCEEDING, CALLED_PROCEEDING, CALLING_ABANDON, CALLED_ABANDON};
-
+	enum { PARA_STATUS};
 	static const char *func = "clicktocall_dlgsvc_on_recv_dbif_status_rpt";
 
 	int rv;
@@ -1851,7 +1851,7 @@ UX_DECLARE(int) clicktocall_dlgsvc_on_recv_dbif_call_end_rpt( uxc_sfcall_t *sfca
 			func, 4, rv, uxc_errnostr(rv));
 		return rv;
 	}
-	dlgsess->isrecored = ival;
+	dlgsess->isrecorded = ival;
 
 	ux_log(UXL_DBG1, "%s: ipcmsg cmdId=%d", func, ipcmsg->header.cmdId);
 	ux_log(UXL_DBG1, "%s: ipcmsg userData=%d", func, ipcmsg->header.userData);	

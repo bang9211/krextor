@@ -96,7 +96,7 @@
 				</oncall>
 			</recv>
 
-			<switch name="CHECK_EIPMSIB_STATUS_RPT" value="status">
+			<switch name="CHECK_ EIPMSIB_STATUS_RPT" value="status">
 				<case value="0" target="SEND_CALLED_CLICKTOCALL_NOTI"/>
 				<case value="1" target="WAIT_REQ"/>
 				<case value="2" target="SEND_CALLING_CLICKTOCALL_NOTI"/>

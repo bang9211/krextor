@@ -1105,7 +1105,7 @@ clicktocall_dlgsess_t* clicktocall_dlgdao_find( clicktocall_dlgdao_t *dao,
 	uint32_t ocseq, tcseq, mscseq, waitingment_id, callment_id;
 	uint64_t rsessid, extime;
 	char *http_session_id, *calling_number, *called_number, *subscriber_name, *charging_number, *calling_cid, *called_cid;
-	char *recordingfile, *recordingfileurl, *callstarttime, *callendtime;
+	char *serviceid, *recordingfile, *recordingfileurl, *callstarttime, *callendtime;
 	char *ostag, *ocall_id, *ofrom, *oto, *tstag, *tcall_id, *tfrom, *tto, *msstag, *mscall_id, *msfrom, *msto;
 	ux_mem_t *allocator;
 	uxc_sesshdr_t *sesshdr;
@@ -1172,7 +1172,7 @@ clicktocall_dlgsess_t* clicktocall_dlgdao_find( clicktocall_dlgdao_t *dao,
 		return NULL;
 	}
 
-	rv = uims_dbdataset_read( rsltset, 36,
+	rv = uims_dbdataset_read( rsltset, 37,
 			//name, type, value, [length:octet only]
 			"sess_id", UIMS_DBTYPE_UINT64, &rsessid,
 			"extime", UIMS_DBTYPE_UINT64, &extime,
@@ -1193,6 +1193,7 @@ clicktocall_dlgsess_t* clicktocall_dlgdao_find( clicktocall_dlgdao_t *dao,
 			"called_cid", UIMS_DBTYPE_STR, &called_cid,
 			"hostcode", UIMS_DBTYPE_UINT8, &hostcode, 
 			"scenariotype", UIMS_DBTYPE_UINT8, &scenariotype,
+			"serviceid", UIMS_DBTYPE_STR, &serviceid,
 			"recordingfile", UIMS_DBTYPE_STR, &recordingfile,
 			"recordingfileurl", UIMS_DBTYPE_STR, &recordingfileurl,
 			"callstarttime", UIMS_DBTYPE_STR, &callstarttime,
@@ -1221,16 +1222,17 @@ clicktocall_dlgsess_t* clicktocall_dlgdao_find( clicktocall_dlgdao_t *dao,
 	ux_log(UXL_INFO, "[CLICKTOCALL:FIND] (sess_id=%llu, state=%d, extime=%llu, dlgstate=%d, method=%u, "
 			"network_type=%u, http_session_id=%s, calling_number=%s, called_number=%s, recording=%u, "
 			"subscriber_name=%s, charging_number=%s, ringbacktone_type=%u, waitingment_id=%d, "
-			"callment_id=%d, calling_cid=%s, called_cid=%s, hostcode=%u, "
-			"scenariotype=%u, recordingfile=%s, recordingfileurl=%s, callstarttime=%s, callendtime=%s, isrecorded=%u, "
+			"callment_id=%d, calling_cid=%s, called_cid=%s, hostcode=%u, scenariotype=%u, "
+			"serviceid=%s, recordingfile=%s, recordingfileurl=%s, callstarttime=%s, callendtime=%s, isrecorded=%u, "
 			"ocseq=%d, ostag=%s, ocall_id=%s, ofrom=%s, oto=%s, "
 			"tcseq=%d, tstag=%s, tcall_id=%s, tfrom=%s, tto=%s, "
 			"mscseq=%d, msstag=%s, mscall_id=%s, msfrom=%s, msto=%s)",
 			(unsigned long long)rsessid, state, (unsigned long long)extime, dlgstate, method, 
 			network_type, http_session_id ? http_session_id : "NULL", calling_number ? calling_number : "NULL", called_number ? called_number : "NULL", recording, 
 			subscriber_name ? subscriber_name : "NULL", charging_number ? charging_number : "NULL", ringbacktone_type, waitingment_id,
-			callment_id, calling_cid ? calling_cid : "NULL", called_cid ? called_cid : "NULL", hostcode, callstarttime ? callstarttime : "NULL", callendtime ? callendtime : "NULL", isrecorded, 
-			scenariotype, recordingfile ? recordingfile : "NULL", recordingfileurl ? recordingfileurl: "NULL", 
+			callment_id, calling_cid ? calling_cid : "NULL", called_cid ? called_cid : "NULL", hostcode, scenariotype,
+			serviceid ? serviceid : "NULL", recordingfile ? recordingfile : "NULL", recordingfileurl ? recordingfileurl: "NULL", 
+			callstarttime ? callstarttime : "NULL", callendtime ? callendtime : "NULL", isrecorded, 
 			ocseq, ostag ? ostag : "NULL", ocall_id ? ocall_id : "NULL", ofrom ? ofrom : "NULL", oto ? oto : "NULL",
 			tcseq, tstag ? tstag : "NULL", tcall_id ? tcall_id : "NULL", tfrom ? tfrom : "NULL", tto ? tto : "NULL",
 			mscseq, msstag ? msstag : "NULL", mscall_id ? mscall_id : "NULL", msfrom ? msfrom : "NULL", msto ? msto : "NULL");
@@ -1273,6 +1275,7 @@ clicktocall_dlgsess_t* clicktocall_dlgdao_find( clicktocall_dlgdao_t *dao,
 	dlgsess->calledcid =  ux_str_dup( called_cid,  allocator);
 	dlgsess->hostcode = hostcode;
 	dlgsess->scenariotype = scenariotype;
+	dlgsess->serviceid = ux_str_dup( serviceid,  allocator);
 	dlgsess->recordingfile = ux_str_dup( recordingfile,  allocator);
 	dlgsess->recordingfileurl = ux_str_dup( recordingfileurl,  allocator);
 	dlgsess->callstarttime = ux_str_dup( callstarttime,  allocator);
@@ -1346,7 +1349,7 @@ clicktocall_dlgsess_t* clicktocall_dlgdao_find( clicktocall_dlgdao_t *dao,
 ux_status_t clicktocall_dlgdao_insert( clicktocall_dlgdao_t *dao, clicktocall_dlgsess_t *dlgsess)
 {
 	static const char* stmtid = "CLICKTOCALL:INSERT";
-	static const char* query = "INSERT INTO table1 VALUES(?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?)";
+	static const char* query = "INSERT INTO table1 VALUES(?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?)";
 
 	int rv, bufsize, buflen;
 	uxc_sess_t *uxcsess;
@@ -1477,6 +1480,7 @@ ux_status_t clicktocall_dlgdao_insert( clicktocall_dlgdao_t *dao, clicktocall_dl
 			"called_cid", UIMS_DBTYPE_STR, dlgsess->calledcid ? dlgsess->calledcid : "",
 			"hostcode", UIMS_DBTYPE_UINT8, dlgsess->hostcode, 
 			"scenariotype", UIMS_DBTYPE_UINT8, dlgsess->scenariotype,
+			"serviceid", UIMS_DBTYPE_STR, dlgsess->serviceid ? dlgsess->serviceid : "",
 			"recordingfile", UIMS_DBTYPE_STR, dlgsess->recordingfile ? dlgsess->recordingfile : "",
 			"recordingfileurl", UIMS_DBTYPE_STR, dlgsess->recordingfileurl ? dlgsess->recordingfileurl : "",
 			"callstarttime", UIMS_DBTYPE_STR, dlgsess->callstarttime ? dlgsess->callstarttime : "",
@@ -1708,8 +1712,6 @@ ux_status_t clicktocall_dlgdao_update_calling_p( clicktocall_dlgdao_t *dao, clic
 			"oto", UIMS_DBTYPE_STR, oto,
 			"sess_id", UIMS_DBTYPE_UINT64, uims_sess_get_id( dlgsess->sess));
 
-	
-
 	if( rv < UIMS_DB_SUCCESS) {
 		ux_log(UXL_MIN, "Failed to set parameters to statement. (stmtid=%s, err=%d,%s)",
 				stmtid, rv, uims_dberr_to_str(rv));
@@ -1828,7 +1830,6 @@ ux_status_t clicktocall_dlgdao_update_called_p( clicktocall_dlgdao_t *dao, click
 			"tfrom", UIMS_DBTYPE_STR, tfrom,
 			"tto", UIMS_DBTYPE_STR, tto,
 			"sess_id", UIMS_DBTYPE_UINT64, uims_sess_get_id( dlgsess->sess));
-	
 
 	if( rv < UIMS_DB_SUCCESS) {
 		ux_log(UXL_MIN, "Failed to set parameters to statement. (stmtid=%s, err=%d,%s)",

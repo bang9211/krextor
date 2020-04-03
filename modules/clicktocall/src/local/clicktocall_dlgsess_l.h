@@ -40,12 +40,13 @@ struct clicktocall_dlgsess_s {
 	char *calledcid;
 	uint8_t hostcode;
 	uint8_t scenariotype;
+	/* eIPMS */
+	char *serviceid; /* eIPMS session id */
 	char *recordingfile;
 	char *recordingfileurl;
 	char *callstarttime;
 	char *callendtime;
-	uint8_t isrecored;
-
+	uint8_t isrecorded;
 	/* sip */
 	uint32_t ocseq; /**< originator cseq */
 	char *ostag; /**< clicktocall originator session tag */
@@ -63,8 +64,6 @@ struct clicktocall_dlgsess_s {
 	usip_nameaddr_t *msfrom; /**< ms From header */
 	usip_nameaddr_t *msto; /**< ms To header */
 	
-	/* dbif */
-	char *serviceid; /* eIPMS session id */
 	void *data; /**< session ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 	void *user_data; /**< ï¿½Ø´ï¿½ sessionï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿? ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ */
 };
