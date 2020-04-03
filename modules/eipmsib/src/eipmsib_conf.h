@@ -17,6 +17,7 @@ struct eipmsib_conf_s {
 	char binding_password[BINDING_PASSWORD_LEN];
 	int heartbeat_interval;
 	int heartbeat_timeout;
+	int request_timeout;
 };
 
 ///////////////////////////////////////////////////////////////////////////////////

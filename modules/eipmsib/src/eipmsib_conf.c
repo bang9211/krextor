@@ -41,6 +41,14 @@ int eipmsib_conf_load( eipmsib_conf_t *conf, const char* cfile)
 	}
 	ux_log(UXL_MAJ, "HEARTBEAT_TIMEOUT : %d", conf->heartbeat_timeout);
 
+	conf->request_timeout = uxc_get_conf_int( cfile, "[SKB]", "REQUEST_TIMEOUT", 0);
+	if ( conf->request_timeout < 1) {
+		ux_log(UXL_MAJ, "invalid REQUEST_TIMEOUT");
+		return eUXC_INVALID_CONF;
+	}
+	ux_log(UXL_MAJ, "REQUEST_TIMEOUT : %d", conf->request_timeout);
+
+
 	return eUXC_SUCCESS;
 }
 

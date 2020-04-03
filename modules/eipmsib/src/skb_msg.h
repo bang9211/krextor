@@ -32,6 +32,7 @@
 // typedef enum {false, true} bool;
 
 /** @brief SKB Request ID Pool */
+uhash_tmt_t *reqID_timestamp_Map;
 uhash_int_t *reqID_SID_Map;
 uhash_int_t *reqID_GWSID_Map;
 uhash_ipc_t *reqID_IPC_Map;
@@ -145,5 +146,9 @@ int skb_msg_process_clicktoconference_remove_party_rpt( skb_msg_t *skbmsg, uxc_d
 int skb_msg_process_clicktoconference_change_party_media_rpt( skb_msg_t *skbmsg, uxc_dbif_t *dbif);
 int skb_msg_process_clicktoconference_change_option_rpt( skb_msg_t *skbmsg);
 int skb_msg_process_clicktoconference_stop_rpt( skb_msg_t *skbmsg, uxc_dbif_t *dbif);
+
+void *timeout_function();
+void turn_timeout_timer_on();
+void turn_timeout_timer_off();
 
 #endif // #ifndef __SKB_MSG_H__

@@ -2,7 +2,9 @@
 #define UHASH_H
 
 #include <uxcutor/uxc_ipcmsg.h>
-#include<pthread.h>
+#include <pthread.h>
+#include <time.h>
+
 #include "khash.h"
 
 // shorthand way to get the key from hashtable or defVal if not found
@@ -12,30 +14,41 @@
 // returns 0=replaced existing item, 1=bucket empty (new key), 2-adding element previously deleted
 #define kh_set(kname, hash, key, val) ({int ret; k = kh_put(kname, hash,key,&ret); kh_value(hash,k) = val; ret;})
 
-KHASH_MAP_INIT_INT(m32, char*)      // instantiate structs and methods
+KHASH_MAP_INIT_INT(tmt, time_t);      // instantiate structs and methods
+KHASH_MAP_INIT_INT(m32, char*);      // instantiate structs and methods
 KHASH_MAP_INIT_STR(str, char*);     // setup khash to handle string key with string body
 KHASH_MAP_INIT_INT(ipc, uxc_ixpc_t*)      // instantiate structs and methods
+
+typedef struct uhash_tmt_s uhash_tmt_t;
+struct uhash_tmt_s {
+    kh_tmt_t* h;
+    pthread_mutex_t mutex_lock;
+};
 
 typedef struct uhash_int_s uhash_int_t;
 struct uhash_int_s {
     kh_m32_t* h;
-    int available;
     pthread_mutex_t mutex_lock;
 };
 
 typedef struct uhash_str_s uhash_str_t;
 struct uhash_str_s {
     kh_str_t* h;
-    int available;
     pthread_mutex_t mutex_lock;
 };
 
 typedef struct uhash_ipc_s uhash_ipc_t;
 struct uhash_ipc_s {
     kh_ipc_t* h;
-    int available;
     pthread_mutex_t mutex_lock;
 };
+
+uhash_tmt_t* uh_tmt_init();
+int uh_tmt_put(uhash_tmt_t* hash, khint_t key, time_t value);
+time_t uh_tmt_get(uhash_tmt_t* hash, khint_t key);
+int uh_tmt_is_exist(uhash_tmt_t* hash, khint_t key);
+void uh_tmt_del(uhash_tmt_t* hash, khint_t key);
+void uh_tmt_destroy(uhash_tmt_t* hash);
 
 uhash_int_t* uh_int_init();
 int uh_int_put(uhash_int_t* hash, khint_t key, char* value);

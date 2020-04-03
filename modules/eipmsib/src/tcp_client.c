@@ -4,6 +4,10 @@
 // functions for tcp_client_t 
 ///////////////////////////////////////////////////////////////////////////////////
 
+int request_timeout;
+pthread_t timeout_thread;
+int timeout_switch = 0;
+
 int seconds[CHANNEL_SIZE] = {0};
 int last_recv_seconds[CHANNEL_SIZE] = {0};
 static tcp_client_t *_g_client = NULL;
@@ -62,6 +66,8 @@ uxc_plugin_t *tcp_client_create( void *xcutor, const char* cfile)
 
 	srand(time(NULL));
 	create_skb_map();
+	request_timeout = client->conf->request_timeout;
+	turn_timeout_timer_on();
 
 	return (uxc_plugin_t*)client;
 }
@@ -74,6 +80,7 @@ static void _tcp_client_destroy( uxc_plugin_t *plugin)
 	tcp_client_final( client);
 	ux_free( ux_mem_default(), client);
 
+	turn_timeout_timer_off();
 	destroy_skb_map();
 }
 
@@ -123,6 +130,7 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 
 	char sessionID[SESSION_ID_LEN];
 	char gwSessionID[GW_SESSION_ID_LEN];
+	time_t rawtime;
 
 	msg_size = sizeof(uxc_ixpc_t) + ipcmsg->header.length;	//dbif header + body
 	msgId = ipcmsg->header.msgId;
@@ -238,22 +246,12 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 	if(!uh_ipc_put(reqID_IPC_Map, skbmsg.header.requestID, &ipc_header)) {
 		ux_log(UXL_CRT, "failed to put to reqID_IPC_Map : (%d)", skbmsg.header.requestID);
 	}
-	/* ipc header */
-	// struct uxc_ixpc_s {
-	//     short	srcSubSysId;	/**< source subsystem ID */
-	//     short	srcProcId;		/**< srouce process ID */
-	//     short	dstSubSysId;	/**< destination subsystem ID*/
-	//     short	dstProcId;		/**< destination process ID*/
-	//     int      srcQid;			/**< source Q id */
-	//     int      dstQid;			/**< destination Q id */
-	//     int      msgId;			/**< message ID */
-	//     int      cmdId;			/**< command ID */
-	//     int		userData;		/**< user data */
-	//     int		fdIdx;			/**< fd index */
-	//     short    length;			/**< length */
-	//     short 	result;			/**< result */
-	// };
-
+	//requestID와 curreunt time(ms) Bind
+	time ( &rawtime );
+	if(!uh_tmt_put(reqID_timestamp_Map, skbmsg.header.requestID, rawtime)) {
+		ux_log(UXL_CRT, "failed to put to reqID_timestamp_Map : (%d)", skbmsg.header.requestID);
+	}
+	
 	//메시지를 Network byte ordering으로 변경
 	rv = skb_msg_cvt_order_hton(&skbmsg, msgId);
 	if( rv< UX_SUCCESS) {
@@ -290,6 +288,15 @@ int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpms
 	if( rv < UX_SUCCESS) {
 		ux_log(UXL_INFO, "skbmsg data error");
 		return rv;
+	}
+
+	//수신한 메시지가 HEARTBEAT_RESPONSE를 제외하고, response인 경우에만 requestID와 일치하는 requestID가 있는지 확인
+	if (skbmsg->header.messageID != HEARTBEAT_RESPONSE && skbmsg->header.messageID / 0x10000000 == 1) {
+		if (uh_tmt_get(reqID_timestamp_Map, skbmsg->header.requestID) == -1) {	//not found
+			ux_log(UXL_CRT, "failed to get reqID_timestamp_Map : %d", skbmsg->header.requestID);
+			return -1;
+		}
+		uh_tmt_del(reqID_timestamp_Map, skbmsg->header.requestID);	//확인되면, timeout 명단에서 제거
 	}
 
 	// 2. process and response to uxcutor
@@ -523,6 +530,7 @@ int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpms
 	}
 
 	if( rv < UX_SUCCESS) {
+		//TODO sessionID가 없거나 기타 문제 발생한 경우 어떻게 처리할지 고려
 		ux_log( UXL_CRT, "can't send data in process rsp.");
 		return rv;
 	}
@@ -578,12 +586,70 @@ int tcp_client_send_ipcmsg( tcp_client_t *client, uxc_ipcmsg_t* ipcmsg, int rv)
 	return eUXC_SUCCESS;
 }
 
-
 static int _tcp_client_on_accept(upa_tcp_t *tcp, ux_channel_t *channel, ux_accptor_t *accptor,
 				ux_cnector_t *cnector, upa_peerkey_t *peerkey)
 {
 	ux_log( UXL_INFO, "Accept TCP connection");
 	return eUXC_SUCCESS;
+}
+
+void *timeout_function()
+{
+	int k;
+	time_t tval;
+	time_t rawtime;
+
+	while(timeout_switch > 0) {
+		sleep(1);
+		time ( &rawtime );
+
+		//hash traverse
+		ux_log(UXL_INFO, "Waiting response=========");
+		for (k = kh_begin(reqID_timestamp_Map->h); k != kh_end(reqID_timestamp_Map->h); ++k) {
+			if (kh_exist(reqID_timestamp_Map->h, k)) {
+				const int key = kh_key(reqID_timestamp_Map->h,k);
+				tval = kh_value(reqID_timestamp_Map->h, k);
+				// ux_log(UXL_INFO, "  before|- k:%d  s:%d  e:%d  requestID=%d  timestamp=%lu", k, kh_begin(reqID_timestamp_Map->h), kh_end(reqID_timestamp_Map->h), key, tval);
+				if ((rawtime - tval) >= request_timeout) {	//timeout
+					ux_log(UXL_CRT, "request timeout, requestID : %d", key);
+					uh_tmt_del(reqID_timestamp_Map, key);
+					// printf("1\n");
+					uh_int_del(reqID_SID_Map, key);
+					// printf("2\n");
+					uh_int_del(reqID_GWSID_Map, key);
+					// printf("3\n");
+					uh_ipc_del(reqID_IPC_Map, key);
+					// printf("4\n");
+					// ux_log(UXL_INFO, "  after |- k:%d  s:%d  e:%d  requestID=%d  timestamp=%lu", k, kh_begin(reqID_timestamp_Map->h), kh_end(reqID_timestamp_Map->h), key, tval);
+
+					//TODO : bind request인 경우, 연결을 끊어주기
+
+					//TODO : timeout 발생 시, 추가로 처리해야할 것 고려하기
+
+					if (k == kh_end(reqID_timestamp_Map->h)) break;
+				}
+			}
+			// ux_log(UXL_INFO, "k:%d  s:%d  e:%d", k, kh_begin(reqID_timestamp_Map->h), kh_end(reqID_timestamp_Map->h));
+		}
+		ux_log(UXL_INFO, "=========================");
+	}
+
+	return NULL;
+}
+
+void turn_timeout_timer_on() {
+	if (timeout_switch == 0) {
+		timeout_switch = 1;
+		ux_log( UXL_INFO, "timeout timer on");
+		pthread_create(&timeout_thread, NULL, timeout_function, NULL);
+	}
+}
+
+void turn_timeout_timer_off() {
+	if (timeout_switch > 0) {
+		ux_log( UXL_INFO, "timeout timer off");
+		timeout_switch = 0;
+	}
 }
 
 void *t_function(void *chnl_idx)
@@ -660,6 +726,7 @@ static int _tcp_client_on_open(upa_tcp_t *tcp, ux_channel_t *channel, ux_cnector
 	skb_msg_t skbmsg[1];
 	int msg_size, rv;
 	int chnl_idx = peerkey->chnl_idx;
+	time_t rawtime;
 
 	ux_log( UXL_INFO, "Open TCP connection");
 
@@ -686,6 +753,13 @@ static int _tcp_client_on_open(upa_tcp_t *tcp, ux_channel_t *channel, ux_cnector
 		return -1;
 	}
 	msg_size = skbmsg->header.length;
+
+	//Bind request의 requestID와 current time(ms) Bind
+	time ( &rawtime );
+	if(!uh_tmt_put(reqID_timestamp_Map, skbmsg->header.requestID, rawtime)) {
+		ux_log(UXL_CRT, "failed to put to reqID_timestamp_Map : (%d)", skbmsg->header.requestID);
+	}
+
 	//메시지를 Network byte ordering으로 변경
 	rv = skb_msg_cvt_order_hton3(skbmsg, chnl_idx);
 	if( rv< UX_SUCCESS) {

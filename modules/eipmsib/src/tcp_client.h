@@ -38,4 +38,12 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpmsg_t *tcpmsg);
 int tcp_client_send_ipcmsg( tcp_client_t *client, uxc_ipcmsg_t* ipcmsg, int rv);
 
+void *timeout_function();
+void turn_timeout_timer_on();
+void turn_timeout_timer_off();
+
+void *t_function(void *chnl_idx);
+void turn_heartbeat_timer_on(int chnl_idx);
+void turn_heartbeat_timer_off(int chnl_idx);
+
 #endif // #ifndef __TCP_CLIENT_H__

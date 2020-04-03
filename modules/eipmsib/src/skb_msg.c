@@ -836,6 +836,7 @@ int32_t getRandomInt32() {
 }
 
 void create_skb_map() {
+	reqID_timestamp_Map = uh_tmt_init();
 	reqID_SID_Map = uh_int_init();    
 	reqID_GWSID_Map = uh_int_init();
 	reqID_IPC_Map = uh_ipc_init();
@@ -852,6 +853,7 @@ void destroy_skb_map() {
 //       }
 //    }
 
+	uh_tmt_destroy(reqID_timestamp_Map);
 	uh_int_destroy(reqID_SID_Map);
 	uh_int_destroy(reqID_GWSID_Map);
 	uh_ipc_destroy(reqID_IPC_Map);
