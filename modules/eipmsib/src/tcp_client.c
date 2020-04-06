@@ -280,7 +280,7 @@ int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpms
 	uxc_dbif_t dbif;
 	uxc_ixpc_t *dbif_header;
 	uxc_ipcmsg_t ipcmsg;
-	int msg_size, requestID;
+	int msg_size, requestID, status;
 
 	// 1. receive skbmsg 
 	// skbmsg = (skb_msg_t *) tcpmsg->netmsg->buffer;
@@ -369,7 +369,11 @@ int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpms
 			rv = skb_msg_process_clicktocall_stoprecording_rpt(skbmsg);		//no send
 			break;
 		case SERVICE_STATUS_REPORT:
-			rv = skb_msg_process_clicktocall_service_status_rpt(skbmsg, &dbif);
+			rv = skb_msg_process_clicktocall_service_status_rpt(skbmsg, &dbif, &status);
+			//착신자 호출 중(2), 정상 서비스 중(0)일 경우에만 gw로 포워딩
+			if (status != 2 && status != 0) {
+				return UX_SUCCESS;
+			}
 			break;
 		default:
 			ux_log(UXL_CRT, "unsupported messageID : %#010x", skbmsg->header.messageID)
@@ -431,6 +435,7 @@ int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpms
 			rv = skb_msg_process_clicktocallrecording_stop_rpt(skbmsg, &dbif);
 			break;
 		case SERVICE_STATUS_REPORT:
+			// 수신녹취에서 규격상 이 메시지는 안올것 같아 보임
 			rv = skb_msg_process_clicktocallrecording_service_status_rpt(skbmsg, &dbif);
 			break;
 		default:
@@ -807,7 +812,7 @@ static int _tcp_client_on_open(upa_tcp_t *tcp, ux_channel_t *channel, ux_cnector
 
 	//메시지를 Network byte ordering으로 변경
 	rv = skb_msg_cvt_order_hton3(skbmsg, chnl_idx);
-	if( rv< UX_SUCCESS) {
+	if( rv < UX_SUCCESS) {
 		ux_log(UXL_CRT, "failed to skb_msg_cvt_order_hton3 : %d", requestID);
 		return -1;
 	}

@@ -16,7 +16,6 @@ uhash_rid_t* uh_rid_init() {
 
 int uh_rid_put(uhash_rid_t* hash, khint_t key) {
     int r;
-    khint_t k;
     
     pthread_mutex_lock(&hash->mutex_lock);
     kh_put_rid(hash->h, key, &r);

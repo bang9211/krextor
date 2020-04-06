@@ -1108,17 +1108,21 @@ int skb_msg_process_clicktocall_stoprecording_rpt( skb_msg_t *skbmsg) {
 	return eUXC_SUCCESS;
 }
 
-int skb_msg_process_clicktocall_service_status_rpt( skb_msg_t *skbmsg, uxc_dbif_t *dbif) {
-	int rv;
+int skb_msg_process_clicktocall_service_status_rpt( skb_msg_t *skbmsg, uxc_dbif_t *dbif, int *status) {
+	int rv = eUXC_SUCCESS;
 	clicktocall_service_status_rpt_tcp_t clicktocall_service_status_rpt[1];
 
 	char headerLog[256];
 	skb_msg_get_recv_header_display(&skbmsg->header, headerLog);
 	memcpy(clicktocall_service_status_rpt, skbmsg->body, sizeof(clicktocall_service_status_rpt_tcp_t));
 	clicktocall_service_status_rpt_tcp_display(headerLog, clicktocall_service_status_rpt);
-	rv = clicktocall_service_status_rpt_encode_to_dbif_msg(clicktocall_service_status_rpt, dbif);
-	if (rv <eUXC_SUCCESS) return rv;
-	clicktocall_service_status_rpt_dbif_display(dbif);
+	*status = clicktocall_service_status_rpt->status;
+	//착신자 호출 중(2), 정상 서비스 중(0)일 경우에만 gw로 포워딩
+	if (*status == 2 || *status == 0) {	
+		rv = clicktocall_service_status_rpt_encode_to_dbif_msg(clicktocall_service_status_rpt, dbif);
+		if (rv <eUXC_SUCCESS) return rv;
+		clicktocall_service_status_rpt_dbif_display(dbif);
+	}
 
 	return rv;
 }
