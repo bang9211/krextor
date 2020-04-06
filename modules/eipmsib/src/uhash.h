@@ -14,10 +14,17 @@
 // returns 0=replaced existing item, 1=bucket empty (new key), 2-adding element previously deleted
 #define kh_set(kname, hash, key, val) ({int ret; k = kh_put(kname, hash,key,&ret); kh_value(hash,k) = val; ret;})
 
+KHASH_SET_INIT_INT(rid)
 KHASH_MAP_INIT_INT(tmt, time_t);      // instantiate structs and methods
 KHASH_MAP_INIT_INT(m32, char*);      // instantiate structs and methods
 KHASH_MAP_INIT_STR(str, char*);     // setup khash to handle string key with string body
 KHASH_MAP_INIT_INT(ipc, uxc_ixpc_t*)      // instantiate structs and methods
+
+typedef struct uhash_rid_s uhash_rid_t;
+struct uhash_rid_s {
+    kh_rid_t* h;
+    pthread_mutex_t mutex_lock;
+};
 
 typedef struct uhash_tmt_s uhash_tmt_t;
 struct uhash_tmt_s {
@@ -42,6 +49,12 @@ struct uhash_ipc_s {
     kh_ipc_t* h;
     pthread_mutex_t mutex_lock;
 };
+
+uhash_rid_t* uh_rid_init();
+int uh_rid_put(uhash_rid_t* hash, khint_t key);
+int uh_rid_is_exist(uhash_rid_t* hash, khint_t key);
+void uh_rid_del(uhash_rid_t* hash, khint_t key);
+void uh_rid_destroy(uhash_rid_t* hash);
 
 uhash_tmt_t* uh_tmt_init();
 int uh_tmt_put(uhash_tmt_t* hash, khint_t key, time_t value);

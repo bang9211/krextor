@@ -15,8 +15,8 @@ int dbif_handle_gwreq(uxc_action_t *action, uxc_worker_t* worker, uxc_msg_t *msg
 	msg_size = sizeof(uxc_ixpc_t) + ipcmsg->header.length + sizeof(long) ;
 
 	// ux_log( UXL_INFO, "1. Received DBIF request "); 
-	ux_log(UXL_INFO, "1. Received ipcmsg from %d to %d, size=%d, header=%lu + dbif=%d\n",
-		ipcmsg->header.srcQid, ipcmsg->header.dstQid, msg_size, sizeof(uxc_ixpc_t),ipcmsg->header.length); 
+	ux_log(UXL_INFO, "1. Received ipcmsg from %d to %d, size=%d, mtype=%lu + header=%lu + dbif=%d",
+		ipcmsg->header.srcQid, ipcmsg->header.dstQid, msg_size, sizeof(long), sizeof(uxc_ixpc_t), ipcmsg->header.length); 
 
 	return tcp_client_forward_gwreq( client, worker,ipcmsg);
 }
@@ -41,7 +41,7 @@ int tcp_client_handle_eipmsrsp(uxc_action_t *action, uxc_worker_t* worker, uxc_m
 		return -1;
 	}
 
-	return 0;
+	return rv;
 }
 
 // /**

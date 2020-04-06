@@ -746,9 +746,11 @@ void skb_msg_make_header(skb_header_t* header, int32_t messageID, int16_t bodySi
 	header->messageID = messageID;
 	if (requestID == NULL) {
 		temp = skb_msg_generate_requestID();
-		// while (uh_int_is_exist(GW_)) {
-
-		// }
+		while (uh_rid_is_exist(reqID_Set, temp)) {
+			ux_log( UXL_INFO, "generated requestID(%d) is already existed, try to regenerate", temp);
+			temp = skb_msg_generate_requestID();
+		}
+		uh_rid_put(reqID_Set, temp);
 		requestID = &temp;
 	}
 	header->requestID = *requestID;
@@ -782,7 +784,7 @@ void skb_msg_get_header_display(skb_header_t* header, char *log) {
 	"  [frameStart1] 0x%hhX\n"
 	"  [length] %d\n"
 	"  [messageID] %#010x\n"
-	"  [requestID] %d\n"
+	"  [requestID] %d (%x)\n"
 	"  [version0] 0x%hhX\n"
 	"  [version1] 0x%hhX\n"
 	"  [userID] %d\n"
@@ -791,6 +793,7 @@ void skb_msg_get_header_display(skb_header_t* header, char *log) {
 		header->length, 
 		header->messageID, 
 		header->requestID, 
+		header->requestID,
 		header->version0, 
 		header->version1, 
 		header->userID, 
@@ -836,6 +839,7 @@ int32_t getRandomInt32() {
 }
 
 void create_skb_map() {
+	reqID_Set = uh_rid_init();
 	reqID_timestamp_Map = uh_tmt_init();
 	reqID_SID_Map = uh_int_init();    
 	reqID_GWSID_Map = uh_int_init();
@@ -852,7 +856,7 @@ void destroy_skb_map() {
 // 		 free(tval);
 //       }
 //    }
-
+	uh_rid_destroy(reqID_Set);
 	uh_tmt_destroy(reqID_timestamp_Map);
 	uh_int_destroy(reqID_SID_Map);
 	uh_int_destroy(reqID_GWSID_Map);
@@ -975,7 +979,7 @@ int skb_msg_process_clicktocall_binding_rsp(skb_msg_t *skbmsg) {
 	if (clicktocall_binding_rsp->resultCode < 2) {
 		return eUXC_SUCCESS;
 	}
-	ux_log(UXL_CRT, "failed to bind : %d", clicktocall_binding_rsp->resultCode);
+	ux_log(UXL_CRT, "failed to bind(resultCode : %d)", clicktocall_binding_rsp->resultCode);
 	return -1;
 }
 
@@ -1208,7 +1212,7 @@ int skb_msg_process_clicktocallrecording_binding_rsp(skb_msg_t *skbmsg) {
 	if (clicktocallrecording_binding_rsp->resultCode < 2) {
 		return eUXC_SUCCESS;
 	}
-	ux_log(UXL_CRT, "failed to bind : %d", clicktocallrecording_binding_rsp->resultCode);
+	ux_log(UXL_CRT, "failed to bind(resultCode : %d)", clicktocallrecording_binding_rsp->resultCode);
 	return -1;
 }
 
@@ -1536,7 +1540,7 @@ int skb_msg_process_clicktoconference_binding_rsp(skb_msg_t *skbmsg) {
 	if (clicktoconference_binding_rsp->resultCode < 2) {
 		return eUXC_SUCCESS;
 	}
-	ux_log(UXL_CRT, "failed to bind : %d", clicktoconference_binding_rsp->resultCode);
+	ux_log(UXL_CRT, "failed to bind(resultCode: %d)", clicktoconference_binding_rsp->resultCode);
 	return -1;
 }
 

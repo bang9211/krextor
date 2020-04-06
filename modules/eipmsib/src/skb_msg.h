@@ -31,11 +31,13 @@
 // #define UNSIGNED_INT32_MAX 4294967295	//2147483647 - (-2147483648), min: 0 max: 4294967295
 // typedef enum {false, true} bool;
 
+
 /** @brief SKB Request ID Pool */
-uhash_tmt_t *reqID_timestamp_Map;
-uhash_int_t *reqID_SID_Map;
-uhash_int_t *reqID_GWSID_Map;
-uhash_ipc_t *reqID_IPC_Map;
+uhash_rid_t *reqID_Set;				//requestID
+uhash_tmt_t *reqID_timestamp_Map;	//requestID - timestamp
+uhash_int_t *reqID_SID_Map;			//requestID - sessionID
+uhash_int_t *reqID_GWSID_Map;		//requestID - gwSessionID
+uhash_ipc_t *reqID_IPC_Map;			//requestID - uxc_ixpc_t
 
 typedef struct skb_header_s skb_header_t; 
 struct skb_header_s {

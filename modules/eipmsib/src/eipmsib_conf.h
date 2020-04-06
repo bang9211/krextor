@@ -13,8 +13,12 @@
 typedef struct eipmsib_conf_s eipmsib_conf_t; 
 struct eipmsib_conf_s {
 	int mqid;
-	char binding_user_id[BINDING_USER_ID_LEN];
-	char binding_password[BINDING_PASSWORD_LEN];
+	char call_binding_user_id[BINDING_USER_ID_LEN];
+	char call_binding_password[BINDING_PASSWORD_LEN];
+	char recording_binding_user_id[BINDING_USER_ID_LEN];
+	char recording_binding_password[BINDING_PASSWORD_LEN];
+	char conference_binding_user_id[BINDING_USER_ID_LEN];
+	char conference_binding_password[BINDING_PASSWORD_LEN];
 	int heartbeat_interval;
 	int heartbeat_timeout;
 	int request_timeout;

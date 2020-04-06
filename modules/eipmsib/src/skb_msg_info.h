@@ -131,8 +131,12 @@
 #define BINDING_USER_ID_LEN                                     16
 #define BINDING_PASSWORD_LEN                                    16
 
-// #define BINDING_USER_ID                                         "PGW"
-// #define BINDING_PASSWORD                                        "PGW99"
+// #define CALL_BINDING_USER_ID                                    "PGW"
+// #define CALL_BINDING_PASSWORD                                   "PGW99"
+// #define RECORDING_BINDING_USER_ID                               "PGW"
+// #define RECORDING_BINDING_PASSWORD                              "PGW99"
+// #define CONFERENCE_BINDING_USER_ID                              "PGW"
+// #define CONFERENCE_BINDING_PASSWORD                             "PGW99"
 
 #define SKB_HEADER_DISPLAY_SIZE                                 256
 

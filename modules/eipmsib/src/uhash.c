@@ -2,6 +2,59 @@
 #include <stdio.h>
 
 ///////////////////////////////////
+//int32_t
+///////////////////////////////////
+
+uhash_rid_t* uh_rid_init() {
+    uhash_rid_t *hash = (uhash_rid_t*)malloc(sizeof(uhash_rid_t));
+    hash->h = kh_init(rid);
+    if (pthread_mutex_init(&hash->mutex_lock, NULL) != 0) {
+        printf("Failed to pthread_mutex_init\n");
+    }
+    return hash;
+}
+
+int uh_rid_put(uhash_rid_t* hash, khint_t key) {
+    int r;
+    khint_t k;
+    
+    pthread_mutex_lock(&hash->mutex_lock);
+    kh_put_rid(hash->h, key, &r);
+    pthread_mutex_unlock(&hash->mutex_lock);
+
+    if (r < 0) {
+        return 0;
+    }
+    return 1;
+}
+
+int uh_rid_is_exist(uhash_rid_t* hash, khint_t key) {
+    khint_t k = kh_get(rid, hash->h, key);
+    if (k == kh_end(hash->h)) {
+        return 0;
+    }
+    return 1;
+}
+
+void uh_rid_del(uhash_rid_t* hash, khint_t key) {
+    khint_t k;
+    pthread_mutex_lock(&hash->mutex_lock);
+    k = kh_get(rid, hash->h, key);
+    if (k == kh_end(hash->h)) {
+        pthread_mutex_unlock(&hash->mutex_lock);
+        return;
+    }
+    kh_del(rid, hash->h, k);
+    pthread_mutex_unlock(&hash->mutex_lock);
+}
+
+void uh_rid_destroy(uhash_rid_t* hash) {
+    pthread_mutex_destroy(&hash->mutex_lock);
+    kh_destroy(rid, hash->h);
+    free(hash);
+}
+
+///////////////////////////////////
 //int32_t - time_t
 ///////////////////////////////////
 
