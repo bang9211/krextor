@@ -1,0 +1,36 @@
+SubDir TOP modules sswsim src ;
+
+SubDirHdrs $(UALIB_SRC_HOME)/include ;
+SubDirHdrs $(UXLIB_SRC_HOME)/include ;
+SubDirHdrs $(UXCUTOR_SRC_HOME)/include ;
+SubDirHdrs $(USIP_SRC_HOME)/include ;
+SubDirHdrs $(UHTTP_SRC_HOME)/include ;
+SubDirHdrs $(TOP)/modules/uims/src ;
+
+LIB_NAME = libsswsim ;
+LIB_VERSION_NAME = $(LIB_NAME)-1.0.0 ;
+LIB_VERLINK_NAME = $(LIB_NAME)-1.0 ;
+
+LOCAL_DEF = $(SYS_CCFLAGS) ;
+
+SRCS =
+	sswsim_plugin
+	;
+
+IHDRS =
+	;
+
+ObjectCcFlags $(SRCS)$(SUFOBJ) : $(LOCAL_DEF) ;
+
+Library $(LIB_VERSION_NAME)$(SUFLIB) : $(SRCS).c ;
+SharedLibraryMain $(LIB_VERSION_NAME)$(SUFSHARED) : $(LIB_VERSION_NAME)$(SUFLIB) ;
+InstallLib $(TOP)/lib : $(LIB_VERSION_NAME)$(SUFLIB) ;
+InstallFile $(TOP)/lib/$(LIB_VERSION_NAME)$(SUFSHARED) : $(LIB_VERSION_NAME)$(SUFSHARED) ;
+InstallLink $(TOP)/lib/$(LIB_VERLINK_NAME)$(SUFSHARED) : $(TOP)/lib/$(LIB_VERSION_NAME)$(SUFSHARED) ;
+InstallLink $(TOP)/lib/$(LIB_NAME)$(SUFSHARED) : $(TOP)/lib/$(LIB_VERLINK_NAME)$(SUFSHARED) ;
+if $(UA_COPY_UASYS_HOME) = yes  {
+	InstallFile $(UASYS_HOME)/lib/$(LIB_VERSION_NAME)$(SUFSHARED) : $(LIB_VERSION_NAME)$(SUFSHARED) ;
+	InstallLink $(UASYS_HOME)/lib/$(LIB_VERLINK_NAME)$(SUFSHARED) : $(UASYS_HOME)/lib/$(LIB_VERSION_NAME)$(SUFSHARED) ;
+	InstallLink $(UASYS_HOME)/lib/$(LIB_NAME)$(SUFSHARED) : $(UASYS_HOME)/lib/$(LIB_VERLINK_NAME)$(SUFSHARED) ;
+}
+Lint check : $(SRCS).c ;

@@ -1,0 +1,4 @@
+SubDir TOP modules sswsim ;
+
+SubInclude TOP modules sswsim src ;
+SubInclude TOP modules sswsim xcpt ;
