@@ -1,0 +1,64 @@
+<uxcutor>
+
+	<service id="101" name="request">
+
+		<session>
+			<member name="status" type="uint32_t"/>
+		</session>
+
+		<fsm>
+			<start name="start">
+				<onrecv target="RECV_REQUEST"/>
+				<default target="stop"/>
+			</start>
+
+			<recv name="RECV_REQUEST" protocol="SIP" operation="ANY" is_req="yes">
+				<oncall>
+					<call type="SYS" function="ibcf_ireqsvc_on_recv_request()"/>;
+				</oncall>
+				<onerror target="SEND_ERROR"/>
+			</recv>
+
+			<send name="FORWARD_REQUEST" protocol="SIP" operation="ANY" is_req="yes">
+				<oncall>
+					<call type="SYS" function="ibcf_ireqsvc_on_forward_request()"/>
+				</oncall>
+			</send>
+
+			<wait name="WAIT_RESPONSE" timeout="180000">
+				<onrecv target="RECV_RESPONSE"/>
+				<default target="SEND_ERROR"/>
+			</wait>
+
+			<recv name="RECV_RESPONSE" protocol="SIP" operation="ANY" is_req="no">
+				<oncall>
+					<call type="SYS" function="ibcf_ireqsvc_on_recv_response(status)"/>
+				</oncall>
+				<default target="SEND_RESPONSE"/>
+			</recv>
+
+			<switch name="SWITCH_100_RSP" value="status">
+				<case value="100" cmpop="le" target="WAIT_RESPONSE"/>
+				<case value="305" cmpop="eq" target="FORWARD_REQUEST"/>
+				<default target="SEND_RESPONSE"/>
+			</switch>
+			<send name="SEND_RESPONSE" protocol="SIP" operation="ANY" is_req="no">
+				<oncall>
+					<call type="SYS" function="ibcf_ireqsvc_on_forward_response()"/>
+				</oncall>
+			</send>
+			<switch name="SWITCH_RESPONSE" value="status">
+				<case value="200" cmpop="lt" target="WAIT_RESPONSE"/>
+				<default target="stop"/>
+			</switch>
+
+			<send name="SEND_ERROR" protocol="SIP" operation="ANY" is_req="no">
+				<oncall>
+					<call type="SYS" function="ibcf_ireqsvc_on_send_error()"/>;
+				</oncall>
+			</send>
+
+			<stop name="stop"/>
+		</fsm>
+	</service>
+</uxcutor>

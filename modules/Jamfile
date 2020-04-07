@@ -1,6 +1,7 @@
 SubDir TOP modules ;
 
 SubInclude TOP modules clicktocall ;
+SubInclude TOP modules sswsim ;
 SubInclude TOP modules uims ;
 SubInclude TOP modules eipmsib ;
 SubInclude TOP modules testtcpserver ;

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <uxcutor>
-	<service name="clicktocall" id="1">
+	<service name="clicktocall_recording" id="2">
 		<functions>
 			<function name="log_msg" acttype="LUA">
 				<parameter name="message" type="char*"/>

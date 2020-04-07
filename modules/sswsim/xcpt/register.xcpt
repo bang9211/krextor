@@ -1,0 +1,34 @@
+<uxcutor>
+	<service id="100" name="register">
+		<fsm>
+			<start name="start">
+				<onrecv target="RECV_REGISTER_REQ"/>
+				<default target="stop"/>
+			</start>
+
+			<recv name="RECV_REGISTER_REQ" protocol="SIP" operation="REGISTER" is_req="yes">
+				<oncall>
+					<call type="SYS" function="ibcf_regsvc_on_recv_register()"/>
+				</oncall>
+				<onerror target="SEND_REGISTER_ERROR"/>
+			</recv>
+
+
+			<send name="SEND_REGISTER_RSP" protocol="SIP" operation="REGISTER" is_req="no">
+				<oncall>
+					<call type="SYS" function="ibcf_regsvc_on_forward_response()"/>
+				</oncall>
+				<onsuccess target="stop"/>
+				<onerror target="SEND_REGISTER_ERROR"/>
+			</send>
+
+			<send name="SEND_REGISTER_ERROR" protocol="SIP" operation="REGISTER" is_req="no">
+				<oncall>
+					<call type="SYS" function="ibcf_regsvc_on_send_error()"/>;
+				</oncall>
+			</send>
+
+			<stop name="stop"/>
+		</fsm>
+	</service>
+</uxcutor>
