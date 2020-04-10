@@ -222,9 +222,9 @@ final:
 void clicktoconference_add_party_rsp_tcp_display(char *headerStr, clicktoconference_add_party_rsp_tcp_t *clicktoconference_add_party_rsp) {
 	ux_log(UXL_INFO, 
 		"%s\n"
-		"Body [clicktoconference_add_party_rsp]"
-		"  [resultCode] %d"
-		"  [confID] %s"
+		"Body [clicktoconference_add_party_rsp]\n"
+		"  [resultCode] %d\n"
+		"  [confID] %s\n"
 		"  [participantList] %s"
 		, headerStr
 		, clicktoconference_add_party_rsp->resultCode
@@ -519,11 +519,11 @@ final:
 void clicktoconference_stop_rsp_tcp_display(char *headerStr, clicktoconference_stop_rsp_tcp_t *clicktoconference_stop_rsp) {
 	ux_log(UXL_INFO, 
 		"%s\n"
-		"Body [clicktoconference_stop_rsp]\b"
-		"  [resultCode] %d\b"
-		"  [confID] %s\b"
-		"  [startTime] %s\b"
-		"  [endTime] %s\b"
+		"Body [clicktoconference_stop_rsp]\n"
+		"  [resultCode] %d\n"
+		"  [confID] %s\n"
+		"  [startTime] %s\n"
+		"  [endTime] %s\n"
 		"  [recordingFileID] %d"
 		, headerStr
 		, clicktoconference_stop_rsp->resultCode

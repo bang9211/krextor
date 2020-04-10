@@ -85,6 +85,7 @@ int tcp_server_handle_svrreq( tcp_server_t *server, uxc_worker_t* worker, upa_tc
 {
 	skb_msg_t *skbmsg;
 	int msgID,rv;
+	char headerLog[256];
 	clicktocall_start_req_tcp_t clicktocall_start_req[1];
 	clicktocall_stop_req_tcp_t clicktocall_stop_req[1];
 	clicktocall_startrecording_req_tcp_t clicktocall_startrecording_req[1];
@@ -145,7 +146,9 @@ int tcp_server_handle_svrreq( tcp_server_t *server, uxc_worker_t* worker, upa_tc
 					return UX_SUCCESS;
 					break;
 				case BINDING_REQUEST:
-					skb_msg_display_recv_header(&skbmsg->header);
+					// skb_msg_display_recv_header(&skbmsg->header);
+					skb_msg_get_recv_header_display(&skbmsg->header, headerLog);
+					clicktocall_binding_req_tcp_display(headerLog, (clicktocall_binding_req_tcp_t*)skbmsg->body);
 					msg_size = sizeof(clicktocall_binding_rsp_tcp_t);
 					memcpy(skbmsg->body, &clicktocall_binding_rsp, msg_size);
 					skb_msg_make_header(&skbmsg->header, BINDING_RESPONSE, msg_size, &skbmsg->header.requestID);

@@ -144,87 +144,87 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 
 	//수신한 DBIF 메시지를 msgID에 따라 TCP로 보낼 eIPMS의 메시지로 변경
 	switch( msgId / 100) {
-	case 1:
-		ux_log(UXL_INFO, "2.1. Channel clicktocall");
-		peerkey.chnl_idx = 0; // configuration 첫번째 채널
-		peerkey.peer_key = 0; // 채널의 첫번째 PEER 
+		case 1:
+			ux_log(UXL_INFO, "2.1. Channel clicktocall");
+			peerkey.chnl_idx = 0; // configuration 첫번째 채널
+			peerkey.peer_key = 0; // 채널의 첫번째 PEER 
 
-		switch(msgId) {
-		case DBIF_CALL_START_REQUEST:
-			rv = skb_msg_process_clicktocall_start_req(&skbmsg, dbif, sessionID, gwSessionID);
+			switch(msgId) {
+				case DBIF_CALL_START_REQUEST:
+					rv = skb_msg_process_clicktocall_start_req(&skbmsg, dbif, sessionID, gwSessionID);
+					break;
+				case DBIF_CALL_STOP_REQUEST:
+					rv = skb_msg_process_clicktocall_stop_req(&skbmsg, dbif);
+					break;
+				case DBIF_CALL_START_RECORDING_REQUEST:
+					rv = skb_msg_process_clicktocall_startrecording_req(&skbmsg, dbif);
+					break;
+				case DBIF_CALL_STOP_RECORDING_REQUEST:
+					rv = skb_msg_process_clicktocall_stoprecording_req(&skbmsg, dbif);
+					break;
+				default:
+					ux_log(UXL_CRT, "unsupported msgId : %d", msgId);
+					return -1;
+			}
 			break;
-		case DBIF_CALL_STOP_REQUEST:
-			rv = skb_msg_process_clicktocall_stop_req(&skbmsg, dbif);
+		case 3:
+			ux_log(UXL_INFO, "2.2. Channel clicktocallrecording");
+			peerkey.chnl_idx = 1; //  채널
+			peerkey.peer_key = 0; // 채널의 첫번째 PEER 
+
+			switch(msgId) {
+				case DBIF_RECORDING_START_REQUEST:
+					rv = skb_msg_process_clicktocallrecording_start_req(&skbmsg, dbif, sessionID, gwSessionID);
+					break;
+				case DBIF_RECORDING_STOP_REQUEST:
+					rv = skb_msg_process_clicktocallrecording_stop_req(&skbmsg, dbif);
+					break;
+				default:
+					ux_log(UXL_CRT, "unsupported msgId : %d", msgId);
+					return -1;
+			}
 			break;
-		case DBIF_CALL_START_RECORDING_REQUEST:
-			rv = skb_msg_process_clicktocall_startrecording_req(&skbmsg, dbif);
-			break;
-		case DBIF_CALL_STOP_RECORDING_REQUEST:
-			rv = skb_msg_process_clicktocall_stoprecording_req(&skbmsg, dbif);
+		case 5:
+			ux_log(UXL_INFO, "2.3. Channel clicktoconference");
+			peerkey.chnl_idx = 2; //  채널
+			peerkey.peer_key = 0; // 채널의 첫번째 PEER 
+
+			switch(msgId) {
+				case DBIF_CONFERENCE_START_REQUEST:
+					rv = skb_msg_process_clicktoconference_start_req(&skbmsg, dbif, sessionID, gwSessionID);
+					break;
+				case DBIF_CONFERENCE_STOP_REQUEST:
+					rv = skb_msg_process_clicktoconference_stop_req(&skbmsg, dbif);
+					break;
+				case DBIF_ADD_PARTY_REQUEST:
+					rv = skb_msg_process_clicktoconference_add_party_req(&skbmsg, dbif);
+					break;
+				case DBIF_REMOVE_PARTY_REQUEST:
+					rv = skb_msg_process_clicktoconference_remove_party_req(&skbmsg, dbif);
+					break;
+				case DBIF_CANCEL_PARTY_REQUEST:
+					rv = skb_msg_process_clicktoconference_cancel_party_req(&skbmsg, dbif);
+					break;
+				case DBIF_CHANGE_PARTY_MEDIA_REQUEST:
+					rv = skb_msg_process_clicktoconference_change_party_media_req(&skbmsg, dbif);
+					break;
+				case DBIF_PLAY_MENT_REQUEST:
+					rv = skb_msg_process_clicktoconference_play_ment_req(&skbmsg, dbif);
+					break;
+				case DBIF_GET_NUMBER_OF_PARTY_REQUEST:
+					rv = skb_msg_process_clicktoconference_get_number_of_party_req(&skbmsg, dbif);
+					break;
+				case DBIF_GET_PARTY_STATUS_REQUEST:
+					rv = skb_msg_process_clicktoconference_get_party_status_req(&skbmsg, dbif);
+					break;
+				default:
+					ux_log(UXL_CRT, "unsupported msgId : %d", msgId);
+					return -1;
+			}
 			break;
 		default:
 			ux_log(UXL_CRT, "unsupported msgId : %d", msgId);
 			return -1;
-		}
-		break;
-	case 2:
-		ux_log(UXL_INFO, "2.2. Channel clicktocallrecording");
-		peerkey.chnl_idx = 1; //  채널
-		peerkey.peer_key = 0; // 채널의 첫번째 PEER 
-
-		switch(msgId) {
-		case DBIF_CALL_RECORDING_START_REQUEST:
-			rv = skb_msg_process_clicktocallrecording_start_req(&skbmsg, dbif, sessionID, gwSessionID);
-			break;
-		case DBIF_CALL_RECORDING_STOP_REQUEST:
-			rv = skb_msg_process_clicktocallrecording_stop_req(&skbmsg, dbif);
-			break;
-		default:
-			ux_log(UXL_CRT, "unsupported msgId : %d", msgId);
-			return -1;
-		}
-		break;
-	case 3:
-		ux_log(UXL_INFO, "2.3. Channel clicktoconference");
-		peerkey.chnl_idx = 2; //  채널
-		peerkey.peer_key = 0; // 채널의 첫번째 PEER 
-
-		switch(msgId) {
-		case DBIF_CONFERENCE_START_REQUEST:
-			rv = skb_msg_process_clicktoconference_start_req(&skbmsg, dbif, sessionID, gwSessionID);
-			break;
-		case DBIF_CONFERENCE_STOP_REQUEST:
-			rv = skb_msg_process_clicktoconference_stop_req(&skbmsg, dbif);
-			break;
-		case DBIF_ADD_PARTY_REQUEST:
-			rv = skb_msg_process_clicktoconference_add_party_req(&skbmsg, dbif);
-			break;
-		case DBIF_REMOVE_PARTY_REQUEST:
-			rv = skb_msg_process_clicktoconference_remove_party_req(&skbmsg, dbif);
-			break;
-		case DBIF_CANCEL_PARTY_REQUEST:
-			rv = skb_msg_process_clicktoconference_cancel_party_req(&skbmsg, dbif);
-			break;
-		case DBIF_CHANGE_PARTY_MEDIA_REQUEST:
-			rv = skb_msg_process_clicktoconference_change_party_media_req(&skbmsg, dbif);
-			break;
-		case DBIF_PLAY_MENT_REQUEST:
-			rv = skb_msg_process_clicktoconference_play_ment_req(&skbmsg, dbif);
-			break;
-		case DBIF_GET_NUMBER_OF_PARTY_REQUEST:
-			rv = skb_msg_process_clicktoconference_get_number_of_party_req(&skbmsg, dbif);
-			break;
-		case DBIF_GET_PARTY_STATUS_REQUEST:
-			rv = skb_msg_process_clicktoconference_get_party_status_req(&skbmsg, dbif);
-			break;
-		default:
-			ux_log(UXL_CRT, "unsupported msgId : %d", msgId);
-			return -1;
-		}
-		break;
-	default:
-		ux_log(UXL_CRT, "unsupported msgId : %d", msgId);
-		return -1;
 	}
 	if( rv < UX_SUCCESS) {
 		ux_log( UXL_CRT, "can't send data in process req.");
@@ -305,236 +305,236 @@ int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpms
 	// 2. process and response to uxcutor
 	//채널 index를 먼저 구분하여 clicktocall, clicktocallrecording, clicktoconference 구분
 	switch(tcpmsg->peerkey.chnl_idx) {
-	case TCP_CHANNEL_CALL:
-		switch(skbmsg->header.messageID) {
-		//HEARTBEAT
-		case HEARTBEAT_RESPONSE:
-			skb_msg_display_recv_header(&skbmsg->header);
-			is_heartbeat_sent[TCP_CHANNEL_CALL] = 0;
-			last_recv_seconds[TCP_CHANNEL_CALL] = seconds[TCP_CHANNEL_CALL];		
-			return UX_SUCCESS;
-		case HEARTBEAT_REQUEST:
-			skb_msg_display_recv_header(&skbmsg->header);
-			skb_msg_process_clicktocall_heartbeat_req(skbmsg);
-			msg_size = skbmsg->header.length;
-			requestID = skbmsg->header.requestID;
-			// 메시지를 Network byte ordering으로 변경
-			rv = skb_msg_cvt_order_hton2(skbmsg);
-			if( rv< UX_SUCCESS) {
-				ux_log(UXL_CRT, "failed to skb_msg_cvt_order_hton2 : %d", requestID);
-				return -1;
+		case TCP_CHANNEL_CALL:
+			switch(skbmsg->header.messageID) {
+			//HEARTBEAT
+				case HEARTBEAT_RESPONSE:
+					skb_msg_display_recv_header(&skbmsg->header);
+					is_heartbeat_sent[TCP_CHANNEL_CALL] = 0;
+					last_recv_seconds[TCP_CHANNEL_CALL] = seconds[TCP_CHANNEL_CALL];		
+					return UX_SUCCESS;
+				case HEARTBEAT_REQUEST:
+					skb_msg_display_recv_header(&skbmsg->header);
+					skb_msg_process_clicktocall_heartbeat_req(skbmsg);
+					msg_size = skbmsg->header.length;
+					requestID = skbmsg->header.requestID;
+					// 메시지를 Network byte ordering으로 변경
+					rv = skb_msg_cvt_order_hton2(skbmsg);
+					if( rv< UX_SUCCESS) {
+						ux_log(UXL_CRT, "failed to skb_msg_cvt_order_hton2 : %d", requestID);
+						return -1;
+					}
+					// ux_log(UXL_CRT, "seding tcp header size : %lu", sizeof(skbmsg->header));
+					// ux_log(UXL_CRT, "seding tcp body size : %lu", msg_size - sizeof(skbmsg->header));
+					rv = upa_tcp_send2(_g_client->patcp, &tcpmsg->peerkey, skbmsg, msg_size, 1);
+					if( rv < UX_SUCCESS) {
+						ux_log( UXL_CRT, "failed to upa_tcp_send2 : %d", requestID);
+						return -1;
+					}
+					return rv;
+				//BINDING
+				case BINDING_RESPONSE:
+					rv = skb_msg_process_clicktocall_binding_rsp(skbmsg);
+					if( rv < UX_SUCCESS) {
+						ux_log( UXL_CRT, "channel TCP_CHANNEL_CALL will be stopped");
+						//세션 연결 종료
+						ux_channel_stop2(channel_arr[TCP_CHANNEL_CALL], UX_TRUE);
+					}
+					turn_heartbeat_timer_on(TCP_CHANNEL_CALL);
+					break;
+				//RESPONSE
+				case START_RESPONSE:
+					rv = skb_msg_process_clicktocall_start_rsp(skbmsg, &dbif);
+					break;
+				case STOP_RESPONSE:
+					rv = skb_msg_process_clicktocall_stop_rsp(skbmsg, &dbif);
+					break;
+				case START_RECORDING_RESPONSE:
+					rv = skb_msg_process_clicktocall_startrecording_rsp(skbmsg, &dbif);
+					break;
+				case STOP_RECORDING_RESPONSE:
+					rv = skb_msg_process_clicktocall_stoprecording_rsp(skbmsg, &dbif);
+					break;
+				case SERVICE_STATUS_RESPONSE:
+					rv = skb_msg_process_clicktocall_service_status_rsp(skbmsg);	//no send
+					break;
+				//REPORT
+				case STOP_REPORT:
+					rv = skb_msg_process_clicktocall_stop_rpt(skbmsg, &dbif);
+					break;
+				case START_RECORDING_REPORT:
+					rv = skb_msg_process_clicktocall_startrecording_rpt(skbmsg);	//no send
+					break;
+				case STOP_RECORDING_REPORT:
+					rv = skb_msg_process_clicktocall_stoprecording_rpt(skbmsg);		//no send
+					break;
+				case SERVICE_STATUS_REPORT:
+					rv = skb_msg_process_clicktocall_service_status_rpt(skbmsg, &dbif, &status);
+					//착신자 호출 중(2), 정상 서비스 중(0)일 경우에만 gw로 포워딩
+					if (status != 2 && status != 0) {
+						return UX_SUCCESS;
+					}
+					break;
+				default:
+					ux_log(UXL_CRT, "unsupported messageID : %#010x", skbmsg->header.messageID)
+					return -1;
 			}
-			// ux_log(UXL_CRT, "seding tcp header size : %lu", sizeof(skbmsg->header));
-			// ux_log(UXL_CRT, "seding tcp body size : %lu", msg_size - sizeof(skbmsg->header));
-			rv = upa_tcp_send2(_g_client->patcp, &tcpmsg->peerkey, skbmsg, msg_size, 1);
-			if( rv < UX_SUCCESS) {
-				ux_log( UXL_CRT, "failed to upa_tcp_send2 : %d", requestID);
-				return -1;
+			break;		
+		case TCP_CHANNEL_RECORDING:
+			switch(skbmsg->header.messageID) {
+				//HEARTBEAT
+				case HEARTBEAT_RESPONSE:
+					skb_msg_display_recv_header(&skbmsg->header);
+					is_heartbeat_sent[TCP_CHANNEL_RECORDING] = 0;
+					last_recv_seconds[TCP_CHANNEL_RECORDING] = seconds[TCP_CHANNEL_RECORDING];		
+					return UX_SUCCESS;
+				case HEARTBEAT_REQUEST:
+					skb_msg_display_recv_header(&skbmsg->header);
+					skb_msg_process_clicktocallrecording_heartbeat_req(skbmsg);
+					msg_size = skbmsg->header.length;
+					requestID = skbmsg->header.requestID;
+					// 메시지를 Network byte ordering으로 변경
+					rv = skb_msg_cvt_order_hton(skbmsg, 0);
+					if( rv< UX_SUCCESS) {
+						ux_log(UXL_CRT, "failed to skb_msg_cvt_order_hton : %d", requestID);
+						break;
+					}
+					// ux_log(UXL_CRT, "sending tcp header size : %lu", sizeof(skbmsg->header));
+					// ux_log(UXL_CRT, "sending tcp body size : %lu", msg_size - sizeof(skbmsg->header));
+					rv = upa_tcp_send2(_g_client->patcp, &tcpmsg->peerkey, skbmsg, msg_size, 1);
+					if( rv < UX_SUCCESS) {
+						ux_log( UXL_CRT, "failed to upa_tcp_send2 : %d", requestID);
+						return -1;
+					}
+					return rv;
+				//BINDING
+				case BINDING_RESPONSE:
+					rv = skb_msg_process_clicktocallrecording_binding_rsp(skbmsg);
+					if( rv < UX_SUCCESS) {
+						ux_log( UXL_CRT, "channel TCP_CHANNEL_RECORDING will be stopped");
+						//세션 연결 종료
+						ux_channel_stop2(channel_arr[TCP_CHANNEL_RECORDING], UX_TRUE);
+					}
+					turn_heartbeat_timer_on(TCP_CHANNEL_RECORDING);
+					break;
+				//RESPONSE
+				case START_RESPONSE:
+					rv = skb_msg_process_clicktocallrecording_start_rsp(skbmsg, &dbif);
+					break;
+				case STOP_RESPONSE:
+					rv = skb_msg_process_clicktocallrecording_stop_rsp(skbmsg, &dbif);
+					break;
+				case SERVICE_STATUS_RESPONSE:
+					rv = skb_msg_process_clicktocallrecording_service_status_rsp(skbmsg);	//no send
+					break;
+				//REPORT
+				case START_REPORT:
+					rv = skb_msg_process_clicktocallrecording_start_rpt(skbmsg);	//no send
+					break;
+				case STOP_REPORT:
+					rv = skb_msg_process_clicktocallrecording_stop_rpt(skbmsg, &dbif);
+					break;
+				case SERVICE_STATUS_REPORT:
+					// 수신녹취에서 규격상 이 메시지는 안올것 같아 보임
+					rv = skb_msg_process_clicktocallrecording_service_status_rpt(skbmsg, &dbif);
+					break;
+				default:
+					ux_log(UXL_CRT, "unsupported messageID : %#010x", skbmsg->header.messageID)
+					break;	
 			}
-			return rv;
-		//BINDING
-		case BINDING_RESPONSE:
-			rv = skb_msg_process_clicktocall_binding_rsp(skbmsg);
-			if( rv < UX_SUCCESS) {
-				ux_log( UXL_CRT, "channel TCP_CHANNEL_CALL will be stopped");
-				//세션 연결 종료
-				ux_channel_stop2(channel_arr[TCP_CHANNEL_CALL], UX_TRUE);
-			}
-			turn_heartbeat_timer_on(TCP_CHANNEL_CALL);
 			break;
-		//RESPONSE
-		case START_RESPONSE:
-			rv = skb_msg_process_clicktocall_start_rsp(skbmsg, &dbif);
-			break;
-		case STOP_RESPONSE:
-			rv = skb_msg_process_clicktocall_stop_rsp(skbmsg, &dbif);
-			break;
-		case START_RECORDING_RESPONSE:
-			rv = skb_msg_process_clicktocall_startrecording_rsp(skbmsg, &dbif);
-			break;
-		case STOP_RECORDING_RESPONSE:
-			rv = skb_msg_process_clicktocall_stoprecording_rsp(skbmsg, &dbif);
-			break;
-		case SERVICE_STATUS_RESPONSE:
-			rv = skb_msg_process_clicktocall_service_status_rsp(skbmsg);	//no send
-			break;
-		//REPORT
-		case STOP_REPORT:
-			rv = skb_msg_process_clicktocall_stop_rpt(skbmsg, &dbif);
-			break;
-		case START_RECORDING_REPORT:
-			rv = skb_msg_process_clicktocall_startrecording_rpt(skbmsg);	//no send
-			break;
-		case STOP_RECORDING_REPORT:
-			rv = skb_msg_process_clicktocall_stoprecording_rpt(skbmsg);		//no send
-			break;
-		case SERVICE_STATUS_REPORT:
-			rv = skb_msg_process_clicktocall_service_status_rpt(skbmsg, &dbif, &status);
-			//착신자 호출 중(2), 정상 서비스 중(0)일 경우에만 gw로 포워딩
-			if (status != 2 && status != 0) {
-				return UX_SUCCESS;
+		case TCP_CHANNEL_CONFERENCE:
+			switch(skbmsg->header.messageID) {
+				//HEARTBEAT
+				case HEARTBEAT_RESPONSE:
+					skb_msg_display_recv_header(&skbmsg->header);
+					is_heartbeat_sent[TCP_CHANNEL_CONFERENCE] = 0;
+					last_recv_seconds[TCP_CHANNEL_CONFERENCE] = seconds[TCP_CHANNEL_CONFERENCE];		
+					return UX_SUCCESS;
+				case HEARTBEAT_REQUEST:
+					skb_msg_display_recv_header(&skbmsg->header);
+					skb_msg_process_clicktoconference_heartbeat_req(skbmsg);
+					msg_size = skbmsg->header.length;
+					requestID = skbmsg->header.requestID;
+					// 메시지를 Network byte ordering으로 변경
+					rv = skb_msg_cvt_order_hton(skbmsg, 0);
+					if( rv< UX_SUCCESS) {
+						ux_log(UXL_INFO, "failed to skb_msg_cvt_order_hton : %d", requestID);
+						break;
+					}
+					// ux_log(UXL_CRT, "seding tcp header size : %lu", sizeof(skbmsg->header));
+					// ux_log(UXL_CRT, "seding tcp body size : %lu", msg_size - sizeof(skbmsg->header));
+					rv = upa_tcp_send2(_g_client->patcp, &tcpmsg->peerkey, skbmsg, msg_size, 1);
+					if( rv < UX_SUCCESS) {
+						ux_log( UXL_CRT, "failed to upa_tcp_send2 : %d", requestID);
+						return -1;
+					}
+					return rv;
+				//BINDING
+				case BINDING_RESPONSE:
+					rv = skb_msg_process_clicktoconference_binding_rsp(skbmsg);
+					if( rv < UX_SUCCESS) {
+						ux_log( UXL_CRT, "channel TCP_CHANNEL_CONFERENCE will be stopped");
+						//세션 연결 종료
+						ux_channel_stop2(channel_arr[TCP_CHANNEL_CONFERENCE], UX_TRUE);
+					}
+					turn_heartbeat_timer_on(TCP_CHANNEL_CONFERENCE);
+					break;
+				//RESPONSE
+				case START_CONFERENCE_RESPONSE:
+					rv = skb_msg_process_clicktoconference_start_rsp(skbmsg, &dbif);
+					break;
+				case ADD_PARTY_RESPONSE:
+					rv = skb_msg_process_clicktoconference_add_party_rsp(skbmsg, &dbif);
+					break;
+				case REMOVE_PARTY_RESPONSE:
+					rv = skb_msg_process_clicktoconference_remove_party_rsp(skbmsg, &dbif);
+					break;
+				case CHANGE_PARTY_MEDIA_RESPONSE:
+					rv = skb_msg_process_clicktoconference_change_party_media_rsp(skbmsg, &dbif);
+					break;
+				case CHANGE_OPTION_RESPONSE:
+					rv = skb_msg_process_clicktoconference_change_option_rsp(skbmsg);	//no send
+					break;
+				case GET_NUMBER_OF_PARTY_RESPONSE:
+					rv = skb_msg_process_clicktoconference_get_number_of_party_rsp(skbmsg, &dbif);
+					break;
+				case STOP_CONFERENCE_RESPONSE:
+					rv = skb_msg_process_clicktoconference_stop_rsp(skbmsg, &dbif);
+					break;
+				case PLAY_MENT_RESPONSE:
+					rv = skb_msg_process_clicktoconference_play_ment_rsp(skbmsg, &dbif);
+					break;
+				case GET_PARTY_STATUS_RESPONSE:
+					rv = skb_msg_process_clicktoconference_get_party_status_rsp(skbmsg, &dbif);
+					break;
+				case CANCEL_PARTY_RESPONSE:
+					rv = skb_msg_process_clicktoconference_cancel_party_rsp(skbmsg, &dbif);
+					break;
+				//REPORT
+				case ADD_PARTY_REPORT:
+					rv = skb_msg_process_clicktoconference_add_party_rpt(skbmsg, &dbif);
+					break;
+				case REMOVE_PARTY_REPORT:
+					rv = skb_msg_process_clicktoconference_remove_party_rpt(skbmsg, &dbif);
+					break;
+				case CHANGE_PARTY_MEDIA_REPORT:
+					rv = skb_msg_process_clicktoconference_change_party_media_rpt(skbmsg, &dbif);
+					break;
+				case CHANGE_OPTION_REPORT:
+					rv = skb_msg_process_clicktoconference_change_option_rpt(skbmsg);	//no send
+					break;
+				case STOP_CONFERENCE_REPORT:
+					rv = skb_msg_process_clicktoconference_stop_rpt(skbmsg, &dbif);
+					break;
+				default:
+					ux_log(UXL_CRT, "unsupported messageID : %#010x", skbmsg->header.messageID)
+					break;	
 			}
 			break;
 		default:
-			ux_log(UXL_CRT, "unsupported messageID : %#010x", skbmsg->header.messageID)
+			ux_log(UXL_CRT, "unsupported Channel Index : %d", tcpmsg->peerkey.chnl_idx)
 			return -1;
-		}
-		break;		
-	case TCP_CHANNEL_RECORDING:
-		switch(skbmsg->header.messageID) {
-		//HEARTBEAT
-		case HEARTBEAT_RESPONSE:
-			skb_msg_display_recv_header(&skbmsg->header);
-			is_heartbeat_sent[TCP_CHANNEL_RECORDING] = 0;
-			last_recv_seconds[TCP_CHANNEL_RECORDING] = seconds[TCP_CHANNEL_RECORDING];		
-			return UX_SUCCESS;
-		case HEARTBEAT_REQUEST:
-			skb_msg_display_recv_header(&skbmsg->header);
-			skb_msg_process_clicktocallrecording_heartbeat_req(skbmsg);
-			msg_size = skbmsg->header.length;
-			requestID = skbmsg->header.requestID;
-			// 메시지를 Network byte ordering으로 변경
-			rv = skb_msg_cvt_order_hton(skbmsg, 0);
-			if( rv< UX_SUCCESS) {
-				ux_log(UXL_CRT, "failed to skb_msg_cvt_order_hton : %d", requestID);
-				break;
-			}
-			// ux_log(UXL_CRT, "sending tcp header size : %lu", sizeof(skbmsg->header));
-			// ux_log(UXL_CRT, "sending tcp body size : %lu", msg_size - sizeof(skbmsg->header));
-			rv = upa_tcp_send2(_g_client->patcp, &tcpmsg->peerkey, skbmsg, msg_size, 1);
-			if( rv < UX_SUCCESS) {
-				ux_log( UXL_CRT, "failed to upa_tcp_send2 : %d", requestID);
-				return -1;
-			}
-			return rv;
-		//BINDING
-		case BINDING_RESPONSE:
-			rv = skb_msg_process_clicktocallrecording_binding_rsp(skbmsg);
-			if( rv < UX_SUCCESS) {
-				ux_log( UXL_CRT, "channel TCP_CHANNEL_RECORDING will be stopped");
-				//세션 연결 종료
-				ux_channel_stop2(channel_arr[TCP_CHANNEL_RECORDING], UX_TRUE);
-			}
-			turn_heartbeat_timer_on(TCP_CHANNEL_RECORDING);
-			break;
-		//RESPONSE
-		case START_RECORDING_RESPONSE:
-			rv = skb_msg_process_clicktocallrecording_start_rsp(skbmsg, &dbif);
-			break;
-		case STOP_RECORDING_RESPONSE:
-			rv = skb_msg_process_clicktocallrecording_stop_rsp(skbmsg, &dbif);
-			break;
-		case SERVICE_STATUS_RESPONSE:
-			rv = skb_msg_process_clicktocallrecording_service_status_rsp(skbmsg);	//no send
-			break;
-		//REPORT
-		case START_REPORT:
-			rv = skb_msg_process_clicktocallrecording_start_rpt(skbmsg);	//no send
-			break;
-		case STOP_REPORT:
-			rv = skb_msg_process_clicktocallrecording_stop_rpt(skbmsg, &dbif);
-			break;
-		case SERVICE_STATUS_REPORT:
-			// 수신녹취에서 규격상 이 메시지는 안올것 같아 보임
-			rv = skb_msg_process_clicktocallrecording_service_status_rpt(skbmsg, &dbif);
-			break;
-		default:
-			ux_log(UXL_CRT, "unsupported messageID : %#010x", skbmsg->header.messageID)
-			break;	
-		}
-		break;
-	case TCP_CHANNEL_CONFERENCE:
-		switch(skbmsg->header.messageID) {
-		//HEARTBEAT
-		case HEARTBEAT_RESPONSE:
-			skb_msg_display_recv_header(&skbmsg->header);
-			is_heartbeat_sent[TCP_CHANNEL_CONFERENCE] = 0;
-			last_recv_seconds[TCP_CHANNEL_CONFERENCE] = seconds[TCP_CHANNEL_CONFERENCE];		
-			return UX_SUCCESS;
-		case HEARTBEAT_REQUEST:
-			skb_msg_display_recv_header(&skbmsg->header);
-			skb_msg_process_clicktoconference_heartbeat_req(skbmsg);
-			msg_size = skbmsg->header.length;
-			requestID = skbmsg->header.requestID;
-			// 메시지를 Network byte ordering으로 변경
-			rv = skb_msg_cvt_order_hton(skbmsg, 0);
-			if( rv< UX_SUCCESS) {
-				ux_log(UXL_INFO, "failed to skb_msg_cvt_order_hton : %d", requestID);
-				break;
-			}
-			// ux_log(UXL_CRT, "seding tcp header size : %lu", sizeof(skbmsg->header));
-			// ux_log(UXL_CRT, "seding tcp body size : %lu", msg_size - sizeof(skbmsg->header));
-			rv = upa_tcp_send2(_g_client->patcp, &tcpmsg->peerkey, skbmsg, msg_size, 1);
-			if( rv < UX_SUCCESS) {
-				ux_log( UXL_CRT, "failed to upa_tcp_send2 : %d", requestID);
-				return -1;
-			}
-			return rv;
-		//BINDING
-		case BINDING_RESPONSE:
-			rv = skb_msg_process_clicktoconference_binding_rsp(skbmsg);
-			if( rv < UX_SUCCESS) {
-				ux_log( UXL_CRT, "channel TCP_CHANNEL_CONFERENCE will be stopped");
-				//세션 연결 종료
-				ux_channel_stop2(channel_arr[TCP_CHANNEL_CONFERENCE], UX_TRUE);
-			}
-			turn_heartbeat_timer_on(TCP_CHANNEL_CONFERENCE);
-			break;
-		//RESPONSE
-		case START_CONFERENCE_RESPONSE:
-			rv = skb_msg_process_clicktoconference_start_rsp(skbmsg, &dbif);
-			break;
-		case ADD_PARTY_RESPONSE:
-			rv = skb_msg_process_clicktoconference_add_party_rsp(skbmsg, &dbif);
-			break;
-		case REMOVE_PARTY_RESPONSE:
-			rv = skb_msg_process_clicktoconference_remove_party_rsp(skbmsg, &dbif);
-			break;
-		case CHANGE_PARTY_MEDIA_RESPONSE:
-			rv = skb_msg_process_clicktoconference_change_party_media_rsp(skbmsg, &dbif);
-			break;
-		case CHANGE_OPTION_RESPONSE:
-			rv = skb_msg_process_clicktoconference_change_option_rsp(skbmsg);	//no send
-			break;
-		case GET_NUMBER_OF_PARTY_RESPONSE:
-			rv = skb_msg_process_clicktoconference_get_number_of_party_rsp(skbmsg, &dbif);
-			break;
-		case STOP_CONFERENCE_RESPONSE:
-			rv = skb_msg_process_clicktoconference_stop_rsp(skbmsg, &dbif);
-			break;
-		case PLAY_MENT_RESPONSE:
-			rv = skb_msg_process_clicktoconference_play_ment_rsp(skbmsg, &dbif);
-			break;
-		case GET_PARTY_STATUS_RESPONSE:
-			rv = skb_msg_process_clicktoconference_get_party_status_rsp(skbmsg, &dbif);
-			break;
-		case CANCEL_PARTY_RESPONSE:
-			rv = skb_msg_process_clicktoconference_cancel_party_rsp(skbmsg, &dbif);
-			break;
-		//REPORT
-		case ADD_PARTY_REPORT:
-			rv = skb_msg_process_clicktoconference_add_party_rpt(skbmsg, &dbif);
-			break;
-		case REMOVE_PARTY_REPORT:
-			rv = skb_msg_process_clicktoconference_remove_party_rpt(skbmsg, &dbif);
-			break;
-		case CHANGE_PARTY_MEDIA_REPORT:
-			rv = skb_msg_process_clicktoconference_change_party_media_rpt(skbmsg, &dbif);
-			break;
-		case CHANGE_OPTION_REPORT:
-			rv = skb_msg_process_clicktoconference_change_option_rpt(skbmsg);	//no send
-			break;
-		case STOP_CONFERENCE_REPORT:
-			rv = skb_msg_process_clicktoconference_stop_rpt(skbmsg, &dbif);
-			break;
-		default:
-			ux_log(UXL_CRT, "unsupported messageID : %#010x", skbmsg->header.messageID)
-			break;	
-		}
-		break;
-	default:
-		ux_log(UXL_CRT, "unsupported Channel Index : %d", tcpmsg->peerkey.chnl_idx)
-		return -1;
 	}
 	if (skbmsg->header.messageID != HEARTBEAT_REQUEST) {
 		last_recv_seconds[tcpmsg->peerkey.chnl_idx] = seconds[tcpmsg->peerkey.chnl_idx] + 1;
@@ -777,21 +777,21 @@ static int _tcp_client_on_open(upa_tcp_t *tcp, ux_channel_t *channel, ux_cnector
 	//binding request 전송
 	ux_log( UXL_INFO, "send binding request(chnl_idx : %d)", chnl_idx);
 	switch(chnl_idx) {
-	case TCP_CHANNEL_CALL:
-		binding_user_id = _g_client->conf->call_binding_user_id;
-		binding_password = _g_client->conf->call_binding_password;
-		break;
-	case TCP_CHANNEL_RECORDING:
-		binding_user_id = _g_client->conf->recording_binding_user_id;
-		binding_password = _g_client->conf->recording_binding_password;
-		break;
-	case TCP_CHANNEL_CONFERENCE:
-		binding_user_id = _g_client->conf->conference_binding_user_id;
-		binding_password = _g_client->conf->conference_binding_password;
-		break;
-	default:
-		ux_log(UXL_CRT, "failed to skb_msg_make_bind_request : wrong channel index");
-		return -1;
+		case TCP_CHANNEL_CALL:
+			binding_user_id = _g_client->conf->call_binding_user_id;
+			binding_password = _g_client->conf->call_binding_password;
+			break;
+		case TCP_CHANNEL_RECORDING:
+			binding_user_id = _g_client->conf->recording_binding_user_id;
+			binding_password = _g_client->conf->recording_binding_password;
+			break;
+		case TCP_CHANNEL_CONFERENCE:
+			binding_user_id = _g_client->conf->conference_binding_user_id;
+			binding_password = _g_client->conf->conference_binding_password;
+			break;
+		default:
+			ux_log(UXL_CRT, "failed to skb_msg_make_bind_request : wrong channel index");
+			return -1;
 	}
 	rv = skb_msg_make_bind_request(skbmsg, chnl_idx, binding_user_id, binding_password);
 	if( rv< UX_SUCCESS) {
@@ -811,7 +811,7 @@ static int _tcp_client_on_open(upa_tcp_t *tcp, ux_channel_t *channel, ux_cnector
 	binding_reqIDs[chnl_idx] = requestID;
 
 	//메시지를 Network byte ordering으로 변경
-	rv = skb_msg_cvt_order_hton3(skbmsg, chnl_idx);
+	rv = skb_msg_cvt_order_hton2(skbmsg);
 	if( rv < UX_SUCCESS) {
 		ux_log(UXL_CRT, "failed to skb_msg_cvt_order_hton3 : %d", requestID);
 		return -1;

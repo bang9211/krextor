@@ -5,11 +5,222 @@
 ////////////////////////////////////////////////////////////////////////////////////
 
 /**
+ * @brief DBIF messageID를 eIPMS messageID로 바꾼다.
+ * @param dbif_msgID DBIF message ID
+ * @return eIPMS message ID, except -1
+ */
+int skb_msg_cvt_to_skb_msg_id(int dbif_msgID) {
+	switch (dbif_msgID) {
+		case DBIF_CALL_START_REQUEST:
+			return START_REQUEST;
+		case DBIF_CALL_STOP_REQUEST:
+			return STOP_REQUEST;
+		case DBIF_CALL_START_RECORDING_REQUEST:
+			return START_RECORDING_REQUEST;
+		case DBIF_CALL_STOP_RECORDING_REQUEST:
+			return STOP_RECORDING_REQUEST;
+		case DBIF_CALL_START_RESPONSE:
+			return START_RESPONSE;
+		case DBIF_CALL_STOP_RESPONSE:
+			return STOP_RESPONSE;
+		case DBIF_CALL_START_RECORDING_RESPONSE:
+			return START_RECORDING_RESPONSE;
+		case DBIF_CALL_STOP_RECORDING_RESPONSE:
+			return STOP_RECORDING_RESPONSE;
+		case DBIF_CALL_SERVICE_STATUS_REPORT:
+			return SERVICE_STATUS_REPORT;
+		case DBIF_CALL_END_REPORT:
+			return STOP_REPORT;
+		case DBIF_RECORDING_START_REQUEST:
+			return START_REQUEST;
+		case DBIF_RECORDING_STOP_REQUEST:
+			return STOP_REQUEST;
+		case DBIF_RECORDING_START_RESPONSE:
+			return STOP_REQUEST;
+		case DBIF_RECORDING_STOP_RESPONSE:
+			return STOP_RESPONSE;
+		case DBIF_RECORDING_CALL_SERVICE_STATUS_REPORT:
+			return SERVICE_STATUS_REPORT;
+		case DBIF_RECORDING_CALL_END_REPORT:
+			return STOP_REPORT;
+		case DBIF_CONFERENCE_START_REQUEST:
+			return START_CONFERENCE_REQUEST;
+		case DBIF_CONFERENCE_STOP_REQUEST:
+			return STOP_CONFERENCE_REQUEST;
+		case DBIF_ADD_PARTY_REQUEST:
+			return ADD_PARTY_REQUEST;
+		case DBIF_REMOVE_PARTY_REQUEST:
+			return REMOVE_PARTY_REQUEST;
+		case DBIF_CANCEL_PARTY_REQUEST:
+			return CANCEL_PARTY_REQUEST;
+		case DBIF_CHANGE_PARTY_MEDIA_REQUEST:
+			return CHANGE_PARTY_MEDIA_REQUEST;
+		case DBIF_PLAY_MENT_REQUEST:
+			return PLAY_MENT_REQUEST;
+		case DBIF_GET_NUMBER_OF_PARTY_REQUEST:
+			return GET_NUMBER_OF_PARTY_REQUEST;
+		case DBIF_GET_PARTY_STATUS_REQUEST:
+			return GET_PARTY_STATUS_REQUEST;
+		case DBIF_CONFERENCE_START_RESPONSE:
+			return START_CONFERENCE_RESPONSE;
+		case DBIF_CONFERENCE_STOP_RESPONSE:
+			return STOP_CONFERENCE_RESPONSE;
+		case DBIF_ADD_PARTY_RESPONSE:
+			return ADD_PARTY_RESPONSE;
+		case DBIF_REMOVE_PARTY_RESPONSE:
+			return REMOVE_PARTY_RESPONSE;
+		case DBIF_CANCEL_PARTY_RESPONSE:
+			return CANCEL_PARTY_RESPONSE;
+		case DBIF_CHANGE_PARTY_MEDIA_RESPONSE:
+			return CHANGE_PARTY_MEDIA_RESPONSE;
+		case DBIF_PLAY_MENT_RESPONSE:
+			return PLAY_MENT_RESPONSE;
+		case DBIF_GET_NUMBER_OF_PARTY_RESPONSE:
+			return GET_NUMBER_OF_PARTY_RESPONSE;
+		case DBIF_GET_PARTY_STATUS_RESPONSE:
+			return GET_PARTY_STATUS_RESPONSE;
+		case DBIF_ADD_PARTY_REPORT:
+			return ADD_PARTY_REPORT;
+		case DBIF_REMOVE_PARTY_REPORT:
+			return REMOVE_PARTY_REPORT;
+		case DBIF_CHANGE_PARTY_MEDIA_REPORT:
+			return CHANGE_PARTY_MEDIA_REPORT;
+		case DBIF_CLOSE_CONF_REPORT:
+			return STOP_CONFERENCE_REPORT;
+		default:
+			ux_log(UXL_CRT, "unsupported dbif msg id : %d", dbif_msgID);
+			return -1;
+	}
+}
+
+/**
+ * @brief eIPMS messageID를 DBIF messageID로 바꾼다.
+ * @param msgID eIPMS message ID
+ * @return DBIF message ID, except -1 
+ */
+int skb_msg_cvt_to_dbif_msg_id(int chnl_idx, int msgID) {
+	switch (chnl_idx) {
+		case TCP_CHANNEL_CALL:
+			switch (msgID) {
+				case START_REQUEST:
+					return DBIF_CALL_START_REQUEST;
+				case STOP_REQUEST:
+					return DBIF_CALL_STOP_REQUEST;
+				case START_RECORDING_REQUEST:
+					return DBIF_CALL_START_RECORDING_REQUEST;
+				case STOP_RECORDING_REQUEST:
+					return DBIF_CALL_STOP_RECORDING_REQUEST;
+				case START_RESPONSE:
+					return DBIF_CALL_START_RESPONSE;
+				case STOP_RESPONSE:
+					return DBIF_CALL_STOP_RESPONSE;
+				case START_RECORDING_RESPONSE:
+					return DBIF_CALL_START_RECORDING_RESPONSE;
+				case STOP_RECORDING_RESPONSE:
+					return DBIF_CALL_STOP_RECORDING_RESPONSE;
+				case SERVICE_STATUS_REPORT:
+					return DBIF_CALL_SERVICE_STATUS_REPORT;
+				case STOP_REPORT:
+					return DBIF_CALL_END_REPORT;
+				case BINDING_REQUEST:
+				case BINDING_RESPONSE:
+				case HEARTBEAT_REQUEST:
+				case HEARTBEAT_RESPONSE:
+					return NONE_DBIF_MESSAGE;
+				default:
+					ux_log(UXL_CRT, "unsupported message id : %#010x", msgID);
+					return -1;
+			}
+		case TCP_CHANNEL_RECORDING:
+			switch (msgID) {
+				case START_REQUEST:
+					return DBIF_RECORDING_START_REQUEST;
+				case STOP_REQUEST:
+					return DBIF_RECORDING_STOP_REQUEST;
+				case START_RESPONSE:
+					return DBIF_RECORDING_START_RESPONSE;
+				case STOP_RESPONSE:
+					return DBIF_RECORDING_STOP_RESPONSE;
+				case SERVICE_STATUS_REPORT:
+					return DBIF_RECORDING_CALL_SERVICE_STATUS_REPORT;
+				case STOP_REPORT:
+					return DBIF_RECORDING_CALL_END_REPORT;
+				case BINDING_REQUEST:
+				case BINDING_RESPONSE:
+				case HEARTBEAT_REQUEST:
+				case HEARTBEAT_RESPONSE:
+					return NONE_DBIF_MESSAGE;
+				default:
+					ux_log(UXL_CRT, "unsupported message id : %#010x", msgID);
+					return -1;
+			}
+		case TCP_CHANNEL_CONFERENCE:
+			switch (msgID) {
+				case START_CONFERENCE_REQUEST:
+					return DBIF_CONFERENCE_START_REQUEST;
+				case STOP_CONFERENCE_REQUEST:
+					return DBIF_CONFERENCE_STOP_REQUEST;
+				case ADD_PARTY_REQUEST:
+					return DBIF_ADD_PARTY_REQUEST;
+				case REMOVE_PARTY_REQUEST:
+					return DBIF_REMOVE_PARTY_REQUEST;
+				case CANCEL_PARTY_REQUEST:
+					return DBIF_CANCEL_PARTY_REQUEST;
+				case CHANGE_PARTY_MEDIA_REQUEST:
+					return DBIF_CHANGE_PARTY_MEDIA_REQUEST;
+				case PLAY_MENT_REQUEST:
+					return DBIF_PLAY_MENT_REQUEST;
+				case GET_NUMBER_OF_PARTY_REQUEST:
+					return DBIF_GET_NUMBER_OF_PARTY_REQUEST;
+				case GET_PARTY_STATUS_REQUEST:
+					return DBIF_GET_PARTY_STATUS_REQUEST;
+				case START_CONFERENCE_RESPONSE:
+					return DBIF_CONFERENCE_START_RESPONSE;
+				case STOP_CONFERENCE_RESPONSE:
+					return DBIF_CONFERENCE_STOP_RESPONSE;
+				case ADD_PARTY_RESPONSE:
+					return DBIF_ADD_PARTY_RESPONSE;
+				case REMOVE_PARTY_RESPONSE:
+					return DBIF_REMOVE_PARTY_RESPONSE;
+				case CANCEL_PARTY_RESPONSE:
+					return DBIF_CANCEL_PARTY_RESPONSE;
+				case CHANGE_PARTY_MEDIA_RESPONSE:
+					return DBIF_CHANGE_PARTY_MEDIA_RESPONSE;
+				case PLAY_MENT_RESPONSE:
+					return DBIF_PLAY_MENT_RESPONSE;
+				case GET_NUMBER_OF_PARTY_RESPONSE:
+					return DBIF_GET_NUMBER_OF_PARTY_RESPONSE;
+				case GET_PARTY_STATUS_RESPONSE:
+					return DBIF_GET_PARTY_STATUS_RESPONSE;
+				case ADD_PARTY_REPORT:
+					return DBIF_ADD_PARTY_REPORT;
+				case REMOVE_PARTY_REPORT:
+					return DBIF_REMOVE_PARTY_REPORT;
+				case CHANGE_PARTY_MEDIA_REPORT:
+					return DBIF_CHANGE_PARTY_MEDIA_REPORT;
+				case STOP_CONFERENCE_REPORT:
+					return DBIF_CLOSE_CONF_REPORT;
+				case BINDING_REQUEST:
+				case BINDING_RESPONSE:
+				case HEARTBEAT_REQUEST:
+				case HEARTBEAT_RESPONSE:
+					return NONE_DBIF_MESSAGE;
+				default:
+					ux_log(UXL_CRT, "unsupported message id : %#010x", msgID);
+					return -1;
+			}
+		default:
+			ux_log(UXL_CRT, "unsupported chnl_idx : %d", chnl_idx);
+			return -1;
+	}
+}
+
+/**
  * @brief network eIPMS 메시지의 값들을 network byte ordering으로 바꾼다.
  * @param msg network eIPMS message
  * @return 실행 결과 
  */
-int skb_msg_cvt_order_hton(skb_msg_t *msg, int dbif_msgId)
+int skb_msg_cvt_order_hton(skb_msg_t *msg, int dbif_msgID)
 {
 	if (msg == NULL) return -1;
 
@@ -59,7 +270,7 @@ int skb_msg_cvt_order_hton(skb_msg_t *msg, int dbif_msgId)
 
     header = &msg->header;
 	
-    switch(dbif_msgId) {
+    switch(dbif_msgID) {
 	//clicktocall
     case DBIF_CALL_START_REQUEST:
 		clicktocall_start_req = (clicktocall_start_req_tcp_t *) msg->body;
@@ -100,17 +311,17 @@ int skb_msg_cvt_order_hton(skb_msg_t *msg, int dbif_msgId)
         clicktocall_stop_rpt->isRecorded = htonl(clicktocall_stop_rpt->isRecorded);
 		break;
 	//clicktocallrecording
-	case DBIF_CALL_RECORDING_START_REQUEST:
+	case DBIF_RECORDING_START_REQUEST:
 		clicktocallrecording_start_req = (clicktocallrecording_start_req_tcp_t *) msg->body;
         clicktocallrecording_start_req->filler2 = htons(clicktocallrecording_start_req->filler2);
 		break;
-	case DBIF_CALL_RECORDING_STOP_REQUEST:		//처리 필요 없음
+	case DBIF_RECORDING_STOP_REQUEST:		//처리 필요 없음
 		break;
-	case DBIF_CALL_RECORDING_START_RESPONSE:
+	case DBIF_RECORDING_START_RESPONSE:
 		clicktocallrecording_start_rsp = (clicktocallrecording_start_rsp_tcp_t *) msg->body;
         clicktocallrecording_start_rsp->resultCode = htonl(clicktocallrecording_start_rsp->resultCode);
 		break;
-	case DBIF_CALL_RECORDING_STOP_RESPONSE:
+	case DBIF_RECORDING_STOP_RESPONSE:
 		clicktocallrecording_stop_rsp = (clicktocallrecording_stop_rsp_tcp_t *) msg->body;
         clicktocallrecording_stop_rsp->resultCode = htonl(clicktocallrecording_stop_rsp->resultCode);
 		break;
@@ -209,7 +420,7 @@ int skb_msg_cvt_order_hton(skb_msg_t *msg, int dbif_msgId)
 		clicktoconference_stop_rpt->isRecorded = htonl(clicktoconference_stop_rpt->isRecorded);
 		break;
 	default:
-		ux_log( UXL_INFO, "Unknown DBIF Msg Id : [%d]\n", dbif_msgId);
+		ux_log( UXL_INFO, "unknown DBIF Msg Id : [%d]\n", dbif_msgID);
 		break;
     }
 
@@ -347,6 +558,7 @@ int skb_msg_cvt_order_ntoh(skb_msg_t *msg, int chnIdx, int *msgId)
 	clicktoconference_change_option_rpt_tcp_t *clicktoconference_change_option_rpt;
 	clicktoconference_stop_rpt_tcp_t *clicktoconference_stop_rpt;
 
+	// char headerLog[256];
 
 	if (msg == NULL) return -1;
 
@@ -426,7 +638,9 @@ int skb_msg_cvt_order_ntoh(skb_msg_t *msg, int chnIdx, int *msgId)
 				clicktocall_service_status_rpt->status = ntohl(clicktocall_service_status_rpt->status);
 				break;
 			default:
-				ux_log(UXL_CRT, "Unsupported messageID : %#010x", msg->header.messageID)
+				ux_log(UXL_CRT, "unsupported message id : %#010x", msg->header.messageID);
+				// skb_msg_get_header_display(&msg->header, headerLog);
+				// ux_log(UXL_CRT, "unsupported message id : %s", headerLog);
 				return -1;
 				// break;
 		}
@@ -481,7 +695,7 @@ int skb_msg_cvt_order_ntoh(skb_msg_t *msg, int chnIdx, int *msgId)
 				clicktocallrecording_service_status_rpt->status = ntohl(clicktocallrecording_service_status_rpt->status);
 				break;
 			default:
-				ux_log(UXL_CRT, "Unsupported messageID : %#010x", msg->header.messageID)
+				ux_log(UXL_CRT, "unsupported message id : %#010x", msg->header.messageID)
 				return -1;
 				// break;
 		}
@@ -596,13 +810,13 @@ int skb_msg_cvt_order_ntoh(skb_msg_t *msg, int chnIdx, int *msgId)
 				clicktoconference_stop_rpt->isRecorded = ntohl(clicktoconference_stop_rpt->isRecorded);
 				break;
 			default:
-				ux_log(UXL_CRT, "Unsupported messageID : %#010x", msg->header.messageID)
+				ux_log(UXL_CRT, "unsupported message id : %#010x", msg->header.messageID)
 				return -1;
 				// break;
 		}
 		break;
 	default:
-		ux_log(UXL_CRT, "Unsupported Channel Index : %d", chnIdx)
+		ux_log(UXL_CRT, "unsupported channel index : %d", chnIdx)
 		return -1;
 	}
 #endif
@@ -637,10 +851,10 @@ int skb_msg_cvt_order_ntoh(skb_msg_t *msg, int chnIdx, int *msgId)
 		case TCP_CHANNEL_RECORDING:
 			switch(msg->header.messageID) {
 			case START_RECORDING_RESPONSE:
-				*msgId = DBIF_CALL_RECORDING_START_RESPONSE;
+				*msgId = DBIF_RECORDING_START_RESPONSE;
 				break;
 			case STOP_RECORDING_RESPONSE:
-				*msgId = DBIF_CALL_RECORDING_STOP_RESPONSE;
+				*msgId = DBIF_RECORDING_STOP_RESPONSE;
 				break;
 			case SERVICE_STATUS_RESPONSE:
 				*msgId = DBIF_RECORDING_CALL_SERVICE_STATUS_REPORT;
@@ -700,7 +914,7 @@ int skb_msg_cvt_order_ntoh(skb_msg_t *msg, int chnIdx, int *msgId)
 			}
 			break;
 		default:
-			ux_log(UXL_CRT, "Unsupported Channel Index : %d", chnIdx)
+			ux_log(UXL_CRT, "unsupported channel index : %d", chnIdx)
 			return -1;
 	}
 
@@ -714,14 +928,14 @@ int skb_msg_cvt_order_ntoh(skb_msg_t *msg, int chnIdx, int *msgId)
  * @param peerkey peer key
  * @return 실행 결과 
  */
-int skb_msg_send( skb_msg_t *msg, upa_tcp_t *tcp, upa_peerkey_t *peerkey, int dbif_msgId)
+int skb_msg_send( skb_msg_t *msg, upa_tcp_t *tcp, upa_peerkey_t *peerkey, int dbif_msgID)
 {
 	ux_log( UXL_INFO, "= msg_send_skbmsg =");
 	int rv, msg_size;
 		
 	msg_size = msg->header.length; 
 
-	rv = skb_msg_cvt_order_hton(msg, dbif_msgId);
+	rv = skb_msg_cvt_order_hton(msg, dbif_msgID);
 	if( rv < UX_SUCCESS) {
 		ux_log(UXL_INFO, "msg data error");
 		return rv;
@@ -996,14 +1210,14 @@ int skb_msg_process_clicktocall_start_rsp( skb_msg_t *skbmsg, uxc_dbif_t *dbif) 
 	//requestID에 따라 기존에 저장한 sessionID, gwSessionID 추가하여 dbif 메시지 생성
 	strncpy(sessionID, uh_int_get(reqID_SID_Map, skbmsg->header.requestID), SESSION_ID_LEN);
 	if (sessionID == NULL || strcmp(sessionID, "") == 0) {
-		ux_log(UXL_CRT, "There is no sessionID of reqID(%d)", skbmsg->header.requestID);
+		ux_log(UXL_CRT, "there is no sessionID of reqID(%d)", skbmsg->header.requestID);
 		return -1;
 	} else {
 		uh_int_del(reqID_SID_Map, skbmsg->header.requestID);
 	}
 	strncpy(gwSessionID, uh_int_get(reqID_GWSID_Map, skbmsg->header.requestID), GW_SESSION_ID_LEN);
 	if (gwSessionID == NULL || strcmp(gwSessionID, "") == 0) {
-		ux_log(UXL_CRT, "There is no gwSessionID of reqID(%d)", skbmsg->header.requestID);
+		ux_log(UXL_CRT, "there is no gwSessionID of reqID(%d)", skbmsg->header.requestID);
 		return -1;
 	} else {
 		uh_int_del(reqID_GWSID_Map, skbmsg->header.requestID);
@@ -1233,14 +1447,14 @@ int skb_msg_process_clicktocallrecording_start_rsp( skb_msg_t *skbmsg, uxc_dbif_
 	//requestID에 따라 기존에 저장한 sessionID, gwSessionID 추가하여 dbif 메시지 생성
 	strncpy(sessionID, uh_int_get(reqID_SID_Map, skbmsg->header.requestID), SESSION_ID_LEN);
 	if (sessionID == NULL || strcmp(sessionID, "") == 0) {
-		ux_log(UXL_CRT, "There is no sessionID of reqID(%d)", skbmsg->header.requestID);
+		ux_log(UXL_CRT, "there is no sessionID of reqID(%d)", skbmsg->header.requestID);
 		return -1;
 	} else {
 		uh_int_del(reqID_SID_Map, skbmsg->header.requestID);
 	}
 	strncpy(gwSessionID, uh_int_get(reqID_GWSID_Map, skbmsg->header.requestID), GW_SESSION_ID_LEN);
 	if (gwSessionID == NULL || strcmp(gwSessionID, "") == 0) {
-		ux_log(UXL_CRT, "There is no gwSessionID of reqID(%d)", skbmsg->header.requestID);
+		ux_log(UXL_CRT, "there is no gwSessionID of reqID(%d)", skbmsg->header.requestID);
 		return -1;
 	} else {
 		uh_int_del(reqID_GWSID_Map, skbmsg->header.requestID);
@@ -1354,7 +1568,7 @@ int skb_msg_process_clicktoconference_start_req( skb_msg_t *skbmsg, uxc_dbif_t *
 	rv = clicktoconference_start_req_decode_dbif_msg(&clicktoconference_start_req, sessionID, gwSessionID, dbif);
 	if (rv < eUXC_SUCCESS) return rv;
 	// TCP Header 설정
-	skb_msg_make_header(&skbmsg->header, START_REQUEST, sizeof(clicktoconference_start_req), NULL);
+	skb_msg_make_header(&skbmsg->header, START_CONFERENCE_REQUEST, sizeof(clicktoconference_start_req), NULL);
 	char headerLog[256];
 	skb_msg_get_send_header_display(&skbmsg->header, headerLog);
 	// TCP Body 설정
@@ -1373,7 +1587,7 @@ int skb_msg_process_clicktoconference_add_party_req( skb_msg_t *skbmsg, uxc_dbif
 	rv = clicktoconference_add_party_req_decode_dbif_msg(&clicktoconference_add_party_req, dbif);
 	if (rv < 0) return rv;
 	// TCP Header 설정
-	skb_msg_make_header(&skbmsg->header, STOP_REQUEST, sizeof(clicktoconference_add_party_req), NULL);
+	skb_msg_make_header(&skbmsg->header, ADD_PARTY_REQUEST, sizeof(clicktoconference_add_party_req), NULL);
 	char headerLog[256];
 	skb_msg_get_send_header_display(&skbmsg->header, headerLog);
 	// TCP Body 설정
@@ -1392,7 +1606,7 @@ int skb_msg_process_clicktoconference_remove_party_req( skb_msg_t *skbmsg, uxc_d
 	rv = clicktoconference_remove_party_req_decode_dbif_msg(&clicktoconference_remove_party_req, dbif);
 	if (rv < 0) return rv;
 	// TCP Header 설정
-	skb_msg_make_header(&skbmsg->header, STOP_REQUEST, sizeof(clicktoconference_remove_party_req), NULL);
+	skb_msg_make_header(&skbmsg->header, REMOVE_PARTY_REQUEST, sizeof(clicktoconference_remove_party_req), NULL);
 	char headerLog[256];
 	skb_msg_get_send_header_display(&skbmsg->header, headerLog);
 	// TCP Body 설정
@@ -1411,7 +1625,7 @@ int skb_msg_process_clicktoconference_change_party_media_req( skb_msg_t *skbmsg,
 	rv = clicktoconference_change_party_media_req_decode_dbif_msg(&clicktoconference_change_party_media_req, dbif);
 	if (rv < 0) return rv;
 	// TCP Header 설정
-	skb_msg_make_header(&skbmsg->header, STOP_REQUEST, sizeof(clicktoconference_change_party_media_req), NULL);
+	skb_msg_make_header(&skbmsg->header, CHANGE_PARTY_MEDIA_REQUEST, sizeof(clicktoconference_change_party_media_req), NULL);
 	char headerLog[256];
 	skb_msg_get_send_header_display(&skbmsg->header, headerLog);
 	// TCP Body 설정
@@ -1443,7 +1657,7 @@ int skb_msg_process_clicktoconference_get_number_of_party_req( skb_msg_t *skbmsg
 	rv = clicktoconference_get_number_of_party_req_decode_dbif_msg(&clicktoconference_get_number_of_party_req, dbif);
 	if (rv < 0) return rv;
 	// TCP Header 설정
-	skb_msg_make_header(&skbmsg->header, STOP_REQUEST, sizeof(clicktoconference_get_number_of_party_req), NULL);
+	skb_msg_make_header(&skbmsg->header, GET_NUMBER_OF_PARTY_REQUEST, sizeof(clicktoconference_get_number_of_party_req), NULL);
 	char headerLog[256];
 	skb_msg_get_send_header_display(&skbmsg->header, headerLog);
 	// TCP Body 설정
@@ -1462,7 +1676,7 @@ int skb_msg_process_clicktoconference_stop_req( skb_msg_t *skbmsg, uxc_dbif_t *d
 	rv = clicktoconference_stop_req_decode_dbif_msg(&clicktoconference_stop_req, dbif);
 	if (rv < 0) return rv;
 	// TCP Header 설정
-	skb_msg_make_header(&skbmsg->header, STOP_REQUEST, sizeof(clicktoconference_stop_req), NULL);
+	skb_msg_make_header(&skbmsg->header, STOP_CONFERENCE_REQUEST, sizeof(clicktoconference_stop_req), NULL);
 	char headerLog[256];
 	skb_msg_get_send_header_display(&skbmsg->header, headerLog);
 	// TCP Body 설정
@@ -1481,7 +1695,7 @@ int skb_msg_process_clicktoconference_play_ment_req( skb_msg_t *skbmsg, uxc_dbif
 	rv = clicktoconference_play_ment_req_decode_dbif_msg(&clicktoconference_play_ment_req, dbif);
 	if (rv < 0) return rv;
 	// TCP Header 설정
-	skb_msg_make_header(&skbmsg->header, STOP_REQUEST, sizeof(clicktoconference_play_ment_req), NULL);
+	skb_msg_make_header(&skbmsg->header, PLAY_MENT_REQUEST, sizeof(clicktoconference_play_ment_req), NULL);
 	char headerLog[256];
 	skb_msg_get_send_header_display(&skbmsg->header, headerLog);
 	// TCP Body 설정
@@ -1500,7 +1714,7 @@ int skb_msg_process_clicktoconference_get_party_status_req( skb_msg_t *skbmsg, u
 	rv = clicktoconference_get_party_status_req_decode_dbif_msg(&clicktoconference_get_party_status_req, dbif);
 	if (rv < 0) return rv;
 	// TCP Header 설정
-	skb_msg_make_header(&skbmsg->header, STOP_REQUEST, sizeof(clicktoconference_get_party_status_req), NULL);
+	skb_msg_make_header(&skbmsg->header, GET_PARTY_STATUS_REQUEST, sizeof(clicktoconference_get_party_status_req), NULL);
 	char headerLog[256];
 	skb_msg_get_send_header_display(&skbmsg->header, headerLog);
 	// TCP Body 설정
@@ -1519,7 +1733,7 @@ int skb_msg_process_clicktoconference_cancel_party_req( skb_msg_t *skbmsg, uxc_d
 	rv = clicktoconference_cancel_party_req_decode_dbif_msg(&clicktoconference_cancel_party_req, dbif);
 	if (rv < 0) return rv;
 	// TCP Header 설정
-	skb_msg_make_header(&skbmsg->header, STOP_REQUEST, sizeof(clicktoconference_cancel_party_req), NULL);
+	skb_msg_make_header(&skbmsg->header, CANCEL_PARTY_REQUEST, sizeof(clicktoconference_cancel_party_req), NULL);
 	char headerLog[256];
 	skb_msg_get_send_header_display(&skbmsg->header, headerLog);
 	// TCP Body 설정
@@ -1561,14 +1775,14 @@ int skb_msg_process_clicktoconference_start_rsp( skb_msg_t *skbmsg, uxc_dbif_t *
 	//requestID에 따라 기존에 저장한 sessionID, gwSessionID 추가하여 dbif 메시지 생성
 	strncpy(sessionID, uh_int_get(reqID_SID_Map, skbmsg->header.requestID), SESSION_ID_LEN);
 	if (sessionID == NULL || strcmp(sessionID, "") == 0) {
-		ux_log(UXL_CRT, "There is no sessionID of reqID(%d)", skbmsg->header.requestID);
+		ux_log(UXL_CRT, "there is no sessionID of reqID(%d)", skbmsg->header.requestID);
 		return -1;
 	} else {
 		uh_int_del(reqID_SID_Map, skbmsg->header.requestID);
 	}
 	strncpy(gwSessionID, uh_int_get(reqID_GWSID_Map, skbmsg->header.requestID), GW_SESSION_ID_LEN);
 	if (gwSessionID == NULL || strcmp(gwSessionID, "") == 0) {
-		ux_log(UXL_CRT, "There is no gwSessionID of reqID(%d)", skbmsg->header.requestID);
+		ux_log(UXL_CRT, "there is no gwSessionID of reqID(%d)", skbmsg->header.requestID);
 		return -1;
 	} else {
 		uh_int_del(reqID_GWSID_Map, skbmsg->header.requestID);
