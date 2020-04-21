@@ -1,5 +1,6 @@
 #include "uims/uims_sipmsg.h"
 #include "uims/uims_sess.h"
+#include "local/sswsim_svc_l.h"
 
 /**
  * @brief REGISTER 메시지로 부터 REGISTER를 위한 ID들을 반환한다.  
@@ -136,5 +137,243 @@ UX_DECLARE(int) sswsim_regsvc_on_send_error( uxc_sfcall_t *sfcall, uxc_sdmvars_t
 		return rv;
 	}
 
+	return UX_SUCCESS;
+}
+
+/**
+ * @internal SSWSIM regist DAO?? ???????.
+ * @param dao SSWSIM regist DAO
+ * @param routermgr router manager
+ * @return ???? ???
+ */
+ux_status_t sswsim_dao_init( sswsim_dao_t *dao, uims_dbmgr_t *dbmgr)
+{
+	dao->dbmgr = dbmgr;
+	dao->db = uims_dbmgr_get_n( dbmgr, "TNTDB");
+	if(dao->db == NULL) {
+		ux_log(UXL_MAJ, "Failed to get TNTDB");
+		return UX_ENOENT;
+	}
+
+	return UX_SUCCESS;
+}
+
+void sswsim_dao_final( sswsim_dao_t *dao)
+{
+	//Do Nonthing
+}
+
+sswsim_regist_t* sswsim_dao_find( sswsim_dao_t *dao, char *publicuid)
+{
+	static const char* stmtid = "SSWSIM:FIND";
+	static const char* query = "SELECT * FROM 1 WHERE 0=?";
+
+	int rv;
+	uint8_t regstatus;
+	uint32_t expire;
+	uint64_t regdate;
+	char *publicuid, *privateuid, *homenetdomain, *contact1, *contact2, *contact3, *contact4, *contact5;
+	ux_mem_t *allocator;
+	uxc_sesshdr_t *sesshdr;
+	uims_sess_t *sess;
+	uims_dbstmt_t *stmt;
+	uims_dbdataset_t *paraset, *rsltset;
+	char tag[128];
+
+	sswsim_regist_t registinfo;
+
+	stmt = uims_db_open_stmt( dao->db, stmtid, query, &rv); 
+	if( stmt == NULL) {
+		ux_log(UXL_MIN, "Failed to open statement. (stmtid=%s)", stmtid);
+		return NULL;
+	}
+
+	paraset = uims_dbstmt_get_paraset( stmt);
+	if( paraset == NULL) {
+		ux_log(UXL_MIN, "Failed to get parameter set from statement. (stmtid=%s)", stmtid);
+		uims_dbstmt_close( stmt);
+		return NULL;
+	}
+
+	rv = uims_dbdataset_write( paraset, 1,
+			//name, type, value, [length:octet only]
+			"publicuid", UIMS_DBTYPE_STR, publicuid);
+	if( rv < UIMS_DB_SUCCESS) {
+		ux_log(UXL_MIN, "Failed to set parameters to statement. (stmtid=%s, err=%d,%s)",
+				stmtid, rv, uims_dberr_to_str(rv));
+		uims_dbstmt_close( stmt);
+		return NULL;
+	}
+
+	rv = uims_dbstmt_execute( stmt);
+	if( rv < UIMS_DB_SUCCESS) {
+		ux_log(UXL_MIN, "Failed to execute statement. (stmtid=%s, err=%d,%s)",
+				stmtid, rv, uims_dberr_to_str(rv));
+		uims_dbstmt_close( stmt);
+		return NULL;
+	}
+
+	rsltset = uims_dbstmt_get_rsltset( stmt);
+	if( rsltset == NULL) {
+		ux_log(UXL_MIN, "Failed to get result set from statement. (stmtid=%s, err=%d,%s)",
+				stmtid, rv, uims_dberr_to_str(rv));
+		uims_dbstmt_close( stmt);
+		return NULL;
+	}
+
+	rv = uims_dbdataset_next( rsltset);
+	if( rv < UIMS_DB_SUCCESS) {
+		ux_log(UXL_INFO, "Failed to find regist info. publicuid=%s, err=%d,%s", publicuid, rv, uxc_errnostr(rv));
+		uims_dbstmt_close( stmt);
+		return NULL;
+	}
+
+	rv = uims_dbdataset_read( rsltset, 11,
+			//name, type, value, [length:octet only]
+			"publicuid", UIMS_DBTYPE_STR, &publicuid,
+			"privateuid", UIMS_DBTYPE_STR, &privateuid,
+			"homenetdomain", UIMS_DBTYPE_STR, &homenetdomain,
+			"regdate", UIMS_DBTYPE_UINT64, &regdate,
+			"regstatus", UIMS_DBTYPE_UINT8, &regstatus,
+			"expire", UIMS_DBTYPE_UINT32, &expire, 
+			"contact1", UIMS_DBTYPE_STR, &contact1,
+			"contact2", UIMS_DBTYPE_STR, &contact2,
+			"contact3", UIMS_DBTYPE_STR, &contact3,
+			"contact4", UIMS_DBTYPE_STR, &contact4,
+			"contact5", UIMS_DBTYPE_STR, &contact5
+			);
+	if( rv < UIMS_DB_SUCCESS) {
+		ux_log(UXL_MIN, "Failed to read value from result set. (stmtid=%s, err=%d,%s)",
+				stmtid, rv, uims_dberr_to_str(rv));
+		uims_dbstmt_close( stmt);
+		return NULL;
+	}
+
+	ux_log(UXL_INFO, "[SSWSIM:FIND] (publicuid=%s, privateuid=%s, homenetdomain=%s, regdate=%llu, regstatus=%d, expire=%u, "
+			"contact1=%s, contact2=%s, contact3=%s, contact4=%s, contact5=%s)",
+			publicuid, privateuid, homenetdomain, (unsigned long long)regdate, regstatus, expire, 
+			contact1 ? contact1 : "NULL", contact2 ? contact2 : "NULL", contact3 ? contact3 : "NULL", 
+			contact4 ? contact4 : "NULL", contact5 ? contact5 : "NULL");
+
+	strcpy(registinfo.privateuid, publicuid);
+	if (privateuid != NULL) strcpy(registinfo.privateuid, privateuid);
+	if (homenetdomain != NULL) strcpy(registinfo.homenetdomain, homenetdomain);
+	registinfo.regdate = regdate;
+	registinfo.regstatus = regstatus;
+	registinfo.expire = expire;
+	if (contact1 != NULL) strcpy(registinfo.contact1, contact1);
+	if (contact2 != NULL) strcpy(registinfo.contact2, contact2);
+	if (contact3 != NULL) strcpy(registinfo.contact3, contact3);
+	if (contact4 != NULL) strcpy(registinfo.contact4, contact4);
+	if (contact5 != NULL) strcpy(registinfo.contact5, contact5);
+
+	uims_dbstmt_close( stmt);
+	
+	return &registinfo;
+}
+
+ux_status_t sswsim_dao_insert( sswsim_dao_t *dao, sswsim_regist_t *registinfo)
+{
+	static const char* stmtid = "SSWSIM:INSERT";
+	static const char* query = "INSERT INTO table1 VALUES(?,?,?,?,?, ?,?,?,?,?, ?)";
+
+	int rv;
+	uims_dbstmt_t *stmt;
+	uims_dbdataset_t *paraset;
+
+	registinfo->regdate = time(NULL);
+
+	ux_log(UXL_INFO, "SSWSIM:INSERT. (publicuid=%s)", registinfo->publicuid);
+
+	stmt = uims_db_open_stmt( dao->db, stmtid, query, &rv); 
+	if( stmt == NULL) {
+		ux_log(UXL_MIN, "Failed to open statement. (stmtid=%s)", stmtid);
+		return UX_ERR_FAILED;
+	}
+
+	paraset = uims_dbstmt_get_paraset( stmt);
+	if( paraset == NULL) {
+		ux_log(UXL_MIN, "Failed to get parameter set from statement. (stmtid=%s)", stmtid);
+		uims_dbstmt_close( stmt);
+		return UX_ERR_FAILED;
+	}
+
+	rv = uims_dbdataset_write( paraset, 11,
+			//name, type, value, [length:octet only]
+			"publicuid", UIMS_DBTYPE_STR, registinfo->publicuid,
+			"privateuid", UIMS_DBTYPE_STR, registinfo->privateuid ? registinfo->privateuid : "",
+			"homenetdomain", UIMS_DBTYPE_STR, registinfo->homenetdomain ? registinfo->homenetdomain : "",
+			"regdate", UIMS_DBTYPE_UINT64, registinfo->regdate,
+			"regstatus", UIMS_DBTYPE_UINT8, registinfo->regstatus,
+			"expire", UIMS_DBTYPE_UINT32, registinfo->expire,
+			"contact1", UIMS_DBTYPE_STR, registinfo->contact1,
+			"contact2", UIMS_DBTYPE_STR, registinfo->contact2,
+			"contact3", UIMS_DBTYPE_STR, registinfo->contact3,
+			"contact4", UIMS_DBTYPE_STR, registinfo->contact4,
+			"contact5", UIMS_DBTYPE_STR, registinfo->contact5);
+	if( rv < UIMS_DB_SUCCESS) {
+		ux_log(UXL_MIN, "Failed to set parameters to statement. (stmtid=%s, err=%d,%s)",
+				stmtid, rv, uims_dberr_to_str(rv));
+		uims_dbstmt_close( stmt);
+		return UX_ERR_FAILED;
+	}
+
+	rv = uims_dbstmt_execute( stmt);
+	if( rv < UIMS_DB_SUCCESS) {
+		ux_log(UXL_MIN, "Failed to execute statement. (stmtid=%s, err=%d,%s)",
+				stmtid, rv, uims_dberr_to_str(rv));
+		uims_dbstmt_close( stmt);
+		return UX_ERR_FAILED;
+	}
+
+	uims_dbstmt_close( stmt);
+
+	return UX_SUCCESS;
+}
+
+ux_status_t sswsim_dao_remove( sswsim_dao_t *dao, sswsim_regist_t *registinfo)
+{
+	static const char* stmtid = "SSWSIM:REMOVE";
+	static const char* query = "DELETE FROM table1 WHERE index0=?";
+
+	int rv;
+	uims_dbstmt_t *stmt;
+	uims_dbdataset_t *paraset;
+
+	ux_log(UXL_INFO, "SSWSIM:REMOVE. publicuid=%s", registinfo->publicuid);
+
+	stmt = uims_db_open_stmt( dao->db, stmtid, query, &rv); 
+	if( stmt == NULL) {
+		ux_log(UXL_MIN, "Failed to open statement. (stmtid=%s)", stmtid);
+		return UX_ERR_FAILED;
+	}
+
+	paraset = uims_dbstmt_get_paraset( stmt);
+	if( paraset == NULL) {
+		ux_log(UXL_MIN, "Failed to get parameter set from statement. (stmtid=%s)", stmtid);
+		uims_dbstmt_close( stmt);
+		return UX_ERR_FAILED;
+	}
+
+	rv = uims_dbdataset_write( paraset, 1,
+			//name, type, value, [length:octet only]
+			"publicuid", UIMS_DBTYPE_STR, registinfo->publicuid);
+	if( rv < UIMS_DB_SUCCESS) {
+		ux_log(UXL_MIN, "Failed to set parameters to statement. (stmtid=%s, err=%d,%s)",
+				stmtid, rv, uims_dberr_to_str(rv));
+		uims_dbstmt_close( stmt);
+		return UX_ERR_FAILED;
+	}
+
+	rv = uims_dbstmt_execute( stmt);
+	if( rv < UIMS_DB_SUCCESS) {
+		ux_log(UXL_MIN, "Failed to execute statement. (stmtid=%s, err=%d,%s)",
+				stmtid, rv, uims_dberr_to_str(rv));
+		uims_dbstmt_close( stmt);
+		return UX_ERR_FAILED;
+	}
+
+	uims_dbstmt_close( stmt);
+	
 	return UX_SUCCESS;
 }
