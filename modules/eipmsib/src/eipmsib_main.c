@@ -2,7 +2,7 @@
 #include <upa/upa_tcp.h>
 
 /**
- * @brief GW ·ÎºÎÅÍ DBIF ¿äÃ» ¸Þ½ÃÁö¸¦ ¹Þ¾Æ eIPMS ÀÇ TCP Server ¿¡ ¿äÃ»À» Àü¼ÛÇÑ´Ù.
+ * @brief GW ï¿½Îºï¿½ï¿½ï¿½ DBIF ï¿½ï¿½Ã» ï¿½Þ½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾ï¿½ eIPMS ï¿½ï¿½ TCP Server ï¿½ï¿½ ï¿½ï¿½Ã»ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
  */
 int dbif_handle_gwreq(uxc_action_t *action, uxc_worker_t* worker, uxc_msg_t *msg)
 {
@@ -15,14 +15,15 @@ int dbif_handle_gwreq(uxc_action_t *action, uxc_worker_t* worker, uxc_msg_t *msg
 	msg_size = sizeof(uxc_ixpc_t) + ipcmsg->header.length + sizeof(long) ;
 
 	// ux_log( UXL_INFO, "1. Received DBIF request "); 
-	ux_log(UXL_INFO, "1. Received ipcmsg from %d to %d, size=%d, mtype=%lu + header=%lu + dbif=%d",
+	// ux_log(UXL_INFO, "1. Received ipcmsg from %d to %d, size=%d, mtype=%lu + header=%lu + dbif=%d",
+	ux_log(UXL_INFO, " - Received ipcmsg from %d to %d, size=%d, mtype=%lu + header=%lu + dbif=%d",
 		ipcmsg->header.srcQid, ipcmsg->header.dstQid, msg_size, sizeof(long), sizeof(uxc_ixpc_t), ipcmsg->header.length); 
 
 	return tcp_client_forward_gwreq( client, worker,ipcmsg);
 }
 
 /**
- * @brief eIPMS ÀÇ TCP Server ·ÎºÎÅÍ ÀÀ´äÀ» ¹Þ¾Æ GW ÀÇ DBIF ¿¡ Àü¼ÛÇÑ´Ù. 
+ * @brief eIPMS ï¿½ï¿½ TCP Server ï¿½Îºï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾ï¿½ GW ï¿½ï¿½ DBIF ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½. 
  */
 int tcp_client_handle_eipmsrsp(uxc_action_t *action, uxc_worker_t* worker, uxc_msg_t *uxcmsg)
 {
@@ -34,7 +35,7 @@ int tcp_client_handle_eipmsrsp(uxc_action_t *action, uxc_worker_t* worker, uxc_m
 	tcpmsg = (upa_tcpmsg_t *)uxcmsg->data;
 
 	if ( tcpmsg->evtype == UPA_TCP_EVENT_RECV) {
-		ux_log( UXL_INFO, "4. Received TCP message");
+		// ux_log( UXL_INFO, "4. Received TCP message");
 		rv = dbif_forward_eipmsrsp( client, worker,tcpmsg);
 	} else {
 		ux_log( UXL_INFO, "invalid event");
@@ -45,11 +46,11 @@ int tcp_client_handle_eipmsrsp(uxc_action_t *action, uxc_worker_t* worker, uxc_m
 }
 
 // /**
-//  * @brief eIPMS ÀÇ TCP Client ·ÎºÎÅÍ ¿äÃ»À» ¹Þ¾Æ decode/encode ÈÄ ipcmsg ¸¦ GW ·Î Àü¼ÛÇÑ´Ù. 
+//  * @brief eIPMS ï¿½ï¿½ TCP Client ï¿½Îºï¿½ï¿½ï¿½ ï¿½ï¿½Ã»ï¿½ï¿½ ï¿½Þ¾ï¿½ decode/encode ï¿½ï¿½ ipcmsg ï¿½ï¿½ GW ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½. 
 //  * @param action action
 //  * @param worker worker
 //  * @param msg uxcutor message
-//  * @return ½ÇÇà °á°ú
+//  * @return ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
 //  */
 // int tcp_handle_eipmsreq( uxc_action_t *action, uxc_worker_t* worker, uxc_msg_t *uxcmsg)
 // {
@@ -70,7 +71,7 @@ int tcp_client_handle_eipmsrsp(uxc_action_t *action, uxc_worker_t* worker, uxc_m
 // }
 
 // /**
-//  * @brief GW ·ÎºÎÅÍ DBIF ÀÀ´ä ¸Þ½ÃÁö¸¦ ¹Þ¾Æ eIPMS ÀÇ TCP Client ¿¡ Àü¼ÛÇÑ´Ù.
+//  * @brief GW ï¿½Îºï¿½ï¿½ï¿½ DBIF ï¿½ï¿½ï¿½ï¿½ ï¿½Þ½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾ï¿½ eIPMS ï¿½ï¿½ TCP Client ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
 //  */
 // int dbif_handle_gwrsp(uxc_action_t *action, uxc_worker_t* worker, uxc_msg_t *msg)
 // {

@@ -58,6 +58,10 @@ struct skb_msg_s {
 	char body[SKB_MSG_MAX_LEN - sizeof(skb_header_t)];
 };
 
+int _heartbeat_display;
+
+void skb_msg_init(int heartbeat_display);
+void skb_msg_end();
 void create_skb_map();
 void destroy_skb_map();
 
@@ -78,6 +82,10 @@ void skb_msg_get_send_header_display(skb_header_t* header, char *log);
 void skb_msg_get_recv_header_display(skb_header_t* header, char *log);
 void skb_msg_display_send_header(skb_header_t* header);
 void skb_msg_display_recv_header(skb_header_t* header);
+void skb_msg_display_send_heartbeat_req(skb_header_t* header, int chnl_idx);
+void skb_msg_display_recv_heartbeat_req(skb_header_t* header, int chnl_idx);
+void skb_msg_display_send_heartbeat_rsp(skb_header_t* header, int chnl_idx);
+void skb_msg_display_recv_heartbeat_rsp(skb_header_t* header, int chnl_idx);
 int32_t skb_msg_generate_messasgeID();
 int32_t skb_msg_generate_requestID();
 

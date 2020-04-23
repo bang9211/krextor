@@ -10,6 +10,8 @@
 // TCP Configuration Structure & Macro 
 ///////////////////////////////////////////////////////////////////////////////////
 
+#define PROCESS_NAME_SIZE 64
+
 typedef struct eipmsib_conf_s eipmsib_conf_t; 
 struct eipmsib_conf_s {
 	int mqid;
@@ -22,6 +24,8 @@ struct eipmsib_conf_s {
 	int heartbeat_interval;
 	int heartbeat_timeout;
 	int request_timeout;
+	int heartbeat_display;
+	char dbif_gw_process_name[PROCESS_NAME_SIZE];
 };
 
 ///////////////////////////////////////////////////////////////////////////////////

@@ -66,8 +66,7 @@ uxc_plugin_t *tcp_client_create( void *xcutor, const char* cfile)
 
 	_g_client = client;
 
-	srand(time(NULL));
-	create_skb_map();
+	skb_msg_init(client->conf->heartbeat_display);
 	request_timeout = client->conf->request_timeout;
 	turn_timeout_timer_on();
 
@@ -83,7 +82,7 @@ static void _tcp_client_destroy( uxc_plugin_t *plugin)
 	ux_free( ux_mem_default(), client);
 
 	turn_timeout_timer_off();
-	destroy_skb_map();
+	skb_msg_end();
 }
 
 tcp_client_t* tcp_client_instance()
@@ -137,7 +136,8 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 	msg_size = sizeof(uxc_ixpc_t) + ipcmsg->header.length;	//dbif header + body
 	msgId = ipcmsg->header.msgId;
 
-	ux_log( UXL_INFO, "2. CALL tcp_client_forward_gwreq (len:%d, msgId:%d) ", msg_size, msgId);
+	// ux_log( UXL_INFO, "2. CALL tcp_client_forward_gwreq (len:%d, msgId:%d) ", msg_size, msgId);
+	ux_log( UXL_INFO, " - CALL tcp_client_forward_gwreq (len:%d, msgId:%d) ", msg_size, msgId);
 
 	// IPC에서 DBIF 추출
 	dbif = uxc_ipcmsg_get_dbif(ipcmsg);
@@ -145,7 +145,7 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 	//수신한 DBIF 메시지를 msgID에 따라 TCP로 보낼 eIPMS의 메시지로 변경
 	switch( msgId / 100) {
 		case 1:
-			ux_log(UXL_INFO, "2.1. Channel clicktocall");
+			// ux_log(UXL_INFO, "2.1. Channel clicktocall");
 			peerkey.chnl_idx = 0; // configuration 첫번째 채널
 			peerkey.peer_key = 0; // 채널의 첫번째 PEER 
 
@@ -168,7 +168,7 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 			}
 			break;
 		case 3:
-			ux_log(UXL_INFO, "2.2. Channel clicktocallrecording");
+			// ux_log(UXL_INFO, "2.2. Channel clicktocallrecording");
 			peerkey.chnl_idx = 1; //  채널
 			peerkey.peer_key = 0; // 채널의 첫번째 PEER 
 
@@ -185,7 +185,7 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 			}
 			break;
 		case 5:
-			ux_log(UXL_INFO, "2.3. Channel clicktoconference");
+			// ux_log(UXL_INFO, "2.3. Channel clicktoconference");
 			peerkey.chnl_idx = 2; //  채널
 			peerkey.peer_key = 0; // 채널의 첫번째 PEER 
 
@@ -268,13 +268,14 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 		ux_log( UXL_CRT, "failed to upa_tcp_send2 : %d", requestID);
 		return -1;
 	}
-	ux_log( UXL_INFO, "3. Forwarded DBIF to TCP msg. from gw to eIPMS, size=%d, header=%lu + body=%lu", msg_size, sizeof(skb_header_t), msg_size - sizeof(skb_header_t));
+	// ux_log( UXL_INFO, "3. Forwarded DBIF to TCP msg. from gw to eIPMS, size=%d, header=%lu + body=%lu", msg_size, sizeof(skb_header_t), msg_size - sizeof(skb_header_t));
+	ux_log( UXL_INFO, " - Forwarded DBIF to TCP msg. from gw to eIPMS, size=%d, header=%lu + body=%lu", msg_size, sizeof(skb_header_t), msg_size - sizeof(skb_header_t));
 	return UX_SUCCESS;
 }
 
 int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpmsg_t *tcpmsg)
 {
-	int rv, msgID;
+	int rv, msgID, mqkey, dstQid = -1;
 	// skb_msg_t *skbmsg;
 	skb_msg_t skbmsg[1];
 	uxc_dbif_t dbif;
@@ -309,13 +310,16 @@ int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpms
 			switch(skbmsg->header.messageID) {
 			//HEARTBEAT
 				case HEARTBEAT_RESPONSE:
-					skb_msg_display_recv_header(&skbmsg->header);
+					// skb_msg_display_recv_header(&skbmsg->header);
+					skb_msg_display_recv_heartbeat_rsp(&skbmsg->header, TCP_CHANNEL_CALL);
 					is_heartbeat_sent[TCP_CHANNEL_CALL] = 0;
 					last_recv_seconds[TCP_CHANNEL_CALL] = seconds[TCP_CHANNEL_CALL];		
 					return UX_SUCCESS;
 				case HEARTBEAT_REQUEST:
-					skb_msg_display_recv_header(&skbmsg->header);
+					// skb_msg_display_recv_header(&skbmsg->header);
+					skb_msg_display_recv_heartbeat_req(&skbmsg->header, TCP_CHANNEL_CALL);
 					skb_msg_process_clicktocall_heartbeat_req(skbmsg);
+					skb_msg_display_send_heartbeat_rsp(&skbmsg->header, TCP_CHANNEL_CALL);
 					msg_size = skbmsg->header.length;
 					requestID = skbmsg->header.requestID;
 					// 메시지를 Network byte ordering으로 변경
@@ -384,17 +388,20 @@ int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpms
 			switch(skbmsg->header.messageID) {
 				//HEARTBEAT
 				case HEARTBEAT_RESPONSE:
-					skb_msg_display_recv_header(&skbmsg->header);
+					// skb_msg_display_recv_header(&skbmsg->header);
+					skb_msg_display_recv_heartbeat_rsp(&skbmsg->header, TCP_CHANNEL_RECORDING);
 					is_heartbeat_sent[TCP_CHANNEL_RECORDING] = 0;
 					last_recv_seconds[TCP_CHANNEL_RECORDING] = seconds[TCP_CHANNEL_RECORDING];		
 					return UX_SUCCESS;
 				case HEARTBEAT_REQUEST:
-					skb_msg_display_recv_header(&skbmsg->header);
+					// skb_msg_display_recv_header(&skbmsg->header);
+					skb_msg_display_recv_heartbeat_req(&skbmsg->header, TCP_CHANNEL_RECORDING);
 					skb_msg_process_clicktocallrecording_heartbeat_req(skbmsg);
+					skb_msg_display_send_heartbeat_rsp(&skbmsg->header, TCP_CHANNEL_RECORDING);
 					msg_size = skbmsg->header.length;
 					requestID = skbmsg->header.requestID;
 					// 메시지를 Network byte ordering으로 변경
-					rv = skb_msg_cvt_order_hton(skbmsg, 0);
+					rv = skb_msg_cvt_order_hton2(skbmsg);
 					if( rv< UX_SUCCESS) {
 						ux_log(UXL_CRT, "failed to skb_msg_cvt_order_hton : %d", requestID);
 						break;
@@ -447,17 +454,20 @@ int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpms
 			switch(skbmsg->header.messageID) {
 				//HEARTBEAT
 				case HEARTBEAT_RESPONSE:
-					skb_msg_display_recv_header(&skbmsg->header);
+					// skb_msg_display_recv_header(&skbmsg->header);
+					skb_msg_display_recv_heartbeat_rsp(&skbmsg->header, TCP_CHANNEL_CONFERENCE);
 					is_heartbeat_sent[TCP_CHANNEL_CONFERENCE] = 0;
 					last_recv_seconds[TCP_CHANNEL_CONFERENCE] = seconds[TCP_CHANNEL_CONFERENCE];		
 					return UX_SUCCESS;
 				case HEARTBEAT_REQUEST:
-					skb_msg_display_recv_header(&skbmsg->header);
+					// skb_msg_display_recv_header(&skbmsg->header);
+					skb_msg_display_recv_heartbeat_req(&skbmsg->header, TCP_CHANNEL_CONFERENCE);
 					skb_msg_process_clicktoconference_heartbeat_req(skbmsg);
+					skb_msg_display_send_heartbeat_rsp(&skbmsg->header, TCP_CHANNEL_CONFERENCE);
 					msg_size = skbmsg->header.length;
 					requestID = skbmsg->header.requestID;
 					// 메시지를 Network byte ordering으로 변경
-					rv = skb_msg_cvt_order_hton(skbmsg, 0);
+					rv = skb_msg_cvt_order_hton2(skbmsg);
 					if( rv< UX_SUCCESS) {
 						ux_log(UXL_INFO, "failed to skb_msg_cvt_order_hton : %d", requestID);
 						break;
@@ -546,18 +556,39 @@ int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpms
 	}
 
 	requestID = skbmsg->header.requestID;
-	if (msgID != 0) {
+	if (msgID != NONE_DBIF_MESSAGE) {
 		dbif_header = uh_ipc_get(reqID_IPC_Map, requestID);
 		if (dbif_header == NULL) {
 			ux_log(UXL_CRT, "there is no ipc_header of reqID(%d)", requestID);
-			return -1;
+			mqkey = uxc_get_conf_process_mqkey( _g_client->conf->dbif_gw_process_name, &rv);
+			if( rv < eUXC_SUCCESS ) {
+				printf("Don't exist gw block information for '%s' in proc.conf\n", _g_client->conf->dbif_gw_process_name);
+				return -1;
+			}
+			dstQid = msgget(mqkey, 0666 | IPC_CREAT);
 		}
-		ipcmsg.header = *dbif_header;
-		ipcmsg.header.msgId = msgID;
-		ipcmsg.header.length = sizeof(uxc_dbif_t) - UXC_DBIF_MAX_DATA + dbif.dataLen;
-		memcpy(ipcmsg.data, &dbif, sizeof(dbif));
 
-		rv = tcp_client_send_ipcmsg(client, &ipcmsg, 0); 
+		if (dstQid == -1) {
+			ipcmsg.header = *dbif_header;
+			ipcmsg.header.msgId = msgID;
+			ipcmsg.header.length = sizeof(uxc_dbif_t) - UXC_DBIF_MAX_DATA + dbif.dataLen;
+			memcpy(ipcmsg.data, &dbif, sizeof(dbif));
+		} else {
+			ipcmsg.mtype = UXC_MTYPE_SLEE;
+			ipcmsg.header.srcProcId = getpid();
+			ipcmsg.header.srcSubSysId = 0;
+			ipcmsg.header.dstProcId = 0;
+			ipcmsg.header.dstSubSysId = 0;
+			ipcmsg.header.msgId = 0;
+			ipcmsg.header.cmdId = (int)random();
+			ipcmsg.header.userData = 0;
+			ipcmsg.header.srcQid = dstQid;
+			// ipcmsg.header.dstQid = dstQid;
+			ipcmsg.header.result = 0;
+			ipcmsg.header.fdIdx = 0;
+		}
+
+		rv = tcp_client_send_ipcmsg(client, &ipcmsg, 0);
 		if( rv< UX_SUCCESS) {
 			ux_log( UXL_INFO, "failed to tcp_client_send_ipcmsg : %d", msgID);
 		} else {
@@ -592,7 +623,9 @@ int tcp_client_send_ipcmsg( tcp_client_t *client, uxc_ipcmsg_t* ipcmsg, int rv)
 	ipcmsg->header.srcQid = client->conf->mqid;
 	ipcmsg->header.result = rv;
 	
-	ux_log(UXL_INFO, "5. Send ipcmsg to %d from %d, size=%d, mtype=%lu + header=%lu + dbif=%d",
+	// ux_log(UXL_INFO, "5. Send ipcmsg to %d from %d, size=%d, mtype=%lu + header=%lu + dbif=%d",
+	// 	ipcmsg->header.dstQid, ipcmsg->header.srcQid, msg_size, sizeof(long), sizeof(uxc_ixpc_t), ipcmsg->header.length); 
+	ux_log(UXL_INFO, " - Send ipcmsg to %d from %d, size=%d, mtype=%lu + header=%lu + dbif=%d",
 		ipcmsg->header.dstQid, ipcmsg->header.srcQid, msg_size, sizeof(long), sizeof(uxc_ixpc_t), ipcmsg->header.length); 
 
 	rv = msgsnd(ipcmsg->header.dstQid, &ipcmsg, msg_size, IPC_NOWAIT);
@@ -601,6 +634,7 @@ int tcp_client_send_ipcmsg( tcp_client_t *client, uxc_ipcmsg_t* ipcmsg, int rv)
 					sizeof(uxc_ixpc_t) + ipcmsg->header.length);
 		return rv;
 	}
+	ux_log(UXL_INFO, "Success to send : %d", rv);
 
 	return eUXC_SUCCESS;
 }
@@ -692,9 +726,10 @@ void *t_function(void *chnl_idx)
 		seconds[cidx]++;
 		if (is_heartbeat_sent[cidx] == 0) {
 			if (seconds[cidx] - last_recv_seconds[cidx] >= interval) {
-				ux_log( UXL_INFO, "send heartbeat(chnl_idx : %d)", cidx);
+				// ux_log( UXL_INFO, "send heartbeat(chnl_idx : %d)", cidx);
 				skb_msg_make_header(&skbmsg->header, HEARTBEAT_REQUEST, 0, NULL);
-				skb_msg_display_send_header(&skbmsg->header);
+				// skb_msg_display_send_header(&skbmsg->header);
+				skb_msg_display_send_heartbeat_req(&skbmsg->header, cidx);
 				strcpy(skbmsg[0].body,  "");
 
 				requestID = skbmsg->header.requestID;
@@ -719,6 +754,7 @@ void *t_function(void *chnl_idx)
 				sent_time = seconds[cidx];
 			}
 		} else if (seconds[cidx] - sent_time >= timeout) {	//TIMEOUT
+			ux_log( UXL_CRT, "heartbeat timeout : %d", cidx);
 			//세션 연결 종료
 			ux_channel_stop2(channel_arr[cidx], UX_TRUE);
 			return NULL;

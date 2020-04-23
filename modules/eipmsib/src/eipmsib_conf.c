@@ -76,6 +76,15 @@ int eipmsib_conf_load( eipmsib_conf_t *conf, const char* cfile)
 	}
 	ux_log(UXL_MAJ, " - REQUEST_TIMEOUT : %d", conf->request_timeout);
 
+	conf->heartbeat_display = uxc_get_conf_bool(cfile, "[SKB]", "HEARTBEAT_DISPLAY", 1);
+	ux_log(UXL_MAJ, " - HEARTBEAT_DISPLAY : %s", conf->heartbeat_display ? "TRUE" : "FALSE");
+	
+	uxc_get_conf_str( cfile, "[SKB]", "DBIF_GW_PROCESS_NAME", conf->dbif_gw_process_name, sizeof( conf->dbif_gw_process_name), "");
+	if ( conf->dbif_gw_process_name[0] == '\0') {
+		ux_log(UXL_MAJ, "no exists DBIF_GW_PROCESS_NAME");
+		return eUXC_INVALID_CONF;
+	}
+	ux_log(UXL_MAJ, " - DBIF_GW_PROCESS_NAME : %s", conf->dbif_gw_process_name);
 
 	return eUXC_SUCCESS;
 }

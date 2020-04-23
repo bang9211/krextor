@@ -1,8 +1,18 @@
 #include "skb_msg.h"
  
 ////////////////////////////////////////////////////////////////////////////////////
-// functions for tcp_msg_t
+// functions for skb_msg_t
 ////////////////////////////////////////////////////////////////////////////////////
+
+void skb_msg_init(int heartbeat_display) {
+	srand(time(NULL));
+	create_skb_map();
+	_heartbeat_display = heartbeat_display;
+}
+
+void skb_msg_end() {
+	destroy_skb_map();
+}
 
 /**
  * @brief DBIF messageID를 eIPMS messageID로 바꾼다.
@@ -844,7 +854,7 @@ int skb_msg_cvt_order_ntoh(skb_msg_t *msg, int chnIdx, int *msgId)
 				*msgId = DBIF_CALL_SERVICE_STATUS_REPORT;
 				break;
 			default:
-				msgId = NULL;
+				*msgId = NONE_DBIF_MESSAGE;
 				break;
 			}
 			break;
@@ -863,7 +873,7 @@ int skb_msg_cvt_order_ntoh(skb_msg_t *msg, int chnIdx, int *msgId)
 				*msgId = DBIF_RECORDING_CALL_END_REPORT;
 				break;
 			default:
-				msgId = NULL;
+				*msgId = NONE_DBIF_MESSAGE;
 				break;
 			}
 			break;
@@ -909,7 +919,7 @@ int skb_msg_cvt_order_ntoh(skb_msg_t *msg, int chnIdx, int *msgId)
 				*msgId = DBIF_CLOSE_CONF_REPORT;
 				break;
 			default:
-				msgId = NULL;
+				*msgId = NONE_DBIF_MESSAGE;
 				break;
 			}
 			break;
@@ -995,6 +1005,7 @@ int skb_msg_make_bind_request(skb_msg_t *skbmsg, int chnl_idx, char *id, char *p
 void skb_msg_get_header_display(skb_header_t* header, char *log) {
 	char temp[SKB_HEADER_DISPLAY_SIZE] = "";
 	sprintf(temp,
+	"  [frameStart0] 0x%hhX\n"
 	"  [frameStart1] 0x%hhX\n"
 	"  [length] %d\n"
 	"  [messageID] %#010x\n"
@@ -1003,6 +1014,7 @@ void skb_msg_get_header_display(skb_header_t* header, char *log) {
 	"  [version1] 0x%hhX\n"
 	"  [userID] %d\n"
 	"  [filler] %d", 
+		header->frameStart0, 
 		header->frameStart1, 
 		header->length, 
 		header->messageID, 
@@ -1037,6 +1049,22 @@ void skb_msg_display_recv_header(skb_header_t* header) {
 	char log[SKB_HEADER_DISPLAY_SIZE] = "";
 	skb_msg_get_recv_header_display(header, log);
 	ux_log(UXL_INFO, "%s", log);
+}
+
+void skb_msg_display_send_heartbeat_req(skb_header_t* header, int chnl_idx) {
+	if (_heartbeat_display) ux_log(UXL_INFO, "Sending TCP Heartbeat req(%d) :\t%x", chnl_idx, header->requestID);
+}
+
+void skb_msg_display_recv_heartbeat_req(skb_header_t* header, int chnl_idx) {
+	if (_heartbeat_display) ux_log(UXL_INFO, "Received TCP Heartbeat req(%d) :\t%x", chnl_idx, header->requestID);
+}
+
+void skb_msg_display_send_heartbeat_rsp(skb_header_t* header, int chnl_idx) {
+	if (_heartbeat_display) ux_log(UXL_INFO, "Sending TCP Heartbeat rsp(%d) :\t%x", chnl_idx, header->requestID);
+}
+
+void skb_msg_display_recv_heartbeat_rsp(skb_header_t* header, int chnl_idx) {
+	if (_heartbeat_display) ux_log(UXL_INFO, "Received TCP Heartbeat rsp(%d) :\t%x", chnl_idx, header->requestID);
 }
 
 int32_t skb_msg_generate_requestID() {
@@ -1084,8 +1112,6 @@ void destroy_skb_map() {
 void skb_msg_process_clicktocall_heartbeat_req(skb_msg_t *skbmsg) {
 	// TCP Header 설정
 	skb_msg_make_header(&skbmsg->header, HEARTBEAT_RESPONSE, 0, &skbmsg->header.requestID);
-	char headerLog[256];
-	skb_msg_get_send_header_display(&skbmsg->header, headerLog);
 }
 
 void skb_msg_process_clicktocall_binding_req(skb_msg_t *skbmsg, char *userID, char *password) {
@@ -1348,8 +1374,6 @@ int skb_msg_process_clicktocall_service_status_rpt( skb_msg_t *skbmsg, uxc_dbif_
 void skb_msg_process_clicktocallrecording_heartbeat_req(skb_msg_t *skbmsg) {
 	// TCP Header 설정
 	skb_msg_make_header(&skbmsg->header, HEARTBEAT_RESPONSE, 0, &skbmsg->header.requestID);
-	char headerLog[256];
-	skb_msg_get_send_header_display(&skbmsg->header, headerLog);
 }
 
 void skb_msg_process_clicktocallrecording_binding_req(skb_msg_t *skbmsg, char *userID, char *password) {
@@ -1540,8 +1564,6 @@ int skb_msg_process_clicktocallrecording_service_status_rpt( skb_msg_t *skbmsg, 
 void skb_msg_process_clicktoconference_heartbeat_req(skb_msg_t *skbmsg) {
 	// TCP Header 설정
 	skb_msg_make_header(&skbmsg->header, HEARTBEAT_RESPONSE, 0, &skbmsg->header.requestID);
-	char headerLog[256];
-	skb_msg_get_send_header_display(&skbmsg->header, headerLog);
 }
 
 void skb_msg_process_clicktoconference_binding_req(skb_msg_t *skbmsg, char *userID, char *password) {
