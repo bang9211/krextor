@@ -163,7 +163,7 @@ void sswsim_dao_final( sswsim_dao_t *dao)
 	//Do Nonthing
 }
 
-sswsim_regist_t* sswsim_dao_find( sswsim_dao_t *dao, char *publicuid)
+sswsim_regist_t* sswsim_dao_find( sswsim_dao_t *dao, char *aor)
 {
 	static const char* stmtid = "SSWSIM:FIND";
 	static const char* query = "SELECT * FROM 1 WHERE 0=?";
@@ -197,7 +197,7 @@ sswsim_regist_t* sswsim_dao_find( sswsim_dao_t *dao, char *publicuid)
 
 	rv = uims_dbdataset_write( paraset, 1,
 			//name, type, value, [length:octet only]
-			"publicuid", UIMS_DBTYPE_STR, publicuid);
+			"publicuid", UIMS_DBTYPE_STR, aor);
 	if( rv < UIMS_DB_SUCCESS) {
 		ux_log(UXL_MIN, "Failed to set parameters to statement. (stmtid=%s, err=%d,%s)",
 				stmtid, rv, uims_dberr_to_str(rv));

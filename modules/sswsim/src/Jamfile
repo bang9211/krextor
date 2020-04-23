@@ -15,6 +15,8 @@ LOCAL_DEF = $(SYS_CCFLAGS) ;
 
 SRCS =
 	sswsim_plugin
+	sswsim_conf
+	sswsim_svc
 	;
 
 IHDRS =
