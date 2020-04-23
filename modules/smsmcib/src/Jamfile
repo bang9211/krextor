@@ -1,0 +1,39 @@
+SubDir TOP modules smscib src ;
+
+SubDirHdrs $(UALIB_SRC_HOME)/include ;
+SubDirHdrs $(UXLIB_SRC_HOME)/include ;
+SubDirHdrs $(UXCUTOR_SRC_HOME)/include ;
+
+LIB_NAME = libsmscib ;
+LIB_VERSION_NAME = $(LIB_NAME)-1.0.0 ;
+LIB_VERLINK_NAME = $(LIB_NAME)-1.0 ;
+
+LOCAL_DEF = $(SYS_CCFLAGS) ;
+
+SRCS =
+    tcp_client
+    tcp_server
+    smscib_conf
+    smscib_main
+    skb_msg
+    uhash
+    smsc_msg
+	;
+
+IHDRS =
+	;
+
+ObjectCcFlags $(SRCS)$(SUFOBJ) : $(LOCAL_DEF) ;
+
+Library $(LIB_VERSION_NAME)$(SUFLIB) : $(SRCS).c ;
+SharedLibraryMain $(LIB_VERSION_NAME)$(SUFSHARED) : $(LIB_VERSION_NAME)$(SUFLIB) ;
+InstallLib $(TOP)/lib : $(LIB_VERSION_NAME)$(SUFLIB) ;
+InstallFile $(TOP)/lib/$(LIB_VERSION_NAME)$(SUFSHARED) : $(LIB_VERSION_NAME)$(SUFSHARED) ;
+InstallLink $(TOP)/lib/$(LIB_VERLINK_NAME)$(SUFSHARED) : $(TOP)/lib/$(LIB_VERSION_NAME)$(SUFSHARED) ;
+InstallLink $(TOP)/lib/$(LIB_NAME)$(SUFSHARED) : $(TOP)/lib/$(LIB_VERLINK_NAME)$(SUFSHARED) ;
+if $(UA_COPY_UASYS_HOME) = yes  {
+	InstallFile $(UASYS_HOME)/lib/$(LIB_VERSION_NAME)$(SUFSHARED) : $(LIB_VERSION_NAME)$(SUFSHARED) ;
+	InstallLink $(UASYS_HOME)/lib/$(LIB_VERLINK_NAME)$(SUFSHARED) : $(UASYS_HOME)/lib/$(LIB_VERSION_NAME)$(SUFSHARED) ;
+	InstallLink $(UASYS_HOME)/lib/$(LIB_NAME)$(SUFSHARED) : $(UASYS_HOME)/lib/$(LIB_VERLINK_NAME)$(SUFSHARED) ;
+}
+Lint check : $(SRCS).c ;

@@ -1,0 +1,6 @@
+SubDir TOP modules smscib ;
+
+SubInclude TOP modules smscib src ;
+
+InstallFile $(UXCUTOR_CONF_HOME)/smscib.conf : conf/smscib.conf ;
+InstallFile $(UXCUTOR_CONF_HOME)/../bin/smscib.dbif.send.sh : script/smscib.dbif.send.sh ;
