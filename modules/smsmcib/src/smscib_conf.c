@@ -1,17 +1,17 @@
-#include "eipmsib_conf.h"
+#include "smscib_conf.h"
 
-int eipmsib_conf_init( eipmsib_conf_t *conf, uxc_xcutor_t *xcutor, const char* cfile)
+int smscib_conf_init( smscib_conf_t *conf, uxc_xcutor_t *xcutor, const char* cfile)
 {
 	conf->mqid = uxc_xcutor_get_mqid( xcutor);
-	return eipmsib_conf_load( conf, cfile);
+	return smscib_conf_load( conf, cfile);
 }
 
-void eipmsib_conf_final( eipmsib_conf_t *conf)
+void smscib_conf_final( smscib_conf_t *conf)
 {
 	//nothing
 }
 
-int eipmsib_conf_load( eipmsib_conf_t *conf, const char* cfile)
+int smscib_conf_load( smscib_conf_t *conf, const char* cfile)
 {
 	uxc_get_conf_str( cfile, "[SKB]", "CALL_BINDING_USER_ID", conf->call_binding_user_id, sizeof( conf->call_binding_user_id), "");
 	if ( conf->call_binding_user_id[0] == '\0') {

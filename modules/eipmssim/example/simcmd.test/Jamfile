@@ -1,0 +1,18 @@
+SubDir TOP example simcmd.test ;
+
+SubDirHdrs /usr/include /usr/local/include ;
+SubDirHdrs $(TOP)/local ;
+
+BIN_NAME = simcmdtest ;
+
+LOCAL_DEF = $(SYS_CCFLAGS) ;
+
+SRC = simcmdtest ;
+
+ObjectCcFlags $(SRC)$(SUFOBJ) : $(SYS_CCFLAGS) $(LOCAL_DEF) -DREADLINE ;
+
+LINKLIBS on $(BIN_NAME) = $(SYS_LIBS) $(UX_LIBS) $(UDBC_LIBS) $(ALTI_LIBS) -L$(TOP)/lib -lsimcmd ;
+
+Main $(BIN_NAME) : $(SRC).c ;
+#Copy $(BIN_NAME) : $(TOP)/bin ;
+#InstallBin $(TOP)/bin : $(BIN_NAME) ;

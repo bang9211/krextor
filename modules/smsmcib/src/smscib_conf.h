@@ -1,5 +1,5 @@
-#ifndef __eipmsib_conf_H__
-#define __eipmsib_conf_H__
+#ifndef __SMSCIB_CONF_H__
+#define __SMSCIB_CONF_H__
 
 #include <uxlib/ux_def.h>
 #include <uxlib/ux_log.h>
@@ -12,8 +12,8 @@
 
 #define PROCESS_NAME_SIZE 64
 
-typedef struct eipmsib_conf_s eipmsib_conf_t; 
-struct eipmsib_conf_s {
+typedef struct smscib_conf_s smscib_conf_t; 
+struct smscib_conf_s {
 	int mqid;
 	char call_binding_user_id[BINDING_USER_ID_LEN];
 	char call_binding_password[BINDING_PASSWORD_LEN];
@@ -32,8 +32,8 @@ struct eipmsib_conf_s {
 // TCP Configuration Functions 
 ///////////////////////////////////////////////////////////////////////////////////
 
-int eipmsib_conf_init( eipmsib_conf_t *conf, uxc_xcutor_t *xcutor, const char* cfile);
-void eipmsib_conf_final( eipmsib_conf_t *conf);
-int eipmsib_conf_load( eipmsib_conf_t *conf, const char* cfile);
+int smscib_conf_init( smscib_conf_t *conf, uxc_xcutor_t *xcutor, const char* cfile);
+void smscib_conf_final( smscib_conf_t *conf);
+int smscib_conf_load( smscib_conf_t *conf, const char* cfile);
 
-#endif // #ifndef __eipmsib_conf_H__
+#endif // #ifndef __SMSCIB_CONF_H__

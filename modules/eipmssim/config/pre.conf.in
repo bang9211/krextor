@@ -1,0 +1,52 @@
+################################################################################
+#
+################################################################################
+
+UA_OS_INFO   = @ua_os_info@
+UA_OS_NAME   = @ua_os_name@
+UA_OS_VER    = @ua_os_version@
+UA_MACH_NAME = @ua_mach_name@
+UA_CPU_NAME  = @ua_cpu_name@
+
+RM=rm -rf
+AR=ar ru
+
+CC           = @CC@
+CFLAGS       = @CFLAGS@
+CPPFLAGS     = @CPPFLAGS@
+CINCLUDE     = @CINCLUDE@
+
+CXX          = @CXX@
+CXXFLAGS     = @CXXFLAGS@
+CXXINCLUDE   = @CXXINCLUDE@
+
+LINK         = @LINKER@
+SUFLIB       = .a
+LDFLAGS      = @LDFLAGS@
+LIBS         = @LIBS@
+
+SHLINK       = @SHLINKER@
+SUFSHARED    = @SUFSHARED@
+SHLDFLAGS    = @SHLDFLAGS@
+SH_NEEDLIBS_BEGIN = @SH_NEEDLIBS_BEGIN@
+SH_NEEDLIBS_EACH = @SH_NEEDLIBS_EACH@
+SH_NEEDLIBS_END = @SH_NEEDLIBS_END@
+
+ALTIBASE_VERSION = @ua_alti_version@
+ALTIBASE_LIBS = @ua_alti_libs@
+ALTIBASE_NEEDLIBS = @ua_alti_needlibs@
+
+DEPEND_FILE    =.makedepend
+DEPEND_COMMAND = @DEPEND_COMMAND@
+
+INSTALL_PATH = @prefix@
+
+is_file=$(shell test -f $(1) && echo 1)
+is_dir=$(shell test -d $(1) && echo 1)
+touch_file=$(shell touch $(1))
+get_cur_dir=$(shell pwd)
+
+
+#OBJ_DIR=@OBJ_DIR@
+OBJ_DIR=$(call get_cur_dir)/.objs/
+

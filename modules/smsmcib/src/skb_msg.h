@@ -1,12 +1,10 @@
 #ifndef __SKB_MSG_H__
 #define __SKB_MSG_H__
 
-#include "eipmsib_conf.h"
+#include "smscib_conf.h"
 #include "uhash.h"
 #include "skb_msg_info.h"
-#include "clicktocall_req.h"
-#include "clicktocall_rsp.h"
-#include "clicktocall_rpt.h"
+#include "smsc_msg.h"
 #include <time.h>
 #include <stdlib.h>
 #include <upa/upa_tcp.h>
@@ -23,11 +21,13 @@
 ///////////////////////////////////////////////////////////////////////////////////
 
 /** @brief SKB Request ID Pool */
-uhash_rid_t *reqID_Set;				//requestID
-uhash_tmt_t *reqID_timestamp_Map;	//requestID - timestamp
-uhash_int_t *reqID_SID_Map;			//requestID - sessionID
-uhash_int_t *reqID_GWSID_Map;		//requestID - gwSessionID
-uhash_ipc_t *reqID_IPC_Map;			//requestID - uxc_ixpc_t
+uhash_rid_t *sn_Set;				//serialNumber
+uhash_tmt_t *sn_timestamp_Map;	//serialNumber - timestamp
+uhash_int_t *sn_SID_Map;			//serialNumber - sessionID
+uhash_int_t *sn_GWSID_Map;			//serialNumber - gwSessionID
+uhash_ipc_t *sn_IPC_Map;			//serialNumber - uxc_ixpc_t
+
+int32_t serialNumber;
 
 typedef struct skb_header_s skb_header_t; 
 struct skb_header_s {
@@ -57,29 +57,31 @@ int skb_msg_cvt_order_hton3(skb_msg_t *msg, int chnl_idx);
 int skb_msg_cvt_order_ntoh(skb_msg_t *msg, int chnIdx, int *msgId);
 int skb_msg_send( skb_msg_t *msg, upa_tcp_t *tcp, upa_peerkey_t *peerkey, int dbif_msgID);
 
-int32_t getRandomInt32();
-void skb_msg_make_header(skb_header_t* header, int32_t messageID, int16_t bodySize, int32_t *requestID);
-int skb_msg_make_bind_request(skb_msg_t *skbmsg, int chnl_idx, char *id, char *pw);
+int32_t generateSerialNumber();
+int check_header(skb_header_t* header);
+void skb_msg_make_header(skb_header_t* header, int32_t msgType, int32_t bodySize);
+int skb_msg_make_bind_request(skb_msg_t *skbmsg, char *id, char *pw);
 void skb_msg_get_header_display(skb_header_t* header, char *log);
 void skb_msg_get_send_header_display(skb_header_t* header, char *log);
 void skb_msg_get_recv_header_display(skb_header_t* header, char *log);
 void skb_msg_display_send_header(skb_header_t* header);
 void skb_msg_display_recv_header(skb_header_t* header);
-void skb_msg_display_send_heartbeat_req(skb_header_t* header, int chnl_idx);
-void skb_msg_display_recv_heartbeat_req(skb_header_t* header, int chnl_idx);
-void skb_msg_display_send_heartbeat_rsp(skb_header_t* header, int chnl_idx);
-void skb_msg_display_recv_heartbeat_rsp(skb_header_t* header, int chnl_idx);
-int32_t skb_msg_generate_messasgeID();
-int32_t skb_msg_generate_requestID();
+void skb_msg_display_send_alive_msg(skb_header_t* header);
+void skb_msg_display_recv_alive_msg(skb_header_t* header);
+void skb_msg_display_send_alive_ack_msg(skb_header_t* header);
+void skb_msg_display_recv_alive_ack_msg(skb_header_t* header);
 
-//clicktocall
-void skb_msg_process_clicktocall_heartbeat_req(skb_msg_t *skbmsg);				//heartbeat
-void skb_msg_process_clicktocall_binding_req(skb_msg_t *skbmsg, char *userID, char *password);					//binding
-int skb_msg_process_clicktocall_start_req( skb_msg_t *skbmsg, uxc_dbif_t *dbif, char *sessionID, char *gwSessionID);
+//client
+void skb_msg_process_alive(skb_msg_t *skbmsg);				//heartbeat
+void skb_msg_process_bind_msg(skb_msg_t *skbmsg, char *userID, char *password);					//binding
+int skb_msg_process_deliver_msg( skb_msg_t *skbmsg, uxc_dbif_t *dbif, char *sessionID, char *gwSessionID, int *serialNumber);
+int skb_msg_process_report_ack_msg( skb_msg_t *skbmsg, uxc_dbif_t *dbif);
 
-void skb_msg_process_clicktocall_heartbeat_rsp(skb_msg_t *skbmsg);				//heartbeat
-int skb_msg_process_clicktocall_binding_rsp(skb_msg_t *skbmsg);					//binding
-int skb_msg_process_clicktocall_start_rsp( skb_msg_t *skbmsg, uxc_dbif_t *dbif);
+//server
+void skb_msg_process_alive_ack(skb_msg_t *skbmsg);				//heartbeat
+int skb_msg_process_bind_ack_msg(skb_msg_t *skbmsg);					//binding
+int skb_msg_process_deliver_ack_msg( skb_msg_t *skbmsg, uxc_dbif_t *dbif, int *serialNumber);
+int skb_msg_process_report_msg( skb_msg_t *skbmsg, uxc_dbif_t *dbif, int *serialNumber);
 
 void *timeout_function();
 void turn_timeout_timer_on();

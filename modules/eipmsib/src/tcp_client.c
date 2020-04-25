@@ -282,6 +282,7 @@ int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpms
 	uxc_ixpc_t *dbif_header;
 	uxc_ipcmsg_t ipcmsg;
 	int msg_size, requestID, status;
+	char headerLog[SKB_HEADER_DISPLAY_SIZE];
 
 	// 1. receive skbmsg 
 	// skbmsg = (skb_msg_t *) tcpmsg->netmsg->buffer;
@@ -292,6 +293,16 @@ int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpms
 	if( rv < UX_SUCCESS) {
 		ux_log(UXL_INFO, "failed to skb_msg_cvt_order_ntoh");
 		return rv;
+	}
+	
+	//header 검증하여 정상적인 수신인지 확인
+	if (check_header(&skbmsg->header) < 0) {
+		skb_msg_get_header_display(&skbmsg->header, headerLog);
+		ux_log(UXL_CRT, "failed to check header\n%s", headerLog);
+
+		//세션 연결 종료
+		ux_channel_stop2(channel_arr[tcpmsg->peerkey.chnl_idx], UX_TRUE);
+		return -1;
 	}
 
 	//수신한 메시지가 HEARTBEAT_RESPONSE를 제외하고, response인 경우에만 requestID와 일치하는 requestID가 있는지 확인
@@ -604,7 +615,7 @@ int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpms
 		return rv;
 	}
 	
-	return -1;
+	return eUXC_SUCCESS;
 }	
 
 

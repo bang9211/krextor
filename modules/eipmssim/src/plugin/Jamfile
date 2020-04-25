@@ -1,0 +1,26 @@
+SubDir TOP src plugin ;
+
+SubDirHdrs /usr/include /usr/local/include ;
+SubDirHdrs $(UXLIB_SRC_HOME)/include ;
+SubDirHdrs $(TOP)/local ;
+SubDirHdrs $(TOP)/src/simctrl ;
+
+
+LIB_NAME = libsimctrl_plugin ;
+
+LOCAL_DEF = $(SYS_CCFLAGS) ;
+if $(OS) = LINUX {
+	LOCAL_DEF += -fPIC ;
+}
+
+SRCS = simctrl_plugin ;
+
+
+ObjectCcFlags $(SRCS)$(SUFOBJ) : $(LOCAL_DEF) ;
+
+Library $(LIB_NAME)$(SUFLIB) : $(SRCS).c ;
+SharedLibraryMain $(LIB_NAME)$(SUFSHARED) : $(LIB_NAME)$(SUFLIB) ;
+
+#Copy $(LIB_NAME)$(SUFSHARED) : $(TOP)/lib ;
+InstallLib $(TOP)/lib : $(LIB_NAME)$(SUFSHARED) ;
+InstallFile $(UASYS_HOME)/lib : $(LIB_NAME)$(SUFSHARED) ;

@@ -1,0 +1,1549 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<scenarios>
+    <configuration>
+		<!-- È­¸é¿¡ ½Ã³ª¸®¿À ½ÇÇà³»¿ë Ãâ·Â ¿©ºÎ. (on/off) (default:on) -->
+		<define name="display-trace-log" value="on"/>
+		<!-- È­¸é¿¡ ½Ã³ª¸®¿À ½ÇÇà³»¿ë ½Ç½Ã°£ Ãâ·Â ¿©ºÎ. (on/off) (default:off) -->
+		<define name="realtime-display" value="off"/>
+		<!-- ½Ã³ª¸®¿À ¼öÇà °á°ú¸¦ ÆÄÀÏ¿¡ ±â·ÏÇÒÁö ¿©ºÎ. (on/off) (default:off) -->
+		<define name="file-report" value="off"/>
+		<!-- ½Ã³ª¸®¿À ½ÇÇà Å¸ÀÓ¾Æ¿ô ½Ã°£(ÃÊ) (default:0(none)) -->
+		<define name="scenario-timeout" value="0"/>
+		<!-- ½Ã³ª¸®¿À ¼öÇà ÈÄ ´ÙÀ½ ½Ã³ª¸®¿À ¼öÇà Àü À¯ÈÞ ½Ã°£(ÃÊ) (default:0) -->
+		<define name="scenario-interval" value="0"/>
+		<!-- ½Ã³ª¸®¿À Å¸ÀÔ (seagull/sipp/none) (default:none) -->
+		<define name="scenario-type" value="none"/>
+		<!-- MMCD ¿¬°á Á¤º¸ - RMI HOST / PORT (default:null) -->
+		<!--define name="rmi-host" value="localhost"/>
+		<define name="rmi-port" value="15003"/-->
+		<!-- Report plugin Á¤º¸ - library name (default:null) -->
+		<!--define name="report-plugin" value="libsimctrl_plugin.so"/-->
+		<!-- ignore list - ÇØ´ç keyword°¡ ÀÖÀ¸¸é ÇØ´ç ¶óÀÎ¿¡¼­ keyword ÀÌÈÄ´Â ºñ±³ÇÏÁö ¾Ê´Â´Ù. -->
+		<!-- replace list - ÇØ´ç keyword°¡ ÀÖÀ¸¸é source¸¦ destinationÀ¸·Î º¯È¯ ÈÄ °á°ú ºñ±³ÇÑ´Ù. -->
+		<!--                src, dst´Â value¿¡ ¼±¾ðµÇ¸ç src + "=>" + dst ÇüÅÂ·á Ç¥±âÇØ¾ßÇÑ´Ù. -->
+		<!-- define list - ¿¹¾àµÈ nameÀÌ ¾Æ´Ï¸é define list¿¡¼­ °ü¸®µÈ´Ù. rmi commandÀÇ ¿¹¾à¾î·Î »ç¿ëµÈ´Ù. -->
+		<define name="User-Tariff" value="T2TingLte35"/>
+		<define name="Voice-Call" value="32912"/> <!-- Service-Option H'8090 -->
+		<define name="Video-Call" value="34960"/> <!-- Service-Option H'8890 -->
+		<define name="RMI-Command" value="$HOME/simulator/callTypeCheck/simctrl.rmi.sh localhost 15003 chk-call-type T2TingLte35"/>
+		<define name="Grep-Command" value=" | grep CALL_TYPE"/>
+	</configuration>
+	<class name="MOBILE_IN">
+		<scenario name="mobile_in - 01020" description="MOBILE_IN - 01020">
+			<command script="RMI-Command Voice-Call 01020 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in - 01021" description="MOBILE_IN - 01021">
+			<command script="RMI-Command Voice-Call 010210 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 010211 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 010212 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 010213 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 010214 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 010215 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 010216 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 010217 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in - 01021 - 2" description="MOBILE_IN - 01021">
+			<command script="RMI-Command Voice-Call 0102192 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0102193 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0102194 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0102195 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0102196 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0102197 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0102198 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0102199 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in - 0103" description="MOBILE_IN - 0103">
+			<command script="RMI-Command Voice-Call 01031 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 01035 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 01036 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 01037 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 01038 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0103972 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0103973 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in - 0104" description="MOBILE_IN - 0104">
+			<command script="RMI-Command Voice-Call 01040 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 01041 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 01045 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 010460 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 010461 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 010462 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 010463 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 010464 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in - 0104 - 2" description="MOBILE_IN - 0104">
+			<command script="RMI-Command Voice-Call 010465 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 010466 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 010467 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 010468 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 010469 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 01047 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 01048 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 01049 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in - 0105" description="MOBILE_IN - 0105">
+			<command script="RMI-Command Voice-Call 01050 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 01052 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 01053 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 01054 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0105707 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0105708 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0105709 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0105723 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in - 0105 - 2" description="MOBILE_IN - 0105">
+			<command script="RMI-Command Voice-Call 0105724 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0105725 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0105726 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0105852 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0105853 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0105854 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0105855 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0105856 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in - 0105 - 3" description="MOBILE_IN - 0105">
+			<command script="RMI-Command Voice-Call 0105857 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0105859 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0105860 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0105861 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0105862 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0105863 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0105864 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0105865 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in - 0105 - 4" description="MOBILE_IN - 0105">
+			<command script="RMI-Command Voice-Call 010590 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 010591 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 010592 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 010593 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 010594 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 010595 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 010596 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in - 0106" description="MOBILE_IN - 0106">
+			<command script="RMI-Command Voice-Call 01062 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 01063 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 01064 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in - 0107" description="MOBILE_IN - 0107">
+			<command script="RMI-Command Voice-Call 01071 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in - 0108" description="MOBILE_IN - 0108">
+			<command script="RMI-Command Voice-Call 01085 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 01086 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 01087 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 01088 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 01089 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in - 0109" description="MOBILE_IN - 0109">
+			<command script="RMI-Command Voice-Call 01090 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 01091 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 01092 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 01093 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 01094 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in - 1567" description="MOBILE_IN - 1567">
+			<command script="RMI-Command Voice-Call 15670 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 01015670 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15671 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 01015671 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in - etc" description="MOBILE_IN - Etc">
+			<command script="RMI-Command Voice-Call 011 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 01220 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 017 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 192 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in.res" serial="true"/>
+		</scenario>
+	</class>
+
+	<class name="MOBILE_IN_FREE">
+		<scenario name="mobile_in_free - 00" description="MOBILE_IN_FREE - 00">
+			<command script="RMI-Command Voice-Call 002800 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 00305 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 00306 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 00308 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 00309 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 00364 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 00366 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0033 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 007" description="MOBILE_IN_FREE - 007">
+			<command script="RMI-Command Voice-Call 00720 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 00721 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 00722 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 00724 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0073 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 00744 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 00765 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 00769 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 007 - 2" description="MOBILE_IN_FREE - 00">
+			<command script="RMI-Command Voice-Call 00778 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 00780 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 00791 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 00793 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 00796 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 00797 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 00798 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 010200" description="MOBILE_IN_FREE - 010200">
+			<command script="RMI-Command Voice-Call 0102004949 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0102007277 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0102008282 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 011200" description="MOBILE_IN_FREE - 011200">
+			<command script="RMI-Command Voice-Call 0112000011 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0112000017 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0112000090 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0112000303 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0112000365 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0112000400 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0112001000 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0112001005 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 011200 - 2" description="MOBILE_IN_FREE - 011200">
+			<command script="RMI-Command Voice-Call 0112001006 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0112001011 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0112001114 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0112001230 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0112001234 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0112001500 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0112001539 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0112001715 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 011200 - 3" description="MOBILE_IN_FREE - 011200">
+			<command script="RMI-Command Voice-Call 0112001716 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0112001717 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0112002011 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0112002100 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0112002200 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0112002300 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0112002400 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0112002500 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 011200 - 4" description="MOBILE_IN_FREE - 011200">
+			<command script="RMI-Command Voice-Call 0112003200 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0112003300 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0112003400 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0112004000 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0112004202 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0112004786 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0112005010 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0112005200 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 011200 - 5" description="MOBILE_IN_FREE - 011200">
+			<command script="RMI-Command Voice-Call 0112005454 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0112005678 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0112006000 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0112006788 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0112006789 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0112007777 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0112007890 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0112008282 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 011200 - 6" description="MOBILE_IN_FREE - 011200">
+			<command script="RMI-Command Voice-Call 0112009000 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0112009292 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0112009876 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 017200" description="MOBILE_IN_FREE - 017200">
+			<command script="RMI-Command Voice-Call 0172000011 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0172000017 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0172000090 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0172000303 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0172000365 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0172000400 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0172001000 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0172001005 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 017200 - 2" description="MOBILE_IN_FREE - 017200">
+			<command script="RMI-Command Voice-Call 0172001006 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0172001011 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0172001114 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0172001230 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0172001234 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0172001500 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0172001539 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0172001715 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 017200 - 3" description="MOBILE_IN_FREE - 017200">
+			<command script="RMI-Command Voice-Call 0172001716 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0172001717 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0172002011 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0172002100 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0172002200 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0172002300 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0172002400 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0172002500 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 017200 - 4" description="MOBILE_IN_FREE - 017200">
+			<command script="RMI-Command Voice-Call 0172003200 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0172003300 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0172003400 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0172003838 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0172004000 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0172004202 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0172004786 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0172005010 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 017200 - 5" description="MOBILE_IN_FREE - 017200">
+			<command script="RMI-Command Voice-Call 0172005200 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0172005454 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0172005678 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0172006000 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0172006788 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0172006789 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0172007777 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0172007890 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 017200 - 6" description="MOBILE_IN_FREE - 017200">
+			<command script="RMI-Command Voice-Call 0172008282 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0172009000 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0172009292 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0172009876 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 060" description="MOBILE_IN_FREE - 060">
+			<command script="RMI-Command Voice-Call 060600053 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0606000540 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0606000541 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0606000542 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0606000543 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0606000544 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0606000545 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0606000546 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 08" description="MOBILE_IN_FREE - 08">
+			<command script="RMI-Command Voice-Call 082100 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 08215 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 08216 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 08218 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 083100 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 083101 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 08314 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 08315 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 08 - 2" description="MOBILE_IN_FREE - 08">
+			<command script="RMI-Command Voice-Call 08316 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 08411 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 080" description="MOBILE_IN_FREE - 080">
+			<command script="RMI-Command Voice-Call 080 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 114" description="MOBILE_IN_FREE - 114">
+			<command script="RMI-Command Voice-Call 010114 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 011114 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 016114 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 017114 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 018114 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 019114 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 114 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 150x" description="MOBILE_IN_FREE - 150X">
+			<command script="RMI-Command Voice-Call 1500 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 1502 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 1504 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 1505 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 151x" description="MOBILE_IN_FREE - 151X">
+			<command script="RMI-Command Voice-Call 15105 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15107 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0111512 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0171512 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 1514 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 1519 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 15109" description="MOBILE_IN_FREE - 15109">
+			<command script="RMI-Command Voice-Call 01015109 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 01115109 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 01615109 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 01715109 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 01815109 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 01915109 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15109 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 1513" description="MOBILE_IN_FREE - 1513">
+			<command script="RMI-Command Voice-Call 0101513 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0111513 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0161513 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0171513 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0181513 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0191513 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 1513 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 152x" description="MOBILE_IN_FREE - 152X">
+			<command script="RMI-Command Voice-Call 1520 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 1522 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 1523 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 1527 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 15210" description="MOBILE_IN_FREE - 15210">
+			<command script="RMI-Command Voice-Call 1521000 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15210020 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15210050 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15210051 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15210052 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 01115210054 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 01715210054 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 1521" description="MOBILE_IN_FREE - 1521">
+			<command script="RMI-Command Voice-Call 1521116 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0101521116 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 1521117 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0101521117 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15212026 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 01015212026 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 153x" description="MOBILE_IN_FREE - 153X">
+			<command script="RMI-Command Voice-Call 15308 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15309 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 01115310 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 01715310 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15311 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 011153881 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 017153881 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 1533" description="MOBILE_IN_FREE - 1533">
+			<command script="RMI-Command Voice-Call 0101533 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0111533 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0171533 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 1533 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 1534" description="MOBILE_IN_FREE - 1534">
+			<command script="RMI-Command Voice-Call 0111534300 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0171534300 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 1534300 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 153435 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15344 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 15341" description="MOBILE_IN_FREE - 15341">
+			<command script="RMI-Command Voice-Call 153411 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 153412 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 153413 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 153414 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 153415 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 153417 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 153481" description="MOBILE_IN_FREE - 153481">
+			<command script="RMI-Command Voice-Call 153481 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 010153481 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 011153481 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 017153481 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 154x" description="MOBILE_IN_FREE - 154X">
+			<command script="RMI-Command Voice-Call 1546 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0111547 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0171547 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 1547 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 155x" description="MOBILE_IN_FREE - 155X">
+			<command script="RMI-Command Voice-Call 1551 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 1554 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 1558 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 156x" description="MOBILE_IN_FREE - 156X">
+			<command script="RMI-Command Voice-Call 156110 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15622 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15625 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15628 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 1563 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 1564 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 1568" description="MOBILE_IN_FREE - 1568">
+			<command script="RMI-Command Voice-Call 15681577 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15685 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15688 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15689 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 157x" description="MOBILE_IN_FREE - 157X">
+			<command script="RMI-Command Voice-Call 1575 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15782007890 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 158x" description="MOBILE_IN_FREE - 158X">
+			<command script="RMI-Command Voice-Call 1580 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 1581 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15810 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0111585 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0171585 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 1585 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 159x" description="MOBILE_IN_FREE - 159X">
+			<command script="RMI-Command Voice-Call 1590 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15935083 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 1592" description="MOBILE_IN_FREE - 1592">
+			<command script="RMI-Command Voice-Call 15925200 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15925252 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15926788 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15927777 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 01015929000 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15929000 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15929876 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 15920" description="MOBILE_IN_FREE - 15920">
+			<command script="RMI-Command Voice-Call 15920011 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15920090 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15920202 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15920365 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 01015920400 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 01115920400 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 01715920400 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15920400 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 15920 - 2" description="MOBILE_IN_FREE - 15920">
+			<command script="RMI-Command Voice-Call 15920401 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15920777 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 15921" description="MOBILE_IN_FREE - 15921">
+			<command script="RMI-Command Voice-Call 01015921000 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15921000 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15921005 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15921006 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15921500 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15921539 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 15922" description="MOBILE_IN_FREE - 15922">
+			<command script="RMI-Command Voice-Call 01015922001 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15922001 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 01015922002 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15922002 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 01015922003 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15922003 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 01015922004 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15922004 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 15922 - 2" description="MOBILE_IN_FREE - 15922">
+			<command script="RMI-Command Voice-Call 01015922005 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15922005 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15922100 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15922200 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15922300 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15922400 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15922500 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15922222 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 15923" description="MOBILE_IN_FREE - 15923">
+			<command script="RMI-Command Voice-Call 15923000 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15923200 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15923300 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15923400 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 15924" description="MOBILE_IN_FREE - 15924">
+			<command script="RMI-Command Voice-Call 15924000 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15924202 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15924786 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 1598" description="MOBILE_IN_FREE - 1598">
+			<command script="RMI-Command Voice-Call 15983913 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15987942 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15989050 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15989051 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 16xx" description="MOBILE_IN_FREE - 16XX">
+			<command script="RMI-Command Voice-Call 162 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 1631 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 1633 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 1650 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 1655 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 1671 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 1677 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 1682 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 19xx" description="MOBILE_IN_FREE - 19XX">
+			<command script="RMI-Command Voice-Call 1982 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 1983 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 1989 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 200" description="MOBILE_IN_FREE - 200">
+			<command script="RMI-Command Voice-Call 2000011 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 2000017 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 2000090 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 2000303 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 2000365 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 2000400 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 2001000 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 2001005 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 200 - 2" description="MOBILE_IN_FREE - 200">
+			<command script="RMI-Command Voice-Call 2001006 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 2001011 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 2001114 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 2001230 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 2001234 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 2001500 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 2001539 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 2001715 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 200 - 3" description="MOBILE_IN_FREE - 200">
+			<command script="RMI-Command Voice-Call 2001716 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 2001717 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 2002001 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 2002002 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 2002003 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 2002004 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 2002005 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 2002011 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 200 - 4" description="MOBILE_IN_FREE - 200">
+			<command script="RMI-Command Voice-Call 2002100 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 2002200 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 2002300 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 2002400 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 2002500 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 2003200 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 2003300 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 2003400 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 200 - 5" description="MOBILE_IN_FREE - 200">
+			<command script="RMI-Command Voice-Call 2003838 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 2004000 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 2004202 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 2004786 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 2005010 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 2005200 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 2005454 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 2005678 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 200 - 6" description="MOBILE_IN_FREE - 200">
+			<command script="RMI-Command Voice-Call 2006000 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 2006788 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 2006789 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 2007777 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 2007890 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 2008282 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 2009000 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 2009292 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 200 - 7" description="MOBILE_IN_FREE - 200">
+			<command script="RMI-Command Voice-Call 2009876 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - 7005083" description="MOBILE_IN_FREE - 7005083">
+			<command script="RMI-Command Voice-Call 0117005083 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0177005083 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_free - etc" description="MOBILE_IN_FREE - Etc">
+			<command script="RMI-Command Voice-Call 01052005252 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 01194709012 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_free.res" serial="true"/>
+		</scenario>
+	</class>
+
+	<class name="MOBILE_IN_VIDEO">
+		<scenario name="mobile_in_video - 01020" description="MOBILE_IN_VIDEO - 01020">
+			<command script="RMI-Command Video-Call 01020 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_video - 01021 - 2" description="MOBILE_IN_VIDEO - 01021">
+			<command script="RMI-Command Video-Call 010210 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 010211 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 010212 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 0102130 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 0102131 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 0102132 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 0102133 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 0102134 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_video - 01021 - 3" description="MOBILE_IN_VIDEO - 01021">
+			<command script="RMI-Command Video-Call 0102135 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 0102136 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 010214 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 010215 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 010216 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 010217 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_video - 01021 - 4" description="MOBILE_IN_VIDEO - 01021">
+			<command script="RMI-Command Video-Call 0102192 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 0102193 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 0102194 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 0102195 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 0102196 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 0102197 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 0102198 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 0102199 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_video - 0103" description="MOBILE_IN_VIDEO - 0103">
+			<command script="RMI-Command Video-Call 01031 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 01035 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 01036 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 01037 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 01038 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 0103972 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 0103973 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_video - 0104" description="MOBILE_IN_VIDEO - 0104">
+			<command script="RMI-Command Video-Call 01040 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 01041 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 01045 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 010460 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 010461 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 010462 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 010463 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 010464 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_video - 0104 - 2" description="MOBILE_IN_VIDEO - 0104">
+			<command script="RMI-Command Video-Call 010465 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 010466 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 010467 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 010468 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 010469 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 01047 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 01048 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 01049 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_video - 0105" description="MOBILE_IN_VIDEO - 0105">
+			<command script="RMI-Command Video-Call 01050 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 01052 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 01053 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 01054 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 0105707 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 0105708 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 0105709 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 0105723 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_video - 0105 - 2" description="MOBILE_IN_VIDEO - 0105">
+			<command script="RMI-Command Video-Call 0105724 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 0105725 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 0105726 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 0105852 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 0105853 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 0105854 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 0105855 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 0105856 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_video - 0105 - 3" description="MOBILE_IN_VIDEO - 0105">
+			<command script="RMI-Command Video-Call 0105857 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 0105859 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 0105860 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 0105861 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 0105862 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 0105863 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 0105864 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 0105865 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_video - 0105 - 4" description="MOBILE_IN_VIDEO - 0105">
+			<command script="RMI-Command Video-Call 010590 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 010591 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 010592 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 010593 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 010594 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 010595 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 010596 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_video - 0106" description="MOBILE_IN_VIDEO - 0106">
+			<command script="RMI-Command Video-Call 01062 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 01063 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 01064 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_video - 0107" description="MOBILE_IN_VIDEO - 0107">
+			<command script="RMI-Command Video-Call 01071 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_video - 0108" description="MOBILE_IN_VIDEO - 0108">
+			<command script="RMI-Command Video-Call 01085 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 01086 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 01087 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 01088 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 01089 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_video - 0109" description="MOBILE_IN_VIDEO - 0109">
+			<command script="RMI-Command Video-Call 01090 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 01091 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 01092 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 01093 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 01094 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_video - etc" description="MOBILE_IN_VIDEO - Etc">
+			<command script="RMI-Command Video-Call 011 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 01220 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 017 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 192 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_video_free" description="MOBILE_IN_VIDEO_FREE">
+			<command script="RMI-Command Video-Call 0112001503 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video_free.res" serial="true"/>
+			<command script="RMI-Command Video-Call 0102001503 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video_free.res" serial="true"/>
+			<command script="RMI-Command Video-Call 1503 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video_free.res" serial="true"/>
+			<command script="RMI-Command Video-Call 011114 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video_free.res" serial="true"/>
+			<command script="RMI-Command Video-Call 017114 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video_free.res" serial="true"/>
+			<!-- MOBILE_IN_FREE·Î Ã³¸®µÊ -->
+			<!--command script="RMI-Command Video-Call 114 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video_free.res" serial="true"/-->
+			<command script="RMI-Command Video-Call 157616 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video_free.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_in_video_free - 2" description="MOBILE_IN_VIDEO_FREE">
+			<command script="RMI-Command Video-Call 010157616 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video_free.res" serial="true"/>
+			<command script="RMI-Command Video-Call 011157616 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video_free.res" serial="true"/>
+			<command script="RMI-Command Video-Call 017157616 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video_free.res" serial="true"/>
+			<command script="RMI-Command Video-Call 157603 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video_free.res" serial="true"/>
+			<command script="RMI-Command Video-Call 010157603 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_in_video_free.res" serial="true"/>
+		</scenario>
+	</class>
+
+	<class name="MOBILE_OUT">
+		<scenario name="mobile_out - 01x" description="MOBILE_OUT - 01X">
+			<command script="RMI-Command Voice-Call 010 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 016 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 018 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 019 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_out - 0102" description="MOBILE_OUT - 0102">
+			<command script="RMI-Command Voice-Call 0102137 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0102138 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0102139 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0102140 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0102141 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 01021 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 01029 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_out - 0105" description="MOBILE_OUT - 0105">
+			<command script="RMI-Command Voice-Call 0105940 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0105941 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_out - 0111" description="MOBILE_OUT - 0111">
+			<command script="RMI-Command Voice-Call 01111 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 01112 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 01113 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 01114 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 01115 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 01116 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 01118 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 01119 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_out - 0112" description="MOBILE_OUT - 0112">
+			<command script="RMI-Command Voice-Call 011200 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_out - 013" description="MOBILE_OUT - 013"> 
+			<command script="RMI-Command Voice-Call 0130 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0131 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0132 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out.res" serial="true"/>
+			<!-- MOBILE_OUT_700 Ã³¸®µÊ -->
+			<!--command script="RMI-Command Voice-Call 0132700 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out.res" serial="true"/-->
+		</scenario>
+		<scenario name="mobile_out - 017" description="MOBILE_OUT - 017">
+			<command script="RMI-Command Voice-Call 017200 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0171577 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0171588 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0171544 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_out - 050" description="MOBILE_OUT - 050">
+			<command script="RMI-Command Voice-Call 050 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_out - 15xx" description="MOBILE_OUT - 15XX">
+			<command script="RMI-Command Voice-Call 1544700 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 1566 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 1577 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 1577060 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 1578 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 1588 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 1588060 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 1588700 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_out - 15xx - 2" description="MOBILE_OUT - 15XX">
+			<command script="RMI-Command Voice-Call 1562 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 1593 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 1599 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15997000 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_out - 16xx" description="MOBILE_OUT - 16XX">
+			<command script="RMI-Command Voice-Call 1600 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 1666 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 1680 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 1685 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 1688 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out.res" serial="true"/>
+		</scenario>
+		<!-- PSTN_700À¸·Î Ã³¸®µÊ --> 
+		<!--scenario name="mobile_out - 700" description="MOBILE_OUT - 700">
+			<command script="RMI-Command Voice-Call 700 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out.res" serial="true"/>
+		</scenario-->
+		<scenario name="mobile_out_060" description="MOBILE_OUT_060">
+			<!-- RESTRICT Ã³¸®µÊ -->
+			<!--command script="RMI-Command Voice-Call 010060 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out.res" serial="true"/--> 
+			<command script="RMI-Command Voice-Call 011060 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out_060.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 016060 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out_060.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 017060 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out_060.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 018060 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out_060.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 019060 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out_060.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_out_700" description="MOBILE_OUT_700">
+			<command script="RMI-Command Voice-Call 010700 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out_700.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 011700 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out_700.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 016700 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out_700.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 017700 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out_700.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 018700 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out_700.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 019700 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out_700.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_out_free" description="MOBILE_OUT_FREE">
+			<command script="RMI-Command Voice-Call 00301 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0101521101 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0101521111 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 08616 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out_free.res" serial="true"/>
+		</scenario>
+	</class>
+
+	<class name="MOBILE_OUT_VIDEO">
+		<scenario name="mobile_out_video - 0102" description="MOBILE_OUT_VIDEO - 0102">
+			<command script="RMI-Command Video-Call 0102137 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 0102138 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 0102139 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 0102140 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 0102141 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out_video.res" serial="true"/>
+		</scenario>
+		<scenario name="mobile_out_video - 0105" description="MOBILE_OUT_VIDEO - 0105">
+			<command script="RMI-Command Video-Call 0105940 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 0105941 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out_video.res" serial="true"/>
+		</scenario>
+		<!-- MOBILE_OUT_FREE·Î Ã³¸®µÊ -->
+		<!--scenario name="mobile_out_video_free" description="MOBILE_OUT_VIDEO_FREE">
+			<command script="RMI-Command Video-Call 08616 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out_video_free.res" serial="true"/>
+			<command script="RMI-Command Video-Call 00301 Grep-Command" check="$HOME/simulator/callTypeCheck/report/mobile_out_video_free.res" serial="true"/>
+		</scenario-->
+	</class>
+
+	<class name="PSTN">
+		<scenario name="pstn" description="PSTN">
+			<command script="RMI-Command Voice-Call 02 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 031 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 032 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 033 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 041 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 042 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 043 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 044 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn - 2" description="PSTN">
+			<command script="RMI-Command Voice-Call 051 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 052 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 053 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 054 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 055 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 061 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 062 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 063 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn - 3" description="PSTN">
+			<command script="RMI-Command Voice-Call 064 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 012 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 015 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 070700 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 027003611 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_060" description="PSTN_060">
+			<command script="RMI-Command Voice-Call 060 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_060.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_070" description="PSTN_070">
+			<command script="RMI-Command Voice-Call 070 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_070.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_700" description="PSTN_700">
+			<command script="RMI-Command Voice-Call 700 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_700.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 02700 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_700.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 031700 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_700.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 032700 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_700.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 033700 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_700.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 041700 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_700.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 042700 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_700.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 043700 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_700.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_700 - 2" description="PSTN_700">
+			<command script="RMI-Command Voice-Call 044700 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_700.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 051700 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_700.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 053700 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_700.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 055700 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_700.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 061700 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_700.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 062700 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_700.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_700 - 3" description="PSTN_700">
+			<command script="RMI-Command Voice-Call 063700 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_700.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 064700 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_700.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 012700 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_700.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 015700 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_700.res" serial="true"/>
+		</scenario>
+	</class>
+
+	<class name="PSTN_FREE">
+		<scenario name="pstn_free - 111" description="PSTN_FREE - 111">
+			<command script="RMI-Command Voice-Call 02111 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 031111 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 032111 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 033111 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 041111 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 042111 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 043111 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 044111 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_free - 111 - 2" description="PSTN_FREE - 111">
+			<command script="RMI-Command Voice-Call 051111 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 052111 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 053111 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 054111 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 055111 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 061111 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 062111 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 063111 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_free - 111 - 3" description="PSTN_FREE - 111">
+			<command script="RMI-Command Voice-Call 064111 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 012111 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 015111 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 111 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_free - 112" description="PSTN_FREE - 112">
+			<command script="RMI-Command Voice-Call 02112 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 031112 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 032112 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 033112 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 041112 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 042112 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 043112 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 044112 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_free - 112 - 2" description="PSTN_FREE - 112">
+			<command script="RMI-Command Voice-Call 051112 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 052112 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 053112 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 054112 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 055112 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 061112 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 062112 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 063112 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_free - 112 - 3" description="PSTN_FREE - 112">
+			<command script="RMI-Command Voice-Call 064112 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 012112 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 015112 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 112 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_free - 113" description="PSTN_FREE - 113">
+			<command script="RMI-Command Voice-Call 02113 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 031113 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 032113 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 033113 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 041113 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 042113 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 043113 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 044113 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_free - 113 - 2" description="PSTN_FREE - 113">
+			<command script="RMI-Command Voice-Call 051113 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 052113 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 053113 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 054113 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 055113 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 061113 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 062113 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 063113 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_free - 113 - 3" description="PSTN_FREE - 113">
+			<command script="RMI-Command Voice-Call 064113 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 012113 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 015113 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 113 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_free - 118" description="PSTN_FREE - 118">
+			<command script="RMI-Command Voice-Call 02118 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 031118 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 032118 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 033118 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 041118 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 042118 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 043118 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 044118 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_free - 118 - 2" description="PSTN_FREE - 118">
+			<command script="RMI-Command Voice-Call 051118 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 052118 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 053118 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 054118 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 055118 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 061118 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 062118 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 063118 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_free - 118 - 3" description="PSTN_FREE - 118">
+			<command script="RMI-Command Voice-Call 064118 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 012118 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 015118 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 118 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_free - 119" description="PSTN_FREE - 119">
+			<command script="RMI-Command Voice-Call 02119 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 031119 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 032119 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 033119 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 041119 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 042119 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 043119 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 044119 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_free - 119 - 2" description="PSTN_FREE - 119">
+			<command script="RMI-Command Voice-Call 051119 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 052119 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 053119 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 054119 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 055119 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 061119 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 062119 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 063119 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_free - 119 - 3" description="PSTN_FREE - 119">
+			<command script="RMI-Command Voice-Call 064119 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 010119 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 011119 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 012119 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 015119 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 016119 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 017119 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 018119 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_free - 119 - 4" description="PSTN_FREE - 119">
+			<command script="RMI-Command Voice-Call 019119 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 119 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_free - 122" description="PSTN_FREE - 122">
+			<command script="RMI-Command Voice-Call 02122 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 031122 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 032122 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 033122 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 041122 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 042122 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 043122 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 044122 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_free - 122 - 2" description="PSTN_FREE - 122">
+			<command script="RMI-Command Voice-Call 051122 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 052122 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 053122 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 054122 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 055122 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 061122 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 062122 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 063122 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_free - 122 - 3" description="PSTN_FREE - 122">
+			<command script="RMI-Command Voice-Call 064122 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 012122 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 015122 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 122 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_free - 125" description="PSTN_FREE - 125">
+			<command script="RMI-Command Voice-Call 02125 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 031125 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 032125 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 033125 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 041125 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 042125 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 043125 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 044125 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_free - 125 - 2" description="PSTN_FREE - 125">
+			<command script="RMI-Command Voice-Call 051125 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 052125 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 053125 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 054125 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 055125 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 061125 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 062125 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 063125 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_free - 125 - 3" description="PSTN_FREE - 125">
+			<command script="RMI-Command Voice-Call 064125 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 012125 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 015125 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 125 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_free - 162" description="PSTN_FREE - 162">
+			<command script="RMI-Command Voice-Call 02162 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 031162 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 032162 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 033162 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 041162 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 042162 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 043162 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 044162 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_free - 162 - 2" description="PSTN_FREE - 162">
+			<command script="RMI-Command Voice-Call 051162 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 052162 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 053162 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 054162 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 055162 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 061162 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 062162 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 063162 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_free - 162 - 3" description="PSTN_FREE - 162">
+			<command script="RMI-Command Voice-Call 064162 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 012162 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 015162 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_free - 1366" description="PSTN_FREE - 1366">
+			<command script="RMI-Command Voice-Call 021366 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0311366 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0321366 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0331366 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0411366 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0421366 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0431366 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0441366 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_free - 1366 - 2" description="PSTN_FREE - 1366">
+			<command script="RMI-Command Voice-Call 0511366 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0521366 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0531366 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0541366 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0551366 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0611366 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0621366 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0631366 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_free - 1366 - 3" description="PSTN_FREE - 1366">
+			<command script="RMI-Command Voice-Call 0641366 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0121366 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0151366 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 1366 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_free - 1388" description="PSTN_FREE - 1388">
+			<command script="RMI-Command Voice-Call 021388 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0311388 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0321388 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0331388 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0411388 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0421388 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0431388 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0441388 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_free - 1388 - 2" description="PSTN_FREE - 1388">
+			<command script="RMI-Command Voice-Call 0511388 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0521388 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0531388 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0541388 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0551388 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0611388 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0621388 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0631388 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_free - 1388 - 3" description="PSTN_FREE - 1388">
+			<command script="RMI-Command Voice-Call 0641388 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0121388 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0151388 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 1388 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_free - 1633" description="PSTN_FREE - 1633">
+			<command script="RMI-Command Voice-Call 021633 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0311633 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0321633 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0331633 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0411633 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0421633 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0431633 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0441633 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_free - 1633 - 2" description="PSTN_FREE - 1633">
+			<command script="RMI-Command Voice-Call 0511633 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0521633 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0531633 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0541633 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0551633 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0611633 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0621633 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0631633 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_free - 1633 - 3" description="PSTN_FREE - 1633">
+			<command script="RMI-Command Voice-Call 0641633 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0121633 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0151633 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_free - 1655" description="PSTN_FREE - 1655">
+			<command script="RMI-Command Voice-Call 021655 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0311655 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0321655 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0331655 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0411655 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0421655 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0431655 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0441655 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_free - 1655 - 2" description="PSTN_FREE - 1655">
+			<command script="RMI-Command Voice-Call 0511655 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0521655 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0531655 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0541655 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0551655 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0611655 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0621655 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0631655 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_free - 1655 - 3" description="PSTN_FREE - 1655">
+			<command script="RMI-Command Voice-Call 0641655 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0121655 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0151655 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_free - 1671" description="PSTN_FREE - 1671">
+			<command script="RMI-Command Voice-Call 021671 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0311671 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0321671 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0331671 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0411671 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0421671 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0431671 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0441671 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_free - 1671 - 2" description="PSTN_FREE - 1671">
+			<command script="RMI-Command Voice-Call 0511671 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0521671 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0531671 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0541671 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0551671 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0611671 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0621671 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0631671 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_free - 1671 - 3" description="PSTN_FREE - 1671">
+			<command script="RMI-Command Voice-Call 0641671 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0121671 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0151671 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_free - 1677" description="PSTN_FREE - 1677">
+			<command script="RMI-Command Voice-Call 021677 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0311677 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0321677 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0331677 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0411677 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0421677 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0431677 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0441677 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_free - 1677 - 2" description="PSTN_FREE - 1677">
+			<command script="RMI-Command Voice-Call 0511677 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0521677 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0531677 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0541677 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0551677 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0611677 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0621677 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0631677 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_free - 1677 - 3" description="PSTN_FREE - 1677">
+			<command script="RMI-Command Voice-Call 0641677 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0121677 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0151677 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_free - 1678" description="PSTN_FREE - 1678">
+			<command script="RMI-Command Voice-Call 021678 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0311678 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0321678 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0331678 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0411678 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0421678 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0431678 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0441678 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_free - 1678 - 2" description="PSTN_FREE - 1678">
+			<command script="RMI-Command Voice-Call 0511678 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0521678 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0531678 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0541678 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0551678 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0611678 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0621678 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0631678 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_free - 1678 - 3" description="PSTN_FREE - 1678">
+			<command script="RMI-Command Voice-Call 0641678 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0121678 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0151678 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 1678 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_free - 1681" description="PSTN_FREE - 1681">
+			<command script="RMI-Command Voice-Call 021681 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0311681 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0321681 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0331681 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0411681 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0421681 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0431681 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0441681 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_free - 1681 - 2" description="PSTN_FREE - 1681">
+			<command script="RMI-Command Voice-Call 0511681 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0521681 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0531681 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0541681 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0551681 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0611681 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0621681 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0631681 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_free - 1681 - 3" description="PSTN_FREE - 1681">
+			<command script="RMI-Command Voice-Call 0641681 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0121681 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0151681 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 1681 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_free - 1682" description="PSTN_FREE - 1682">
+			<command script="RMI-Command Voice-Call 021682 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0311682 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0321682 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0331682 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0411682 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0421682 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0431682 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0441682 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_free - 1682 - 2" description="PSTN_FREE - 1682">
+			<command script="RMI-Command Voice-Call 0511682 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0521682 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0531682 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0541682 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0551682 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0611682 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0621682 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0631682 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_free - 1682 - 3" description="PSTN_FREE - 1682">
+			<command script="RMI-Command Voice-Call 0641682 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0121682 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0151682 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+		</scenario>
+		<scenario name="pstn_free - etc" description="PSTN_FREE - Etc">
+			<command script="RMI-Command Voice-Call 0263439011 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0232100404 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0234459445 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 1509 Grep-Command" check="$HOME/simulator/callTypeCheck/report/pstn_free.res" serial="true"/>
+		</scenario>
+	</class>
+
+	<class name="RESTRICT">
+		<scenario name="restrict - 0100" description="RESTRICT - 0100">
+			<command script="RMI-Command Voice-Call 0100 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict.res" serial="true"/>
+		</scenario>
+		<scenario name="restrict - 082" description="RESTRICT - 082">
+			<command script="RMI-Command Voice-Call 08211 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 08212 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 08213 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 08214 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 08217 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict.res" serial="true"/>
+		</scenario>
+		<scenario name="restrict - 141" description="RESTRICT - 141">
+			<command script="RMI-Command Voice-Call 011141 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 017141 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict.res" serial="true"/>
+			<!-- MOBILE_OUTÀ¸·Î Ã³¸®µÊ -->
+			<!--command script="RMI-Command Voice-Call 141 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 010141 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 016141 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 018141 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 019141 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict.res" serial="true"/-->
+		</scenario>
+		<scenario name="restrict - 152x" description="RESTRICT - 152X">
+			<command script="RMI-Command Voice-Call 15210460 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 01015210460 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15210461 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 01015210461 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict.res" serial="true"/>
+		</scenario>
+		<scenario name="restrict - 15xx" description="RESTRICT - 15XX">
+			<command script="RMI-Command Voice-Call 15731 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 1574 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 1591 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 1595 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15996710 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict.res" serial="true"/>
+		</scenario>
+		<scenario name="restrict - 200x" description="RESTRICT - 200X">
+			<command script="RMI-Command Voice-Call 20001 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 20003 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 20005 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 20006 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 20008 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 20009 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 2001 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 2003715 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict.res" serial="true"/>
+		</scenario>
+		<scenario name="restrict - 200x - 2" description="RESTRICT - 200X">
+			<command script="RMI-Command Voice-Call 2006 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 2009 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict.res" serial="true"/>
+		</scenario>
+	</class>
+
+	<class name="RESTRICT_INTL">
+		<scenario name="restrict_intl - ting_intl_video" description="TING_INTL_VIDEO -> RESTRICT_INTL">
+			<command script="RMI-Command Video-Call 001 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict_intl_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 002 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict_intl_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 1578002 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict_intl_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 008 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict_intl_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 00700 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict_intl_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 157800700 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict_intl_video.res" serial="true"/>
+		</scenario>
+		<scenario name="restrict_intl - ting_intl_video - 2" description="TING_INTL_VIDEO -> RESTRICT_INTL">
+			<command script="RMI-Command Video-Call 00345 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict_intl_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 003 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict_intl_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 006 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict_intl_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 007 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict_intl_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 009 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict_intl_video.res" serial="true"/>
+			<command script="RMI-Command Video-Call 15401 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict_intl_video.res" serial="true"/>
+		</scenario>
+		<scenario name="restrict_intl - 001intl" description="001INTL -> RESTRICT_INTL">
+			<command script="RMI-Command Voice-Call 001 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict_intl.res" serial="true"/>
+		</scenario>
+		<scenario name="restrict_intl - 002intl" description="002INTL -> RESTRICT_INTL">
+			<command script="RMI-Command Voice-Call 002 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict_intl.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 1578002 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict_intl.res" serial="true"/>
+		</scenario>
+		<scenario name="restrict_intl - 00345intl" description="00345INTL -> RESTRICT_INTL">
+			<command script="RMI-Command Voice-Call 00345 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict_intl.res" serial="true"/>
+		</scenario>
+		<scenario name="restrict_intl - 005intl" description="005INTL -> RESTRICT_INTL">
+			<command script="RMI-Command Voice-Call 005 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict_intl.res" serial="true"/>
+		</scenario>
+		<scenario name="restrict_intl - 00700intl" description="00700INTL -> RESTRICT_INTL">
+			<command script="RMI-Command Voice-Call 00700 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict_intl.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 157800700 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict_intl.res" serial="true"/>
+		</scenario>
+		<scenario name="restrict_intl - 008intl" description="008INTL -> RESTRICT_INTL">
+			<command script="RMI-Command Voice-Call 008 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict_intl.res" serial="true"/>
+		</scenario>
+		<scenario name="restrict_intl - common_intl" description="COMMON_INTL -> RESTRICT_INTL">
+			<command script="RMI-Command Voice-Call 003 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict_intl.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 006 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict_intl.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 007 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict_intl.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 009 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict_intl.res" serial="true"/>
+		</scenario>
+		<scenario name="restrict_intl - common_intl - 2" description="COMMON_INTL -> RESTRICT_INTL">
+			<command script="RMI-Command Voice-Call 00284 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict_intl.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0030084 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict_intl.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 0070084 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict_intl.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15401 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict_intl.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 157800284 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict_intl.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15780030084 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict_intl.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 15780070084 Grep-Command" check="$HOME/simulator/callTypeCheck/report/restrict_intl.res" serial="true"/>
+		</scenario>
+	</class>
+
+	<class name="ETC">
+		<scenario name="gcs" description="GCS">
+			<command script="RMI-Command Voice-Call 1556 Grep-Command" check="$HOME/simulator/callTypeCheck/report/gcs.res" serial="true"/>
+		</scenario>
+		<scenario name="vps" description="VPS">
+			<command script="RMI-Command Video-Call 0101521112 Grep-Command" check="$HOME/simulator/callTypeCheck/report/vps.res" serial="true"/>
+			<command script="RMI-Command Video-Call 1521112 Grep-Command" check="$HOME/simulator/callTypeCheck/report/vps.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 1555 Grep-Command" check="$HOME/simulator/callTypeCheck/report/vps.res" serial="true"/>
+		</scenario>
+		<scenario name="kt114_pstn_fix" description="KT114_PSTN_FIX">
+			<command script="RMI-Command Voice-Call 02114 Grep-Command" check="$HOME/simulator/callTypeCheck/report/kt114_pstn_fix.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 031114 Grep-Command" check="$HOME/simulator/callTypeCheck/report/kt114_pstn_fix.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 032114 Grep-Command" check="$HOME/simulator/callTypeCheck/report/kt114_pstn_fix.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 033114 Grep-Command" check="$HOME/simulator/callTypeCheck/report/kt114_pstn_fix.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 041114 Grep-Command" check="$HOME/simulator/callTypeCheck/report/kt114_pstn_fix.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 042114 Grep-Command" check="$HOME/simulator/callTypeCheck/report/kt114_pstn_fix.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 043114 Grep-Command" check="$HOME/simulator/callTypeCheck/report/kt114_pstn_fix.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 044114 Grep-Command" check="$HOME/simulator/callTypeCheck/report/kt114_pstn_fix.res" serial="true"/>
+		</scenario>
+		<scenario name="kt114_pstn_fix - 2" description="KT114_PSTN_FIX">
+			<command script="RMI-Command Voice-Call 051114 Grep-Command" check="$HOME/simulator/callTypeCheck/report/kt114_pstn_fix.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 052114 Grep-Command" check="$HOME/simulator/callTypeCheck/report/kt114_pstn_fix.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 053114 Grep-Command" check="$HOME/simulator/callTypeCheck/report/kt114_pstn_fix.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 054114 Grep-Command" check="$HOME/simulator/callTypeCheck/report/kt114_pstn_fix.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 055114 Grep-Command" check="$HOME/simulator/callTypeCheck/report/kt114_pstn_fix.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 061114 Grep-Command" check="$HOME/simulator/callTypeCheck/report/kt114_pstn_fix.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 062114 Grep-Command" check="$HOME/simulator/callTypeCheck/report/kt114_pstn_fix.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 063114 Grep-Command" check="$HOME/simulator/callTypeCheck/report/kt114_pstn_fix.res" serial="true"/>
+		</scenario>
+		<scenario name="kt114_pstn_fix - 3" description="KT114_PSTN_FIX">
+			<command script="RMI-Command Voice-Call 064114 Grep-Command" check="$HOME/simulator/callTypeCheck/report/kt114_pstn_fix.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 012114 Grep-Command" check="$HOME/simulator/callTypeCheck/report/kt114_pstn_fix.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 015114 Grep-Command" check="$HOME/simulator/callTypeCheck/report/kt114_pstn_fix.res" serial="true"/>
+			<command script="RMI-Command Voice-Call 070114 Grep-Command" check="$HOME/simulator/callTypeCheck/report/kt114_pstn_fix.res" serial="true"/>
+		</scenario>
+	</class>
+</scenarios>

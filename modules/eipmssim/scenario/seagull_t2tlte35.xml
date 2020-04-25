@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<scenarios>
+    <configuration>
+		<!-- È­¸é¿¡ ½Ã³ª¸®¿À ½ÇÇà³»¿ë Ãâ·Â ¿©ºÎ. (on/off) (default:on) -->
+		<define name="display-trace-log" value="on"/>
+		<!-- È­¸é¿¡ ½Ã³ª¸®¿À ½ÇÇà³»¿ë ½Ç½Ã°£ Ãâ·Â ¿©ºÎ. (on/off) (default:off) -->
+		<define name="realtime-display" value="on"/>
+		<!-- ½Ã³ª¸®¿À ¼öÇà °á°ú¸¦ ÆÄÀÏ¿¡ ±â·ÏÇÒÁö ¿©ºÎ. (on/off) (default:off) -->
+		<define name="file-report" value="off"/>
+		<!-- ½Ã³ª¸®¿À ½ÇÇà Å¸ÀÓ¾Æ¿ô ½Ã°£(ÃÊ) (default:0(none)) -->
+		<define name="scenario-timeout" value="0"/>
+		<!-- ½Ã³ª¸®¿À ¼öÇà ÈÄ ´ÙÀ½ ½Ã³ª¸®¿À ¼öÇà Àü À¯ÈÞ ½Ã°£(ÃÊ) (default:0) -->
+		<define name="scenario-interval" value="6"/>
+		<!-- ½Ã³ª¸®¿À Å¸ÀÔ (seagull/sipp/none) (default:none) -->
+		<define name="scenario-type" value="seagull"/>
+		<!-- MMCD ¿¬°á Á¤º¸ - RMI HOST / PORT (default:null) -->
+		<!--define name="rmi-host" value="sktdb2"/>
+		<define name="rmi-port" value="15003"/-->
+		<!-- Report plugin Á¤º¸ - library name (default:null) -->
+		<!--define name="report-plugin" value="libsimctrl_plugin.so"/-->
+		<!-- ignore list - ÇØ´ç keyword°¡ ÀÖÀ¸¸é ÇØ´ç ¶óÀÎ¿¡¼­ keyword ÀÌÈÄ´Â ºñ±³ÇÏÁö ¾Ê´Â´Ù. -->
+		<define name="ignore-keyword" value="|A|PID ["/>
+		<define name="ignore-keyword" value="|M| (avp-code = 278)(flags = 64)] = ["/>
+		<define name="ignore-keyword" value="|M| (avp-code = 55)(flags = 64)] = ["/>
+		<define name="ignore-keyword" value="|M|[HbH-id] = ["/>
+		<define name="ignore-keyword" value="|M|[EtE-id] = ["/>
+		<define name="ignore-keyword" value="DEV1_1"/>
+		<define name="ignore-keyword" value="dev1_1"/>
+		<define name="ignore-keyword" value="FreeDosu"/>
+		<!-- replace list - ÇØ´ç keyword°¡ ÀÖÀ¸¸é source¸¦ destinationÀ¸·Î º¯È¯ ÈÄ °á°ú ºñ±³ÇÑ´Ù. -->
+		<!--                src, dst´Â value¿¡ ¼±¾ðµÇ¸ç src + "=>" + dst ÇüÅÂ·á Ç¥±âÇØ¾ßÇÑ´Ù. -->
+	</configuration>
+	<class name="LTE_DATA_Y">
+		<scenario name="data_y_lte" description="LTE µ¥ÀÌÅÍ ÇÑµµ Çã¿ë ÄÉÀÌ½º (RAT Type = LTE)">
+			<command script="$HOME/simulator/seagull/SKTOCS/T2TING_LTE35/data.data_y.sh trace" 
+					 check="$HOME/simulator/seagull/SKTOCS/T2TING_LTE35/report/data.data_y.res"/>
+		</scenario>
+		<scenario name="data_y_3g" description="LTE µ¥ÀÌÅÍ ÇÑµµ Çã¿ë ÄÉÀÌ½º (RAT Type = 3G)">
+			<command script="$HOME/simulator/seagull/SKTOCS/T2TING_LTE35/data.data_y_3g.sh trace" 
+			         check="$HOME/simulator/seagull/SKTOCS/T2TING_LTE35/report/data.data_y_3g.res"/>
+		</scenario>
+		<scenario name="data_y_multi_mscc" description="LTE µ¥ÀÌÅÍ ÇÑµµ Çã¿ë ÄÉÀÌ½º (MSCC AVP º¹¼ö°³ ¼³Á¤)">
+			<command script="$HOME/simulator/seagull/SKTOCS/T2TING_LTE35/data.data_y_multi_mscc.sh trace" 
+			         check="$HOME/simulator/seagull/SKTOCS/T2TING_LTE35/report/data.data_y_multi_mscc.res"/>
+		</scenario>
+		<scenario name="data_y_multi_session" description="LTE µ¥ÀÌÅÍ ÇÑµµ Çã¿ë ÄÉÀÌ½º (SessionÀÌ º¹¼ö°³ »ý¼º)">
+			<command script="$HOME/simulator/seagull/SKTOCS/T2TING_LTE35/data.data_y_multi_session.sh trace" 
+			         check="$HOME/simulator/seagull/SKTOCS/T2TING_LTE35/report/data.data_y_multi_session.res"/>
+		</scenario>
+		<scenario name="data_y_not_exist_ccr_init" description="LTE µ¥ÀÌÅÍ ÇÑµµ Çã¿ë ÄÉÀÌ½º (CCR(Initial-Request) ´©¶ô)"> 
+			<command script="$HOME/simulator/seagull/SKTOCS/T2TING_LTE35/data.data_y_not_exist_ccr_init.sh trace" 
+			         check="$HOME/simulator/seagull/SKTOCS/T2TING_LTE35/report/data.data_y_not_exist_ccr_init.res"/>
+		</scenario>
+		<scenario name="data_y_not_exist_mscc" description="LTE µ¥ÀÌÅÍ ÇÑµµ Çã¿ë ÄÉÀÌ½º (MSCC AVP ¹Ì¼³Á¤)"> 
+			<command script="$HOME/simulator/seagull/SKTOCS/T2TING_LTE35/data.data_y_not_exist_mscc.sh trace" 
+			         check="$HOME/simulator/seagull/SKTOCS/T2TING_LTE35/report/data.data_y_not_exist_mscc.res"/>
+		</scenario>
+		<scenario name="data_y_null_svc_key" description="LTE µ¥ÀÌÅÍ ÇÑµµ Çã¿ë ÄÉÀÌ½º (Win-Service-Type AVP ¹Ì¼³Á¤)"> 
+			<command script="$HOME/simulator/seagull/SKTOCS/T2TING_LTE35/data.data_y_null_svc_key.sh trace" 
+			         check="$HOME/simulator/seagull/SKTOCS/T2TING_LTE35/report/data.data_y_null_svc_key.res"/>
+		</scenario>
+		<scenario name="data_y_rating_group" description="LTE µ¥ÀÌÅÍ ÇÑµµ Çã¿ë ÄÉÀÌ½º (Rating-Group AVP¿¡ ÀÇÇØ Quota/VT ¼³Á¤)">
+			<command script="$HOME/simulator/seagull/SKTOCS/T2TING_LTE35/data.data_y_rg.sh trace" 
+			         check="$HOME/simulator/seagull/SKTOCS/T2TING_LTE35/report/data.data_y_rg.res"/>
+		</scenario>
+		<scenario name="data_y_service_id" description="LTE µ¥ÀÌÅÍ ÇÑµµ Çã¿ë ÄÉÀÌ½º (Service-Identifier AVP¿¡ ÀÇÇØ Q/VT ¼³Á¤)">
+			<command script="$HOME/simulator/seagull/SKTOCS/T2TING_LTE35/data.data_y_sid.sh trace" 
+			         check="$HOME/simulator/seagull/SKTOCS/T2TING_LTE35/report/data.data_y_sid.res"/>
+		</scenario>
+		<scenario name="data_y_usu" description="LTE µ¥ÀÌÅÍ ÇÑµµ Çã¿ë ÄÉÀÌ½º (Used-Service-Unit Á¸Àç)" >
+			<command script="$HOME/simulator/seagull/SKTOCS/T2TING_LTE35/data.data_y_usu.sh trace" 
+					 check="$HOME/simulator/seagull/SKTOCS/T2TING_LTE35/report/data.data_y_usu.res"/>
+		</scenario>
+		<scenario name="data_y_too_long" description="LTE µ¥ÀÌÅÍ ÇÑµµ Çã¿ë ÄÉÀÌ½º (Used-Service-Unit Á¸Àç, 15°³ Á¸Àç(¸Þ½ÃÁö°¡ ¸Å¿ì±æ´Ù.))" >
+			<command script="$HOME/simulator/seagull/SKTOCS/T2TING_LTE35/data.data_y_too_long.sh trace"
+					 check="$HOME/simulator/seagull/SKTOCS/T2TING_LTE35/report/data.data_y_too_long.res"/>
+		</scenario>
+	</class>
+
+	<class name="LTE_DATA_N">
+		<scenario name="data_n_lte" description="LTE µ¥ÀÌÅÍ ÇÑµµ Â÷´Ü ÄÉÀÌ½º (RAT Type = LTE)">
+			<command script="$HOME/simulator/seagull/SKTOCS/T2TING_LTE35/data.data_n.sh trace" 
+			         check="$HOME/simulator/seagull/SKTOCS/T2TING_LTE35/report/data.data_n.res"/>
+		</scenario>
+		<scenario name="data_n_3g" description="LTE µ¥ÀÌÅÍ ÇÑµµ Â÷´Ü ÄÉÀÌ½º (RAT Type = 3G)">
+			<command script="$HOME/simulator/seagull/SKTOCS/T2TING_LTE35/data.data_n_3g.sh trace" 
+			         check="$HOME/simulator/seagull/SKTOCS/T2TING_LTE35/report/data.data_n_3g.res"/>
+		</scenario>
+		<scenario name="data_n_block" description="LTE µ¥ÀÌÅÍ ÇÑµµ Â÷´Ü ÄÉÀÌ½º (µ¥ÀÌÅÍ Â÷´Ü ºÎ°¡¼­ºñ½º °¡ÀÔ)">
+			<command script="$HOME/simulator/seagull/SKTOCS/T2TING_LTE35/data.data_n_block.sh trace" 
+			         check="$HOME/simulator/seagull/SKTOCS/T2TING_LTE35/report/data.data_n_block.res"/>
+		</scenario>
+		<scenario name="data_n_not_exist_mscc" description="LTE µ¥ÀÌÅÍ ÇÑµµ Â÷´Ü ÄÉÀÌ½º (MSCC AVP ¹Ì¼³Á¤)">
+			<command script="$HOME/simulator/seagull/SKTOCS/T2TING_LTE35/data.data_n_not_exist_mscc.sh trace"
+			         check="$HOME/simulator/seagull/SKTOCS/T2TING_LTE35/report/data.data_n_not_exit_mscc.res"/>
+		</scenario>
+	</class>
+
+	<class name="LTE_DATA_RAR">
+		<scenario name="data_y_rar" description="LTE µ¥ÀÌÅÍ ÇÑµµ Çã¿ë -> ¼ÒÁø ÀüÈ¯ ÄÉÀÌ½º">
+			<command script="$HOME/simulator/seagull/SKTOCS/T2TING_LTE35/data.data_y_rar.sh trace" 
+			         check="$HOME/simulator/seagull/SKTOCS/T2TING_LTE35/report/data.data_y_rar.res"/> 
+			<command script="$HOME/simulator/seagull/SKTOCS/T2TING_LTE35/_chg_counter_34_n.sh trace" 
+					 check="" display="false" report="false" sleep="2"/>
+		</scenario>
+		<scenario name="data_n_rar" description="LTE µ¥ÀÌÅÍ ÇÑµµ ¼ÒÁø -> Çã¿ë ÀüÈ¯ ÄÉÀÌ½º">
+			<command script="$HOME/simulator/seagull/SKTOCS/T2TING_LTE35/data.data_n_rar.sh trace" 
+			         check="$HOME/simulator/seagull/SKTOCS/T2TING_LTE35/report/data.data_n_rar.res"/> 
+			<command script="$HOME/simulator/seagull/SKTOCS/T2TING_LTE35/_chg_counter_34_y.sh trace" 
+			         check="" display="false" report="false" sleep="2"/>
+		</scenario>
+	</class>
+
+	<class name="ABNORMAL_CASE">
+		<scenario name="data_not_found" description="¹Ì °¡ÀÔ ¹øÈ£ µ¥ÀÌÅÍ È£ ½Ãµµ">
+			<command script="$HOME/simulator/seagull/SKTOCS/T2TING_LTE35/data.data_not_found.sh trace"
+			         check="$HOME/simulator/seagull/SKTOCS/T2TING_LTE35/report/data.data_not_found.res"/>
+		</scenario>
+		<scenario name="data_not_found_null_win_svc_type" 
+		          description="¹Ì °¡ÀÔ ¹øÈ£ µ¥ÀÌÅÍ È£ ½Ãµµ +  Win-Service-Type AVP ¹Ì ¼³Á¤ ÄÉÀÌ½º">
+			<command script="$HOME/simulator/seagull/SKTOCS/T2TING_LTE35/data.data_not_found_null_svc_key.sh trace" 
+			         check="$HOME/simulator/seagull/SKTOCS/T2TING_LTE35/report/data.data_not_found_null_svc_key.res"/>
+		</scenario>
+		<scenario name="invalid_lost_stop" description="°¡ÀÔÀÚ »óÅÂ ºñÁ¤»ó (LOST_STOP)">
+			<command script="$HOME/simulator/seagull/SKTOCS/T2TING_LTE35/data.invalid_lost_stop.sh trace" 
+					 check="$HOME/simulator/seagull/SKTOCS/T2TING_LTE35/report/data.invalid_lost_stop.res"/>
+		</scenario>
+		<scenario name="invalid_tmp_del" description="°¡ÀÔÀÚ »óÅÂ ºñÁ¤»ó (TMP_DEL)">
+			<command script="$HOME/simulator/seagull/SKTOCS/T2TING_LTE35/data.invalid_tmp_del.sh trace" 
+					 check="$HOME/simulator/seagull/SKTOCS/T2TING_LTE35/report/data.invalid_tmp_del.res"/>
+		</scenario>
+		<scenario name="invalid_tmp_stop" description="°¡ÀÔÀÚ »óÅÂ ºñÁ¤»ó (TMP_STOP)">
+			<command script="$HOME/simulator/seagull/SKTOCS/T2TING_LTE35/data.invalid_tmp_stop.sh trace" 
+					 check="$HOME/simulator/seagull/SKTOCS/T2TING_LTE35/report/data.invalid_tmp_stop.res"/>
+		</scenario>
+		<scenario name="invalid_user_stop" description="°¡ÀÔÀÚ »óÅÂ ºñÁ¤»ó (USER_STOP)">
+			<command script="$HOME/simulator/seagull/SKTOCS/T2TING_LTE35/data.invalid_user_stop.sh trace" 
+					 check="$HOME/simulator/seagull/SKTOCS/T2TING_LTE35/report/data.invalid_user_stop.res"/>
+		</scenario>
+		<scenario name="invalid_win_svc_type" description="°¡ÀÔÀÚ ¿ä±ÝÁ¦¿Í Win-Service-Type ¿¡ ´ëÇÑ ¿ä±ÝÁ¦ ºÒÀÏÄ¡">
+			<command script="$HOME/simulator/seagull/SKTOCS/T2TING_LTE35/data.invalid_win_svc_type.sh trace" 
+					 check="$HOME/simulator/seagull/SKTOCS/T2TING_LTE35/report/data.invalid_win_svc_type.res"/>
+		</scenario>
+		<scenario name="win_svc_type_not_found" description="¹Ì µî·Ï Win-Service-Type AVP·Î µ¥ÀÌÅÍ È£ ½Ãµµ"> 
+			<command script="$HOME/simulator/seagull/SKTOCS/T2TING_LTE35/data.win_svc_type_not_found.sh trace" 
+			         check="$HOME/simulator/seagull/SKTOCS/T2TING_LTE35/report/data.win_svc_type_not_found.res"/>
+		</scenario>
+	</class>
+	<class name="PKG_R412">
+		<scenario name="data_y_qos" description="LTE µ¥ÀÌÅÍ ÇÑµµ Çã¿ë ÄÉÀÌ½º (QoS Á¦¾î ºÎ°¡¼­ºñ½º °¡ÀÔ, DataYN - N)">
+			<command script="$HOME/simulator/seagull/SKTOCS/T2TING_LTE35/data.data_y_qos.sh trace"
+					 check="$HOME/simulator/seagull/SKTOCS/T2TING_LTE35/report/data.data_y_qos.res"/>
+		</scenario>
+		<scenario name="data_n_block_qos" description="LTE µ¥ÀÌÅÍ ÇÑµµ Â÷´Ü ÄÉÀÌ½º (µ¥ÀÌÅÍ Â÷´Ü ºÎ°¡¼­ºñ½º, QoS Á¦¾î ºÎ°¡¼­ºñ½º °¡ÀÔ)">
+			<command script="$HOME/simulator/seagull/SKTOCS/T2TING_LTE35/data.data_n_block_qos.sh trace" 
+			         check="$HOME/simulator/seagull/SKTOCS/T2TING_LTE35/report/data.data_n_block_qos.res"/>
+		</scenario>
+	</class>
+</scenarios>

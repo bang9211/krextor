@@ -1,0 +1,74 @@
+SubDir TOP src simcmd ;
+
+SubDirHdrs $(UALIB_SRC_HOME)/include ;
+SubDirHdrs $(UXLIB_SRC_HOME)/include ;
+SubDirHdrs $(UXCUTOR_SRC_HOME)/include ;
+
+LIB_NAME = libsimcmd ;
+LOCAL_DEF = $(SYS_CCFLAGS) ;
+if $(OS) = LINUX {
+	LOCAL_DEF += -fPIC ;
+}
+
+SRCS = 
+	simcmd
+	simcmd_command
+	simcmd_history
+	simcmd_readchar
+	simcmd_readline
+	simcmd_register
+	simcmd_termios
+	simcmd_util
+	version
+	ipmssim_cmd
+	ipmssim_msg
+	ipmssim_msg_call
+	ipmssim_msg_record
+	ipmssim_msg_conf
+	ipmssim_proc
+	ipmssim_tcpip
+	ipmssim_util
+	cJSON
+	cJSON_Utils
+	../../../eipmsib/src/skb_msg
+    ../../../eipmsib/src/uhash
+    ../../../eipmsib/src/clicktocall_req
+    ../../../eipmsib/src/clicktocall_rsp
+    ../../../eipmsib/src/clicktocall_rpt
+    ../../../eipmsib/src/clicktocallrecording_req
+    ../../../eipmsib/src/clicktocallrecording_rsp
+    ../../../eipmsib/src/clicktocallrecording_rpt
+    ../../../eipmsib/src/clicktoconference_req
+    ../../../eipmsib/src/clicktoconference_rsp
+    ../../../eipmsib/src/clicktoconference_rpt
+	;
+
+IHDRS = 
+	;
+
+ObjectCcFlags $(SRCS)$(SUFOBJ) : $(LOCAL_DEF) ;
+
+if $(OS) = NONSTOP {
+	if $(CC) = cc {
+		$(ANSI) += -Xa ;
+	} else {
+		ANSI = ;
+	}
+	LIBS += -lsocket ;
+}
+LIBS += -L$(TOP)/lib -L$(UASYS_HOME)/lib -lua_common -lsock_lib -lsys_lib ; # UALIB
+LIBS += -L$(HOME)/simulator/lib -lsimcmd ; # SIMCMD
+LIBS += -lm ; # for math
+
+READLINE_LIBS = -lreadline -lhistory -lcurses $(LIBS) ;
+LINKLIBS on $(LIB_NAME) = $(READLINE_LIBS) ;
+LINKLIBS on $(LIB_NAME)$(SUFSHARED) = $(READLINE_LIBS) ;
+
+Library $(LIB_NAME)$(SUFLIB) : $(SRCS).c ;
+SharedLibraryMain $(LIB_NAME)$(SUFSHARED) : $(LIB_NAME)$(SUFLIB) $(LINKLIBS) ;
+
+Copy $(LIB_NAME)$(SUFSHARED) : $(TOP)/lib ;
+	
+InstallLib $(TOP)/lib : $(LIB_NAME)$(SUFSHARED) ;
+InstallLib $(UASYS_HOME)/lib : $(LIB_NAME)$(SUFSHARED) ;
+InstallAbs $(TOP)/local/simcmd : $(IHDRS).h ;

@@ -1,0 +1,11 @@
+{
+	"returnCode":0,
+	"serviceID":"service0001",
+	"startTime":"YYYYMMDDHH24MISS",
+	"endTime":"YYYYMMDDHH24MISS",
+	"callingNumber":"01011112222",
+	"calledNumber":"01033334444",
+	"isRecorded":0,
+	"recordingFileURL":"uangel.com/testFileURL",
+	"recordingFileName":"testFileName"
+}

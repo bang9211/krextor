@@ -1,0 +1,20 @@
+#ifndef __IPMSSIM_MSG_CALL_H__
+#define __IPMSSIM_MSG_CALL_H__
+
+#include <time.h>
+#include <stdlib.h>
+#include <arpa/inet.h>
+#include <math.h>
+#include <time.h>
+#include <ua_log.h>
+#include "ipmssim_util.h"
+#include "../../../SKBGW/modules/eipmsib/src/skb_msg.h"
+
+int ipmssim_proc_clicktocall_binding_req(int idx, skb_msg_t *rcvmsg, skb_msg_t *sndmsg);
+int ipmssim_proc_clicktocall_start_req(int idx, skb_msg_t *rcvmsg, skb_msg_t *sndmsg);
+int ipmssim_proc_clicktocall_stop_req(int idx, skb_msg_t *rcvmsg, skb_msg_t *sndmsg);
+int ipmssim_proc_clicktocall_startrecording_req(int idx, skb_msg_t *rcvmsg, skb_msg_t *sndmsg);
+int ipmssim_proc_clicktocall_stoprecording_req(int idx, skb_msg_t *rcvmsg, skb_msg_t *sndmsg);
+int ipmssim_proc_clicktocall_service_status_req(int idx, skb_msg_t *rcvmsg, skb_msg_t *sndmsg);
+
+#endif  // #ifndef __IPMSSIM_MSG_CALL_H__

@@ -1,0 +1,720 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<scenarios>
+    <configuration>
+		<!-- È­¸é¿¡ ½Ã³ª¸®¿À ½ÇÇà³»¿ë Ãâ·Â ¿©ºÎ. (on/off) (default:on) -->
+		<define name="display-trace-log" value="on"/>
+		<!-- È­¸é¿¡ ½Ã³ª¸®¿À ½ÇÇà³»¿ë ½Ç½Ã°£ Ãâ·Â ¿©ºÎ. (on/off) (default:off) -->
+		<define name="realtime-display" value="off"/>
+		<!-- ½Ã³ª¸®¿À ¼öÇà °á°ú¸¦ ÆÄÀÏ¿¡ ±â·ÏÇÒÁö ¿©ºÎ. (on/off) (default:off) -->
+		<define name="file-report" value="off"/>
+		<!-- ½Ã³ª¸®¿À ½ÇÇà Å¸ÀÓ¾Æ¿ô ½Ã°£(ÃÊ) (default:0(none)) -->
+		<define name="scenario-timeout" value="0"/>
+		<!-- ½Ã³ª¸®¿À ¼öÇà ÈÄ ´ÙÀ½ ½Ã³ª¸®¿À ¼öÇà Àü À¯ÈÞ ½Ã°£(ÃÊ) (default:0) -->
+		<define name="scenario-interval" value="0"/>
+		<!-- ½Ã³ª¸®¿À Å¸ÀÔ (seagull/sipp/none) (default:none) -->
+		<define name="scenario-type" value="none"/>
+		<!-- MMCD ¿¬°á Á¤º¸ - RMI HOST / PORT (default:null) -->
+		<!--define name="rmi-host" value="sktdb2"/>
+		<define name="rmi-port" value="15003"/-->
+		<!-- Report plugin Á¤º¸ - library name (default:null) -->
+		<!--define name="report-plugin" value="libsimctrl_plugin.so"/-->
+		<!-- ignore list - ÇØ´ç keyword°¡ ÀÖÀ¸¸é ÇØ´ç ¶óÀÎ¿¡¼­ keyword ÀÌÈÄ´Â ºñ±³ÇÏÁö ¾Ê´Â´Ù. -->
+		<define name="ignore-keyword" value="SDP's IP Address: ip address = "/>
+		<define name="ignore-keyword" value="Keyword: Down S port ="/>
+		<define name="ignore-keyword" value="Down R port = "/>
+		<define name="ignore-keyword" value="SUBS S port = "/>
+		<define name="ignore-keyword" value="SUBS R port = "/>
+		<define name="ignore-keyword" value="download S_ch = "/>
+		<define name="ignore-keyword" value="download R_ch = "/>
+		<define name="ignore-keyword" value="SUB_DATA_REQ S_ch = "/>
+		<define name="ignore-keyword" value="SUB_DATA_REQ R_ch = "/>
+		<define name="ignore-keyword" value="TID        : "/>
+		<define name="ignore-keyword" value="DOWN_S_TID = ["/>
+		<define name="ignore-keyword" value="SUB_S_TID = ["/>
+		<define name="ignore-keyword" value="DOWN_R_TID = ["/>
+		<define name="ignore-keyword" value="SUB_R_TID = ["/>
+		<define name="ignore-keyword" value="command : downSSock = "/>
+		<define name="ignore-keyword" value="RCV("/>
+		<!-- replace list - ÇØ´ç keyword°¡ ÀÖÀ¸¸é source¸¦ destinationÀ¸·Î º¯È¯ ÈÄ °á°ú ºñ±³ÇÑ´Ù. -->
+		<!--                src, dst´Â value¿¡ ¼±¾ðµÇ¸ç src + "=>" + dst ÇüÅÂ·á Ç¥±âÇØ¾ßÇÑ´Ù. -->
+	</configuration>
+	<class name="A1">
+		<scenario name="a1_normal" description="°¡ÀÔÀÚ»ý¼º(A1)¾÷¹« - Á¤»ó ÄÉÀÌ½º">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="$HOME/simulator/cssim/ltet42/report/A1/normal.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/A1/normal.y5.res"/>
+		</scenario>
+		<scenario name="a1_not_exist_svcmngid" description="°¡ÀÔÀÚ»ý¼º(A1)¾÷¹« - SVC_MANAGE_ID ¹Ì ¼³Á¤">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 not_exist_svcmngid" check="$HOME/simulator/cssim/ltet42/report/A1/not_exist_svcmngid.res"/>
+		</scenario>
+		<scenario name="a1_exist_subsid" description="°¡ÀÔÀÚ»ý¼º(A1)¾÷¹« - °¡ÀÔÀÚ ÀÌ¹Ì Á¸Àç(subs_id)">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 exist_subsid" check="$HOME/simulator/cssim/ltet42/report/A1/exist_subsid.res"/>
+		</scenario>
+		<scenario name="a1_exist_min" description="°¡ÀÔÀÚ»ý¼º(A1)¾÷¹« - °¡ÀÔÀÚ ÀÌ¹Ì Á¸Àç(min)">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 exist_min" check="$HOME/simulator/cssim/ltet42/report/A1/exist_min.res"/>
+		</scenario>
+		<scenario name="a1_exist_svcmngid" description="°¡ÀÔÀÚ»ý¼º(A1)¾÷¹« - °¡ÀÔÀÚ ÀÌ¹Ì Á¸Àç(svc_manage_id)">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 exist_svcmngid" check="$HOME/simulator/cssim/ltet42/report/A1/exist_svcmngid.res"/>
+		</scenario>
+	</class>
+	<class name="D3">
+		<scenario name="d3_normal" description="¹øÈ£º¯°æ(D3)¾÷¹« - Á¤»ó ÄÉÀÌ½º">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/ltet42/D3/rmi.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 D3 normal" check="$HOME/simulator/cssim/ltet42/report/D3/normal.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 D3 normal2" check="" display="false" report="false"/>
+		</scenario>
+		<scenario name="d3_not_exist" description="¹øÈ£º¯°æ(D3)¾÷¹« - º¯°æ Àü ¹øÈ£ ¹Ì Á¸Àç">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 D3 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 D3 normal" check="$HOME/simulator/cssim/ltet42/report/D3/not_exist.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 D3 normal2" check="" display="false" report="false"/>
+		</scenario>
+		<scenario name="d3_exist" description="¹øÈ£º¯°æ(D3)¾÷¹« - º¯°æÇÒ ¹øÈ£ Á¸Àç">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal2" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal2" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 D3 normal" check="$HOME/simulator/cssim/ltet42/report/D3/exist.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 D3 normal2" check="" display="false" report="false"/>
+		</scenario>
+	</class>
+	<class name="Z1/Z2">
+		<scenario name="z1_normal" description="Á÷±ÇÇØÁö(Z1)¾÷¹« - Á¤»ó ÄÉÀÌ½º">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="$HOME/simulator/cssim/ltet42/report/Z1/normal.res"/>
+		</scenario>
+		<scenario name="z1_not_exist_subsid" description="Á÷±ÇÇØÁö(Z1)¾÷¹« - °¡ÀÔÀÚ ¹Ì Á¸Àç">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 not_exist_subsid" check="$HOME/simulator/cssim/ltet42/report/Z1/not_exist_subsid.res"/>
+		</scenario>
+		<scenario name="z2_normal" description="ÀÏ¹ÝÇØÁö(Z2)¾÷¹« - Á¤»ó ÄÉÀÌ½º">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z2 normal" check="$HOME/simulator/cssim/ltet42/report/Z2/normal.res"/>
+		</scenario>
+		<scenario name="z2_not_exist_subsid" description="ÀÏ¹ÝÇØÁö(Z2)¾÷¹« - °¡ÀÔÀÚ ¹Ì Á¸Àç">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z2 not_exist_subsid" check="$HOME/simulator/cssim/ltet42/report/Z2/not_exist_subsid.res"/>
+		</scenario>
+	</class>
+	<class name="F1/F2">
+		<scenario name="f1_normal" description="Á¤Áö½ÅÃ»(F1)¾÷¹« - Á¤»ó ÄÉÀÌ½º">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 F1 normal" check="$HOME/simulator/cssim/ltet42/report/F1/normal.res"/>
+		</scenario>
+		<scenario name="f1_not_exist_subsid" description="Á¤Áö½ÅÃ»(F1)¾÷¹« - °¡ÀÔÀÚ ¹Ì Á¸Àç">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 F1 not_exist_subsid" check="$HOME/simulator/cssim/ltet42/report/F1/not_exist_subsid.res"/>
+		</scenario>
+		<scenario name="f2_normal" description="Á¤ÁöÇØÁ¦(F2)¾÷¹« - Á¤»ó ÄÉÀÌ½º">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 F1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 F2 normal" check="$HOME/simulator/cssim/ltet42/report/F2/normal.res"/>
+		</scenario>
+		<scenario name="f2_not_exist_subsid" description="ÀÏ¹ÝÇØÁö(F2)¾÷¹« - °¡ÀÔÀÚ ¹Ì Á¸Àç">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 F2 not_exist_subsid" check="$HOME/simulator/cssim/ltet42/report/F2/not_exist_subsid.res"/>
+		</scenario>
+	</class>
+	<class name="Y5">
+		<scenario name="y5_normal_family" description="Á¶È¸(Y5)¾÷¹« - Á¤»ó ÄÉÀÌ½º(¿Â°¡Á·ÇÒÀÎÆ÷ÇÔ)">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/ltet42/Y5/rmi.family.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/Y5/normal.family.res"/>
+	 	</scenario>
+		<scenario name="y5_normal_fmfree" description="Á¶È¸(Y5)¾÷¹« - Á¤»ó ÄÉÀÌ½º(¿Â°¡Á·ÇÁ¸®Æ÷ÇÔ)">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/ltet42/Y5/rmi.fmfree.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/Y5/normal.fmfree.res"/>
+	 	</scenario>
+		<scenario name="y5_not_exist_subsid" description="Á¶È¸(Y5)¾÷¹« - °¡ÀÔÀÚ ¾øÀ½">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 not_exist_subsid" check="$HOME/simulator/cssim/ltet42/report/Y5/not_exist_subsid.res"/>
+		</scenario>
+<!-- ÆÐÄ¡ ÀÌÈÄ È®ÀÎ.
+		<scenario name="y5_mismatch_svccode" description="Á¶È¸(Y5)¾÷¹« - °¡ÀÔÀÚÀÇ ¿ä±ÝÁ¦¿Í Àü¹®ÀÇ SVCCODE ºÒÀÏÄ¡">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 mismatch_svccode" check="$HOME/simulator/cssim/ltet42/report/Y5/mismatch_svcode.res"/>
+		</scenario>
+-->
+	</class>
+	<class name="G1"> 
+		<scenario name="g1_normal_new" description="¿ä±ÝÁ¦º¯°æ(G1)¾÷¹« - Á¤»ó ÄÉÀÌ½º(ÀÏ¹Ý->Áö´É¸Á)"> 
+			<command script="$HOME/simulator/cssim/ltet42/G1/rmi.del.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 G1 normal_new" check="$HOME/simulator/cssim/ltet42/report/G1/normal_new.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/G1/normal_new.y5.res"/>
+		</scenario>
+		<scenario name="g1_normal_bye" description="¿ä±ÝÁ¦º¯°æ(G1)¾÷¹« - Á¤»ó ÄÉÀÌ½º(Áö´É¸Á->ÀÏ¹Ý)"> 
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 G1 normal_bye" check="$HOME/simulator/cssim/ltet42/report/G1/normal_bye.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/G1/normal_bye.y5.res"/>
+		</scenario>
+		<scenario name="g1_normal_same" description="¿ä±ÝÁ¦º¯°æ(G1)¾÷¹« - Á¤»ó ÄÉÀÌ½º(Áö´É¸Á->Áö´É¸Á(µ¿ÀÏDB))"> 
+			<command script="$HOME/simulator/cssim/ltet42/G1/rmi.add.L1.family.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 G1 normal_same" check="$HOME/simulator/cssim/ltet42/report/G1/normal_same.family.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/G1/normal_same.y5.family.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/ltet42/G1/rmi.add.L1.fmfree.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 G1 normal_same" check="$HOME/simulator/cssim/ltet42/report/G1/normal_same.fmfree.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/G1/normal_same.y5.fmfree.res"/>
+		</scenario>
+		<scenario name="g1_normal_other" description="¿ä±ÝÁ¦º¯°æ(G1)¾÷¹« - Á¤»ó ÄÉÀÌ½º(Áö´É¸Á->Áö´É¸Á(´Ù¸¥DB))"> 
+			<command script="$HOME/simulator/cssim/ltet42/G1/rmi.del.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/ltet42/G1/rmi2.add.T4.family.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 G1 normal_other" check="$HOME/simulator/cssim/ltet42/report/G1/normal_other.family.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/G1/normal_other.y5.family.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/ltet42/G1/rmi.del.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/ltet42/G1/rmi2.add.T4.fmfree.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 G1 normal_other" check="$HOME/simulator/cssim/ltet42/report/G1/normal_other.fmfree.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/G1/normal_other.y5.fmfree.res"/>
+		</scenario>
+		<scenario name="g1_not_exist_svcmngid" description="¿ä±ÝÁ¦º¯°æ(G1)¾÷¹« - SVC_MANAGE_ID ¹Ì ¼³Á¤">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 G1 not_exist_svcmngid" check="$HOME/simulator/cssim/ltet42/report/G1/not_exist_svcmngid.res"/>
+		</scenario>
+		<scenario name="g1_not_exist_subsid_bye" description="¿ä±ÝÁ¦º¯°æ(G1)¾÷¹« - °¡ÀÔÀÚ ¹Ì Á¸Àç(Áö´É¸Á->ÀÏ¹Ý)">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 G1 not_exist_subsid_bye" check="$HOME/simulator/cssim/ltet42/report/G1/not_exist_subsid_bye.res"/>
+		</scenario>
+		<scenario name="g1_not_exist_subsid_same" description="¿ä±ÝÁ¦º¯°æ(G1)¾÷¹« - °¡ÀÔÀÚ ¹Ì Á¸Àç(Áö´É¸Á->Áö´É¸Á(µ¿ÀÏDB))">
+			<command script="$HOME/simulator/cssim/ltet42/G1/rmi.del.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 G1 normal_same" check="$HOME/simulator/cssim/ltet42/report/G1/not_exist_subsid_same.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/G1/not_exist_subsid_same.y5.res"/>
+		</scenario>
+		<scenario name="g1_not_exist_subsid_other" description="¿ä±ÝÁ¦º¯°æ(G1)¾÷¹« - °¡ÀÔÀÚ ¹Ì Á¸Àç(Áö´É¸Á->Áö´É¸Á(´Ù¸¥DB))">
+			<command script="$HOME/simulator/cssim/ltet42/G1/rmi.del.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/ltet42/G1/rmi2.del.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 G1 normal_other" check="$HOME/simulator/cssim/ltet42/report/G1/not_exist_subsid_other.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/G1/not_exist_subsid_other.y5.res"/>
+		</scenario>
+		<scenario name="g1_exist_subsid" description="¿ä±ÝÁ¦º¯°æ(G1)¾÷¹« - °¡ÀÔÀÚ ÀÌ¹Ì Á¸Àç">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 G1 normal_other" check="$HOME/simulator/cssim/ltet42/report/G1/exist_subsid_other.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 G1 normal_same" check="$HOME/simulator/cssim/ltet42/report/G1/exist_subsid_same.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/G1/exist_subsid_same.y5.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 G1 normal_new" check="$HOME/simulator/cssim/ltet42/report/G1/exist_subsid_new.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/G1/exist_subsid_new.y5.res"/>
+		</scenario>
+	</class>
+	<class name="M1"> 
+		<scenario name="m1_normal_new" description="ÀÏ¹Ý¸íÀÇº¯°æ(M1)¾÷¹« - Á¤»ó ÄÉÀÌ½º(ÀÏ¹Ý->Áö´É¸Á)"> 
+			<command script="$HOME/simulator/cssim/ltet42/M1/rmi.del.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 M1 normal_new" check="$HOME/simulator/cssim/ltet42/report/M1/normal_new.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/M1/normal_new.y5.res"/>
+		</scenario>
+		<scenario name="m1_normal_bye" description="ÀÏ¹Ý¸íÀÇº¯°æ(M1)¾÷¹« - Á¤»ó ÄÉÀÌ½º(Áö´É¸Á->ÀÏ¹Ý)"> 
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 M1 normal_bye" check="$HOME/simulator/cssim/ltet42/report/M1/normal_bye.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/M1/normal_bye.y5.res"/>
+		</scenario>
+		<scenario name="m1_normal_same" description="ÀÏ¹Ý¸íÀÇº¯°æ(M1)¾÷¹« - Á¤»ó ÄÉÀÌ½º(Áö´É¸Á->Áö´É¸Á(µ¿ÀÏDB))"> 
+			<command script="$HOME/simulator/cssim/ltet42/M1/rmi.add.L1.family.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 M1 normal_same" check="$HOME/simulator/cssim/ltet42/report/M1/normal_same.family.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/M1/normal_same.y5.family.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/ltet42/M1/rmi.add.L1.fmfree.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 M1 normal_same" check="$HOME/simulator/cssim/ltet42/report/M1/normal_same.fmfree.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/M1/normal_same.y5.fmfree.res"/>
+		</scenario>
+		<scenario name="m1_normal_other" description="ÀÏ¹Ý¸íÀÇº¯°æ(M1)¾÷¹« - Á¤»ó ÄÉÀÌ½º(Áö´É¸Á->Áö´É¸Á(´Ù¸¥DB))"> 
+			<command script="$HOME/simulator/cssim/ltet42/M1/rmi.del.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/ltet42/M1/rmi2.add.T4.family.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 M1 normal_other" check="$HOME/simulator/cssim/ltet42/report/M1/normal_other.family.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/M1/normal_other.y5.family.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/ltet42/M1/rmi.del.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/ltet42/M1/rmi2.add.T4.fmfree.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 M1 normal_other" check="$HOME/simulator/cssim/ltet42/report/M1/normal_other.fmfree.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/M1/normal_other.y5.fmfree.res"/>
+		</scenario>
+		<scenario name="m1_not_exist_svcmngid" description="ÀÏ¹Ý¸íÀÇº¯°æ(M1)¾÷¹« - SVC_MANAGE_ID ¹Ì ¼³Á¤">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 M1 not_exist_svcmngid" check="$HOME/simulator/cssim/ltet42/report/M1/not_exist_svcmngid.res"/>
+		</scenario>
+		<scenario name="m1_not_exist_subsid_bye" description="ÀÏ¹Ý¸íÀÇº¯°æ(M1)¾÷¹« - °¡ÀÔÀÚ ¹Ì Á¸Àç(Áö´É¸Á->ÀÏ¹Ý)">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 M1 not_exist_subsid_bye" check="$HOME/simulator/cssim/ltet42/report/M1/not_exist_subsid_bye.res"/>
+		</scenario>
+		<scenario name="m1_not_exist_subsid_same" description="ÀÏ¹Ý¸íÀÇº¯°æ(M1)¾÷¹« - °¡ÀÔÀÚ ¹Ì Á¸Àç(Áö´É¸Á->Áö´É¸Á(µ¿ÀÏDB))">
+			<command script="$HOME/simulator/cssim/ltet42/M1/rmi.del.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 M1 normal_same" check="$HOME/simulator/cssim/ltet42/report/M1/not_exist_subsid_same.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/M1/not_exist_subsid_same.y5.res"/>
+		</scenario>
+		<scenario name="m1_not_exist_subsid_other" description="ÀÏ¹Ý¸íÀÇº¯°æ(M1)¾÷¹« - °¡ÀÔÀÚ ¹Ì Á¸Àç(Áö´É¸Á->Áö´É¸Á(´Ù¸¥DB))">
+			<command script="$HOME/simulator/cssim/ltet42/M1/rmi.del.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/ltet42/M1/rmi2.del.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 M1 normal_other" check="$HOME/simulator/cssim/ltet42/report/M1/not_exist_subsid_other.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/M1/not_exist_subsid_other.y5.res"/>
+		</scenario>
+		<scenario name="m1_exist_subsid" description="ÀÏ¹Ý¸íÀÇº¯°æ(M1)¾÷¹« - °¡ÀÔÀÚ ÀÌ¹Ì Á¸Àç">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 M1 normal_other" check="$HOME/simulator/cssim/ltet42/report/M1/exist_subsid_other.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 M1 normal_same" check="$HOME/simulator/cssim/ltet42/report/M1/exist_subsid_same.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/M1/exist_subsid_same.y5.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 M1 normal_new" check="$HOME/simulator/cssim/ltet42/report/M1/exist_subsid_new.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/M1/exist_subsid_new.y5.res"/>
+		</scenario>
+	</class>
+	<class name="A5"> 
+		<scenario name="a5_normal_new" description="Á¤»êÈÄ¸íÀÇº¯°æ(A5)¾÷¹« - Á¤»ó ÄÉÀÌ½º(ÀÏ¹Ý->Áö´É¸Á)"> 
+			<command script="$HOME/simulator/cssim/ltet42/A5/rmi.del.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A5 normal_new"
+					 check="$HOME/simulator/cssim/ltet42/report/A5/normal_new.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/A5/normal_new.y5.res"/>
+		</scenario>
+		<scenario name="a5_normal_bye" description="Á¤»êÈÄ¸íÀÇº¯°æ(A5)¾÷¹« - Á¤»ó ÄÉÀÌ½º(Áö´É¸Á->ÀÏ¹Ý)"> 
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A5 normal_bye" check="$HOME/simulator/cssim/ltet42/report/A5/normal_bye.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/A5/normal_bye.y5.res"/>
+		</scenario>
+		<scenario name="a5_normal_same" description="Á¤»êÈÄ¸íÀÇº¯°æ(A5)¾÷¹« - Á¤»ó ÄÉÀÌ½º(Áö´É¸Á->Áö´É¸Á(µ¿ÀÏDB))"> 
+			<command script="$HOME/simulator/cssim/ltet42/A5/rmi.add.L1.family.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A5 normal_same" check="$HOME/simulator/cssim/ltet42/report/A5/normal_same.family.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/A5/normal_same.y5.family.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/ltet42/A5/rmi.add.L1.fmfree.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A5 normal_same" check="$HOME/simulator/cssim/ltet42/report/A5/normal_same.fmfree.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/A5/normal_same.y5.fmfree.res"/>
+		</scenario>
+		<scenario name="a5_normal_other" description="Á¤»êÈÄ¸íÀÇº¯°æ(A5)¾÷¹« - Á¤»ó ÄÉÀÌ½º(Áö´É¸Á->Áö´É¸Á(´Ù¸¥DB))"> 
+			<command script="$HOME/simulator/cssim/ltet42/A5/rmi.del.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/ltet42/A5/rmi2.add.T4.family.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A5 normal_other" check="$HOME/simulator/cssim/ltet42/report/A5/normal_other.family.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/A5/normal_other.y5.family.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/ltet42/A5/rmi.del.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/ltet42/A5/rmi2.add.T4.fmfree.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A5 normal_other" check="$HOME/simulator/cssim/ltet42/report/A5/normal_other.fmfree.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/A5/normal_other.y5.fmfree.res"/>
+		</scenario>
+		<scenario name="a5_not_exist_svcmngid" description="Á¤»êÈÄ¸íÀÇº¯°æ(A5)¾÷¹« - SVC_MANAGE_ID ¹Ì ¼³Á¤">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A5 not_exist_svcmngid" check="$HOME/simulator/cssim/ltet42/report/A5/not_exist_svcmngid.res"/>
+		</scenario>
+		<scenario name="a5_not_exist_subsid_bye" description="Á¤»êÈÄ¸íÀÇº¯°æ(A5)¾÷¹« - °¡ÀÔÀÚ ¹Ì Á¸Àç(Áö´É¸Á->ÀÏ¹Ý)">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A5 not_exist_subsid_bye" check="$HOME/simulator/cssim/ltet42/report/A5/not_exist_subsid_bye.res"/>
+		</scenario>
+		<scenario name="a5_not_exist_subsid_same" description="Á¤»êÈÄ¸íÀÇº¯°æ(A5)¾÷¹« - °¡ÀÔÀÚ ¹Ì Á¸Àç(Áö´É¸Á->Áö´É¸Á(µ¿ÀÏDB))">
+			<command script="$HOME/simulator/cssim/ltet42/A5/rmi.del.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A5 normal_same" check="$HOME/simulator/cssim/ltet42/report/A5/not_exist_subsid_same.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/A5/not_exist_subsid_same.y5.res"/>
+		</scenario>
+		<scenario name="a5_not_exist_subsid_other" description="Á¤»êÈÄ¸íÀÇº¯°æ(A5)¾÷¹« - °¡ÀÔÀÚ ¹Ì Á¸Àç(Áö´É¸Á->Áö´É¸Á(´Ù¸¥DB))">
+			<command script="$HOME/simulator/cssim/ltet42/A5/rmi.del.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/ltet42/A5/rmi2.del.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A5 normal_other" check="$HOME/simulator/cssim/ltet42/report/A5/not_exist_subsid_other.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/A5/not_exist_subsid_other.y5.res"/>
+		</scenario>
+		<scenario name="a5_exist_subsid" description="Á¤»êÈÄ¸íÀÇº¯°æ(A5)¾÷¹« - °¡ÀÔÀÚ ÀÌ¹Ì Á¸Àç">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A5 normal_other" check="$HOME/simulator/cssim/ltet42/report/A5/exist_subsid_other.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A5 normal_same" check="$HOME/simulator/cssim/ltet42/report/A5/exist_subsid_same.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/A5/exist_subsid_same.y5.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A5 normal_new" check="$HOME/simulator/cssim/ltet42/report/A5/exist_subsid_new.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/A5/exist_subsid_new.y5.res"/>
+		</scenario>
+	</class>
+	<class name="A5-98"> 
+		<scenario name="a598_normal_new" description="Á¤»êÈÄ¸íÀÇº¯°æÃë¼Ò(A5-98)¾÷¹« - Á¤»ó ÄÉÀÌ½º(ÀÏ¹Ý->Áö´É¸Á)"> 
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A5 normal_bye" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A598 normal_new" check="$HOME/simulator/cssim/ltet42/report/A598/normal_new.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/A598/normal_new.y5.res"/>
+		</scenario>
+		<scenario name="a598_normal_bye" description="Á¤»êÈÄ¸íÀÇº¯°æÃë¼Ò(A5-98)¾÷¹« - Á¤»ó ÄÉÀÌ½º(Áö´É¸Á->ÀÏ¹Ý)"> 
+			<command script="$HOME/simulator/cssim/ltet42/A5/rmi.del.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A5 normal_new" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A598 normal_bye" check="$HOME/simulator/cssim/ltet42/report/A598/normal_bye.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/A598/normal_bye.y5.res"/>
+		</scenario>
+		<scenario name="a598_normal_same" description="Á¤»êÈÄ¸íÀÇº¯°æÃë¼Ò(A5-98)¾÷¹« - Á¤»ó ÄÉÀÌ½º(Áö´É¸Á->Áö´É¸Á(µ¿ÀÏDB))"> 
+			<command script="$HOME/simulator/cssim/ltet42/A5/rmi.add.L6.family.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A5 normal_same2" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A598 normal_same" check="$HOME/simulator/cssim/ltet42/report/A598/normal_same.family.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/A598/normal_same.y5.family.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/ltet42/A5/rmi.add.L6.fmfree.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A5 normal_same2" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A598 normal_same" check="$HOME/simulator/cssim/ltet42/report/A598/normal_same.fmfree.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/A598/normal_same.y5.fmfree.res"/>
+		</scenario>
+		<scenario name="a598_normal_other-1" description="Á¤»êÈÄ¸íÀÇº¯°æÃë¼Ò(A5-98)¾÷¹« - Á¤»ó ÄÉÀÌ½º(Áö´É¸Á->Áö´É¸Á(´Ù¸¥DB))"> 
+			<command script="$HOME/simulator/cssim/ltet42/A5/rmi2.del.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/ltet42/A5/rmi.add.L6.family.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A5 normal_other2" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A598 normal_other" check="$HOME/simulator/cssim/ltet42/report/A598/normal_other.family.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/A598/normal_other.y5.family.res"/>
+		</scenario>
+		<scenario name="a598_normal_other-2" description="Á¤»êÈÄ¸íÀÇº¯°æÃë¼Ò(A5-98)¾÷¹« - Á¤»ó ÄÉÀÌ½º(Áö´É¸Á->Áö´É¸Á(´Ù¸¥DB))"> 
+			<command script="$HOME/simulator/cssim/ltet42/A5/rmi2.del.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/ltet42/A5/rmi.add.L6.fmfree.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A5 normal_other2" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A598 normal_other" check="$HOME/simulator/cssim/ltet42/report/A598/normal_other.fmfree.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/A598/normal_other.y5.fmfree.res"/>
+		</scenario>
+		<scenario name="a598_not_exist_subsid_bye" description="Á¤»êÈÄ¸íÀÇº¯°æÃë¼Ò(A5-98)¾÷¹« - °¡ÀÔÀÚ ¹Ì Á¸Àç(Áö´É¸Á->ÀÏ¹Ý)">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A598 not_exist_mdn_bye" check="$HOME/simulator/cssim/ltet42/report/A598/not_exist_mdn_bye.res"/>
+		</scenario>
+		<scenario name="a598_not_exist_subsid_same" description="Á¤»êÈÄ¸íÀÇº¯°æÃë¼Ò(A5-98)¾÷¹« - °¡ÀÔÀÚ ¹Ì Á¸Àç(Áö´É¸Á->Áö´É¸Á(µ¿ÀÏDB))">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A598 not_exist_mdn_same" check="$HOME/simulator/cssim/ltet42/report/A598/not_exist_mdn_same.res"/>
+		</scenario>
+		<scenario name="a598_not_exist_subsid_other" description="Á¤»êÈÄ¸íÀÇº¯°æ(A5-98)¾÷¹« - °¡ÀÔÀÚ ¹Ì Á¸Àç(Áö´É¸Á->Áö´É¸Á(´Ù¸¥DB))">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A598 not_exist_mdn_other" check="$HOME/simulator/cssim/ltet42/report/A598/not_exist_subsid_other.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/A598/not_exist_subsid_other.y5.res" serial="true"/>
+			<command script="rmi -u admin -p 123admin -c 'del-user 01067009999'" check="" display="false" report="false"/>
+		</scenario>
+		<scenario name="a598_exist_subsid_other" description="Á¤»êÈÄ¸íÀÇº¯°æ(A5-98)¾÷¹« - °¡ÀÔÀÚ ÀÌ¹Ì Á¸Àç(Áö´É¸Á->Áö´É¸Á(´Ù¸¥DB))">
+			<command script="$HOME/simulator/cssim/ltet42/A5/rmi2.del.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/ltet42/A5/rmi.add.L6.family.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A5 normal_other2" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A598 normal_other" check="$HOME/simulator/cssim/ltet42/report/A598/exist_subsid_other.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/A598/exist_subsid_other.y5.res"/>
+		</scenario>
+		<scenario name="a598_exist_subsid_new" description="Á¤»êÈÄ¸íÀÇº¯°æ(A5-98)¾÷¹« - °¡ÀÔÀÚ ÀÌ¹Ì Á¸Àç(ÀÏ¹Ý->Áö´É¸Á)">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A5 normal_bye" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A598 normal_bye" check="$HOME/simulator/cssim/ltet42/report/A598/exist_subsid_new.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/A598/exist_subsid_new.y5.res"/>
+		</scenario>
+	</class>
+	<class name="M2">
+		<scenario name="m2_normal" description="¿ä±ÝÁ¦Á¤º¸º¯°æ(M2)¾÷¹« - Á¤»ó ÄÉÀÌ½º"> 
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/ltet42/M2/rmi.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 M2 normal" check="$HOME/simulator/cssim/ltet42/report/M2/normal.res"/> 
+		</scenario>
+		<scenario name="m2_not_exist_subsid" description="¿ä±ÝÁ¦Á¤º¸º¯°æ(M2)¾÷¹« - °¡ÀÔÀÚ ¹Ì Á¸Àç"> 
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 M2 not_exist_subsid" check="$HOME/simulator/cssim/ltet42/report/M2/not_exist_subsid.res"/>
+		</scenario>
+	</class>
+	<class name="I2/I3"> 
+		<scenario name="i2_normal" description="ºÎ°¡¼­ºñ½º½ÅÃ»(I2)¾÷¹« - Á¤»óÄÉÀÌ½º">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 I2 normal_svc_all" check="$HOME/simulator/cssim/ltet42/report/I2/normal_svc_all.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/I2/normal_svc_all.y5.res"/>
+		</scenario>
+		<scenario name="i2_not_exist_subsid" description="ºÎ°¡¼­ºñ½º½ÅÃ»(I2)¾÷¹« - °¡ÀÔÀÚ ¹Ì Á¸Àç">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 I2 not_exist_subsid" check="$HOME/simulator/cssim/ltet42/report/I2/not_exist_subsid.res"/>
+		</scenario>
+		<scenario name="i2_exist_vas" description="ºÎ°¡¼­ºñ½º½ÅÃ»(I2)¾÷¹« - ºÎ°¡¼­ºñ½º ±â °¡ÀÔ">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 I2 exist_vas" check="$HOME/simulator/cssim/ltet42/report/I2/exist_vas.res"/>
+		</scenario>
+		<scenario name="i2_normal_data_n_qos" description="ºÎ°¡¼­ºñ½º½ÅÃµ(I2)¾÷¹« - Á¤»óÄÉÀÌ½º, DataYN - NÀÌ°í, QoSºÎ°¡¼­ºñ½º °¡ÀÔ ATM(Recharge), RARÀü¼Û">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/ltet42/I2/rmi.dataN.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 I2 normal_svc_all" check="$HOME/simulator/cssim/ltet42/report/I2/normal_data_n_qos.res"/>
+		</scenario>
+		<scenario name="i3_normal" description="ºÎ°¡¼­ºñ½ºÇØÁ¦(I3)¾÷¹« - Á¤»óÄÉÀÌ½º">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 I2 normal_svc_all" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 I3 normal_svc_all" check="$HOME/simulator/cssim/ltet42/report/I3/normal_svc_all.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/I3/normal_svc_all.y5.res"/>
+		</scenario>
+		<scenario name="i3_not_exist_subsid" description="ºÎ°¡¼­ºñ½ºÇØÁ¦(I3)¾÷¹« - °¡ÀÔÀÚ ¹Ì Á¸Àç">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 I3 not_exist_subsid" check="$HOME/simulator/cssim/ltet42/report/I3/not_exist_subsid.res"/>
+		</scenario>
+		<scenario name="i3_not_exist_vas" description="ºÎ°¡¼­ºñ½ºÇØÁ¦(I3)¾÷¹« - ºÎ°¡¼­ºñ½º ¹Ì °¡ÀÔ">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 I2 normal_svc_all" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 I3 normal_svc_all" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 I3 normal" check="$HOME/simulator/cssim/ltet42/report/I3/not_exist_vas.res"/>
+		</scenario>
+		<scenario name="i3_normal_data_n_qos" description="ºÎ°¡¼­ºñ½ºÇØÁö(I3)¾÷¹« - Á¤»óÄÉÀÌ½º, DataYN - NÀÌ°í, QoSºÎ°¡¼­ºñ½º ÇØÁö ATM(Exhaust), RARÀü¼Û">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 I2 normal_svc_all" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/ltet42/I3/rmi.dataN.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 I3 normal_svc_all" check="$HOME/simulator/cssim/ltet42/report/I3/normal_dasta_n_qos.res"/>
+		</scenario>
+	</class>
+	<class name="C1/U1"> 
+		<scenario name="c1_normal" description="±â±âº¯°æ(C1)¾÷¹« - Á¤»óÄÉÀÌ½º">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 C1 normal" check="$HOME/simulator/cssim/ltet42/report/C1/normal.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/C1/normal.y5.res"/>
+		</scenario>
+		<scenario name="c1_not_exist_subsid" description="±â±âº¯°æ(C1)¾÷¹« - °¡ÀÔÀÚ ¹Ì Á¸Àç">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 C1 not_exist_subsid" check="$HOME/simulator/cssim/ltet42/report/C1/not_exist_subsid.res"/>	
+		</scenario>
+		<scenario name="u1_normal" description="USIMº¯°æ(U1)¾÷¹« - Á¤»óÄÉÀÌ½º">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 U1 normal" check="$HOME/simulator/cssim/ltet42/report/U1/normal.res"/>
+		</scenario>
+		<scenario name="u1_not_exist_subsid" description="USIMº¯°æ(U1)¾÷¹« - °¡ÀÔÀÚ ¹Ì Á¸Àç">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 U1 not_exist_subsid" check="$HOME/simulator/cssim/ltet42/report/U1/not_exist_subsid.res"/>
+		</scenario>
+	</class>
+	<class name="M4"> 
+		<scenario name="m4_normal_add_balance" description="ÇÑµµÃæÀü/Ãë¼Ò(M4)¾÷¹« - Á¤»ó ÃæÀü ÄÉÀÌ½º(À¯·á°èÁ¤)"> 
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 M4 add_balance" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 M4 add_balance" check="$HOME/simulator/cssim/ltet42/report/M4/add_balance.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/M4/add_balance.y5.res"/>
+		</scenario>
+		<scenario name="m4_normal_add_msgcall" description="ÇÑµµÃæÀü/Ãë¼Ò(M4)¾÷¹« - Á¤»ó ÃæÀü ÄÉÀÌ½º(¸Þ½ÃÁöÄÝ)"> 
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 I2 normal_msgcall" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 M4 add_msgcall" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 M4 add_msgcall" check="$HOME/simulator/cssim/ltet42/report/M4/add_msgcall.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/M4/add_msgcall.y5.res"/>
+		</scenario>
+		<scenario name="m4_normal_add_auto" description="ÇÑµµÃæÀü/Ãë¼Ò(M4)¾÷¹« - Á¤»ó ÃæÀü ÄÉÀÌ½º(ÀÚµ¿ÃæÀü)"> 
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 M4 add_auto" check="$HOME/simulator/cssim/ltet42/report/M4/add_auto.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/M4/add_auto.y5.res"/>
+		</scenario>
+		<scenario name="m4_normal_del_balance" description="ÇÑµµÃæÀü/Ãë¼Ò(M4)¾÷¹« - Á¤»ó ÃæÀü ÄÉÀÌ½º(À¯·á°èÁ¤)"> 
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 M4 add_balance" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 M4 add_balance" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 M4 del_balance" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 M4 del_balance" check="$HOME/simulator/cssim/ltet42/report/M4/del_balance.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/M4/del_balance.y5.res"/>
+		</scenario>
+		<scenario name="m4_normal_del_msgcall" description="ÇÑµµÃæÀü/Ãë¼Ò(M4)¾÷¹« - Á¤»ó ÃæÀü ÄÉÀÌ½º(¸Þ½ÃÁöÄÝ)"> 
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 I2 normal_msgcall" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 M4 add_msgcall" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 M4 add_msgcall" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 M4 del_msgcall" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 M4 del_msgcall" check="$HOME/simulator/cssim/ltet42/report/M4/del_msgcall.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/M4/del_msgcall.y5.res"/>
+		</scenario>
+		<scenario name="m4_normal_del_auto" description="ÇÑµµÃæÀü/Ãë¼Ò(M4)¾÷¹« - Á¤»ó ÃæÀü ÄÉÀÌ½º(ÀÚµ¿ÃæÀü)"> 
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 M4 add_auto" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 M4 del_auto" check="$HOME/simulator/cssim/ltet42/report/M4/del_auto.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/M4/del_auto.y5.res"/>
+		</scenario>
+		<scenario name="m4_not_exist_subsid" description="ÇÑµµÃæÀü/Ãë¼Ò(M4)¾÷¹« - °¡ÀÔÀÚ ¹Ì Á¸Àç">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 M4 not_exist_subsid" check="$HOME/simulator/cssim/ltet42/report/M4/not_exist_subsid.res"/>
+		</scenario>
+		<scenario name="m4_not_exist_msgcall" description="ÇÑµµÃæÀü/Ãë¼Ò(M4)¾÷¹« - ¸Þ½ÃÁöÄÝ ºÎ°¡¼­ºñ½º ¹Ì °¡ÀÔ">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 M4 add_msgcall" check="$HOME/simulator/cssim/ltet42/report/M4/not_exist_msgcall_add.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 M4 del_msgcall" check="$HOME/simulator/cssim/ltet42/report/M4/not_exist_msgcall_del.res"/>
+		</scenario>
+	</class>
+	<class name="M6/M7"> 
+		<scenario name="m6_normal" description="ÃæÀü¹æÁö(M6)¾÷¹« - Á¤»óÄÉÀÌ½º">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 M4 add_auto" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 M6 normal" check="$HOME/simulator/cssim/ltet42/report/M6/normal.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/M6/normal.y5.res"/>
+		</scenario>
+		<scenario name="m6_not_exist_subsid" description="ÃæÀü¹æÁö(M6)¾÷¹« - °¡ÀÔÀÚ ¹Ì Á¸Àç">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 M6 not_exist_subsid" check="$HOME/simulator/cssim/ltet42/report/M6/not_exist_subsid.res"/>
+		</scenario>
+		<scenario name="m7_normal" description="ÃæÀü¹æÁöÇØÁ¦(M7)¾÷¹« - Á¤»óÄÉÀÌ½º">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 M6 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 M7 normal" check="$HOME/simulator/cssim/ltet42/report/M7/normal.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/M7/normal.y5.res"/>
+		</scenario>
+		<scenario name="m7_not_exist_subsid" description="ÃæÀü¹æÁö(M7)¾÷¹« - °¡ÀÔÀÚ ¹Ì Á¸Àç">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 M7 not_exist_subsid" check="$HOME/simulator/cssim/ltet42/report/M7/not_exist_subsid.res"/>
+		</scenario>
+	</class>
+	<class name="D7"> 
+		<scenario name="d7_normal" description="ÁöÁ¤¹øÈ£º¯°æ(D7)¾÷¹« - Á¤»óÄÉÀÌ½º">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 D7 normal_not_dedi" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 D7 normal" check="$HOME/simulator/cssim/ltet42/report/D7/normal.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/D7/normal.y5.res"/>
+
+		</scenario>
+		<scenario name="d7_normal_not_dedi" description="ÁöÁ¤¹øÈ£º¯°æ(D7)¾÷¹« - Á¤»óÄÉÀÌ½º(ÁöÁ¤¹øÈ£¹Ì¼³Á¤)">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 D7 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 D7 normal_not_dedi" check="$HOME/simulator/cssim/ltet42/report/D7/normal_not_dedi.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/D7/normal_not_dedi.y5.res"/>
+		</scenario>
+		<scenario name="d7_not_exist_subsid" description="ÁöÁ¤¹øÈ£º¯°æ(D7)¾÷¹« - °¡ÀÔÀÚ ¹Ì Á¸Àç">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 D7 not_exist_subsid" check="$HOME/simulator/cssim/ltet42/report/D7/not_exist_subsid.res"/>
+		</scenario>
+		<scenario name="d7_normal_not_vas" description="ÁöÁ¤¹øÈ£º¯°æ(D7)¾÷¹« - Á¤»óÄÉÀÌ½º(ºÎ°¡¼­ºñ½º ¹Ì ¼³Á¤)">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 D7 normal_not_vas" check="$HOME/simulator/cssim/ltet42/report/D7/normal_not_vas.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/D7/normal_not_vas.y5.res"/>
+		</scenario>
+	</class>
+	<class name="H2"> 
+		<scenario name="h2_normal_add" description="ÃæÀü¼±¹°/Ãë¼Ò(H2)¾÷¹« - Á¤»ó Gift ÃæÀü">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/ltet42/H2/rmi.del.gift.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 H2 add" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 H2 add" check="$HOME/simulator/cssim/ltet42/report/H2/normal_add.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/H2/normal_add.y5.res"/>
+		</scenario>
+		<scenario name="h2_normal_del" description="ÃæÀü¼±¹°/Ãë¼Ò(H2)¾÷¹« - Á¤»ó Gift ÃæÀüÃë¼Ò">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/ltet42/H2/rmi.del.gift.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 H2 add" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 H2 add" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 H2 del" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 H2 del" check="$HOME/simulator/cssim/ltet42/report/H2/normal_del.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/H2/normal_del.y5.res"/>
+		</scenario>
+		<scenario name="h2_add_not_exist_subsid" description="ÃæÀü¼±¹°/Ãë¼Ò(H2)¾÷¹« - ¹Ì°¡ÀÔÀÚ Gift ÃæÀü">
+			<command script="$HOME/simulator/cssim/ltet42/H2/rmi.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 H2 add" check="$HOME/simulator/cssim/ltet42/report/H2/add_not_exist_subsid.res" serial="true"/>
+		</scenario>
+	</class>
+	<class name="I6/I7/I8"> 
+		<scenario name="i6_normal_family" description="¿Â°¡Á·ÇÒÀÎ°¡ÀÔ(I6)¾÷¹« - Á¤»ó ¿Â°¡Á·ÇÒÀÎ °¡ÀÔ"> 
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 I6 normal_family" check="$HOME/simulator/cssim/ltet42/report/I6/normal_family.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/I6/normal_family.y5.res"/>
+		</scenario>
+		<scenario name="i6_normal_fmfree" description="¿Â°¡Á·ÇÒÀÎ°¡ÀÔ(I6)¾÷¹« - Á¤»ó ¿Â°¡Á·ÇÁ¸® °¡ÀÔ"> 
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 I6 normal_fmfree" check="$HOME/simulator/cssim/ltet42/report/I6/normal_fmfree.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/I6/normal_fmfree.y5.res"/>
+		</scenario>
+		<scenario name="i6_not_exist_subsid" description="¿Â°¡Á·ÇÒÀÎ°¡ÀÔ(I6)¾÷¹« - °¡ÀÔÀÚ ¹Ì Á¸Àç">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 I6 not_exist_subsid" check="$HOME/simulator/cssim/ltet42/report/I6/not_exist_subsid.res"/>
+		</scenario>
+		<scenario name="i6_exist_vas" description="¿Â°¡Á·ÇÒÀÎ°¡ÀÔ(I6)¾÷¹« - ºÎ°¡¼­ºñ½º ±â °¡ÀÔ"> 
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 I6 normal_family" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 I6 normal_family" check="$HOME/simulator/cssim/ltet42/report/I6/exist_vas.res"/>
+		</scenario>
+		<scenario name="i7_normal_family" description="¿Â°¡Á·ÇÒÀÎÇØÁö(I7)¾÷¹« - Á¤»ó ¿Â°¡Á·ÇÒÀÎ ÇØÁö"> 
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 I6 normal_family" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 I7 normal_family" check="$HOME/simulator/cssim/ltet42/report/I7/normal_family.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/I7/normal_family.y5.res"/>
+		</scenario>
+			<scenario name="i7_normal_fmfree" description="¿Â°¡Á·ÇÒÀÎÇØÁö(I7)¾÷¹« - Á¤»ó ¿Â°¡Á·ÇÁ¸® ÇØÁö"> 
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 I6 normal_fmfree" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 I7 normal_fmfree" check="$HOME/simulator/cssim/ltet42/report/I7/normal_fmfree.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/I7/normal_fmfree.y5.res"/>
+		</scenario>
+		<scenario name="i7_not_exist_subsid" description="¿Â°¡Á·ÇÒÀÎÇØÁö(I7)¾÷¹« - °¡ÀÔÀÚ ¹Ì Á¸Àç">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 I7 not_exist_subsid" check="$HOME/simulator/cssim/ltet42/report/I7/not_exist_subsid.res"/>
+		</scenario>
+		<scenario name="i7_not_exist_vas" description="¿Â°¡Á·ÇÒÀÎÇØÁö(I7)¾÷¹« - ºÎ°¡¼­ºñ½º ¹Ì Á¸Àç"> 
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 I7 normal_family" check="$HOME/simulator/cssim/ltet42/report/I7/not_exist_vas.res"/>
+		</scenario>
+		<scenario name="i8_normal_family" description="¿Â°¡Á·ÇÒÀÎ¸â¹öº¯°æ(I8)¾÷¹« - Á¤»ó ¿Â°¡Á·ÇÒÀÎ ¸â¹ö º¯°æ">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 I6 normal_family" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 I8 normal_family" check="$HOME/simulator/cssim/ltet42/report/I8/normal_family.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/I8/normal_family.y5.res"/>
+		</scenario>
+		<scenario name="i8_normal_fmfree" description="¿Â°¡Á·ÇÒÀÎ¸â¹öº¯°æ(I8)¾÷¹« - Á¤»ó ¿Â°¡Á·ÇÁ¸® ¸â¹ö º¯°æ">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 I6 normal_fmfree" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 I8 normal_fmfree" check="$HOME/simulator/cssim/ltet42/report/I8/normal_fmfree.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/I8/normal_fmfree.y5.res"/>
+		</scenario>
+		<scenario name="i8_not_exist_subsid" description="¿Â°¡Á·ÇÒÀÎ¸â¹öº¯°æ(I8)¾÷¹« - °¡ÀÔÀÚ ¹Ì Á¸Àç">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 I8 not_exist_subsid" check="$HOME/simulator/cssim/ltet42/report/I8/not_exist_subsid.res"/>
+		</scenario>
+		<scenario name="i8_not_exist_vas_family" description="¿Â°¡Á·ÇÒÀÎ¸â¹öº¯°æ(I8)¾÷¹« - ºÎ°¡¼­ºñ½º ¹Ì Á¸Àç">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 I6 normal_fmfree" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 I8 normal_family" check="$HOME/simulator/cssim/ltet42/report/I8/not_exist_vas_family.res"/>
+		</scenario>
+		<scenario name="i8_not_exist_vas_fmfree" description="¿Â°¡Á·ÇÒÀÎ¸â¹öº¯°æ(I8)¾÷¹« - ºÎ°¡¼­ºñ½º ¹Ì Á¸Àç">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 I6 normal_family" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 I8 normal_fmfree" check="$HOME/simulator/cssim/ltet42/report/I8/not_exist_vas_fmfree.res"/>
+		</scenario>
+	</class>
+	<class name="J6"> 
+		<scenario name="j6_normal_add" description="FMC°¡ÀÔ/ÇØÁö/º¯°æ(J6)¾÷¹« - Á¤»ó FMC °¡ÀÔ">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 J6 add" check="$HOME/simulator/cssim/ltet42/report/J6/normal_add.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/J6/normal_add.y5.res"/>
+		</scenario>
+		<scenario name="j6_normal_update" description="FMC°¡ÀÔ/ÇØÁö/º¯°æ(J6)¾÷¹« - Á¤»ó FMC º¯°æ">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 J6 add" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 J6 update" check="$HOME/simulator/cssim/ltet42/report/J6/normal_update.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/J6/normal_update.y5.res"/>
+		</scenario>
+		<scenario name="j6_normal_del" description="FMC°¡ÀÔ/ÇØÁö/º¯°æ(J6)¾÷¹« - Á¤»ó FMC ÇØÁö">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 J6 add" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 J6 del" check="$HOME/simulator/cssim/ltet42/report/J6/normal_del.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/J6/normal_del.y5.res"/>
+		</scenario>
+		<scenario name="j6_not_exist_subsid" description="FMC°¡ÀÔ/ÇØÁö/º¯°æ(J6)¾÷¹« - °¡ÀÔÀÚ ¹Ì Á¸Àç">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 J6 not_exist_subsid" check="$HOME/simulator/cssim/ltet42/report/J6/not_exist_subsid.res"/>
+		</scenario>
+		<scenario name="j6_not_exist_vas" description="FMC°¡ÀÔ/ÇØÁö/º¯°æ(J6)¾÷¹« - ºÎ°¡½Ãºñ½º ¹Ì Á¸Àç">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 J6 del" check="$HOME/simulator/cssim/ltet42/report/J6/not_exist_vas.res"/>
+		</scenario>
+	</class>
+	<class name="L1"> 
+		<scenario name="l1_normal" description="µ¥ÀÌÅÍÇÑµµº¯°æ(L1)¾÷¹« -  Á¤»ó ÄÉÀÌ½º">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 L1 normal_15000" check="$HOME/simulator/cssim/ltet42/report/L1/normal.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/L1/normal.y5.res"/>
+		</scenario>
+		<scenario name="l1_normal_next" description="µ¥ÀÌÅÍÇÑµµº¯°æ(L1)¾÷¹« -  Á¤»ó ÄÉÀÌ½º(ÀÌ´Þ¿¡ ÀÌ¹Ì º¯°æÀ» ÇÑ °æ¿ì)">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Z1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 A1 normal" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 L1 normal_15000" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 L1 normal_10000" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 L1 normal_5000" check="$HOME/simulator/cssim/ltet42/report/L1/normal_next.res" serial="true"/>
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 Y5 normal" check="$HOME/simulator/cssim/ltet42/report/L1/normal_next.y5.res"/>
+		</scenario>
+		<scenario name="l1_not_exist_subsid" description="µ¥ÀÌÅÍÇÑµµº¯°æ(L1)¾÷¹« - °¡ÀÔÀÚ ¹Ì Á¸Àç">
+			<command script="$HOME/simulator/cssim/cssim.sh ltet42 L1 not_exist_subsid" check="$HOME/simulator/cssim/ltet42/report/L1/not_exist_subsid"/>
+		</scenario>
+	</class>
+	<!--class name="B1"> </class-->
+</scenarios>

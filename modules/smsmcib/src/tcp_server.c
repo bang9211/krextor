@@ -151,7 +151,7 @@ int tcp_server_handle_svrreq( tcp_server_t *server, uxc_worker_t* worker, upa_tc
 					clicktocall_binding_req_tcp_display(headerLog, (clicktocall_binding_req_tcp_t*)skbmsg->body);
 					msg_size = sizeof(clicktocall_binding_rsp_tcp_t);
 					memcpy(skbmsg->body, &clicktocall_binding_rsp, msg_size);
-					skb_msg_make_header(&skbmsg->header, BIND_ACK, msg_size, &skbmsg->header.requestID);
+					skb_msg_make_header(&skbmsg->header, BIND_ACK, msg_size, &skbmsg->header.serialNumber);
 					msg_size = skbmsg->header.length;
 					// 메시지를 Network byte ordering으로 변경
 					rv = skb_msg_cvt_order_hton3(skbmsg, TCP_CHANNEL_SMS_CLI);
@@ -211,7 +211,7 @@ static int tcp_server_handle_clicktocall_start_req( tcp_server_t *server, uxc_wo
 	strncpy(clicktocall_start_rsp->recordingFileURL, "/test/test", RECORDING_FILE_URL_LEN);
 	strncpy(clicktocall_start_rsp->recordingFileName, "testFileName", RECORDING_FILE_NAME_LEN);
 
-	skb_msg_make_header(&rspMsg.header, DELIVER_ACK, sizeof(clicktocall_start_rsp), &skbmsg->header.requestID);
+	skb_msg_make_header(&rspMsg.header, DELIVER_ACK, sizeof(clicktocall_start_rsp), &skbmsg->header.serialNumber);
 	// skb_msg_display_send_header(&rspMsg.header);
 	skb_msg_get_send_header_display(&rspMsg.header, log);
 	clicktocall_start_rsp_tcp_display(log, clicktocall_start_rsp);
@@ -245,7 +245,7 @@ static int tcp_server_handle_clicktocall_stop_req( tcp_server_t *server, uxc_wor
 	clicktocall_stop_rsp->resultCode = 0;
 	strncpy(clicktocall_stop_rsp->serviceID, "service0001", SERVICE_ID_LEN);
 
-	skb_msg_make_header(&rspMsg.header, STOP_RESPONSE, sizeof(clicktocall_stop_rsp), &skbmsg->header.requestID);
+	skb_msg_make_header(&rspMsg.header, STOP_RESPONSE, sizeof(clicktocall_stop_rsp), &skbmsg->header.serialNumber);
 	// skb_msg_display_send_header(&rspMsg.header);
 	skb_msg_get_send_header_display(&rspMsg.header, log);
 	clicktocall_stop_rsp_tcp_display(log, clicktocall_stop_rsp);
@@ -279,7 +279,7 @@ static int tcp_server_handle_clicktocall_startrecording_req( tcp_server_t *serve
 	strncpy(clicktocall_startrecording_rsp->recordingFileURL, "/test/test", RECORDING_FILE_URL_LEN);
 	strncpy(clicktocall_startrecording_rsp->recordingFileName, "testFileName", RECORDING_FILE_NAME_LEN);
 
-	skb_msg_make_header(&rspMsg.header, START_RECORDING_RESPONSE, sizeof(clicktocall_startrecording_rsp), &skbmsg->header.requestID);
+	skb_msg_make_header(&rspMsg.header, START_RECORDING_RESPONSE, sizeof(clicktocall_startrecording_rsp), &skbmsg->header.serialNumber);
 	// skb_msg_display_send_header(&rspMsg.header);
 	skb_msg_get_send_header_display(&rspMsg.header, log);
 	clicktocall_startrecording_rsp_tcp_display(log, clicktocall_startrecording_rsp);
@@ -311,7 +311,7 @@ static int tcp_server_handle_clicktocall_stoprecording_req( tcp_server_t *server
 	clicktocall_stoprecording_rsp->resultCode = 0;
 	strncpy(clicktocall_stoprecording_rsp->serviceID, "service0001", SERVICE_ID_LEN);
 
-	skb_msg_make_header(&rspMsg.header, STOP_RECORDING_RESPONSE, sizeof(clicktocall_stoprecording_rsp), &skbmsg->header.requestID);
+	skb_msg_make_header(&rspMsg.header, STOP_RECORDING_RESPONSE, sizeof(clicktocall_stoprecording_rsp), &skbmsg->header.serialNumber);
 	// skb_msg_display_send_header(&rspMsg.header);
 	skb_msg_get_send_header_display(&rspMsg.header, log);
 	clicktocall_stoprecording_rsp_tcp_display(log, clicktocall_stoprecording_rsp);

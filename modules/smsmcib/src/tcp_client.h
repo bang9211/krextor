@@ -17,7 +17,7 @@ typedef struct tcp_client_s tcp_client_t;
 struct tcp_client_s {
 	uxc_plugin_t base[1];
 	uxc_xcutor_t *xcutor;
-	eipmsib_conf_t conf[1];
+	smscib_conf_t conf[1];
 	upa_dbif_t *padbif;
 	upa_tcp_t *patcp;
 };
@@ -35,7 +35,7 @@ int  tcp_client_init( tcp_client_t *client, uxc_xcutor_t *xcutor, const char *cf
 void tcp_client_final( tcp_client_t *client);
 
 int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ipcmsg_t *ipcmsg);
-int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpmsg_t *tcpmsg);
+int dbif_forward_smscrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpmsg_t *tcpmsg);
 int tcp_client_send_ipcmsg( tcp_client_t *client, uxc_ipcmsg_t* ipcmsg, int rv);
 
 void *timeout_function();

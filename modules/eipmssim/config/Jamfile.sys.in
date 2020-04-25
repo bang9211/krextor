@@ -1,0 +1,34 @@
+#
+#
+# OS Dependent settings
+# which are filled by autoconf
+#
+#
+
+UA_OS_INFO   = @ua_os_info@ ;
+UA_OS_NAME   = @ua_os_name@ ;
+UA_OS_VER    = @ua_os_version@ ;
+UA_MACH_NAME = @ua_mach_name@ ;
+UA_CPU_NAME  = @ua_cpu_name@ ;
+
+SYS_CC = @CC@ ;
+SYS_CFLAGS = @CFLAGS@ ;
+SYS_CPPFLAGS = @CPPFLAGS@ ;
+SYS_CINCLUDE = @CINCLUDE@ ;
+
+SYS_CXX = @CXX@ ;
+SYS_CXXFLAGS = @CXXFLAGS@ ;
+SYS_CXXINCLUDE = @CXXINCLUDE@ ;
+
+SYS_LINK = @LINKER@ ;
+SYS_LDFLAGS = @LDFLAGS@ ;
+SYS_LIBS = @LIBS@ ;
+
+SYS_SHLINK = @SHLINKER@ ;
+SYS_SUFSHARED = @SUFSHARED@ ;
+SYS_SHLDFLAGS = @SHLDFLAGS@ ;
+SYS_SH_NEEDLIBS_BEGIN = @SH_NEEDLIBS_BEGIN@ ;
+SYS_SH_NEEDLIBS_EACH = @SH_NEEDLIBS_EACH@ ;
+SYS_SH_NEEDLIBS_END = @SH_NEEDLIBS_END@ ;
+
+SYS_EXEMODE = 755 ;

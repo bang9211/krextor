@@ -96,7 +96,7 @@ int tcp_client_init( tcp_client_t *client, uxc_xcutor_t *xcutor, const char* cfi
 
 	client->xcutor = xcutor;
 
-	rv = eipmsib_conf_init( client->conf, client->xcutor, cfile);
+	rv = smscib_conf_init( client->conf, client->xcutor, cfile);
 	if ( rv < eUXC_SUCCESS) return rv;
 
 	client->patcp = (upa_tcp_t*) uxc_xcutor_get_paif( client->xcutor, "PA_TCP");
@@ -122,7 +122,7 @@ void tcp_client_final( tcp_client_t *client)
 int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ipcmsg_t *ipcmsg )
 {
 	int rv = 0;
-	int msg_size, msgId, requestID;
+	int msg_size, msgId, serialNumber;
 	upa_peerkey_t peerkey;
 
 	skb_msg_t skbmsg;
@@ -142,17 +142,34 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 	// IPC에서 DBIF 추출
 	dbif = uxc_ipcmsg_get_dbif(ipcmsg);
 
-	//수신한 DBIF 메시지를 msgID에 따라 TCP로 보낼 eIPMS의 메시지로 변경
-	// ux_log(UXL_INFO, "2.1. Channel clicktocall");
+	//수신한 DBIF 메시지를 msgID에 따라 TCP로 보낼 SMSC의 메시지로 변경
 	peerkey.chnl_idx = 0; // configuration 첫번째 채널
 	peerkey.peer_key = 0; // 채널의 첫번째 PEER 
 
 	switch(msgId) {
 		case DBIF_GW_DELIVER:
-			rv = skb_msg_process_clicktocall_start_req(&skbmsg, dbif, sessionID, gwSessionID);
+			rv = skb_msg_process_deliver_msg(&skbmsg, dbif, sessionID, gwSessionID, &serialNumber);
+			//serialNumber와 sessionID Bind
+			if(!uh_int_put(sn_SID_Map, serialNumber, sessionID)) {
+				ux_log(UXL_CRT, "failed to put to sn_SID_Map : (%d - %s)", serialNumber, sessionID);
+			}
+			//serialNumber와 gwSessionID Bind
+			if(!uh_int_put(sn_GWSID_Map, serialNumber, gwSessionID)) {
+				ux_log(UXL_CRT, "failed to put to sn_GWSID_Map : (%d - %s)", serialNumber, gwSessionID);
+			}
+			//serialNumber와 ipc header Bind
+			memcpy(&ipc_header, &ipcmsg->header, sizeof(uxc_ixpc_t));
+			if(!uh_ipc_put(sn_IPC_Map, serialNumber, &ipc_header)) {
+				ux_log(UXL_CRT, "failed to put to sn_IPC_Map : (%d)", serialNumber);
+			}
+			//serialNumber와 curreunt time(ms) Bind
+			time ( &rawtime );
+			if(!uh_tmt_put(sn_timestamp_Map, serialNumber, rawtime)) {
+				ux_log(UXL_CRT, "failed to put to sn_timestamp_Map : (%d)", serialNumber);
+			}
 			break;
 		case DBIF_GW_REPORT_ACK:
-			rv = skb_msg_process_clicktocall_stop_req(&skbmsg, dbif);
+			rv = skb_msg_process_report_ack_msg(&skbmsg, dbif);
 			break;
 		default:
 			ux_log(UXL_CRT, "unsupported msgId : %d", msgId);
@@ -164,49 +181,29 @@ int tcp_client_forward_gwreq( tcp_client_t *client, uxc_worker_t *worker, uxc_ip
 		return rv;
 	}
 
-	msg_size = skbmsg.header.length;
-	requestID = skbmsg.header.requestID;
+	msg_size = skbmsg.header.length + sizeof(skb_header_t);
 	// ux_log(UXL_CRT, "sending tcp header size : %lu", sizeof(skbmsg.header));
 	// ux_log(UXL_CRT, "sending tcp body size : %lu", msg_size - sizeof(skbmsg.header));
-
-	//requestID와 sessionID Bind
-	if(!uh_int_put(reqID_SID_Map, requestID, sessionID)) {
-		ux_log(UXL_CRT, "failed to put to reqID_SID_Map : (%d - %s)", requestID, sessionID);
-	}
-	//requestID와 gwSessionID Bind
-	if(!uh_int_put(reqID_GWSID_Map, requestID, gwSessionID)) {
-		ux_log(UXL_CRT, "failed to put to reqID_GWSID_Map : (%d - %s)", requestID, gwSessionID);
-	}
-	//requestID와 ipc header Bind
-	memcpy(&ipc_header, &ipcmsg->header, sizeof(uxc_ixpc_t));
-	if(!uh_ipc_put(reqID_IPC_Map, requestID, &ipc_header)) {
-		ux_log(UXL_CRT, "failed to put to reqID_IPC_Map : (%d)", requestID);
-	}
-	//requestID와 curreunt time(ms) Bind
-	time ( &rawtime );
-	if(!uh_tmt_put(reqID_timestamp_Map, requestID, rawtime)) {
-		ux_log(UXL_CRT, "failed to put to reqID_timestamp_Map : (%d)", requestID);
-	}
 	
 	//메시지를 Network byte ordering으로 변경
 	rv = skb_msg_cvt_order_hton(&skbmsg, msgId);
 	if( rv< UX_SUCCESS) {
-		ux_log(UXL_INFO, "failed to skb_msg_cvt_order_hton : %d", requestID);
+		ux_log(UXL_INFO, "failed to skb_msg_cvt_order_hton : %d", msgId);
 		return rv;
 	}
 
 	//TCP Send
 	rv = upa_tcp_send2(_g_client->patcp, &peerkey, &skbmsg, msg_size, 1);
 	if( rv < UX_SUCCESS) {
-		ux_log( UXL_CRT, "failed to upa_tcp_send2 : %d", requestID);
+		ux_log( UXL_CRT, "failed to upa_tcp_send2 : %d", msgId);
 		return -1;
 	}
-	// ux_log( UXL_INFO, "3. Forwarded DBIF to TCP msg. from gw to eIPMS, size=%d, header=%lu + body=%lu", msg_size, sizeof(skb_header_t), msg_size - sizeof(skb_header_t));
-	ux_log( UXL_INFO, " - Forwarded DBIF to TCP msg. from gw to eIPMS, size=%d, header=%lu + body=%lu", msg_size, sizeof(skb_header_t), msg_size - sizeof(skb_header_t));
+	// ux_log( UXL_INFO, "3. Forwarded DBIF to TCP msg. from gw to SMSC, size=%d, header=%lu + body=%lu", msg_size, sizeof(skb_header_t), msg_size - sizeof(skb_header_t));
+	ux_log( UXL_INFO, " - Forwarded DBIF to TCP msg. from gw to SMSC, size=%d, header=%lu + body=%lu", msg_size, sizeof(skb_header_t), msg_size - sizeof(skb_header_t));
 	return UX_SUCCESS;
 }
 
-int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpmsg_t *tcpmsg)
+int dbif_forward_smscrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpmsg_t *tcpmsg)
 {
 	int rv, msgID, mqkey, dstQid = -1;
 	// skb_msg_t *skbmsg;
@@ -214,7 +211,9 @@ int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpms
 	uxc_dbif_t dbif;
 	uxc_ixpc_t *dbif_header;
 	uxc_ipcmsg_t ipcmsg;
-	int msg_size, requestID, status;
+	int msg_size, serialNumber, status;
+	deliver_ack_msg_tcp_t deliver_ack_msg[1];
+	char headerLog[SKB_HEADER_DISPLAY_SIZE];
 
 	// 1. receive skbmsg 
 	// skbmsg = (skb_msg_t *) tcpmsg->netmsg->buffer;
@@ -227,51 +226,27 @@ int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpms
 		return rv;
 	}
 
-	//수신한 메시지가 ALIVE_ACK를 제외하고, response인 경우에만 requestID와 일치하는 requestID가 있는지 확인
-	if (skbmsg->header.messageID != ALIVE_ACK && skbmsg->header.messageID / 0x10000000 == 1) {
-		if (uh_tmt_get(reqID_timestamp_Map, skbmsg->header.requestID) == -1) {	//not found
-			ux_log(UXL_CRT, "failed to get reqID_timestamp_Map : %d", skbmsg->header.requestID);
-			return -1;
-		}
-		uh_tmt_del(reqID_timestamp_Map, skbmsg->header.requestID);	//확인되면, timeout 명단에서 제거
+	//header 검증하여 정상적인 수신인지 확인
+	if (check_header(&skbmsg->header) < 0) {
+		skb_msg_get_header_display(&skbmsg->header, headerLog);
+		ux_log(UXL_CRT, "failed to check header\n%s", headerLog);
+
+		//세션 연결 종료
+		ux_channel_stop2(channel_arr[tcpmsg->peerkey.chnl_idx], UX_TRUE);
+		return -1;
 	}
 
 	// 2. process and response to uxcutor
-	//채널 index를 먼저 구분하여 clicktocall, clicktocallrecording, clicktoconference 구분
 	switch(tcpmsg->peerkey.chnl_idx) {
 		case TCP_CHANNEL_SMS_CLI:
-			switch(skbmsg->header.messageID) {
-			//HEARTBEAT
+			switch(skbmsg->header.msgType) {
 				case ALIVE_ACK:
-					// skb_msg_display_recv_header(&skbmsg->header);
-					skb_msg_display_recv_heartbeat_rsp(&skbmsg->header, TCP_CHANNEL_SMS_CLI);
+					skb_msg_display_recv_alive_ack_msg(&skbmsg->header);
 					is_heartbeat_sent[TCP_CHANNEL_SMS_CLI] = 0;
 					last_recv_seconds[TCP_CHANNEL_SMS_CLI] = seconds[TCP_CHANNEL_SMS_CLI];		
 					return UX_SUCCESS;
-				case ALIVE:
-					// skb_msg_display_recv_header(&skbmsg->header);
-					skb_msg_display_recv_heartbeat_req(&skbmsg->header, TCP_CHANNEL_SMS_CLI);
-					skb_msg_process_clicktocall_heartbeat_req(skbmsg);
-					skb_msg_display_send_heartbeat_rsp(&skbmsg->header, TCP_CHANNEL_SMS_CLI);
-					msg_size = skbmsg->header.length;
-					requestID = skbmsg->header.requestID;
-					// 메시지를 Network byte ordering으로 변경
-					rv = skb_msg_cvt_order_hton2(skbmsg);
-					if( rv< UX_SUCCESS) {
-						ux_log(UXL_CRT, "failed to skb_msg_cvt_order_hton2 : %d", requestID);
-						return -1;
-					}
-					// ux_log(UXL_CRT, "seding tcp header size : %lu", sizeof(skbmsg->header));
-					// ux_log(UXL_CRT, "seding tcp body size : %lu", msg_size - sizeof(skbmsg->header));
-					rv = upa_tcp_send2(_g_client->patcp, &tcpmsg->peerkey, skbmsg, msg_size, 1);
-					if( rv < UX_SUCCESS) {
-						ux_log( UXL_CRT, "failed to upa_tcp_send2 : %d", requestID);
-						return -1;
-					}
-					return rv;
-				//BINDING
 				case BIND_ACK:
-					rv = skb_msg_process_clicktocall_binding_rsp(skbmsg);
+					rv = skb_msg_process_bind_ack_msg(skbmsg);
 					if( rv < UX_SUCCESS) {
 						ux_log( UXL_CRT, "channel TCP_CHANNEL_SMS_CLI will be stopped");
 						//세션 연결 종료
@@ -279,220 +254,39 @@ int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpms
 					}
 					turn_heartbeat_timer_on(TCP_CHANNEL_SMS_CLI);
 					break;
-				//RESPONSE
 				case DELIVER_ACK:
-					rv = skb_msg_process_clicktocall_start_rsp(skbmsg, &dbif);
-					break;
-				case STOP_RESPONSE:
-					rv = skb_msg_process_clicktocall_stop_rsp(skbmsg, &dbif);
-					break;
-				case START_RECORDING_RESPONSE:
-					rv = skb_msg_process_clicktocall_startrecording_rsp(skbmsg, &dbif);
-					break;
-				case STOP_RECORDING_RESPONSE:
-					rv = skb_msg_process_clicktocall_stoprecording_rsp(skbmsg, &dbif);
-					break;
-				case SERVICE_STATUS_RESPONSE:
-					rv = skb_msg_process_clicktocall_service_status_rsp(skbmsg);	//no send
-					break;
-				//REPORT
-				case STOP_REPORT:
-					rv = skb_msg_process_clicktocall_stop_rpt(skbmsg, &dbif);
-					break;
-				case START_RECORDING_REPORT:
-					rv = skb_msg_process_clicktocall_startrecording_rpt(skbmsg);	//no send
-					break;
-				case STOP_RECORDING_REPORT:
-					rv = skb_msg_process_clicktocall_stoprecording_rpt(skbmsg);		//no send
-					break;
-				case SERVICE_STATUS_REPORT:
-					rv = skb_msg_process_clicktocall_service_status_rpt(skbmsg, &dbif, &status);
-					//착신자 호출 중(2), 정상 서비스 중(0)일 경우에만 gw로 포워딩
-					if (status != 2 && status != 0) {
-						return UX_SUCCESS;
+					//수신한 메시지가 DELIVER_ACK인 경우에만 serialNumber와 일치하는 serialNumber가 있는지 확인
+					memcpy(deliver_ack_msg, skbmsg->body, sizeof(deliver_ack_msg_tcp_t));
+					if (uh_tmt_get(sn_timestamp_Map, deliver_ack_msg->serialNumber) == -1) {	//not found
+						ux_log(UXL_CRT, "failed to get sn_timestamp_Map : %d", deliver_ack_msg->serialNumber);
+						return -1;
 					}
+					uh_tmt_del(sn_timestamp_Map, deliver_ack_msg->serialNumber);	//확인되면, timeout 명단에서 제거
+					rv = skb_msg_process_deliver_ack_msg(skbmsg, &dbif, &serialNumber);
+					break;
+				case REPORT:
+					rv = skb_msg_process_report_msg(skbmsg, &dbif, &serialNumber);
 					break;
 				default:
-					ux_log(UXL_CRT, "unsupported messageID : %#010x", skbmsg->header.messageID)
+					ux_log(UXL_CRT, "unsupported msgType : %#010x", skbmsg->header.msgType)
 					return -1;
-			}
-			break;		
-		case TCP_CHANNEL_RECORDING:
-			switch(skbmsg->header.messageID) {
-				//HEARTBEAT
-				case ALIVE_ACK:
-					// skb_msg_display_recv_header(&skbmsg->header);
-					skb_msg_display_recv_heartbeat_rsp(&skbmsg->header, TCP_CHANNEL_RECORDING);
-					is_heartbeat_sent[TCP_CHANNEL_RECORDING] = 0;
-					last_recv_seconds[TCP_CHANNEL_RECORDING] = seconds[TCP_CHANNEL_RECORDING];		
-					return UX_SUCCESS;
-				case ALIVE:
-					// skb_msg_display_recv_header(&skbmsg->header);
-					skb_msg_display_recv_heartbeat_req(&skbmsg->header, TCP_CHANNEL_RECORDING);
-					skb_msg_process_clicktocallrecording_heartbeat_req(skbmsg);
-					skb_msg_display_send_heartbeat_rsp(&skbmsg->header, TCP_CHANNEL_RECORDING);
-					msg_size = skbmsg->header.length;
-					requestID = skbmsg->header.requestID;
-					// 메시지를 Network byte ordering으로 변경
-					rv = skb_msg_cvt_order_hton2(skbmsg);
-					if( rv< UX_SUCCESS) {
-						ux_log(UXL_CRT, "failed to skb_msg_cvt_order_hton : %d", requestID);
-						break;
-					}
-					// ux_log(UXL_CRT, "sending tcp header size : %lu", sizeof(skbmsg->header));
-					// ux_log(UXL_CRT, "sending tcp body size : %lu", msg_size - sizeof(skbmsg->header));
-					rv = upa_tcp_send2(_g_client->patcp, &tcpmsg->peerkey, skbmsg, msg_size, 1);
-					if( rv < UX_SUCCESS) {
-						ux_log( UXL_CRT, "failed to upa_tcp_send2 : %d", requestID);
-						return -1;
-					}
-					return rv;
-				//BINDING
-				case BIND_ACK:
-					rv = skb_msg_process_clicktocallrecording_binding_rsp(skbmsg);
-					if( rv < UX_SUCCESS) {
-						ux_log( UXL_CRT, "channel TCP_CHANNEL_RECORDING will be stopped");
-						//세션 연결 종료
-						ux_channel_stop2(channel_arr[TCP_CHANNEL_RECORDING], UX_TRUE);
-					}
-					turn_heartbeat_timer_on(TCP_CHANNEL_RECORDING);
-					break;
-				//RESPONSE
-				case DELIVER_ACK:
-					rv = skb_msg_process_clicktocallrecording_start_rsp(skbmsg, &dbif);
-					break;
-				case STOP_RESPONSE:
-					rv = skb_msg_process_clicktocallrecording_stop_rsp(skbmsg, &dbif);
-					break;
-				case SERVICE_STATUS_RESPONSE:
-					rv = skb_msg_process_clicktocallrecording_service_status_rsp(skbmsg);	//no send
-					break;
-				//REPORT
-				case START_REPORT:
-					rv = skb_msg_process_clicktocallrecording_start_rpt(skbmsg);	//no send
-					break;
-				case STOP_REPORT:
-					rv = skb_msg_process_clicktocallrecording_stop_rpt(skbmsg, &dbif);
-					break;
-				case SERVICE_STATUS_REPORT:
-					// 수신녹취에서 규격상 이 메시지는 안올것 같아 보임
-					rv = skb_msg_process_clicktocallrecording_service_status_rpt(skbmsg, &dbif);
-					break;
-				default:
-					ux_log(UXL_CRT, "unsupported messageID : %#010x", skbmsg->header.messageID)
-					break;	
-			}
-			break;
-		case TCP_CHANNEL_CONFERENCE:
-			switch(skbmsg->header.messageID) {
-				//HEARTBEAT
-				case ALIVE_ACK:
-					// skb_msg_display_recv_header(&skbmsg->header);
-					skb_msg_display_recv_heartbeat_rsp(&skbmsg->header, TCP_CHANNEL_CONFERENCE);
-					is_heartbeat_sent[TCP_CHANNEL_CONFERENCE] = 0;
-					last_recv_seconds[TCP_CHANNEL_CONFERENCE] = seconds[TCP_CHANNEL_CONFERENCE];		
-					return UX_SUCCESS;
-				case ALIVE:
-					// skb_msg_display_recv_header(&skbmsg->header);
-					skb_msg_display_recv_heartbeat_req(&skbmsg->header, TCP_CHANNEL_CONFERENCE);
-					skb_msg_process_clicktoconference_heartbeat_req(skbmsg);
-					skb_msg_display_send_heartbeat_rsp(&skbmsg->header, TCP_CHANNEL_CONFERENCE);
-					msg_size = skbmsg->header.length;
-					requestID = skbmsg->header.requestID;
-					// 메시지를 Network byte ordering으로 변경
-					rv = skb_msg_cvt_order_hton2(skbmsg);
-					if( rv< UX_SUCCESS) {
-						ux_log(UXL_INFO, "failed to skb_msg_cvt_order_hton : %d", requestID);
-						break;
-					}
-					// ux_log(UXL_CRT, "seding tcp header size : %lu", sizeof(skbmsg->header));
-					// ux_log(UXL_CRT, "seding tcp body size : %lu", msg_size - sizeof(skbmsg->header));
-					rv = upa_tcp_send2(_g_client->patcp, &tcpmsg->peerkey, skbmsg, msg_size, 1);
-					if( rv < UX_SUCCESS) {
-						ux_log( UXL_CRT, "failed to upa_tcp_send2 : %d", requestID);
-						return -1;
-					}
-					return rv;
-				//BINDING
-				case BIND_ACK:
-					rv = skb_msg_process_clicktoconference_binding_rsp(skbmsg);
-					if( rv < UX_SUCCESS) {
-						ux_log( UXL_CRT, "channel TCP_CHANNEL_CONFERENCE will be stopped");
-						//세션 연결 종료
-						ux_channel_stop2(channel_arr[TCP_CHANNEL_CONFERENCE], UX_TRUE);
-					}
-					turn_heartbeat_timer_on(TCP_CHANNEL_CONFERENCE);
-					break;
-				//RESPONSE
-				case START_CONFERENCE_RESPONSE:
-					rv = skb_msg_process_clicktoconference_start_rsp(skbmsg, &dbif);
-					break;
-				case ADD_PARTY_RESPONSE:
-					rv = skb_msg_process_clicktoconference_add_party_rsp(skbmsg, &dbif);
-					break;
-				case REMOVE_PARTY_RESPONSE:
-					rv = skb_msg_process_clicktoconference_remove_party_rsp(skbmsg, &dbif);
-					break;
-				case CHANGE_PARTY_MEDIA_RESPONSE:
-					rv = skb_msg_process_clicktoconference_change_party_media_rsp(skbmsg, &dbif);
-					break;
-				case CHANGE_OPTION_RESPONSE:
-					rv = skb_msg_process_clicktoconference_change_option_rsp(skbmsg);	//no send
-					break;
-				case GET_NUMBER_OF_PARTY_RESPONSE:
-					rv = skb_msg_process_clicktoconference_get_number_of_party_rsp(skbmsg, &dbif);
-					break;
-				case STOP_CONFERENCE_RESPONSE:
-					rv = skb_msg_process_clicktoconference_stop_rsp(skbmsg, &dbif);
-					break;
-				case PLAY_MENT_RESPONSE:
-					rv = skb_msg_process_clicktoconference_play_ment_rsp(skbmsg, &dbif);
-					break;
-				case GET_PARTY_STATUS_RESPONSE:
-					rv = skb_msg_process_clicktoconference_get_party_status_rsp(skbmsg, &dbif);
-					break;
-				case CANCEL_PARTY_RESPONSE:
-					rv = skb_msg_process_clicktoconference_cancel_party_rsp(skbmsg, &dbif);
-					break;
-				//REPORT
-				case ADD_PARTY_REPORT:
-					rv = skb_msg_process_clicktoconference_add_party_rpt(skbmsg, &dbif);
-					break;
-				case REMOVE_PARTY_REPORT:
-					rv = skb_msg_process_clicktoconference_remove_party_rpt(skbmsg, &dbif);
-					break;
-				case CHANGE_PARTY_MEDIA_REPORT:
-					rv = skb_msg_process_clicktoconference_change_party_media_rpt(skbmsg, &dbif);
-					break;
-				case CHANGE_OPTION_REPORT:
-					rv = skb_msg_process_clicktoconference_change_option_rpt(skbmsg);	//no send
-					break;
-				case STOP_CONFERENCE_REPORT:
-					rv = skb_msg_process_clicktoconference_stop_rpt(skbmsg, &dbif);
-					break;
-				default:
-					ux_log(UXL_CRT, "unsupported messageID : %#010x", skbmsg->header.messageID)
-					break;	
 			}
 			break;
 		default:
 			ux_log(UXL_CRT, "unsupported Channel Index : %d", tcpmsg->peerkey.chnl_idx)
 			return -1;
 	}
-	if (skbmsg->header.messageID != ALIVE) {
-		last_recv_seconds[tcpmsg->peerkey.chnl_idx] = seconds[tcpmsg->peerkey.chnl_idx] + 1;
-	}
+	last_recv_seconds[tcpmsg->peerkey.chnl_idx] = seconds[tcpmsg->peerkey.chnl_idx] + 1;
 
 	if( rv < UX_SUCCESS) {
 		ux_log( UXL_CRT, "can't send data in process rsp.");
 		return rv;
 	}
 
-	requestID = skbmsg->header.requestID;
 	if (msgID != NONE_DBIF_MESSAGE) {
-		dbif_header = uh_ipc_get(reqID_IPC_Map, requestID);
+		dbif_header = uh_ipc_get(sn_IPC_Map, serialNumber);
 		if (dbif_header == NULL) {
-			ux_log(UXL_CRT, "there is no ipc_header of reqID(%d)", requestID);
+			ux_log(UXL_CRT, "there is no ipc_header of reqID(%d)", serialNumber);
 			mqkey = uxc_get_conf_process_mqkey( _g_client->conf->dbif_gw_process_name, &rv);
 			if( rv < eUXC_SUCCESS ) {
 				printf("Don't exist gw block information for '%s' in proc.conf\n", _g_client->conf->dbif_gw_process_name);
@@ -526,18 +320,16 @@ int dbif_forward_eipmsrsp( tcp_client_t *client, uxc_worker_t *worker, upa_tcpms
 			ux_log( UXL_INFO, "failed to tcp_client_send_ipcmsg : %d", msgID);
 		} else {
 			//성공 시 후처리 수행
-			uh_ipc_del(reqID_IPC_Map, requestID);
-			//stop report인 경우, reqID 제거
-			if (skbmsg->header.messageID == STOP_REPORT || 
-				skbmsg->header.messageID == STOP_RECORDING_REPORT ||
-				skbmsg->header.messageID == STOP_CONFERENCE_REPORT) {
-				uh_rid_del(reqID_Set, requestID);
+			//report인 경우, reqID 제거
+			if (skbmsg->header.msgType == REPORT) {
+				uh_ipc_del(sn_IPC_Map, serialNumber);
+				uh_rid_del(sn_Set, serialNumber);
 			}
 		}
 		return rv;
 	}
 	
-	return -1;
+	return eUXC_SUCCESS;
 }	
 
 
@@ -591,22 +383,22 @@ void *timeout_function()
 
 		//hash traverse
 		// ux_log(UXL_INFO, "Waiting response=========");
-		for (k = kh_begin(reqID_timestamp_Map->h); k != kh_end(reqID_timestamp_Map->h); ++k) {
-			if (kh_exist(reqID_timestamp_Map->h, k)) {
-				const int key = kh_key(reqID_timestamp_Map->h,k);
-				tval = kh_value(reqID_timestamp_Map->h, k);
-				// ux_log(UXL_INFO, "  before|- k:%d  s:%d  e:%d  requestID=%d  timestamp=%lu", k, kh_begin(reqID_timestamp_Map->h), kh_end(reqID_timestamp_Map->h), key, tval);
+		for (k = kh_begin(sn_timestamp_Map->h); k != kh_end(sn_timestamp_Map->h); ++k) {
+			if (kh_exist(sn_timestamp_Map->h, k)) {
+				const int key = kh_key(sn_timestamp_Map->h,k);
+				tval = kh_value(sn_timestamp_Map->h, k);
+				// ux_log(UXL_INFO, "  before|- k:%d  s:%d  e:%d  serialNumber=%d  timestamp=%lu", k, kh_begin(sn_timestamp_Map->h), kh_end(sn_timestamp_Map->h), key, tval);
 				if ((rawtime - tval) >= request_timeout) {	//timeout
-					ux_log(UXL_CRT, "request timeout, requestID : %d", key);
-					uh_tmt_del(reqID_timestamp_Map, key);
+					ux_log(UXL_CRT, "request timeout, serialNumber : %d", key);
+					uh_tmt_del(sn_timestamp_Map, key);
 					// printf("1\n");
-					uh_int_del(reqID_SID_Map, key);
+					uh_int_del(sn_SID_Map, key);
 					// printf("2\n");
-					uh_int_del(reqID_GWSID_Map, key);
+					uh_int_del(sn_GWSID_Map, key);
 					// printf("3\n");
-					uh_ipc_del(reqID_IPC_Map, key);
+					uh_ipc_del(sn_IPC_Map, key);
 					// printf("4\n");
-					// ux_log(UXL_INFO, "  after |- k:%d  s:%d  e:%d  requestID=%d  timestamp=%lu", k, kh_begin(reqID_timestamp_Map->h), kh_end(reqID_timestamp_Map->h), key, tval);
+					// ux_log(UXL_INFO, "  after |- k:%d  s:%d  e:%d  serialNumber=%d  timestamp=%lu", k, kh_begin(sn_timestamp_Map->h), kh_end(sn_timestamp_Map->h), key, tval);
 
 					//bind request인 경우, 연결을 끊어주기
 					for (i = 0; i < CHANNEL_SIZE; i++) {
@@ -618,10 +410,10 @@ void *timeout_function()
 
 					//TODO : timeout 발생 시, 추가로 처리해야할 것 고려하기
 
-					if (k == kh_end(reqID_timestamp_Map->h)) break;
+					if (k == kh_end(sn_timestamp_Map->h)) break;
 				}
 			}
-			// ux_log(UXL_INFO, "k:%d  s:%d  e:%d", k, kh_begin(reqID_timestamp_Map->h), kh_end(reqID_timestamp_Map->h));
+			// ux_log(UXL_INFO, "k:%d  s:%d  e:%d", k, kh_begin(sn_timestamp_Map->h), kh_end(sn_timestamp_Map->h));
 		}
 		// ux_log(UXL_INFO, "=========================");
 	}
@@ -646,7 +438,7 @@ void turn_timeout_timer_off() {
 
 void *t_function(void *chnl_idx)
 {
-	int rv, requestID;
+	int rv;
 	int timeout = _g_client->conf->heartbeat_timeout;
 	int interval = _g_client->conf->heartbeat_interval;
 	int sent_time = 0;
@@ -659,18 +451,14 @@ void *t_function(void *chnl_idx)
 		seconds[cidx]++;
 		if (is_heartbeat_sent[cidx] == 0) {
 			if (seconds[cidx] - last_recv_seconds[cidx] >= interval) {
-				// ux_log( UXL_INFO, "send heartbeat(chnl_idx : %d)", cidx);
-				skb_msg_make_header(&skbmsg->header, ALIVE, 0, NULL);
-				// skb_msg_display_send_header(&skbmsg->header);
-				skb_msg_display_send_heartbeat_req(&skbmsg->header, cidx);
+				skb_msg_make_header(&skbmsg->header, ALIVE, 0);
+				skb_msg_display_send_alive_msg(&skbmsg->header);
 				strcpy(skbmsg[0].body,  "");
-
-				requestID = skbmsg->header.requestID;
 
 				//메시지를 Network byte ordering으로 변경
 				rv = skb_msg_cvt_order_hton2(skbmsg);
 				if( rv< UX_SUCCESS) {
-					ux_log(UXL_INFO, "failed to skb_msg_cvt_order_hton2 : %d", requestID);
+					ux_log(UXL_INFO, "failed to skb_msg_cvt_order_hton2");
 					return NULL;
 				}
 
@@ -678,7 +466,7 @@ void *t_function(void *chnl_idx)
 				// ux_log(UXL_CRT, "seding tcp body size : %lu", msg_size - sizeof(skbmsg->header));
 				rv = upa_tcp_send2(_g_client->patcp, &peerkey_arr[cidx], skbmsg, sizeof(skb_header_t), 1);
 				if( rv < UX_SUCCESS) {
-					ux_log( UXL_CRT, "failed to upa_tcp_send2 : %d", requestID);
+					ux_log( UXL_CRT, "failed to upa_tcp_send2");
 					//세션 연결 종료
 					ux_channel_stop2(channel_arr[cidx], UX_TRUE);
 					return NULL;
@@ -720,7 +508,7 @@ static int _tcp_client_on_open(upa_tcp_t *tcp, ux_channel_t *channel, ux_cnector
 {
 
 	skb_msg_t skbmsg[1];
-	int msg_size, requestID, rv;
+	int msg_size, rv;
 	int chnl_idx = peerkey->chnl_idx;
 	time_t rawtime;
 	char *binding_user_id;
@@ -750,39 +538,30 @@ static int _tcp_client_on_open(upa_tcp_t *tcp, ux_channel_t *channel, ux_cnector
 			binding_user_id = _g_client->conf->call_binding_user_id;
 			binding_password = _g_client->conf->call_binding_password;
 			break;
-		case TCP_CHANNEL_RECORDING:
-			binding_user_id = _g_client->conf->recording_binding_user_id;
-			binding_password = _g_client->conf->recording_binding_password;
-			break;
-		case TCP_CHANNEL_CONFERENCE:
-			binding_user_id = _g_client->conf->conference_binding_user_id;
-			binding_password = _g_client->conf->conference_binding_password;
-			break;
 		default:
 			ux_log(UXL_CRT, "failed to skb_msg_make_bind_request : wrong channel index");
 			return -1;
 	}
-	rv = skb_msg_make_bind_request(skbmsg, chnl_idx, binding_user_id, binding_password);
+	rv = skb_msg_make_bind_request(skbmsg, binding_user_id, binding_password);
 	if( rv< UX_SUCCESS) {
 		ux_log(UXL_CRT, "failed to skb_msg_make_bind_request");
 		return -1;
 	}
-	msg_size = skbmsg->header.length;
-	requestID = skbmsg->header.requestID;
+	msg_size = skbmsg->header.length + sizeof(skb_header_t);
 
-	//Bind request의 requestID와 current time(ms) Bind
+	//Bind request의 serialNumber와 current time(ms) Bind
 	time ( &rawtime );
-	if(!uh_tmt_put(reqID_timestamp_Map, requestID, rawtime)) {
-		ux_log(UXL_CRT, "failed to put to reqID_timestamp_Map : (%d)", requestID);
+	if(!uh_tmt_put(sn_timestamp_Map, serialNumber, rawtime)) {
+		ux_log(UXL_CRT, "failed to put to sn_timestamp_Map : (%d)", serialNumber);
 	}
 
-	//Bind requestID 저장
-	binding_reqIDs[chnl_idx] = requestID;
+	//Bind serialNumber 저장
+	binding_reqIDs[chnl_idx] = serialNumber;
 
 	//메시지를 Network byte ordering으로 변경
 	rv = skb_msg_cvt_order_hton2(skbmsg);
 	if( rv < UX_SUCCESS) {
-		ux_log(UXL_CRT, "failed to skb_msg_cvt_order_hton3 : %d", requestID);
+		ux_log(UXL_CRT, "failed to skb_msg_cvt_order_hton3 : %d", serialNumber);
 		return -1;
 	}
 
@@ -790,7 +569,7 @@ static int _tcp_client_on_open(upa_tcp_t *tcp, ux_channel_t *channel, ux_cnector
 	// ux_log(UXL_CRT, "seding tcp body size : %lu", msg_size - sizeof(skbmsg->header));
 	rv = upa_tcp_send2(_g_client->patcp, &peerkey_arr[chnl_idx], skbmsg, msg_size, 1);
 	if( rv < UX_SUCCESS) {
-		ux_log( UXL_CRT, "failed to upa_tcp_send2 : %d", requestID);
+		ux_log( UXL_CRT, "failed to upa_tcp_send2 : %d", serialNumber);
 		//세션 연결 종료
 		ux_channel_stop2(channel_arr[chnl_idx], UX_TRUE);
 		return -1;

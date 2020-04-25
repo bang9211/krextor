@@ -1,0 +1,1054 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<scenarios>
+    <configuration>
+		<!-- È­¸é¿¡ ½Ã³ª¸®¿À ½ÇÇà³»¿ë Ãâ·Â ¿©ºÎ. (on/off) (default:on) -->
+		<define name="display-trace-log" value="on"/>
+		<!-- È­¸é¿¡ ½Ã³ª¸®¿À ½ÇÇà³»¿ë ½Ç½Ã°£ Ãâ·Â ¿©ºÎ. (on/off) (default:off) -->
+		<define name="realtime-display" value="on"/>
+		<!-- ½Ã³ª¸®¿À ¼öÇà °á°ú¸¦ ÆÄÀÏ¿¡ ±â·ÏÇÒÁö ¿©ºÎ. (on/off) (default:off) -->
+		<define name="file-report" value="off"/>
+		<!-- ½Ã³ª¸®¿À ½ÇÇà Å¸ÀÓ¾Æ¿ô ½Ã°£(ÃÊ) (default:0(none)) -->
+		<define name="scenario-timeout" value="0"/>
+		<!-- ½Ã³ª¸®¿À ¼öÇà ÈÄ ´ÙÀ½ ½Ã³ª¸®¿À ¼öÇà Àü À¯ÈÞ ½Ã°£(ÃÊ) (default:0) -->
+		<define name="scenario-interval" value="0"/>
+		<!-- ½Ã³ª¸®¿À Å¸ÀÔ (seagull/sipp/none) (default:none) -->
+		<define name="scenario-type" value="sipp"/>
+		<!-- MMCD ¿¬°á Á¤º¸ - RMI HOST / PORT (default:null) -->
+		<!--define name="rmi-host" value="sktdb2"/>
+		<define name="rmi-port" value="15003"/-->
+		<!-- Report plugin Á¤º¸ - library name (default:null) -->
+		<!--define name="report-plugin" value="libsimctrl_plugin.so"/-->
+		<!-- ignore list - ÇØ´ç keyword°¡ ÀÖÀ¸¸é ÇØ´ç ¶óÀÎ¿¡¼­ keyword ÀÌÈÄ´Â ºñ±³ÇÏÁö ¾Ê´Â´Ù. -->
+		<!-- sipp Àü¿ë ignore keyword -->
+		<define name="ignore-keyword" value="-----------------------------------------------"/>
+		<define name="ignore-keyword" value=";branch="/>
+		<define name="ignore-keyword" value=";tag="/>
+		<define name="ignore-keyword" value="Call-ID: "/>
+		<define name="ignore-keyword" value="CSeq: "/>
+		<define name="ignore-keyword" value="RSeq: "/>
+		<define name="ignore-keyword" value="RAck: "/>
+		<define name="ignore-keyword" value="UDP message received ["/>
+		<define name="ignore-keyword" value="UDP message sent ("/>
+		<define name="ignore-keyword" value="m=audio "/>
+		<define name="ignore-keyword" value="m=video "/>
+		<!-- cdr Àü¿ë ignore keyword -->
+		<define name="ignore-keyword" value="Query : SELECT BL_NAME,TO_CHAR(TIMESTAMP,"/>
+		<define name="ignore-keyword" value="  OCSID ="/>
+		<define name="ignore-keyword" value=" StartTime    ="/>
+		<define name="ignore-keyword" value=" EndTime      ="/>
+		<!-- replace list - ÇØ´ç keyword°¡ ÀÖÀ¸¸é source¸¦ destinationÀ¸·Î º¯È¯ ÈÄ °á°ú ºñ±³ÇÑ´Ù. -->
+		<!--                src, dst´Â value¿¡ ¼±¾ðµÇ¸ç src + "=>" + dst ÇüÅÂ·á Ç¥±âÇØ¾ßÇÑ´Ù. -->
+	</configuration>
+
+	<class name="NORMAL_CALL">
+		<scenario name="normal_voice_call" description="HDV Á¤»ó À½¼º È£ ÄÉÀÌ½º">
+			<command script="$HOME/sipp/T2TING/01. Normal Call Service/rmi2.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/sipp/T2TING/01. Normal Call Service/uac.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/01/uac.res"/>
+			<command script="$HOME/sipp/T2TING/01. Normal Call Service/uas.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/01/uas.res"/> 
+		</scenario>
+		<scenario name="normal_voice_long_call" description="HDV Á¤»ó À½¼º È£ ÄÉÀÌ½º (100ÃÊÀÌ»ó)">
+			<command script="$HOME/sipp/T2TING/01. Normal Call Service/rmi2.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/sipp/T2TING/01. Normal Call Service/uac.longcall.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/01/uac.longcall.res"/>
+			<command script="$HOME/sipp/T2TING/01. Normal Call Service/uas.longcall.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/01/uas.longcall.res"/> 
+		</scenario>
+		<scenario name="normal_voice_under3sec_call" description="HDV Á¤»ó À½¼º È£ ÄÉÀÌ½º (3ÃÊ ¹Ì¸¸ ÅëÈ­)">
+			<command script="$HOME/sipp/T2TING/01. Normal Call Service/rmi2.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/sipp/T2TING/01. Normal Call Service/uac.under3sec.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/01/uac.under3sec.res"/>
+			<command script="$HOME/sipp/T2TING/01. Normal Call Service/uas.under3sec.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/01/uas.under3sec.res"/> 
+		</scenario>
+		<scenario name="normal_voice_rbt_call" description="HDV RBT & À½¼º È£ ¿¬°á ÄÉÀÌ½º">
+			<command script="$HOME/sipp/T2TING/03. PA Remote RBT Call/rmi2.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/sipp/T2TING/03. PA Remote RBT Call/uac.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/03/uac.res"/>
+			<command script="$HOME/sipp/T2TING/03. PA Remote RBT Call/uas.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/03/uas.res"/> 
+		</scenario>
+		<scenario name="noremains_disconnect_voice_call" description="HDV À½¼º È£, ÅëÈ­Áß ÀÜ¾× ¼ÒÁø">
+			<command script="$HOME/sipp/T2TING/06. No remains Disconnect/rmi2.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/sipp/T2TING/06. No remains Disconnect/uac.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/06/uac.res"/>
+			<command script="$HOME/sipp/T2TING/06. No remains Disconnect/uas.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/06/uas.res"/> 
+		</scenario>
+		<scenario name="noremains_disconnect_video_call" description="HDV ¿µ»ó È£, ÅëÈ­Áß ÀÜ¾× ¼ÒÁø">
+			<command script="$HOME/sipp/T2TING/06. No remains Disconnect/rmi2.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/sipp/T2TING/06. No remains Disconnect/uac.video.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/06/uac.video.res"/>
+			<command script="$HOME/sipp/T2TING/06. No remains Disconnect/uas.video.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/06/uas.video.res"/> 
+		</scenario>
+		<scenario name="normal_video_call" description="HDV Á¤»ó ¿µ»ó È£ ÄÉÀÌ½º">
+			<command script="$HOME/sipp/T2TING/07. Video Call Service/rmi2.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/sipp/T2TING/07. Video Call Service/uac.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/07/uac.res"/>
+			<command script="$HOME/sipp/T2TING/07. Video Call Service/uas.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/07/uas.res"/> 
+		</scenario>
+		<scenario name="normal_video_long_call" description="HDV Á¤»ó ¿µ»ó È£ ÄÉÀÌ½º (100ÃÊÀÌ»ó)">
+			<command script="$HOME/sipp/T2TING/07. Video Call Service/rmi2.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/sipp/T2TING/07. Video Call Service/uac.longcall.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/07/uac.longcall.res"/>
+			<command script="$HOME/sipp/T2TING/07. Video Call Service/uas.longcall.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/07/uas.longcall.res"/> 
+		</scenario>
+		<scenario name="normal_video_under8sec_call" description="HDV Á¤»ó ¿µ»ó È£ ÄÉÀÌ½º (8ÃÊ ¹Ì¸¸ ÅëÈ­)">
+			<command script="$HOME/sipp/T2TING/07. Video Call Service/rmi2.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/sipp/T2TING/07. Video Call Service/uac.under8sec.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/07/uac.under8sec.res"/>
+			<command script="$HOME/sipp/T2TING/07. Video Call Service/uas.under8sec.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/07/uas.under8sec.res"/> 
+		</scenario>
+		<scenario name="normal_voice_durazero_call" description="HDV Á¤»ó À½¼º È£, ÅëÈ­½Ã°£ 0ÃÊ">
+			<command script="$HOME/sipp/T2TING/15. Dura_zero/rmi2.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/sipp/T2TING/15. Dura_zero/uac.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/15/uac.res"/>
+			<command script="$HOME/sipp/T2TING/15. Dura_zero/uas.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/15/uas.res"/>
+		</scenario>
+	</class>
+
+	<class name="MRF_CONNECT_CALL">
+		<scenario name="normal_voice_pa_call" description="HDV ÀÜ¾×¾È³» & À½¼º È£ ¿¬°á ÄÉÀÌ½º">
+			<command script="$HOME/sipp/T2TING/02. PA Call Connect/rmi2.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/sipp/T2TING/02. PA Call Connect/uac.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/02/uac.res"/>
+			<command script="$HOME/sipp/T2TING/02. PA Call Connect/mrf.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/02/mrf.res"/>
+			<command script="$HOME/sipp/T2TING/02. PA Call Connect/uas.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/02/uas.res"/>
+		</scenario>
+		<scenario name="invalid_state_voice_call" description="ºñÁ¤»ó »óÅÂ °¡ÀÔÀÚ ¾È³» ¸àÆ® ¼ÛÃâ">
+			<command script="$HOME/sipp/T2TING/04. Error Announcement/rmi2.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/sipp/T2TING/04. Error Announcement/uac.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/04/uac.res"/>
+			<command script="$HOME/sipp/T2TING/04. Error Announcement/mrf.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/04/mrf.res"/>
+		</scenario>
+		<scenario name="normal_video_pa_call" description="HDV ÀÜ¾×¾È³»(MRF¹Ì¿¬µ¿) & ¿µ»ó È£ ¿¬°á ÄÉÀÌ½º">
+			<command script="$HOME/sipp/T2TING/08. Video Call (ment)/rmi2.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/sipp/T2TING/08. Video Call (ment)/uac.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/08/uac.res"/>
+			<command script="$HOME/sipp/T2TING/08. Video Call (ment)/uas.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/08/uas.res"/>
+		</scenario>
+		<scenario name="mrf_connect_failed" description="MRF ¿¬°á ½ÇÆÐ, HDV À½¼º È£ ¿¬°á ÄÉÀÌ½º">
+			<command script="$HOME/sipp/T2TING/13. MRF Connect Fail/rmi2.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/sipp/T2TING/13. MRF Connect Fail/uac.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/13/uac.res"/>
+			<command script="$HOME/sipp/T2TING/13. MRF Connect Fail/uas.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/13/uas.res"/>
+		 </scenario>
+	</class>
+
+	<class name="ABNORMAL_CALL">
+		<scenario name="term_busy_voice_call" description="HDV À½¼º È£, Âø½Å Busy ÄÉÀÌ½º">
+			<command script="$HOME/sipp/T2TING/05. Term Busy/rmi2.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/sipp/T2TING/05. Term Busy/uac.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/05/uac.res"/>
+			<command script="$HOME/sipp/T2TING/05. Term Busy/uas.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/05/uas.res"/> 
+		</scenario>
+		<scenario name="term_busy_video_call" description="HDV ¿µ»ó È£, Âø½Å Busy ÄÉÀÌ½º">
+			<command script="$HOME/sipp/T2TING/05. Term Busy/rmi2.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/sipp/T2TING/05. Term Busy/uac.video.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/05/uac.video.res"/>
+			<command script="$HOME/sipp/T2TING/05. Term Busy/uas.video.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/05/uas.video.res"/> 
+		</scenario>
+		<scenario name="invalid_state_video_call" description="HDV ¿µ»ó È£, ºñÁ¤»ó °¡ÀÔÀÚ">
+			<command script="$HOME/sipp/T2TING/09. Video Call (error)/rmi2.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/sipp/T2TING/09. Video Call (error)/uac.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/09/uac.res"/>
+		</scenario>
+		<scenario name="abandon_voice_call" description="HDV À½¼º È£, ¹ß½Å Abandon"> 
+			<command script="$HOME/sipp/T2TING/12. UAC Abandon/rmi2.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/sipp/T2TING/12. UAC Abandon/uac.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/12/uac.res"/>
+			<command script="$HOME/sipp/T2TING/12. UAC Abandon/uas.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/12/uas.res"/>
+		</scenario>
+		<scenario name="abandon_video_call" description="HDV ¿µ»ó È£, ¹ß½Å Abandon"> 
+			<command script="$HOME/sipp/T2TING/12. UAC Abandon/rmi2.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/sipp/T2TING/12. UAC Abandon/uac.video.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/12/uac.video.res"/>
+			<command script="$HOME/sipp/T2TING/12. UAC Abandon/uas.video.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/12/uas.video.res"/>
+		</scenario>
+		<scenario name="no_answer_voice_call" description="HDV À½¼º È£, ¹«ÀÀ´ä ÄÉÀÌ½º">
+			<command script="$HOME/sipp/T2TING/14. No Answer/rmi2.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/sipp/T2TING/14. No Answer/uac.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/14/uac.res"/>
+		</scenario>
+		<scenario name="timeout_voice_call" description="HDV À½¼º È£, 408 Timeout">
+			<command script="$HOME/sipp/T2TING/16. 408 Timeout/rmi2.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/sipp/T2TING/16. 408 Timeout/uac.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/16/uac.res"/>
+			<command script="$HOME/sipp/T2TING/16. 408 Timeout/uas.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/16/uas.res"/>
+		</scenario>
+	</class>
+
+	<class name="SIP_FEATURE">
+		<scenario name="reinvite_voice_video_call" description="HDV À½¼ºÈ£ -> ¿µ»óÈ£ ÀüÈ¯">
+			<command script="$HOME/sipp/T2TING/10. Re-Invite/rmi2.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/sipp/T2TING/10. Re-Invite/uac.voice_video.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/10/uac.voice_video.res"/>
+			<command script="$HOME/sipp/T2TING/10. Re-Invite/uas.voice_video.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/10/uas.voice_video.res"/>
+		</scenario>
+		<scenario name="reinvite_video_voice_call" description="HDV ¿µ»óÈ£ -> À½¼ºÈ£ ÀüÈ¯">
+			<command script="$HOME/sipp/T2TING/10. Re-Invite/rmi2.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/sipp/T2TING/10. Re-Invite/uac.video_voice.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/10/uac.video_voice.res"/>
+			<command script="$HOME/sipp/T2TING/10. Re-Invite/uas.video_voice.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/10/uas.video_voice.res"/>
+		</scenario>
+		<scenario name="send_info" description="INFO Çì´õ Àü¼Û ÄÉÀÌ½º">
+			<command script="$HOME/sipp/T2TING/11. Info/rmi2.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/sipp/T2TING/11. Info/uac.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/11/uac.res"/>
+			<command script="$HOME/sipp/T2TING/11. Info/uas.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/11/uas.res"/>
+		</scenario>
+		<scenario name="send_update" description="UPDATE Çì´õ Àü¼Û ÄÉÀÌ½º">
+			<command script="$HOME/sipp/T2TING/17. Update/rmi2.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/sipp/T2TING/17. Update/uac.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/17/uac.res"/>
+			<command script="$HOME/sipp/T2TING/17. Update/uas.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/17/uas.res"/>
+		</scenario>
+		<scenario name="in_out_transactions" description="Input/Output Transaction µ¿½Ã ¹ß»ý ÄÉÀÌ½º">
+			<command script="$HOME/sipp/T2TING/18. InOut Transc/rmi2.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/sipp/T2TING/18. InOut Transc/uac.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/18/uac.res"/>
+			<command script="$HOME/sipp/T2TING/18. InOut Transc/uas.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/18/uas.res"/>
+		</scenario>
+		<scenario name="session_expire_voice_call" description="HDV À½¼º È£, Session Expire¿¡ ÀÇÇÑ È£ Á¾·á">
+			<command script="$HOME/sipp/T2TING/19. Session Expired/rmi2.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/sipp/T2TING/19. Session Expired/uac.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/19/uac.res"/>
+			<command script="$HOME/sipp/T2TING/19. Session Expired/uas.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/19/uas.res"/>
+		</scenario>
+		<scenario name="session_expire_video_call" description="HDV ¿µ»ó È£, Session Expire¿¡ ÀÇÇÑ È£ Á¾·á">
+			<command script="$HOME/sipp/T2TING/19. Session Expired/rmi2.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/sipp/T2TING/19. Session Expired/uac.video.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/19/uac.video.res"/>
+			<command script="$HOME/sipp/T2TING/19. Session Expired/uas.video.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/19/uas.video.res"/>
+		</scenario>
+		<scenario name="retrans_ack_voice_call" description="HDV À½¼º È£, Retrans ACK message">
+			<command script="$HOME/sipp/T2TING/24. ACK Retrans/rmi2.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/sipp/T2TING/24. ACK Retrans/uac.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/24/uac.res"/>
+			<command script="$HOME/sipp/T2TING/24. ACK Retrans/uas.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/24/uas.res"/>
+		</scenario>
+		<scenario name="call_forwarding_voice_call" description="HDV À½¼º È£, Call forwarding">
+			<command script="$HOME/sipp/T2TING/25. Call Forwarding/rmi2.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/sipp/T2TING/25. Call Forwarding/uac.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/25/uac.res"/>
+			<command script="$HOME/sipp/T2TING/25. Call Forwarding/uas.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/25/uas.res"/>
+		</scenario>
+		<scenario name="reliable_response_voice_call" description="HDV À½¼º È£, Reliable response">
+			<command script="$HOME/sipp/T2TING/26. Reliable Response/rmi2.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/sipp/T2TING/26. Reliable Response/uac.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/26/uac.res"/>
+			<command script="$HOME/sipp/T2TING/26. Reliable Response/uas.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/26/uas.res"/>
+		</scenario>
+		<scenario name="no_delay_queue_voice_call" description="HDV À½¼º È£, No delay queue">
+			<command script="$HOME/sipp/T2TING/27. No Delay Queue/rmi2.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/sipp/T2TING/27. No Delay Queue/uac.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/27/uac.res"/>
+			<command script="$HOME/sipp/T2TING/27. No Delay Queue/uas.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/27/uas.res"/>
+		</scenario>
+		<scenario name="svcact_voice_call" description="HDV À½¼º È£, Âø½Å¸Á¿ÜÀüÈ¯(P-SKT-Svc-Act: F0)"> 
+			<command script="$HOME/sipp/T2TING/28. P-SKT-Svc-Act/rmi2.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/sipp/T2TING/28. P-SKT-Svc-Act/uac.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/28/uac.res"/>
+			<command script="$HOME/sipp/T2TING/28. P-SKT-Svc-Act/uas.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/28/uas.res"/>
+		</scenario>
+<!-- ¸Á³»/¿Ü ÆÇ´Ü ±â´É °³¼±À¸·Î Á¦¿Ü½ÃÅ´
+		<scenario name="svcact_voice_long_call" description="HDV À½¼º È£, Âø½Å¸Á¿ÜÀüÈ¯(P-SKT-Svc-Act: F0) (100ÃÊ ÀÌ»ó)"> 
+			<command script="$HOME/sipp/T2TING/28. P-SKT-Svc-Act/rmi2.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/sipp/T2TING/28. P-SKT-Svc-Act/uac.longcall.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/28/uac.longcall.res"/>
+			<command script="$HOME/sipp/T2TING/28. P-SKT-Svc-Act/uas.longcall.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/28/uas.longcall.res"/>
+		</scenario>
+-->
+		<scenario name="svcact_video_call" description="HDV ¿µ»ó È£, Âø½Å¸Á¿ÜÀüÈ¯(P-SKT-Svc-Act: F0)"> 
+			<command script="$HOME/sipp/T2TING/28. P-SKT-Svc-Act/rmi2.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/sipp/T2TING/28. P-SKT-Svc-Act/uac.video.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/28/uac.video.res"/>
+			<command script="$HOME/sipp/T2TING/28. P-SKT-Svc-Act/uas.video.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/28/uas.video.res"/>
+		</scenario>
+	</class>
+
+	<class name="SRVCC">
+		<scenario name="srvcc_normal_call" description="HDV À½¼º È£, SRVCC ¼º°ø ÄÉÀÌ½º">
+			<command script="$HOME/sipp/T2TING/20. SRVCC Normal/rmi2.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/sipp/T2TING/20. SRVCC Normal/uac.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/20/uac.res"/>
+			<command script="$HOME/sipp/T2TING/20. SRVCC Normal/uas_org.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/20/uas_org.res"/>
+			<command script="$HOME/sipp/T2TING/20. SRVCC Normal/uas_srvcc.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/20/uas_srvcc.res"/>
+		</scenario>
+		<scenario name="srvcc_cancell_call" description="HDV À½¼º È£, SRVCC Ãë¼Ò ÄÉÀÌ½º">
+			<command script="$HOME/sipp/T2TING/21. SRVCC Cancel/rmi2.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/sipp/T2TING/21. SRVCC Cancel/uac.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/21/uac.res"/>
+			<command script="$HOME/sipp/T2TING/21. SRVCC Cancel/uas_org.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/21/uas_org.res"/>
+			<command script="$HOME/sipp/T2TING/21. SRVCC Cancel/uas_srvcc.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/21/uas_srvcc.res"/>
+		</scenario>
+		<scenario name="srvcc_fail_call" description="HDV À½¼º È£, SRVCC ½ÇÆÐ ÄÉÀÌ½º">
+			<command script="$HOME/sipp/T2TING/22. SRVCC INFO Fail/rmi2.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/sipp/T2TING/22. SRVCC INFO Fail/uac.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/22/uac.res"/>
+			<command script="$HOME/sipp/T2TING/22. SRVCC INFO Fail/uas_org.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/22/uas_org.res"/>
+			<command script="$HOME/sipp/T2TING/22. SRVCC INFO Fail/uas_srvcc.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/22/uas_srvcc.res"/>
+		</scenario>
+	</class>
+
+	<class name="USIM">
+		<scenario name="usim_contact" description="USIM ÀÌµ¿¼º Ç¥ÁØÈ­, Contact Header">
+			<command script="$HOME/sipp/T2TING/29. USIM/rmi2.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/sipp/T2TING/29. USIM/uac.contact.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/29/uac.contact.res"/>
+			<command script="$HOME/sipp/T2TING/29. USIM/uas.contact.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/29/uas.contact.res"/>
+		</scenario>
+		<scenario name="usim_history_info" description="USIM ÀÌµ¿¼º Ç¥ÁØÈ­, History-Info Header">
+			<command script="$HOME/sipp/T2TING/29. USIM/rmi2.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/sipp/T2TING/29. USIM/uac.history.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/29/uac.history.res"/>
+			<command script="$HOME/sipp/T2TING/29. USIM/uas.history.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/29/uas.history.res"/>
+		</scenario>
+		<scenario name="usim_p_tta_volte_info" description="USIM ÀÌµ¿¼º Ç¥ÁØÈ­, P-TTA-VoLTE-Info Header">
+			<command script="$HOME/sipp/T2TING/29. USIM/rmi2.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/sipp/T2TING/29. USIM/uac.p_tta_volte_info.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/29/uac.p_tta_volte_info.res"/>
+			<command script="$HOME/sipp/T2TING/29. USIM/uas.p_tta_volte_info.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/29/uas.p_tta_volte_info.res"/>
+		</scenario>
+		<scenario name="usim_callhold" description="USIM ÀÌµ¿¼º Ç¥ÁØÈ­, Call Hold">
+			<command script="$HOME/sipp/T2TING/29. USIM/rmi2.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/sipp/T2TING/29. USIM/uac.callhold.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/29/uac.callhold.res"/>
+			<command script="$HOME/sipp/T2TING/29. USIM/uas.callhold.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/29/uas.callhold.res"/>
+		</scenario>
+		<scenario name="usim_cid" description="USIM ÀÌµ¿¼º Ç¥ÁØÈ­, CID">
+			<command script="$HOME/sipp/T2TING/29. USIM/rmi2.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/sipp/T2TING/29. USIM/uac.cid.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/29/uac.cid.res"/>
+			<command script="$HOME/sipp/T2TING/29. USIM/uas.cid.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/29/uas.cid.res"/>
+		</scenario>
+		<scenario name="usim_dialing_plan" description="USIM ÀÌµ¿¼º Ç¥ÁØÈ­, Dialing Plan">
+			<command script="$HOME/sipp/T2TING/29. USIM/rmi2.sh" check="" display="false" report="false" serial="true"/>
+			<command script="$HOME/sipp/T2TING/29. USIM/uac.dialingplan.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/29/uac.dialingplan.res"/>
+			<command script="$HOME/sipp/T2TING/29. USIM/uas.dialingplan.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/29/uas.dialingplan.res"/>
+		</scenario>
+	</class>
+
+	<class name="FEATURE_CODE">
+		<scenario name="feature_code_normal" description="FEATURE CODE ¿¹¿Ü Ã³¸®, ÀÏ¹Ý À½¼ºÈ£ ¿¬°á">
+			<command script="$HOME/sipp/T2TING/30. Feature Code Normal/uac.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/30/uac.res"/>
+			<command script="$HOME/sipp/T2TING/30. Feature Code Normal/uas.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/30/uas.res"/>
+		</scenario>
+		<scenario name="feature_code_normal_longcall" description="FEATURE CODE ¿¹¿Ü Ã³¸®, ÀÏ¹Ý À½¼ºÈ£ ¿¬°á(100ÃÊÀÌ»ó)">
+			<command script="$HOME/sipp/T2TING/30. Feature Code Normal/uac.longcall.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/30/uac.longcall.res"/>
+			<command script="$HOME/sipp/T2TING/30. Feature Code Normal/uas.longcall.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/30/uas.longcall.res"/>
+		</scenario>
+		<scenario name="feature_code_normal_video" description="FEATURE CODE ¿¹¿Ü Ã³¸®, ÀÏ¹Ý ¿µ»óÈ£ ¿¬°á">
+			<command script="$HOME/sipp/T2TING/30. Feature Code Normal/uac.video.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/30/uac.video.res"/>
+			<command script="$HOME/sipp/T2TING/30. Feature Code Normal/uas.video.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/30/uas.video.res"/>
+		</scenario>
+		<scenario name="feature_code_release" description="FEATURE CODE ¿¹¿Ü Ã³¸®, À½¼ºÈ£ ¿¬°áÇØÁ¦(380 Alternative Service)">
+			<command script="$HOME/sipp/T2TING/31. Feature Code Release/uac.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/31/uac.res"/>
+		</scenario>
+		<scenario name="feature_code_release_video" description="FEATURE CODE ¿¹¿Ü Ã³¸®, ¿µ»óÈ£ ¿¬°áÇØÁ¦(380 Alternative Service)">
+			<command script="$HOME/sipp/T2TING/31. Feature Code Release/uac.video.sh simctrl" check="$HOME/sipp/T2TING/report/T2TingLte35/31/uac.video.res"/>
+		</scenario>
+	</class>
+
+	<class name="SVC_FEATURE_#1">
+		<scenario name="abnormal_loststop" description="HDV À½¼º È£, °¡ÀÔÀÚ »óÅÂ ºñÁ¤»ó(LOST_STOP)">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/01. Abnormal State/loststop.sh simctrl uac" 
+				     check="$HOME/sipp/T2TING/report/T2TingLte35/90/01/uac.loststop.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/01. Abnormal State/loststop.sh simctrl mrf" 
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/01/mrf.loststop.res"/>
+		</scenario>
+		<scenario name="abnormal_loststop_video" description="HDV ¿µ»ó È£, °¡ÀÔÀÚ »óÅÂ ºñÁ¤»ó(LOST_STOP)">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/01. Abnormal State/loststop.video.sh simctrl uac" 
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/01/uac.loststop.video.res"/>
+		</scenario>
+		<scenario name="abnormal_tmpdel" description="HDV À½¼º È£, °¡ÀÔÀÚ »óÅÂ ºñÁ¤»ó(TMP_DEL)">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/01. Abnormal State/tmpdel.sh simctrl uac" 
+				     check="$HOME/sipp/T2TING/report/T2TingLte35/90/01/uac.tmpdel.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/01. Abnormal State/tmpdel.sh simctrl mrf" 
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/01/mrf.tmpdel.res"/>
+		</scenario>
+		<scenario name="abnormal_tmpdel_video" description="HDV ¿µ»ó È£, °¡ÀÔÀÚ »óÅÂ ºñÁ¤»ó(TMP_DEL)">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/01. Abnormal State/tmpdel.video.sh simctrl uac" 
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/01/uac.tmpdel.video.res"/>
+		</scenario>
+		<scenario name="abnormal_tmpstop" description="HDV À½¼º È£, °¡ÀÔÀÚ »óÅÂ ºñÁ¤»ó(TMP_STOP)">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/01. Abnormal State/tmpstop.sh simctrl uac" 
+				     check="$HOME/sipp/T2TING/report/T2TingLte35/90/01/uac.tmpstop.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/01. Abnormal State/tmpstop.sh simctrl mrf" 
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/01/mrf.tmpstop.res"/>
+		</scenario>
+		<scenario name="abnormal_tmpstop_video" description="HDV ¿µ»ó È£, °¡ÀÔÀÚ »óÅÂ ºñÁ¤»ó(TMP_STOP)">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/01. Abnormal State/tmpstop.video.sh simctrl uac" 
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/01/uac.tmpstop.video.res"/>
+		</scenario>
+		<scenario name="abnormal_userstop" description="HDV À½¼º È£, °¡ÀÔÀÚ »óÅÂ ºñÁ¤»ó(USER_STOP)">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/01. Abnormal State/userstop.sh simctrl uac" 
+				     check="$HOME/sipp/T2TING/report/T2TingLte35/90/01/uac.userstop.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/01. Abnormal State/userstop.sh simctrl mrf" 
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/01/mrf.userstop.res"/>
+		</scenario>
+		<scenario name="abnormal_userstop_video" description="HDV ¿µ»ó È£, °¡ÀÔÀÚ »óÅÂ ºñÁ¤»ó(USER_STOP)">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/01. Abnormal State/userstop.video.sh simctrl uac" 
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/01/uac.userstop.video.res"/>
+		</scenario>
+	</class>
+
+	<class name="SVC_FEATURE_#2">
+		<scenario name="noremains_119_video" description="HDV ¿µ»ó È£, ¹ÌÀÜ¾× 119 È£ ½Ãµµ">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/02. No Remains/119.video.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/02/uac.119.video.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/02. No Remains/119.video.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/02/uas.119.video.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/02/cdr.119.video.res"/>
+		</scenario>
+		<scenario name="noremains_162" description="HDV À½¼º È£, ¹ÌÀÜ¾× 162 È£ ½Ãµµ">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/02. No Remains/162.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/02/uac.162.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/02. No Remains/162.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/02/uas.162.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/02/cdr.162.res"/>
+		</scenario>
+<!-- KT114 º¸¿Ï Àü 53µµ ¼ö ¹Ì¸¸, 180ÃÊ Á¦ÇÑ
+		<scenario name="noremains_kt114_52remains" description="HDV À½¼º È£, 52µµ¼ö ³²Àº »óÅÂ KT114 È£ ½Ãµµ">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/02. No Remains/kt114.52remains.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/02/uac.kt114.52remains.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/02. No Remains/kt114.52remains.sh simctrl mrf"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/02/mrf.kt114.52remains.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/02/cdr.kt114.52remains.res"/>
+		</scenario>
+		<scenario name="noremains_kt114_53remains" description="HDV À½¼º È£, 53µµ¼ö ³²Àº »óÅÂ KT114 È£ ½Ãµµ">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/02. No Remains/kt114.53remains.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/02/uac.kt114.53remains.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/02. No Remains/kt114.53remains.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/02/uas.kt114.53remains.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/02/cdr.kt114.53remains.res"/>
+		</scenario>
+-->
+		<scenario name="noremains_kt114_noremains" description="HDV À½¼º È£, ÀÜ¾× ¼ÒÁø »óÅÂ KT114 È£ ½Ãµµ">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/02. No Remains/kt114.noremains.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/02/uac.kt114.noremains.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/02. No Remains/kt114.noremains.sh simctrl mrf"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/02/mrf.kt114.noremains.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/02/cdr.kt114.noremains.res"/>
+		</scenario>
+		<scenario name="noremains_kt114_1remains" description="HDV À½¼º È£, 1µµ¼ö ³²Àº »óÅÂ KT114 È£ ½Ãµµ">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/02. No Remains/kt114.1remains.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/02/uac.kt114.1remains.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/02. No Remains/kt114.1remains.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/02/uas.kt114.1remains.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/02/cdr.kt114.1remains.res"/>
+		</scenario>
+		<scenario name="noremains_kt114_video" description="HDV ¿µ»ó È£, ÀÜ¾× ¹Ì¼ÒÁø KT114 È£ ½Ãµµ">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/02. No Remains/kt114.video.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/02/uac.kt114.video.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/02. No Remains/kt114.video.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/02/uas.kt114.video.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/02/cdr.kt114.video.res"/>
+		</scenario>
+		<scenario name="noremains_mobile_in" description="HDV À½¼º È£, ¹ÌÀÜ¾× ¸Á³»È£ ½Ãµµ">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/02. No Remains/mobile_in.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/02/uac.mobile_in.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/02. No Remains/mobile_in.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/02/uas.mobile_in.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/02/cdr.mobile_in.res"/>
+		</scenario>
+		<scenario name="noremains_mobile_in_video" description="HDV ¿µ»ó È£, ¹ÌÀÜ¾× ¸Á³» È£ ½Ãµµ">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/02. No Remains/mobile_in.video.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/02/uac.mobile_in.video.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/02/cdr.mobile_in.video.res"/>
+		</scenario>
+		<scenario name="noremains_mobile_in_out" description="HDV À½¼º È£, ¹ÌÀÜ¾× ¸Á³»È£ ½Ãµµ ¸Á¿Ü È£ÀüÈ¯">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/02. No Remains/mobile_in_out.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/02/uac.mobile_in_out.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/02. No Remains/mobile_in_out.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/02/uas.mobile_in_out.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/02/cdr.mobile_in_out.res"/>
+		</scenario>
+<!-- ¸Á³»/¿Ü ÆÇ´Ü ±â´É °³¼±À¸·Î Á¦¿Ü½ÃÅ´
+		<scenario name="noremains_mobile_in_out_long" description="HDV À½¼º È£, ¹ÌÀÜ¾× ¸Á³»È£ ½Ãµµ ¸Á¿Ü È£ÀüÈ¯(100ÃÊÀÌ»ó) ">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/02. No Remains/mobile_in_out.long.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/02/uac.mobile_in_out.long.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/02. No Remains/mobile_in_out.long.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/02/uas.mobile_in_out.long.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/02/cdr.mobile_in_out.long.res"/>
+		</scenario>
+-->
+		<scenario name="noremains_mobile_out_kt" description="HDV À½¼º È£, ¹ÌÀÜ¾× ¸Á¿Ü(KT)È£ ½Ãµµ">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/02. No Remains/mobile_out_kt.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/02/uac.mobile_out_kt.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/02. No Remains/mobile_out_kt.sh simctrl mrf"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/02/mrf.mobile_out_kt.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/02/cdr.mobile_out_kt.res"/>
+		</scenario>
+		<scenario name="noremains_mobile_out_lg" description="HDV À½¼º È£, ¹ÌÀÜ¾× ¸Á¿Ü(LG)È£ ½Ãµµ">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/02. No Remains/mobile_out_lg.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/02/uac.mobile_out_lg.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/02. No Remains/mobile_out_lg.sh simctrl mrf"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/02/mrf.mobile_out_lg.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/02/cdr.mobile_out_lg.res"/>
+		</scenario>
+		<scenario name="noremains_pstn" description="HDV À½¼º È£, ¹ÌÀÜ¾× PSTNÈ£ ½Ãµµ">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/02. No Remains/pstn.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/02/uac.pstn.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/02. No Remains/pstn.sh simctrl mrf"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/02/mrf.pstn.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/02/cdr.pstn.res"/>
+		</scenario>
+		<scenario name="noremains_pstn_video" description="HDV ¿µ»ó È£, ¹ÌÀÜ¾× PSTN È£ ½Ãµµ">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/02. No Remains/pstn.video.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/02/uac.pstn.video.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/02/cdr.pstn.video.res"/>
+		</scenario>
+	</class>
+
+	<class name="SVC_FEATURE_#3">
+		<scenario name="restrict_060_blockinfo" description="HDV À½¼º È£, 060 ¹ß½ÅÁ¦ÇÑ">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/03. Restrict/060.blockinfo.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/03/uac.060.blockinfo.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/03. Restrict/060.blockinfo.sh simctrl mrf"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/03/mrf.060.blockinfo.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/03/cdr.060.blockinfo.res"/>
+		</scenario>
+		<scenario name="restrict_060_blockinfo_video" description="HDV ¿µ»ó È£, 060 ¹ß½ÅÁ¦ÇÑ"> 
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/03. Restrict/060.blockinfo.video.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/03/uac.060.blockinfo.video.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/03/cdr.060.blockinfo.video.res"/>
+		</scenario>
+		<scenario name="restrict_1591" description="HDV À½¼º È£, 1591 ¹ß½ÅÁ¦ÇÑ">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/03. Restrict/1591.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/03/uac.1591.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/03. Restrict/1591.sh simctrl mrf"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/03/mrf.1591.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/03/cdr.1591.res"/>
+		</scenario>
+		<scenario name="restrict_1591_video" description="HDV ¿µ»ó È£, 1591 ¹ß½ÅÁ¦ÇÑ(¿µ»óÀº È£ Çã¿ë) "> 
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/03. Restrict/1591.video.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/03/uac.1591.video.res"/> 
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/03. Restrict/1591.video.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/03/uas.1591.video.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/03/cdr.1591.video.res"/>
+		</scenario>
+		<scenario name="restrict_intl001" description="HDV À½¼º È£, ±¹Á¦ÀüÈ­(001)  ¹ß½ÅÁ¦ÇÑ">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/03. Restrict/intl001.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/03/uac.intl001.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/03. Restrict/intl001.sh simctrl mrf"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/03/mrf.intl001.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/03/cdr.intl001.res"/>
+		</scenario>
+		<scenario name="restrict_intl001_video" description="HDV ¿µ»ó È£, ±¹Á¦ÀüÈ­(001) ¹ß½ÅÁ¦ÇÑ"> 
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/03. Restrict/intl001.video.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/03/uac.intl001.video.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/03/cdr.intl001.video.res"/>
+		</scenario>
+		<scenario name="restrict_intl002" description="HDV À½¼º È£, ±¹Á¦ÀüÈ­(002)  ¹ß½ÅÁ¦ÇÑ">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/03. Restrict/intl002.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/03/uac.intl002.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/03. Restrict/intl002.sh simctrl mrf"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/03/mrf.intl002.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/03/cdr.intl002.res"/>
+		</scenario>
+		<scenario name="restrict_intl002_video" description="HDV ¿µ»ó È£, ±¹Á¦ÀüÈ­(002) ¹ß½ÅÁ¦ÇÑ"> 
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/03. Restrict/intl002.video.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/03/uac.intl002.video.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/03/cdr.intl002.video.res"/>
+		</scenario>
+		<scenario name="restrict_intl00345" description="HDV À½¼º È£, ±¹Á¦ÀüÈ­(00345)  ¹ß½ÅÁ¦ÇÑ">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/03. Restrict/intl00345.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/03/uac.intl00345.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/03. Restrict/intl00345.sh simctrl mrf"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/03/mrf.intl00345.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/03/cdr.intl00345.res"/>
+		</scenario>
+		<scenario name="restrict_intl00345_video" description="HDV ¿µ»ó È£, ±¹Á¦ÀüÈ­(00345) ¹ß½ÅÁ¦ÇÑ"> 
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/03. Restrict/intl00345.video.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/03/uac.intl00345.video.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/03/cdr.intl00345.video.res"/>
+		</scenario>
+		<scenario name="restrict_intl00700" description="HDV À½¼º È£, ±¹Á¦ÀüÈ­(00700)  ¹ß½ÅÁ¦ÇÑ">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/03. Restrict/intl00700.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/03/uac.intl00700.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/03. Restrict/intl00700.sh simctrl mrf"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/03/mrf.intl00700.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/03/cdr.intl00700.res"/>
+		</scenario>
+		<scenario name="restrict_intl00700_video" description="HDV ¿µ»ó È£, ±¹Á¦ÀüÈ­(00700) ¹ß½ÅÁ¦ÇÑ"> 
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/03. Restrict/intl00700.video.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/03/uac.intl00700.video.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/03/cdr.intl00700.video.res"/>
+		</scenario>
+		<scenario name="restrict_intl008" description="HDV À½¼º È£, ±¹Á¦ÀüÈ­(008)  ¹ß½ÅÁ¦ÇÑ">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/03. Restrict/intl008.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/03/uac.intl008.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/03. Restrict/intl008.sh simctrl mrf"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/03/mrf.intl008.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/03/cdr.intl008.res"/>
+		</scenario>
+		<scenario name="restrict_intl008_video" description="HDV ¿µ»ó È£, ±¹Á¦ÀüÈ­(008) ¹ß½ÅÁ¦ÇÑ"> 
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/03. Restrict/intl008.video.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/03/uac.intl008.video.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/03/cdr.intl008.video.res"/>
+		</scenario>
+	</class>
+
+	<class name="SVC_FEATURE_#4">
+		<scenario name="remains_account" description="HDV À½¼º È£, Account °èÁ¤ »ç¿ë">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/04. Remains/account.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/uac.account.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/04. Remains/account.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/uas.account.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/cdr.account.res"/>
+		</scenario>
+		<scenario name="remains_account_video" description="HDV ¿µ»ó È£, Account °èÁ¤ »ç¿ë">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/04. Remains/account.video.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/uac.account.video.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/04. Remains/account.video.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/uas.account.video.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/cdr.account.video.res"/>
+		</scenario>
+		<scenario name="remains_account_shortcall" description="HDV À½¼º È£, Account °èÁ¤ »ç¿ë(3ÃÊ¹Ì¸¸ÅëÈ­)">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/04. Remains/account.shortcall.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/uac.account.shortcall.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/04. Remains/account.shortcall.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/uas.account.shortcall.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/cdr.account.shortcall.res"/>
+		</scenario>
+		<scenario name="remains_account_shortcall_video" description="HDV ¿µ»ó È£, Account °èÁ¤ »ç¿ë(8ÃÊ¹Ì¸¸ÅëÈ­)">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/04. Remains/account.shortcall.video.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/uac.account.shortcall.video.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/04. Remains/account.shortcall.video.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/uas.account.shortcall.video.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/cdr.account.shortcall.video.res"/>
+		</scenario>
+		<scenario name="remains_account_under4sec" description="HDV À½¼º È£, Account °èÁ¤ »ç¿ë(4ÃÊ¹Ì¸¸ ÅëÈ­ °¡´É ÀÜ¾×)">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/04. Remains/account.under4sec.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/uac.account.under4sec.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/04. Remains/account.under4sec.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/uas.account.under4sec.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/cdr.account.under4sec.res"/>
+		</scenario>
+		<scenario name="remains_account_under4sec_video" description="HDV ¿µ»ó È£, Account °èÁ¤ »ç¿ë(4ÃÊ¹Ì¸¸ ÅëÈ­ °¡´É ÀÜ¾×)">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/04. Remains/account.under4sec.video.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/uac.account.under4sec.video.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/04. Remains/account.under4sec.video.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/uas.account.under4sec.video.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/cdr.account.under4sec.video.res"/>
+		</scenario>
+		<scenario name="remains_account_mobile_in_out" description="HDV À½¼º È£, Account °èÁ¤ »ç¿ë(¸Á³»->¸Á¿Ü È£ÀüÈ¯)">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/04. Remains/account.mobile_in_out.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/uac.account.mobile_in_out.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/04. Remains/account.mobile_in_out.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/uas.account.mobile_in_out.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/cdr.account.mobile_in_out.res"/>
+		</scenario>
+<!-- ¸Á³»/¿Ü ÆÇ´Ü ±â´É °³¼±À¸·Î Á¦¿Ü½ÃÅ´
+		<scenario name="remains_account_mobile_in_out_long" description="HDV À½¼º È£, Account °èÁ¤ »ç¿ë(¸Á³»->¸Á¿Ü È£ÀüÈ¯,100ÃÊÀÌ»ó)">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/04. Remains/account.mobile_in_out.long.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/uac.account.mobile_in_out.long.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/04. Remains/account.mobile_in_out.long.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/uas.account.mobile_in_out.long.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/cdr.account.mobile_in_out.long.res"/>
+		</scenario>
+-->
+		<scenario name="remains_account_*23#" description="HDV À½¼º È£, Account °èÁ¤ »ç¿ë(*23#)">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/04. Remains/account.star23sharp.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/uac.account.star23sharp.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/04. Remains/account.star23sharp.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/uas.account.star23sharp.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/cdr.account.star23sharp.res"/>
+		</scenario>
+		<scenario name="remains_freedosu" description="HDV À½¼º È£, FreeDosu °èÁ¤ »ç¿ë">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/04. Remains/freedosu.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/uac.freedosu.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/04. Remains/freedosu.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/uas.freedosu.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/cdr.freedosu.res"/>
+		</scenario>
+		<scenario name="remains_freedosu_video" description="HDV ¿µ»ó È£, FreeDosu °èÁ¤ »ç¿ë">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/04. Remains/freedosu.video.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/uac.freedosu.video.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/04. Remains/freedosu.video.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/uas.freedosu.video.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/cdr.freedosu.video.res"/>
+		</scenario>
+		<scenario name="remains_freedosu_under4sec" description="HDV À½¼º È£, FreeDosu °èÁ¤ »ç¿ë(4ÃÊ¹Ì¸¸ ÅëÈ­ °¡´É ÀÜ¾×)">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/04. Remains/freedosu.under4sec.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/uac.freedosu.under4sec.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/04. Remains/freedosu.under4sec.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/uas.freedosu.under4sec.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/cdr.freedosu.under4sec.res"/>
+		</scenario>
+		<scenario name="remains_freedosu_under4sec_video" description="HDV ¿µ»ó È£, FreeDosu °èÁ¤ »ç¿ë(4ÃÊ¹Ì¸¸ ÅëÈ­ °¡´É ÀÜ¾×)">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/04. Remains/freedosu.under4sec.video.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/uac.freedosu.under4sec.video.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/04. Remains/freedosu.under4sec.video.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/uas.freedosu.under4sec.video.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/cdr.freedosu.under4sec.video.res"/>
+		</scenario>
+		<scenario name="remains_freedosu_mobile_in_out" description="HDV À½¼º È£, FreeDosu °èÁ¤ »ç¿ë(¸Á³»->¸Á¿Ü È£ÀüÈ¯)">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/04. Remains/freedosu.mobile_in_out.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/uac.freedosu.mobile_in_out.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/04. Remains/freedosu.mobile_in_out.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/uas.freedosu.mobile_in_out.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/cdr.freedosu.mobile_in_out.res"/>
+		</scenario>
+<!-- ¸Á³»/¿Ü ÆÇ´Ü ±â´É °³¼±À¸·Î Á¦¿Ü½ÃÅ´
+		<scenario name="remains_freedosu_mobile_in_out_long" description="HDV À½¼º È£, FreeDosu °èÁ¤ »ç¿ë(¸Á³»->¸Á¿Ü È£ÀüÈ¯,100ÃÊÀÌ»ó)">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/04. Remains/freedosu.mobile_in_out.long.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/uac.freedosu.mobile_in_out.long.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/04. Remains/freedosu.mobile_in_out.long.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/uas.freedosu.mobile_in_out.long.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/cdr.freedosu.mobile_in_out.long.res"/>
+		</scenario>
+-->
+		<scenario name="remains_gift" description="HDV À½¼º È£, Gift °èÁ¤ »ç¿ë">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/04. Remains/gift.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/uac.gift.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/04. Remains/gift.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/uas.gift.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/cdr.gift.res"/>
+		</scenario>
+		<scenario name="remains_gift_video" description="HDV ¿µ»ó È£, Gift °èÁ¤ »ç¿ë">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/04. Remains/gift.video.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/uac.gift.video.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/04. Remains/gift.video.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/uas.gift.video.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/cdr.gift.video.res"/>
+		</scenario>
+		<scenario name="remains_gift_under4sec" description="HDV À½¼º È£, Gift °èÁ¤ »ç¿ë(4ÃÊ¹Ì¸¸ ÅëÈ­ °¡´É ÀÜ¾×)">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/04. Remains/gift.under4sec.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/uac.gift.under4sec.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/04. Remains/gift.under4sec.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/uas.gift.under4sec.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/cdr.gift.under4sec.res"/>
+		</scenario>
+		<scenario name="remains_gift_under4sec_video" description="HDV ¿µ»ó È£, Gift °èÁ¤ »ç¿ë(4ÃÊ¹Ì¸¸ ÅëÈ­ °¡´É ÀÜ¾×)">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/04. Remains/gift.under4sec.video.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/uac.gift.under4sec.video.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/04. Remains/gift.under4sec.video.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/uas.gift.under4sec.video.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/cdr.gift.under4sec.video.res"/>
+		</scenario>
+		<scenario name="remains_gift_mobile_in_out" description="HDV À½¼º È£, Gift °èÁ¤ »ç¿ë(¸Á³»->¸Á¿Ü È£ÀüÈ¯)">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/04. Remains/gift.mobile_in_out.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/uac.gift.mobile_in_out.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/04. Remains/gift.mobile_in_out.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/uas.gift.mobile_in_out.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/cdr.gift.mobile_in_out.res"/>
+		</scenario>
+<!-- ¸Á³»/¿Ü ÆÇ´Ü ±â´É °³¼±À¸·Î Á¦¿Ü½ÃÅ´
+		<scenario name="remains_gift_mobile_in_out_long" description="HDV À½¼º È£, Gift °èÁ¤ »ç¿ë(¸Á³»->¸Á¿Ü È£ÀüÈ¯,100ÃÊÀÌ»ó)">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/04. Remains/gift.mobile_in_out.long.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/uac.gift.mobile_in_out.long.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/04. Remains/gift.mobile_in_out.long.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/uas.gift.mobile_in_out.long.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/cdr.gift.mobile_in_out.long.res"/>
+		</scenario>
+-->
+		<scenario name="remains_refilldosu" description="HDV À½¼º È£, RefillDosu °èÁ¤ »ç¿ë">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/04. Remains/refilldosu.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/uac.refilldosu.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/04. Remains/refilldosu.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/uas.refilldosu.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/cdr.refilldosu.res"/>
+		</scenario>
+		<scenario name="remains_refilldosu_video" description="HDV ¿µ»ó È£, RefillDosu °èÁ¤ »ç¿ë">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/04. Remains/refilldosu.video.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/uac.refilldosu.video.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/04. Remains/refilldosu.video.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/uas.refilldosu.video.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/cdr.refilldosu.video.res"/>
+		</scenario>
+		<scenario name="remains_refilldosu_under4sec" description="HDV À½¼º È£, RefillDosu °èÁ¤ »ç¿ë(4ÃÊ¹Ì¸¸ ÅëÈ­ °¡´É ÀÜ¾×)">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/04. Remains/refilldosu.under4sec.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/uac.refilldosu.under4sec.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/04. Remains/refilldosu.under4sec.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/uas.refilldosu.under4sec.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/cdr.refilldosu.under4sec.res"/>
+		</scenario>
+		<scenario name="remains_refilldosu_under4sec_video" description="HDV ¿µ»ó È£, RefillDosu °èÁ¤ »ç¿ë(4ÃÊ¹Ì¸¸ ÅëÈ­ °¡´É ÀÜ¾×)">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/04. Remains/refilldosu.under4sec.video.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/uac.refilldosu.under4sec.video.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/04. Remains/refilldosu.under4sec.video.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/uas.refilldosu.under4sec.video.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/cdr.refilldosu.under4sec.video.res"/>
+		</scenario>
+		<scenario name="remains_refilldosu_mobile_in_out" description="HDV À½¼º È£, RefillDosu °èÁ¤ »ç¿ë(¸Á³»->¸Á¿Ü È£ÀüÈ¯)">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/04. Remains/refilldosu.mobile_in_out.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/uac.refilldosu.mobile_in_out.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/04. Remains/refilldosu.mobile_in_out.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/uas.refilldosu.mobile_in_out.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/cdr.refilldosu.mobile_in_out.res"/>
+		</scenario>
+<!-- ¸Á³»/¿Ü ÆÇ´Ü ±â´É °³¼±À¸·Î Á¦¿Ü½ÃÅ´
+		<scenario name="remains_refilldosu_mobile_in_out_long" description="HDV À½¼º È£, RefillDosu °èÁ¤ »ç¿ë(¸Á³»->¸Á¿Ü È£ÀüÈ¯,100ÃÊÀÌ»ó)">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/04. Remains/refilldosu.mobile_in_out.long.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/uac.refilldosu.mobile_in_out.long.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/04. Remains/refilldosu.mobile_in_out.long.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/uas.refilldosu.mobile_in_out.long.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/04/cdr.refilldosu.mobile_in_out.long.res"/>
+		</scenario>
+-->
+	</class>
+
+	<class name="SVC_FEATURE_#5">
+		<scenario name="family_noremains" description="HDV À½¼º È£, ¿Â°¡Á·ÇÒÀÎ, Family ÀÜ¾×¾øÀ½">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/05. VAS/family.noremains.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/uac.family.noremains.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/05. VAS/family.noremains.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/uas.family.noremains.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/cdr.family.noremains.res"/>
+		</scenario>
+		<scenario name="family_noremains_video" description="HDV ¿µ»ó È£, ¿Â°¡Á·ÇÒÀÎ, Family ÀÜ¾×¾øÀ½">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/05. VAS/family.noremains.video.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/uac.family.noremains.video.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/cdr.family.noremains.video.res"/>
+		</scenario>
+		<scenario name="family_noremains_mobile_in_out" description="HDV À½¼º È£, ¿Â°¡Á·ÇÒÀÎ, Family ÀÜ¾×¾øÀ½(¸Á¿ÜÈ£ÀüÈ¯)">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/05. VAS/family.noremains.mobile_in_out.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/uac.family.noremains.mobile_in_out.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/05. VAS/family.noremains.mobile_in_out.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/uas.family.noremains.mobile_in_out.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/cdr.family.noremains.mobile_in_out.res"/>
+		</scenario>
+<!-- ¸Á³»/¿Ü ÆÇ´Ü ±â´É °³¼±À¸·Î Á¦¿Ü½ÃÅ´
+		<scenario name="family_noremains_mobile_in_out_long" description="HDV À½¼º È£, ¿Â°¡Á·ÇÒÀÎ, Family ÀÜ¾×¾øÀ½(¸Á¿ÜÈ£ÀüÈ¯,100ÃÊÀÌ»ó)">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/05. VAS/family.noremains.mobile_in_out.long.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/uac.family.noremains.mobile_in_out.long.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/05. VAS/family.noremains.mobile_in_out.long.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/uas.family.noremains.mobile_in_out.long.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/cdr.family.noremains.mobile_in_out.long.res"/>
+		</scenario>
+-->
+		<scenario name="family_remains" description="HDV À½¼º È£, ¿Â°¡Á·ÇÒÀÎ, Family ÀÜ¾×ÀÖÀ½">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/05. VAS/family.remains.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/uac.family.remains.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/05. VAS/family.remains.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/uas.family.remains.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/cdr.family.remains.res"/>
+		</scenario>
+		<scenario name="family_remains_video" description="HDV ¿µ»ó È£, ¿Â°¡Á·ÇÒÀÎ, Family ÀÜ¾×ÀÖÀ½">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/05. VAS/family.remains.video.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/uac.family.remains.video.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/05. VAS/family.remains.video.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/uas.family.remains.video.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/cdr.family.remains.video.res"/>
+		</scenario>
+		<scenario name="family_remains_mobile_in_out" description="HDV À½¼º È£, ¿Â°¡Á·ÇÒÀÎ, Family ÀÜ¾×ÀÖÀ½(¸Á¿ÜÈ£ÀüÈ¯)">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/05. VAS/family.remains.mobile_in_out.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/uac.family.remains.mobile_in_out.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/05. VAS/family.remains.mobile_in_out.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/uas.family.remains.mobile_in_out.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/cdr.family.remains.mobile_in_out.res"/>
+		</scenario>
+		<scenario name="family_remains_mobile_in_out_video" description="HDV ¿µ»ó È£, ¿Â°¡Á·ÇÒÀÎ, Family ÀÜ¾×ÀÖÀ½(¸Á¿ÜÈ£ÀüÈ¯)">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/05. VAS/family.remains.video.mobile_in_out.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/uac.family.remains.video.mobile_in_out.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/05. VAS/family.remains.video.mobile_in_out.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/uas.family.remains.video.mobile_in_out.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/cdr.family.remains.video.mobile_in_out.res"/>
+		</scenario>
+<!-- ¸Á³»/¿Ü ÆÇ´Ü ±â´É °³¼±À¸·Î Á¦¿Ü½ÃÅ´
+		<scenario name="family_remains_mobile_in_out_long" description="HDV À½¼º È£, ¿Â°¡Á·ÇÒÀÎ, Family ÀÜ¾×ÀÖÀ½(¸Á¿ÜÈ£ÀüÈ¯,100ÃÊÀÌ»ó)">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/05. VAS/family.remains.mobile_in_out.long.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/uac.family.remains.mobile_in_out.long.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/05. VAS/family.remains.mobile_in_out.long.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/uas.family.remains.mobile_in_out.long.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/cdr.family.remains.mobile_in_out.long.res"/>
+		</scenario>
+-->
+		<scenario name="fmc(family)_noremains" description="HDV À½¼º È£, FMC(¿Â°¡Á·), Family ÀÜ¾×¾øÀ½">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/05. VAS/fmc.family.noremains.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/uac.fmc.family.noremains.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/05. VAS/fmc.family.noremains.sh simctrl mrf"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/mrf.fmc.family.noremains.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/cdr.fmc.family.noremains.res"/>
+		</scenario>
+		<scenario name="fmc(family)_noremains_video" description="HDV ¿µ»ó È£, FMC(¿Â°¡Á·), Family ÀÜ¾×¾øÀ½">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/05. VAS/fmc.family.noremains.video.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/uac.fmc.family.noremains.video.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/cdr.fmc.family.noremains.video.res"/>
+		</scenario>
+		<scenario name="fmc(family)_remains" description="HDV À½¼º È£, FMC(¿Â°¡Á·), Family ÀÜ¾×ÀÖÀ½">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/05. VAS/fmc.family.remains.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/uac.fmc.family.remains.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/05. VAS/fmc.family.remains.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/uas.fmc.family.remains.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/cdr.fmc.family.remains.res"/>
+		</scenario>
+		<scenario name="fmc(family)_remains_video" description="HDV ¿µ»ó È£, FMC(¿Â°¡Á·), Family ÀÜ¾×ÀÖÀ½">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/05. VAS/fmc.family.remains.video.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/uac.fmc.family.remains.video.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/05. VAS/fmc.family.remains.video.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/uas.fmc.family.remains.video.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/cdr.fmc.family.remains.video.res"/>
+		</scenario>
+		<scenario name="fmc(individual)_remains" description="HDV À½¼º È£, FMC(°³ÀÎ), Family ÀÜ¾×ÀÖÀ½">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/05. VAS/fmc.individual.remains.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/uac.fmc.individual.remains.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/05. VAS/fmc.individual.remains.sh simctrl mrf"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/mrf.fmc.individual.remains.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/cdr.fmc.individual.remains.res"/>
+		</scenario>
+		<scenario name="fmc(individual)_remains_video" description="HDV ¿µ»ó È£, FMC(°³ÀÎ), Family ÀÜ¾×ÀÖÀ½">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/05. VAS/fmc.individual.remains.video.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/uac.fmc.individual.remains.video.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/cdr.fmc.individual.remains.video.res"/>
+		</scenario>
+		<scenario name="fmfree_ind_remains" description="HDV À½¼º È£, ¿Â°¡Á·ÇÁ¸® ÁöÁ¤¹øÈ£, OFNumDosu ÀÜ¾×ÀÖÀ½">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/05. VAS/fmfree.ind.remains.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/uac.fmfree.ind.remains.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/05. VAS/fmfree.ind.remains.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/uas.fmfree.ind.remains.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/cdr.fmfree.ind.remains.res"/>
+		</scenario>
+		<scenario name="fmfree_ind_remains_video" description="HDV ¿µ»ó È£, ¿Â°¡Á·ÇÁ¸® ÁöÁ¤¹øÈ£, OFNumDosu ÀÜ¾×ÀÖÀ½">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/05. VAS/fmfree.ind.remains.video.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/uac.fmfree.ind.remains.video.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/cdr.fmfree.ind.remains.video.res"/>
+		</scenario>
+		<scenario name="fmfree_noremains" description="HDV À½¼º È£, ¿Â°¡Á·ÇÁ¸®, Family ÀÜ¾×¾øÀ½">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/05. VAS/fmfree.noremains.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/uac.fmfree.noremains.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/05. VAS/fmfree.noremains.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/uas.fmfree.noremains.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/cdr.fmfree.noremains.res"/>
+		</scenario>
+		<scenario name="fmfree_noremains_video" description="HDV ¿µ»ó È£, ¿Â°¡Á·ÇÁ¸®, Family ÀÜ¾×¾øÀ½">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/05. VAS/fmfree.noremains.video.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/uac.fmfree.noremains.video.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/cdr.fmfree.noremains.video.res"/>
+		</scenario>
+		<scenario name="fmfree_noremains_mobile_in_out" description="HDV À½¼º È£, ¿Â°¡Á·ÇÁ¸®, Family ÀÜ¾×¾øÀ½(¸Á¿ÜÈ£ÀüÈ¯)">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/05. VAS/fmfree.noremains.mobile_in_out.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/uac.fmfree.noremains.mobile_in_out.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/05. VAS/fmfree.noremains.mobile_in_out.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/uas.fmfree.noremains.mobile_in_out.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/cdr.fmfree.noremains.mobile_in_out.res"/>
+		</scenario>
+<!-- ¸Á³»/¿Ü ÆÇ´Ü ±â´É °³¼±À¸·Î Á¦¿Ü½ÃÅ´
+		<scenario name="fmfree_noremains_mobile_in_out_long" description="HDV À½¼º È£, ¿Â°¡Á·ÇÁ¸®, Family ÀÜ¾×¾øÀ½(¸Á¿ÜÈ£ÀüÈ¯,100ÃÊÀÌ»ó)">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/05. VAS/fmfree.noremains.mobile_in_out.long.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/uac.fmfree.noremains.mobile_in_out.long.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/05. VAS/fmfree.noremains.mobile_in_out.long.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/uas.fmfree.noremains.mobile_in_out.long.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/cdr.fmfree.noremains.mobile_in_out.long.res"/>
+		</scenario>
+-->
+		<scenario name="fmfree_remains" description="HDV À½¼º È£, ¿Â°¡Á·ÇÁ¸®, Family ÀÜ¾×ÀÖÀ½">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/05. VAS/fmfree.remains.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/uac.fmfree.remains.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/05. VAS/fmfree.remains.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/uas.fmfree.remains.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/cdr.fmfree.remains.res"/>
+		</scenario>
+		<scenario name="fmfree_remains_video" description="HDV ¿µ»ó È£, ¿Â°¡Á·ÇÁ¸®, Family ÀÜ¾×ÀÖÀ½">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/05. VAS/fmfree.remains.video.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/uac.fmfree.remains.video.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/cdr.fmfree.remains.video.res"/>
+		</scenario>
+		<scenario name="fmfree_remains_mobile_in_out" description="HDV À½¼º È£, ¿Â°¡Á·ÇÁ¸®, Family ÀÜ¾×ÀÖÀ½(¸Á¿ÜÈ£ÀüÈ¯)">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/05. VAS/fmfree.remains.mobile_in_out.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/uac.fmfree.remains.mobile_in_out.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/05. VAS/fmfree.remains.mobile_in_out.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/uas.fmfree.remains.mobile_in_out.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/cdr.fmfree.remains.mobile_in_out.res"/>
+		</scenario>
+<!-- ¸Á³»/¿Ü ÆÇ´Ü ±â´É °³¼±À¸·Î Á¦¿Ü½ÃÅ´
+		<scenario name="fmfree_remains_mobile_in_out_long" description="HDV À½¼º È£, ¿Â°¡Á·ÇÁ¸®, Family ÀÜ¾×ÀÖÀ½(¸Á¿ÜÈ£ÀüÈ¯,100ÃÊÀÌ»ó)">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/05. VAS/fmfree.remains.mobile_in_out.long.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/uac.fmfree.remains.mobile_in_out.long.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/05. VAS/fmfree.remains.mobile_in_out.long.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/uas.fmfree.remains.mobile_in_out.long.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/05/cdr.fmfree.remains.mobile_in_out.long.res"/>
+		</scenario>
+-->
+	</class>		
+
+	<class name="SVC_FEATURE_#6">
+		<scenario name="emegency_voice_call" description="HDV À½¼º È£, ºñ»óÈ£">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/06. ETC/emergency.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/06/uac.emergency.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/06. ETC/emergency.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/06/uas.emergency.res"/>
+		</scenario>
+		<scenario name="emegency_video_call" description="HDV ¿µ»ó È£, ºñ»óÈ£">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/06. ETC/emergency.video.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/06/uac.emergency.video.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/06. ETC/emergency.video.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/06/uas.emergency.video.res"/>
+		</scenario>
+		<scenario name="mybell_voice_call" description="HDV À½¼º È£, ¸¶ÀÌº§">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/06. ETC/mybell.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/06/uac.mybell.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/06. ETC/mybell.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/06/uas.mybell.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/06/cdr.mybell.res"/>
+		</scenario>
+		<scenario name="notfound_voice_call" description="HDV À½¼º È£, ¹Ì°¡ÀÔ ¹øÈ£">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/06. ETC/notfound.sh simctrl uac" 
+				     check="$HOME/sipp/T2TING/report/T2TingLte35/90/06/uac.notfound.res"/>
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/06. ETC/notfound.sh simctrl mrf" 
+				     check="$HOME/sipp/T2TING/report/T2TingLte35/90/06/mrf.notfound.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/06/cdr.notfound.res"/>
+		</scenario>
+		<scenario name="notfound_video_call" description="HDV ¿µ»ó È£, ¹Ì°¡ÀÔ ¹øÈ£">
+			<command script="$HOME/sipp/T2TING/90. Service Logic Test/06. ETC/notfound.video.sh simctrl uac" 
+				     check="$HOME/sipp/T2TING/report/T2TingLte35/90/06/uac.notfound.video.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/90/06/cdr.notfound.video.res"/>
+		</scenario>
+	</class>
+
+	<class name="pkg_test">
+		<scenario name="r390_calling_deluser" description="R390, ÅëÈ­ Áß °¡ÀÔÀÚ »èÁ¦µÈ °æ¿ì ¿¹¿ÜÃ³¸® È®ÀÎ">
+			<command script="$HOME/sipp/T2TING/91. PKG/R390/calling_deluser.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/91/R390/uac.calling_deluser.res"/>
+			<command script="$HOME/sipp/T2TING/91. PKG/R390/calling_deluser.sh simctrl uas"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/91/R390/uas.calling_deluser.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/91/R390/cdr.calling_deluser.res"/>
+		</scenario>
+		<scenario name="r417_too_long_called" description="R417, ¹öÆÛ¸¦ ÃÊ°úÇÑ Âø½Å ÀÔ·Â ½Ã ¿¹¿ÜÃ³¸® È®ÀÎ">
+			<command script="$HOME/sipp/T2TING/91. PKG/R417/too_long_called.sh simctrl uac"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/91/R417/uac.too_long_called.res" serial="true"/>
+			<command script="lcdr.sh v" remote_host="sktocs@192.168.1.36" remote_passwd="" check_type="none"
+					 check="$HOME/sipp/T2TING/report/T2TingLte35/91/R417/cdr.too_long_called.res"/>
+		</scenario>
+	</class>
+</scenarios>

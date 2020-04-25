@@ -97,7 +97,7 @@ void report_msg_dbif_display(uxc_dbif_t *dbif);
 
 int report_ack_msg_tcp_init( report_ack_msg_tcp_t *report_ack_msg);
 void report_ack_msg_tcp_final( report_ack_msg_tcp_t *report_ack_msg);
-int report_ack_msg_decode_dbif_msg( report_ack_msg_tcp_t *report_ack_msg, char *sessionID, char *gwSessionID, uxc_dbif_t *dbif);
+int report_ack_msg_decode_dbif_msg( report_ack_msg_tcp_t *report_ack_msg, uxc_dbif_t *dbif);
 int report_ack_msg_encode_to_dbif_msg( report_ack_msg_tcp_t *report_ack_msg, uxc_dbif_t *dbif);
 void report_ack_msg_tcp_display(char *headerStr, report_ack_msg_tcp_t *report_ack_msg);
 void report_ack_msg_dbif_display(uxc_dbif_t *dbif);

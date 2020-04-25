@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<scenarios>
+    <configuration>
+		<!-- È­¸é¿¡ ½Ã³ª¸®¿À ½ÇÇà³»¿ë Ãâ·Â ¿©ºÎ. (on/off) (default:on) -->
+		<define name="display-trace-log" value="on"/>
+		<!-- È­¸é¿¡ ½Ã³ª¸®¿À ½ÇÇà³»¿ë ½Ç½Ã°£ Ãâ·Â ¿©ºÎ. (on/off) (default:off) -->
+		<define name="realtime-display" value="off"/>
+		<!-- ½Ã³ª¸®¿À ¼öÇà °á°ú¸¦ ÆÄÀÏ¿¡ ±â·ÏÇÒÁö ¿©ºÎ. (on/off) (default:off) -->
+		<define name="file-report" value="off"/>
+		<!-- ½Ã³ª¸®¿À ½ÇÇà Å¸ÀÓ¾Æ¿ô ½Ã°£(ÃÊ) (default:0(none)) -->
+		<define name="scenario-timeout" value="0"/>
+		<!-- ½Ã³ª¸®¿À ¼öÇà ÈÄ ´ÙÀ½ ½Ã³ª¸®¿À ¼öÇà Àü À¯ÈÞ ½Ã°£(ÃÊ) (default:0) -->
+		<define name="scenario-interval" value="0"/>
+		<!-- ½Ã³ª¸®¿À Å¸ÀÔ (seagull/sipp/none) (default:none) -->
+		<define name="scenario-type" value="none"/>
+		<!-- MMCD ¿¬°á Á¤º¸ - RMI HOST / PORT (default:null) -->
+		<define name="rmi-host" value="sktdb2"/>
+		<define name="rmi-port" value="15003"/>
+		<!-- Report plugin Á¤º¸ - library name (default:null) -->
+		<!--define name="report-plugin" value="libsimctrl_plugin.so"/-->
+		<!-- ignore list - ÇØ´ç keyword°¡ ÀÖÀ¸¸é ÇØ´ç ¶óÀÎ¿¡¼­ keyword ÀÌÈÄ´Â ºñ±³ÇÏÁö ¾Ê´Â´Ù. -->
+		<define name="ignore-keyword" value="Test1"/>
+		<define name="ignore-keyword" value="Test2"/>
+		<!-- replace list - ÇØ´ç keyword°¡ ÀÖÀ¸¸é source¸¦ destinationÀ¸·Î º¯È¯ ÈÄ °á°ú ºñ±³ÇÑ´Ù. -->
+		<!--                src, dst´Â value¿¡ ¼±¾ðµÇ¸ç src + "=>" + dst ÇüÅÂ·á Ç¥±âÇØ¾ßÇÑ´Ù. -->
+		<!-- define list - ¿¹¾àµÈ nameÀÌ ¾Æ´Ï¸é define list¿¡¼­ °ü¸®µÈ´Ù. rmi commandÀÇ ¿¹¾à¾î·Î »ç¿ëµÈ´Ù. -->
+		<define name="Subscription-Id" value="01067003951"/>
+		<define name="User-Tariff" value="LteTing34"/>
+	</configuration>
+	<class name="TEST-CLASS">
+		<rmi command="dis-user Subscription-Id"/>
+		<scenario name="TEST-SCENARIO" description="Å×½ºÆ® ½Ã³ª¸®¿À ÀÔ´Ï´Ù.">
+			<rmi command="chg-user Subscription-Id TARIFF=User-Tariff" display="false"/>
+			<rmi command="dis-user Subscription-Id"/>
+			<command script="dismc" check="" display="true" report="false"/>
+		</scenario>
+	</class>
+</scenarios>

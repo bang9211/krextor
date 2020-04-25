@@ -1,0 +1,30 @@
+SubDir TOP src simctrl ;
+
+SubDirHdrs /usr/include /usr/local/include ;
+SubDirHdrs $(UXLIB_SRC_HOME)/include ;
+SubDirHdrs $(TOP)/local ;
+
+BIN_NAME = simctrl ;
+
+LOCAL_DEF = $(SYS_CCFLAGS) ;
+
+SRC = 
+	main 
+	simctrl_cmd
+	simctrl_props
+	simctrl_report
+	simctrl_rmi
+	simctrl_scen 
+	simctrl_util
+	version
+	;
+
+ObjectCcFlags $(SRC)$(SUFOBJ) : $(SYS_CCFLAGS) $(LOCAL_DEF) -DREADLINE ;
+
+UX_LIBS = -luxlib -lpthread ;
+LINKLIBS on $(BIN_NAME) = $(SYS_LIBS) $(UX_LIBS) $(UDBC_LIBS) $(ALTI_LIBS) -L$(TOP)/lib  -L$(UASYS_HOME)/lib -lsimcmd ;
+
+Main $(BIN_NAME) : $(SRC).c ;
+#Copy $(BIN_NAME) : $(TOP)/bin ;
+InstallBin $(TOP)/bin : $(BIN_NAME) ;
+InstallBin $(UASYS_HOME)/bin : $(BIN_NAME) ;

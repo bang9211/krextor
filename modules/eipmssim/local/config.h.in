@@ -1,0 +1,76 @@
+#ifndef __UX_CONFIG_H__
+#define __UX_CONFIG_H__
+
+#undef __EXTENSIONS__
+
+/* Define to 1 if you have the <sys/types.h> header file. */
+#undef UX_HAVE_SYS_TYPES_H
+/* Define to 1 if you have the <stdint.h> header file. */
+#undef UX_HAVE_STDINT_H
+/* Define to 1 if you have the <inttypes.h> header file. */
+#undef UX_HAVE_INTTYPES_H
+/* Define to 1 if you have the <stdlib.h> header file. */
+#undef UX_HAVE_STDLIB_H
+/* Define to 1 if you have the <string.h> header file. */
+#undef UX_HAVE_STRING_H
+/* Define to 1 if you have the <time.h> header file. */
+#undef UX_HAVE_TIME_H
+/* Define to 1 if you have the <sys/time.h> header file. */
+#undef UX_HAVE_SYS_TIME_H
+/* Define to 1 if you have the <sys/select.h> header file. */
+#undef UX_HAVE_SYS_SELECT_H
+/* Define to 1 if you have the <sys/socket.h> header file. */
+#undef UX_HAVE_SYS_SOCKET_H
+/* Define to 1 if you have the <sys/filio.h> header file. */
+#undef UX_HAVE_SYS_FILIO_H
+/* Define to 1 if you have the <sys/epoll.h> header file. */
+#undef UX_HAVE_SYS_EPOLL_H
+/* Define to 1 if you have the <sys/devpoll.h> header file. */
+#undef UX_HAVE_SYS_DEVPOLL_H
+/* Define to 1 if you have the <sys/event.h> header file. */
+#undef UX_HAVE_SYS_EVENT_H
+/* Define to 1 if you have the <openssl/ssl.h> header file. */
+#undef UX_HAVE_OPENSSL_SSL_H
+
+
+/* Define to 1 if you have the type 'struct timeval'. */
+#undef UX_HAVE_STRUCT_TIMEVAL
+/* Define to 1 if you have the type 'struct tm'. */
+#undef UX_HAVE_STRUCT_TM
+
+
+/* Define to 1 if you have the function 'localtime_r'. */
+#undef UX_HAVE_LOCALTIME_R
+/* Define to 1 if you have the function 'strlcpy'. */
+#undef UX_HAVE_STRLCPY
+/* Define to 1 if you have the function 'strlcat'. */
+#undef UX_HAVE_STRLCAT
+/* Define to 1 if you have the function 'inet_ntop'. */
+#undef UX_HAVE_INET_NTOP
+/* Define to 1 if you have the function 'inet_pton'. */
+#undef UX_HAVE_INET_PTON
+/* Define to 1 if you have the function 'semtimedop'. */
+#undef UX_HAVE_SEMTIMEDOP
+
+/* Define to 1 if compiler provides atomic builtins. */
+#undef UX_HAVE_ATOMIC_BUILTINS 
+
+/* Define to 1 if your system is BIGENDIAN. */
+#undef UX_BIGENDIAN
+
+#undef const
+
+#undef UX_INLINE
+
+#undef UX_HAVE_INLINE
+
+#undef UX_HAVE_IN6
+
+#undef UX_HAVE_SOCKADDR_SA_LEN
+
+#undef UX_HAVE_ADDRINFO
+
+#undef UX_HAVE_MSG_TRUNC
+
+
+#endif // #ifndef __UX_CONFIG_H__

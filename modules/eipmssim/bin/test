@@ -1,0 +1,8 @@
+<msgbody month='202004'>
+  <svcMgmtID id='ythan' mdn='mdn' svc='svc'>
+    <changeItem fieldname='test' value='1' type='int'>
+      <ppsItem chargeTime='' cdrType='01' chargeAmt='2'>
+      </ppsItem>
+    </changeItem>
+  </svcMgmtID>
+</msgbody>

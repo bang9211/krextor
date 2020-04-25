@@ -1,0 +1,3 @@
+SubDir SIMCTRL_SRC_HOME ;
+
+SubInclude SIMCTRL_SRC_HOME config ;

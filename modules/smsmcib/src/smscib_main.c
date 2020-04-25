@@ -25,7 +25,7 @@ int dbif_handle_gwreq(uxc_action_t *action, uxc_worker_t* worker, uxc_msg_t *msg
 /**
  * @brief eIPMS �� TCP Server �κ��� ������ �޾� GW �� DBIF �� �����Ѵ�. 
  */
-int tcp_client_handle_eipmsrsp(uxc_action_t *action, uxc_worker_t* worker, uxc_msg_t *uxcmsg)
+int tcp_client_handle_smscrsp(uxc_action_t *action, uxc_worker_t* worker, uxc_msg_t *uxcmsg)
 {
 	int rv;
 	tcp_client_t *client;
@@ -36,7 +36,7 @@ int tcp_client_handle_eipmsrsp(uxc_action_t *action, uxc_worker_t* worker, uxc_m
 
 	if ( tcpmsg->evtype == UPA_TCP_EVENT_RECV) {
 		// ux_log( UXL_INFO, "4. Received TCP message");
-		rv = dbif_forward_eipmsrsp( client, worker,tcpmsg);
+		rv = dbif_forward_smscrsp( client, worker,tcpmsg);
 	} else {
 		ux_log( UXL_INFO, "invalid event");
 		return -1;
@@ -61,7 +61,7 @@ int tcp_server_handle_smscreq( uxc_action_t *action, uxc_worker_t* worker, uxc_m
 		ux_log( UXL_INFO, "Receive event! (len=%d, worker=%d, chnl_idx=%d, peer_key=%d)",
 				tcpmsg->netmsg->buflen, uxc_worker_get_thread_id(worker),
 				tcpmsg->peerkey.chnl_idx, tcpmsg->peerkey.peer_key);
-		return tcp_server_handle_eipmsreq( tcp_server_instance(), worker, tcpmsg);
+		return tcp_server_handle_smscreq( tcp_server_instance(), worker, tcpmsg);
 	} else {
 		ux_log( UXL_INFO, "invalid event");
 		return -1;

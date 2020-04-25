@@ -1,0 +1,34 @@
+#
+#
+# OS Dependent settings
+# which are filled by autoconf
+#
+#
+
+UA_OS_INFO   = linux4_9_184_linuxkit ;
+UA_OS_NAME   = linux ;
+UA_OS_VER    = 4_9_184_linuxkit ;
+UA_MACH_NAME = x86_64 ;
+UA_CPU_NAME  = x86_64 ;
+
+SYS_CC = cc ;
+SYS_CFLAGS = -Wshadow -fPIC   -g -O2 -Wall ;
+SYS_CPPFLAGS = -D__LINUX__ -DPIC -D_GNU_SOURCE -D_REENTRANT ;
+SYS_CINCLUDE =  ;
+
+SYS_CXX = gcc ;
+SYS_CXXFLAGS = -Wshadow -fPIC  -O2 -g -O2 -Wall ;
+SYS_CXXINCLUDE =  ;
+
+SYS_LINK = cc ;
+SYS_LDFLAGS =  ;
+SYS_LIBS = -ldl -lpthread  ;
+
+SYS_SHLINK = cc ;
+SYS_SUFSHARED = .so ;
+SYS_SHLDFLAGS =  -shared ;
+SYS_SH_NEEDLIBS_BEGIN = -Wl,--whole-archive ;
+SYS_SH_NEEDLIBS_EACH =  ;
+SYS_SH_NEEDLIBS_END = -Wl,--no-whole-archive ;
+
+SYS_EXEMODE = 755 ;

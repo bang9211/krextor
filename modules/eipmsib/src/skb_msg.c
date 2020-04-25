@@ -961,6 +961,16 @@ int skb_msg_send( skb_msg_t *msg, upa_tcp_t *tcp, upa_peerkey_t *peerkey, int db
 	}
 }
 
+int check_header(skb_header_t* header) {
+	if (header->frameStart0 != (int8_t)0xFE ||
+		header->frameStart1 != (int8_t)0xFE ||
+		header->version0 != (int8_t)0x00 ||
+		header->version1 != (int8_t)0x01) {
+		return -1;
+	}
+	return 0;
+}
+
 void skb_msg_make_header(skb_header_t* header, int32_t messageID, int16_t bodySize, int32_t *requestID) {
 	int32_t temp;
 
