@@ -4,3 +4,6 @@
 
 *.log
 report
+.git_backup_*
+.git_backup
+modules/eipmssim/.svn
